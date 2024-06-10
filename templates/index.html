@@ -1,0 +1,132 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+<style>
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-title {
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+    .card-body {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+
+    .card-text {
+        font-size: 1em;
+        color: #6c757d;
+    }
+
+    .custom-control.custom-switch {
+        padding-top: 10px;
+    }
+
+    .bank-details {
+        margin-bottom: 10px;
+    }
+
+    .bank-numbers {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .bank-numbers li {
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+    }
+</style>
+<div class="container mt-4">
+    <div class="row">
+        <!-- Bank Account 1 -->
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Bank Name: Bank A</h5>
+                    <p class="card-text bank-details">user_a/*****</p>
+                    <h6 class="card-subtitle mb-2 text-muted">Bank Numbers:</h6>
+                    <ul class="bank-numbers">
+                        <li>
+                            <span>123456789</span>
+                            <span>Balance: $5,000</span>
+                        </li>
+                        <li>
+                            <span>987654321</span>
+                            <span>Balance: $3,000</span>
+                        </li>
+                        <li>
+                            <span>112233445</span>
+                            <span>Balance: $2,000</span>
+                        </li>
+                    </ul>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="switch1">
+                        <label class="custom-control-label" for="switch1">Switch On/Off</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bank Account 2 -->
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Bank Name: Bank A</h5>
+                    <p class="card-text bank-details">user_a/*****</p>
+                    <h6 class="card-subtitle mb-2 text-muted">Bank Numbers:</h6>
+                    <ul class="bank-numbers">
+                        <li>
+                            <span>123456789</span>
+                            <span>Balance: $5,000</span>
+                        </li>
+                        <li>
+                            <span>987654321</span>
+                            <span>Balance: $3,000</span>
+                        </li>
+                        <li>
+                            <span>112233445</span>
+                            <span>Balance: $2,000</span>
+                        </li>
+                    </ul>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="switch1">
+                        <label class="custom-control-label" for="switch1">Switch On/Off</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Bank Account 3 -->
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">Bank Name: Bank A</h5>
+                    <p class="card-text bank-details">user_a/*****</p>
+                    <h6 class="card-subtitle mb-2 text-muted">Bank Numbers:</h6>
+                    <ul class="bank-numbers">
+                        <li>
+                            <span>123456789</span>
+                            <span>Balance: $5,000</span>
+                        </li>
+                        <li>
+                            <span>987654321</span>
+                            <span>Balance: $3,000</span>
+                        </li>
+                        <li>
+                            <span>112233445</span>
+                            <span>Balance: $2,000</span>
+                        </li>
+                    </ul>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="switch1">
+                        <label class="custom-control-label" for="switch1">Switch On/Off</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
