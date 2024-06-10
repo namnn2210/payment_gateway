@@ -1,5 +1,6 @@
 {% extends "layout/layout.html" %}
-
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
 <style>
     .card-icon {
@@ -37,93 +38,89 @@
     .today-stats .text-danger {
         display: block;
     }
+
+    .table-responsive {
+            border: none;
+        }
+
+        .table {
+            border: none;
+        }
+
+        .table thead th {
+            border-bottom: none;
+        }
+
+        .table tbody tr td {
+            border-top: none;
+        }
 </style>
 <div class="container mt-4">
     <div class="row">
-        <!-- Card 1 -->
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="card-content">
-                        <div class="ml-3">
-                            <h5 class="card-title">ACB01</h5>
-                            <p class="balance">1,475,784,545 <span class="text-success">đ</span></p>
-                            <p class="card-text">39128377</p>
+        {% for bank_account in list_user_bank %}
+            <div class="col-md-3 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="card-content">
+                            <div class="ml-3">
+                                <h5 class="card-title">{{bank_account.account_name}}</h5>
+                                <p class="balance">{{bank_account.balance | intcomma}} <span class="text-success">đ</span></p>
+                                <p class="card-text">{{bank_account.account_number}}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="card-footer">
-                    <span>Today:</span>
-                    <div class="today-stats">
-                        <span class="text-success">+0 ~ 0</span>
-                        <span class="text-danger">-0 ~ 0</span>
+                    <div class="card-footer">
+                        <span>Today:</span>
+                        <div class="today-stats">
+                            <span class="text-success">+0 ~ 0</span>
+                            <span class="text-danger">-0 ~ 0</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Card 2 -->
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="card-content">
-                        <div class="ml-3">
-                            <h5 class="card-title">ACB02</h5>
-                            <p class="balance">2,011,010 <span class="text-success">đ</span></p>
-                            <p class="card-text">37878837</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <span>Today:</span>
-                    <div class="today-stats">
-                        <span class="text-success">+0 ~ 0</span>
-                        <span class="text-danger">-0 ~ 0</span>
-                    </div>
-                </div>
+        {% endfor %}
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Latest Transaction History</h5>
             </div>
-        </div>
-        <!-- Card 3 -->
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="card-content">
-                        <div class="ml-3">
-                            <h5 class="card-title">MB01</h5>
-                            <p class="balance">7,330,999,697 <span class="text-success">đ</span></p>
-                            <p class="card-text">0314813182222</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <span>Today:</span>
-                    <div class="today-stats">
-                        <span class="text-success">+5,086,760,028 ~ 864</span>
-                        <span class="text-danger">-0 ~ 0</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Card 4 -->
-        <div class="col-md-3 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="card-content">
-                        <div class="ml-3">
-                            <h5 class="card-title">VCB01</h5>
-                            <p class="balance">3,621 <span class="text-success">đ</span></p>
-                            <p class="card-text">9024706868</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <span>Today:</span>
-                    <div class="today-stats">
-                        <span class="text-success">+0 ~ 0</span>
-                        <span class="text-danger">-0 ~ 0</span>
-                    </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Account Number</th>
+                                <th>Reference Number</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Memo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>0314813182222</td>
+                                <td>REF123456</td>
+                                <td><span class="text-success">1,000,000 đ</span></td>
+                                <td>2024-06-10</td>
+                                <td>Payment for services</td>
+                            </tr>
+                            <tr>
+                                <td>0314813182222</td>
+                                <td>REF123457</td>
+                                <td><span class="text-success">500,000 đ</span></td>
+                                <td>2024-06-10</td>
+                                <td>Refund</td>
+                            </tr>
+                            <!-- Add more transactions as needed -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

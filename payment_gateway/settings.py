@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cms'
+    'django.contrib.humanize',
+    'cms',
+    'bank'
 ]
 
 MIDDLEWARE = [
@@ -74,13 +76,17 @@ WSGI_APPLICATION = 'payment_gateway.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('DB_NAME', 'payment'),
+        'USER': 'root',
+        'PASSWORD': 'ngocnam2210',
+        'HOST': 'localhost',  # Change this if your MySQL server is on a different host
+        'PORT': '3306',
     }
 }
+
 
 
 # Password validation
@@ -130,4 +136,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
-LOGOUT_REDIRECT_URL = '/'
+# LOGOUT_REDIRECT_URL = 'login'

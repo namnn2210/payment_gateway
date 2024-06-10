@@ -1,0 +1,172 @@
+{% extends "layout/layout.html" %}
+{% load humanize %}
+{% block title %}Bank Account{% endblock %}
+{% block content %}
+<style>
+    .container {
+        margin-top: 40px;
+    }
+
+    .search-box {
+        margin-bottom: 20px;
+    }
+
+    .btn-add {
+        margin-bottom: 20px;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+    }
+
+    .table tbody tr {
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table tbody tr:last-child {
+        border-bottom: none;
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" class="form-control search-box" id="searchAccountNumber" placeholder="Search by Account Number">
+        </div>
+        <div class="col-md-6 text-right">
+            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addBankModal">Add Bank</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Bank List</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0 text-center">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th>Account Number</th>
+                                    <th>Bank Name</th>
+                                    <th>Balance</th>
+                                    <th>Last Update</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="bankList" >
+                                {% for bank_account in list_user_bank %}
+                                <tr>
+                                    <td>
+                                        <p>{{bank_account.account_number}}</p>
+                                        <i>{{bank_account.account_name}}</i>
+                                    </td>
+                                    <td>{{bank_account.bank_name}}</td>
+                                    <td>{{bank_account.balance |intcomma }} <span class="text-success">đ</span></td>
+                                    <td>{{bank_account.updated_at}}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-info">Details</button>
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="addBankModal" tabindex="-1" aria-labelledby="addBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBankModalLabel">Add New Bank</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addBankForm">
+                    <div class="form-group">
+                        <label for="bankNumber">Bank Number</label>
+                        <input type="text" class="form-control" id="bankNumber" name="bankNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankUsername">Bank Username</label>
+                        <input type="text" class="form-control" id="bankUsername" name="bankUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankPassword">Bank Password</label>
+                        <input type="password" class="form-control" id="bankPassword" name="bankPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankName">Bank Name</label>
+                        <select class="form-control" id="bankName" name="bankName" required>
+                            {% for bank in list_bank_option %}
+                                <option value="{{ bank.name }}">{{ bank.name }}</option>
+                            {% endfor %}
+                            <!-- Add more bank options as needed -->
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Bank</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    function showAlert(message, type) {
+        const alertContainer = $('#alertContainer');
+        const alertHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        alertContainer.html(alertHTML);
+    }
+
+    $(document).ready(function () {
+        $('#searchAccountNumber').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $('#bankList tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        $('#addBankForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = {
+                bankNumber: $('#bankNumber').val(),
+                bankUsername: $('#bankUsername').val(),
+                bankPassword: $('#bankPassword').val(),
+                bankName: $('#bankName').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "add_bank" %}',  // Ensure this URL name matches your urls.py
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.status === 200) {
+                        showAlert(response.message, 'success');
+                        $('#addBankModal').modal('hide');
+                    }
+                    // Optionally, refresh the bank list or add the new bank row to the table
+                    location.reload();
+                },
+                error: function (response) {
+                    showAlert('An error occurred. Please try again.', 'danger');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
