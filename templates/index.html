@@ -2,127 +2,124 @@
 
 {% block content %}
 <style>
-    .card {
-        border-radius: 15px;
-        overflow: hidden;
+    .card-icon {
+        width: 30px;
+        height: 30px;
     }
 
-    .card-title {
-        font-weight: bold;
-        font-size: 1.2em;
+    .card-content {
+        display: flex;
+        align-items: center;
     }
 
     .card-body {
-        padding: 20px;
-        background-color: #f8f9fa;
+        padding: 10px;
     }
 
-    .card-text {
-        font-size: 1em;
-        color: #6c757d;
+    .balance {
+        font-size: 1.5rem;
+        font-weight: bold;
     }
 
-    .custom-control.custom-switch {
-        padding-top: 10px;
-    }
-
-    .bank-details {
-        margin-bottom: 10px;
-    }
-
-    .bank-numbers {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    .bank-numbers li {
-        margin-bottom: 5px;
+    .card-footer {
+        background-color: transparent;
+        border-top: none;
         display: flex;
         justify-content: space-between;
+        font-size: 0.9rem;
+    }
+
+    .today-stats {
+        text-align: right;
+    }
+
+    .today-stats .text-success,
+    .today-stats .text-danger {
+        display: block;
     }
 </style>
 <div class="container mt-4">
     <div class="row">
-        <!-- Bank Account 1 -->
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
+        <!-- Card 1 -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title text-primary">Bank Name: Bank A</h5>
-                    <p class="card-text bank-details">user_a/*****</p>
-                    <h6 class="card-subtitle mb-2 text-muted">Bank Numbers:</h6>
-                    <ul class="bank-numbers">
-                        <li>
-                            <span>123456789</span>
-                            <span>Balance: $5,000</span>
-                        </li>
-                        <li>
-                            <span>987654321</span>
-                            <span>Balance: $3,000</span>
-                        </li>
-                        <li>
-                            <span>112233445</span>
-                            <span>Balance: $2,000</span>
-                        </li>
-                    </ul>
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="switch1">
-                        <label class="custom-control-label" for="switch1">Switch On/Off</label>
+                    <div class="card-content">
+                        <div class="ml-3">
+                            <h5 class="card-title">ACB01</h5>
+                            <p class="balance">1,475,784,545 <span class="text-success">đ</span></p>
+                            <p class="card-text">39128377</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span>Today:</span>
+                    <div class="today-stats">
+                        <span class="text-success">+0 ~ 0</span>
+                        <span class="text-danger">-0 ~ 0</span>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Bank Account 2 -->
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
+        <!-- Card 2 -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title text-primary">Bank Name: Bank A</h5>
-                    <p class="card-text bank-details">user_a/*****</p>
-                    <h6 class="card-subtitle mb-2 text-muted">Bank Numbers:</h6>
-                    <ul class="bank-numbers">
-                        <li>
-                            <span>123456789</span>
-                            <span>Balance: $5,000</span>
-                        </li>
-                        <li>
-                            <span>987654321</span>
-                            <span>Balance: $3,000</span>
-                        </li>
-                        <li>
-                            <span>112233445</span>
-                            <span>Balance: $2,000</span>
-                        </li>
-                    </ul>
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="switch1">
-                        <label class="custom-control-label" for="switch1">Switch On/Off</label>
+                    <div class="card-content">
+                        <div class="ml-3">
+                            <h5 class="card-title">ACB02</h5>
+                            <p class="balance">2,011,010 <span class="text-success">đ</span></p>
+                            <p class="card-text">37878837</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span>Today:</span>
+                    <div class="today-stats">
+                        <span class="text-success">+0 ~ 0</span>
+                        <span class="text-danger">-0 ~ 0</span>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Bank Account 3 -->
-        <div class="col-md-4">
-            <div class="card mb-4 shadow-sm">
+        <!-- Card 3 -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title text-primary">Bank Name: Bank A</h5>
-                    <p class="card-text bank-details">user_a/*****</p>
-                    <h6 class="card-subtitle mb-2 text-muted">Bank Numbers:</h6>
-                    <ul class="bank-numbers">
-                        <li>
-                            <span>123456789</span>
-                            <span>Balance: $5,000</span>
-                        </li>
-                        <li>
-                            <span>987654321</span>
-                            <span>Balance: $3,000</span>
-                        </li>
-                        <li>
-                            <span>112233445</span>
-                            <span>Balance: $2,000</span>
-                        </li>
-                    </ul>
-                    <div class="custom-control custom-switch">
-                        <input type="checkbox" class="custom-control-input" id="switch1">
-                        <label class="custom-control-label" for="switch1">Switch On/Off</label>
+                    <div class="card-content">
+                        <div class="ml-3">
+                            <h5 class="card-title">MB01</h5>
+                            <p class="balance">7,330,999,697 <span class="text-success">đ</span></p>
+                            <p class="card-text">0314813182222</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span>Today:</span>
+                    <div class="today-stats">
+                        <span class="text-success">+5,086,760,028 ~ 864</span>
+                        <span class="text-danger">-0 ~ 0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Card 4 -->
+        <div class="col-md-3 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="card-content">
+                        <div class="ml-3">
+                            <h5 class="card-title">VCB01</h5>
+                            <p class="balance">3,621 <span class="text-success">đ</span></p>
+                            <p class="card-text">9024706868</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <span>Today:</span>
+                    <div class="today-stats">
+                        <span class="text-success">+0 ~ 0</span>
+                        <span class="text-danger">-0 ~ 0</span>
                     </div>
                 </div>
             </div>
