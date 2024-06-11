@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME', 'payment'),
         'USER': 'root',
-        'PASSWORD': 'ngocnam2210',
+        'PASSWORD': '',
         'HOST': 'localhost',  # Change this if your MySQL server is on a different host
         'PORT': '3306',
     }

@@ -27,10 +27,11 @@
         border-bottom: none;
     }
 </style>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-md-6">
-            <input type="text" class="form-control search-box" id="searchAccountNumber" placeholder="Search by Account Number">
+            <input type="text" class="form-control search-box" id="searchAccountNumber"
+                placeholder="Search by Account Number">
         </div>
         <div class="col-md-6 text-right">
             <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addBankModal">Add Bank</button>
@@ -54,7 +55,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="bankList" >
+                            <tbody id="bankList">
                                 {% for bank_account in list_user_bank %}
                                 <tr>
                                     <td>
@@ -65,7 +66,9 @@
                                     <td>{{bank_account.balance |intcomma }} <span class="text-success">đ</span></td>
                                     <td>{{bank_account.updated_at}}</td>
                                     <td>
-                                        <button class="btn btn-sm btn-info">Details</button>
+                                        <a href="{% url 'bank_transaction_history' bank_account.account_number %}"><button
+                                                class="btn btn-sm btn-success">History</button>
+                                        </a>
                                         <button class="btn btn-sm btn-danger">Delete</button>
                                     </td>
                                 </tr>
@@ -105,7 +108,7 @@
                         <label for="bankName">Bank Name</label>
                         <select class="form-control" id="bankName" name="bankName" required>
                             {% for bank in list_bank_option %}
-                                <option value="{{ bank.name }}">{{ bank.name }}</option>
+                            <option value="{{ bank.name }}">{{ bank.name }}</option>
                             {% endfor %}
                             <!-- Add more bank options as needed -->
                         </select>

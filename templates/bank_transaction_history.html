@@ -1,0 +1,178 @@
+{% extends "layout/layout.html" %}
+{% load humanize %}
+{% block title %}Bank History{% endblock %}
+{% block content %}
+<style>
+    .container-fluid {
+        margin-top: 20px;
+    }
+
+    .search-box {
+        margin-bottom: 20px;
+    }
+
+    .filter-buttons {
+        margin-bottom: 20px;
+    }
+
+    .table th,
+    .table td {
+        text-align: center;
+        border: none;
+    }
+
+    .table tbody tr {
+        font-size: 14px;
+        padding: 5px;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .step-links a,
+    .step-links span.current {
+        margin: 0 5px;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        color: #333;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    .step-links a:hover {
+        background-color: #f1f1f1;
+        border-color: #888;
+    }
+
+    .step-links span.current {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+</style>
+<div class="container-fluid">
+    <h2>Transaction History</h2>
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" class="form-control search-box" id="searchMemo" placeholder="Search by Memo">
+        </div>
+        <div class="col-md-6 text-right">
+            <div class="btn-group filter-buttons" role="group">
+                <button type="button" class="btn btn-secondary" data-filter="all">All</button>
+                <button type="button" class="btn btn-secondary" data-filter="today">Today</button>
+                <button type="button" class="btn btn-secondary" data-filter="yesterday">Yesterday</button>
+                <button type="button" class="btn btn-secondary" data-filter="this_week">This Week</button>
+                <button type="button" class="btn btn-secondary" data-filter="last_week">Last Week</button>
+                <button type="button" class="btn btn-secondary" data-filter="last_30_days">Last 30 Days</button>
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Transaction Number</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Memo</th>
+                </tr>
+            </thead>
+            <tbody id="transactionTableBody">
+                {% if page_obj.object_list %}
+                {% for history in page_obj.object_list%}
+                <tr>
+                    <td><b>{{history.transaction_number}}</b></td>
+                    {% if history.type == 'IN' %}
+                    <td><span class="text-success">+{{history.amount | intcomma}}</span></td>
+                    {% else %}
+                    <td><span class="text-danger">-{{history.amount | intcomma}}</span></td>
+                    {% endif %}
+                    <td>2024-06-01</td>
+                    <td>{{history.description}}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <p>No data found.</p>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $(document).ready(function () {
+        // Handle search by memo
+        $('#searchMemo').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $('#transactionTableBody tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+
+        // Handle filter buttons
+        $('.filter-buttons .btn-secondary').on('click', function () {
+            $('.filter-buttons .btn-secondary').removeClass('active');
+            $(this).addClass('active');
+            var filter = $(this).data('filter');
+            filterTransactions(filter);
+        });
+
+        function filterTransactions(filter) {
+            var today = new Date();
+            var startDate, endDate;
+
+            if (filter === 'all') {
+                $('#transactionTableBody tr').show();
+                return;
+            }
+
+            if (filter === 'today') {
+                startDate = endDate = today;
+            } else if (filter === 'yesterday') {
+                startDate = endDate = new Date(today.setDate(today.getDate() - 1));
+            } else if (filter === 'this_week') {
+                var dayOfWeek = today.getDay();
+                startDate = new Date(today.setDate(today.getDate() - dayOfWeek));
+                endDate = new Date(today.setDate(today.getDate() + (6 - dayOfWeek)));
+            } else if (filter === 'last_week') {
+                var dayOfWeek = today.getDay();
+                startDate = new Date(today.setDate(today.getDate() - dayOfWeek - 7));
+                endDate = new Date(today.setDate(today.getDate() + 6));
+            } else if (filter === 'last_30_days') {
+                startDate = new Date(today.setDate(today.getDate() - 30));
+                endDate = today;
+            }
+
+            $('#transactionTableBody tr').each(function () {
+                var date = new Date($(this).find('td:eq(2)').text());
+                if (date >= startDate && date <= endDate) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

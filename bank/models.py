@@ -21,6 +21,8 @@ class BankAccount(models.Model):
     bank_name = models.ForeignKey(Bank, on_delete=models.DO_NOTHING, null=False)
     account_number = models.CharField(max_length=255)
     account_name = models.CharField(max_length=255, default='')
+    username = models.CharField(max_length=255, default='')
+    password = models.CharField(max_length=255, default='')
     balance = models.BigIntegerField(default=0)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
