@@ -58,7 +58,7 @@
 
             <table class="table table-borderless datatable">
                 <thead>
-                    <tr>
+                    <tr class="text-center">
                         <th>Account Number</th>
                         <th>Reference Number</th>
                         <th>Amount</th>
@@ -66,14 +66,8 @@
                         <th>Memo</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row"><a href="#">#2457</a></th>
-                        <td>Brandon Jacob</td>
-                        <td><a href="#" class="text-primary">At praesentium minu</a></td>
-                        <td>$64</td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                    </tr>
+                <tbody id="transaction-table-body">
+                    <!-- Data will be appended here -->
                 </tbody>
             </table>
 
@@ -82,4 +76,48 @@
     </div>
 </div><!-- End Recent Sales -->
 </div>
+{% endblock %}
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function fetchLatestTransactions() {
+            fetch('{% url "update_transaction_history" %}')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.querySelector('table.table tbody');
+                    if (!tableBody) {
+                        console.error('Table body element not found');
+                        return;
+                    }
+                    tableBody.innerHTML = ''; // Clear existing table rows
+                    data.data.forEach(transaction => {
+                        console.log(transaction)
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${transaction.account}</td>
+                            <td>${transaction.transaction_number}</td>
+                            <td class="text-success">${transaction.amount.toLocaleString()}</td>
+                            <td>${transaction.active_datetime}</td>
+                            <td>${transaction.description}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching transactions:', error);
+                });
+        }
+
+        // Fetch transactions when the page loads
+        fetchLatestTransactions();
+
+        // Optionally, set an interval to fetch the data periodically
+        setInterval(fetchLatestTransactions, 15000); // Fetch every 30 seconds
+    });
+</script>
 {% endblock %}

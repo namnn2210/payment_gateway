@@ -8,6 +8,8 @@ from django.views import View
 from django.core.paginator import Paginator
 from .utils import get_acb_bank_transaction_history, get_bank
 import json
+import redis
+import pandas as pd
 
 # Create your views here.
 @login_required(login_url='login')
@@ -16,6 +18,7 @@ def list_bank(request):
     list_user_bank = BankAccount.objects.filter(user=request.user)
     return render(request=request, template_name='bank.html',context={'list_bank_option':list_bank_option, 'list_user_bank':list_user_bank})
 
+@login_required(login_url='login')
 def bank_transaction_history(request, account_number):
     bank_account = BankAccount.objects.filter(account_number=account_number).first()
     histories = get_acb_bank_transaction_history(bank_account)
@@ -53,5 +56,40 @@ class AddBankView(View):
             return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         
         return JsonResponse({'status': '500', 'message': 'Failed to add bank'})
+    
 
+def update_transaction_history(request):
+    redis_client = redis.Redis(host='localhost', port=6379, db=1)
+    bank_accounts = BankAccount.objects.filter(user=request.user)
+    
+    all_transactions = []
+
+    for bank_account in bank_accounts:
+        bank_redis = redis_client.get(bank_account.account_number)
+        if bank_redis:
+            json_data = json.loads(bank_redis)
+            df = pd.DataFrame(json_data)
+            df = df[df['type'] == 'IN']
+            all_transactions.append(df)
+
+    # Close the Redis connection
+    redis_client.close()
+
+    # Concatenate all transaction DataFrames
+    if all_transactions:
+        all_transactions_df = pd.concat(all_transactions)
+
+        # Convert the 'active_datetime' column to datetime if it's not already
+        # if not pd.api.types.is_datetime64_any_dtype(all_transactions_df['active_datetime']):
+        #     all_transactions_df['active_datetime'] = pd.to_datetime(all_transactions_df['active_datetime'])
+
+        # Sort by 'active_datetime' in descending order and get the top 10
+        sorted_transactions = all_transactions_df.sort_values(by='active_datetime', ascending=False).head(10)
+
+        # Convert the sorted DataFrame to JSON
+        top_transactions_json = sorted_transactions.to_json(orient='records', date_format='iso')
+    else:
+        top_transactions_json = json.dumps([])  # Empty list if no transactions
+
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': json.loads(top_transactions_json)})
 

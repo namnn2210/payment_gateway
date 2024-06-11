@@ -12,7 +12,7 @@ class Command(BaseCommand):
     help = 'Get all bank transaction history to redis'
 
     def handle(self, *args, **kwargs):
-        redis_client = redis.Redis(host='localhost', port=6379, db=0)
+        redis_client = redis.Redis(host='localhost', port=6379, db=1)
         columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
         while True:
             # Get all active bank accounts
@@ -39,4 +39,5 @@ class Command(BaseCommand):
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:
                         print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-            time.sleep(20)
+            redis_client.close()
+            time.sleep(15)
