@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://laragongateway.xyz/', 'laragongateway.xyz', 'www.laragongateway.xyz', '15.235.131.24']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'corsheaders',
     'cms',
     'bank'
 ]
@@ -46,6 +47,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -137,3 +139,16 @@ MEDIA_URL = '/media/'
 
 
 # LOGOUT_REDIRECT_URL = 'login'
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:2210',
+    "http://localhost:2210",
+    # "http://103.241.43.107:7979",
+    'https://laragongateway.xyz'
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:2210',
+    "http://localhost:2210",
+    # 'http://103.241.43.107:7979',
+    'https://laragongateway.xyz'
+]
