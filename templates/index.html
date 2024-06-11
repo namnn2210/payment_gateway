@@ -2,63 +2,10 @@
 {% load humanize %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<style>
-    .card-icon {
-        width: 30px;
-        height: 30px;
-    }
-
-    .card-content {
-        display: flex;
-        align-items: center;
-    }
-
-    .card-body {
-        padding: 10px;
-    }
-
-    .balance {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    .card-footer {
-        background-color: transparent;
-        border-top: none;
-        display: flex;
-        justify-content: space-between;
-        font-size: 0.9rem;
-    }
-
-    .today-stats {
-        text-align: right;
-    }
-
-    .today-stats .text-success,
-    .today-stats .text-danger {
-        display: block;
-    }
-
-    .table-responsive {
-            border: none;
-        }
-
-        .table {
-            border: none;
-        }
-
-        .table thead th {
-            border-bottom: none;
-        }
-
-        .table tbody tr td {
-            border-top: none;
-        }
-</style>
 <div class="container mt-4">
     <div class="row">
         {% for bank_account in list_user_bank %}
-            <div class="col-md-3 mb-3">
+        <!-- <div class="col-md-3 mb-3">
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <div class="card-content">
@@ -77,50 +24,62 @@
                         </div>
                     </div>
                 </div>
+            </div> -->
+        <div class="col-xxl-4 col-md-6">
+            <div class="card info-card revenue-card">
+
+                <div class="card-body">
+                    <h5 class="card-title">{{bank_account.account_number}} <span>| {{bank_account.account_name}}</span>
+                    </h5>
+
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6>{{bank_account.balance | intcomma}} <span class="text-success">đ</span></h6>
+                            <span class="text-success small pt-1 fw-bold">8%</span> <span
+                                class="text-muted small pt-2 ps-1">increase</span>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
+        </div><!-- End Revenue Card -->
         {% endfor %}
     </div>
 </div>
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Latest Transaction History</h5>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table mb-0">
-                        <thead class="thead-light">
-                            <tr>
-                                <th>Account Number</th>
-                                <th>Reference Number</th>
-                                <th>Amount</th>
-                                <th>Date</th>
-                                <th>Memo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>0314813182222</td>
-                                <td>REF123456</td>
-                                <td><span class="text-success">1,000,000 đ</span></td>
-                                <td>2024-06-10</td>
-                                <td>Payment for services</td>
-                            </tr>
-                            <tr>
-                                <td>0314813182222</td>
-                                <td>REF123457</td>
-                                <td><span class="text-success">500,000 đ</span></td>
-                                <td>2024-06-10</td>
-                                <td>Refund</td>
-                            </tr>
-                            <!-- Add more transactions as needed -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+<div class="col-12">
+    <div class="card recent-sales overflow-auto">
+
+        <div class="card-body">
+            <h5 class="card-title">Latest Transaction History</h5>
+
+            <table class="table table-borderless datatable">
+                <thead>
+                    <tr>
+                        <th>Account Number</th>
+                        <th>Reference Number</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Memo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row"><a href="#">#2457</a></th>
+                        <td>Brandon Jacob</td>
+                        <td><a href="#" class="text-primary">At praesentium minu</a></td>
+                        <td>$64</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
         </div>
+
     </div>
-</div>
+</div><!-- End Recent Sales -->
 </div>
 {% endblock %}
