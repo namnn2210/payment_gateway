@@ -1,0 +1,49 @@
+import requests
+import json
+import pandas as pd
+
+def get_bank(bank_name,bank_number, bank_username, bank_password):
+    if bank_name == 'ACB':
+        return get_acb_bank(bank_number, bank_username, bank_password)
+
+def get_acb_bank(bank_number, bank_username, bank_password):
+    url = "https://api.httzip.com/api/bank/ACB/balance"
+    headers = {
+        'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
+        'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
+        'Content-Type': 'application/json'
+    }
+    payload = json.dumps({
+        "login_id": bank_username,
+        "login_password": bank_password
+    })
+
+    response = requests.post(url=url, headers=headers, data=payload)
+    if response.status_code == 200:
+        list_bank_account = response.json()['data']
+        for bank_account in list_bank_account:
+            if bank_account['accountNumber'] == bank_number:
+                return bank_account
+    return None
+
+def get_acb_bank_transaction_history(bank_account):
+    url = 'https://api.httzip.com/api/bank/ACB/transactions'
+    headers = {
+        'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
+        'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
+        'Content-Type': 'application/json'
+    }
+    payload = json.dumps({
+        "login_id": bank_account.username,
+        "login_password": bank_account.password,
+        "filter_account":bank_account.account_number
+    })
+    
+    response = requests.post(url=url, headers=headers, data=payload)
+    if response.status_code == 200:
+        list_bank_account = response.json()['data']
+        return list_bank_account
+    return None
+
+def unix_to_datetime(unix_time):
+    return pd.to_datetime(unix_time, unit='ms')
