@@ -14,13 +14,16 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         redis_client = redis.Redis(host='localhost', port=6379, db=1)
         columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
+        print('start')
         while True:
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
+            print(bank_accounts)
             for bank in bank_accounts:
                 bank_exists = redis_client.get(bank.account_number)
                 new_bank_history = get_acb_bank_transaction_history(bank)
                 new_bank_history_df = pd.DataFrame(new_bank_history)
+                print(new_bank_history_df)
                 if new_bank_history_df.empty:
                     continue
                 # Convert Unix timestamp to datetime and replace nan values
@@ -35,6 +38,10 @@ class Command(BaseCommand):
                     # Compare 2 dataframes using compare
                     differences = old_bank_history_df.compare(final_new_bank_history_df)
                     if not differences.empty:
+                        # Get differences
+                        changed_rows = final_new_bank_history_df.loc[differences.index]
+                        print(changed_rows)
+
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:
