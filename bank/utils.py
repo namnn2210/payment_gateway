@@ -52,3 +52,25 @@ def unix_to_datetime(unix_time):
     dt_gmt_plus_7 = dt_utc.dt.tz_convert(tz='Asia/Bangkok')
     formatted_dt = dt_gmt_plus_7.dt.strftime('%Y-%m-%d %H:%M:%S')
     return formatted_dt
+
+CHAT_ID = '-1002160999380'
+API_KEY = '7402362257:AAHpTt7prptyy5fbvAWlMbYVNKUi0B5aZV8'
+
+def send_telegram_message(message: str):
+    data_dict = {'chat_id': CHAT_ID,
+                 'text': message,
+                 'parse_mode': 'HTML',
+                 'disable_notification': True}
+    headers = {'Content-Type': 'application/json',
+               'Proxy-Authorization': 'Basic base64'}
+    data = json.dumps(data_dict)
+    params = {
+        'parse_mode': 'Markdown'
+    }
+    url = f'https://api.telegram.org/bot{API_KEY}/sendMessage'
+    response = requests.post(url,
+                             data=data,
+                             headers=headers,
+                             params=params,
+                             verify=False)
+    return response

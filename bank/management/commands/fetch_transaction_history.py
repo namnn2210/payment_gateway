@@ -2,7 +2,7 @@ import json
 import redis
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.utils import get_acb_bank_transaction_history, unix_to_datetime
+from bank.utils import get_acb_bank_transaction_history, unix_to_datetime, send_telegram_message
 import time
 import pandas as pd
 from datetime import datetime
@@ -35,7 +35,11 @@ class Command(BaseCommand):
                     # Compare 2 dataframes using compare
                     differences = old_bank_history_df.compare(final_new_bank_history_df)
                     if not differences.empty:
-
+                        diff = old_bank_history_df.merge(final_new_bank_history_df, how='outer', indicator=True)
+                        unique_rows_new = diff[diff['_merge'] == 'right_only'].drop(columns=['_merge'])
+                        for _, row in unique_rows_new.iterrows():
+                            alert = '*{}*-{}\nMemo: {}\nAmount: {} VND\nDatetime: {}'.format(bank.account_number, bank.account_name, row['description'], row['amount'], row['active_datetime'])
+                            send_telegram_message(alert)
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:
