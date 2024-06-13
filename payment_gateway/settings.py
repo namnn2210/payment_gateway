@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'corsheaders',
     'cms',
-    'bank'
+    'bank',
+    'acb'
 ]
 
 MIDDLEWARE = [
@@ -83,7 +84,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.environ.get('DB_NAME', 'payment'),
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': 'ngocnam2210',
         'HOST': 'localhost',  # Change this if your MySQL server is on a different host
         'PORT': '3306',
     }

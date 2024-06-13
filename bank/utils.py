@@ -1,6 +1,10 @@
 import requests
 import json
 import pandas as pd
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def get_bank(bank_name,bank_number, bank_username, bank_password):
     if bank_name == 'ACB':
@@ -53,11 +57,8 @@ def unix_to_datetime(unix_time):
     formatted_dt = dt_gmt_plus_7.dt.strftime('%Y-%m-%d %H:%M:%S')
     return formatted_dt
 
-CHAT_ID = '-1002160999380'
-API_KEY = '7402362257:AAHpTt7prptyy5fbvAWlMbYVNKUi0B5aZV8'
-
 def send_telegram_message(message: str):
-    data_dict = {'chat_id': CHAT_ID,
+    data_dict = {'chat_id': os.environ.get('CHAT_ID'),
                  'text': message,
                  'parse_mode': 'HTML',
                  'disable_notification': True}
@@ -67,6 +68,7 @@ def send_telegram_message(message: str):
     params = {
         'parse_mode': 'Markdown'
     }
+    API_KEY = os.environ.get('API_KEY')
     url = f'https://api.telegram.org/bot{API_KEY}/sendMessage'
     response = requests.post(url,
                              data=data,

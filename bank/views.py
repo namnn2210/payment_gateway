@@ -7,9 +7,13 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.core.paginator import Paginator
 from .utils import get_acb_bank_transaction_history, get_bank, unix_to_datetime
+from .database import redis_connect
 import json
 import redis
 import pandas as pd
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Create your views here.
 @login_required(login_url='login')
@@ -64,7 +68,7 @@ class AddBankView(View):
     
 
 def update_transaction_history(request):
-    redis_client = redis.Redis(host='localhost', port=6379, db=1)
+    redis_client = redis_connect()
     bank_accounts = BankAccount.objects.filter(user=request.user)
     
     all_transactions = []
