@@ -26,7 +26,6 @@ class Command(BaseCommand):
                 # Convert Unix timestamp to datetime and replace nan values
                 new_bank_history_df[columns_to_convert] = new_bank_history_df[columns_to_convert].apply(unix_to_datetime, axis=1)
                 final_new_bank_history_df = new_bank_history_df.fillna('')
-                print(final_new_bank_history_df[columns_to_convert])
                 if not bank_exists:
                     redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                 else:
@@ -36,11 +35,6 @@ class Command(BaseCommand):
                     # Compare 2 dataframes using compare
                     differences = old_bank_history_df.compare(final_new_bank_history_df)
                     if not differences.empty:
-                        # old_bank_history_df.to_csv('old.csv', index=False)
-                        # final_new_bank_history_df.to_csv('new.csv', index=False)
-                        # Get differences
-                        # change_rows = pd.concat([final_new_bank_history_df,old_bank_history_df]).drop_duplicates(keep=False)
-                        # print(change_rows)
 
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
