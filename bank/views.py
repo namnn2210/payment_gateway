@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core.paginator import Paginator
-from .utils import get_acb_bank_transaction_history, get_bank
+from .utils import get_acb_bank_transaction_history, get_bank, unix_to_datetime
 import json
 import redis
 import pandas as pd
@@ -22,6 +22,11 @@ def list_bank(request):
 def bank_transaction_history(request, account_number):
     bank_account = BankAccount.objects.filter(account_number=account_number).first()
     histories = get_acb_bank_transaction_history(bank_account)
+    columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
+    df = pd.DataFrame(list(histories))
+    df[columns_to_convert] = df[columns_to_convert].apply(unix_to_datetime, axis=1)
+    df = df.fillna('')
+    histories = df.to_dict(orient='records')
     # Paginate the data
     paginator = Paginator(histories, 10)  # Show 10 items per page
 

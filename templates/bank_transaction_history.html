@@ -90,7 +90,7 @@
                     {% else %}
                     <td><span class="text-danger">-{{history.amount | intcomma}}</span></td>
                     {% endif %}
-                    <td>2024-06-01</td>
+                    <td>{{history.active_datetime}}</td>
                     <td>{{history.description}}</td>
                 </tr>
                 {% endfor %}
