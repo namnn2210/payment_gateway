@@ -32,9 +32,9 @@ class Command(BaseCommand):
                     # Get data from redis by key, load data as json and convert to dataframe, compare with final_new_bank_history_df, if differences is found, update redis
                     old_bank_history = json.loads(redis_client.get(bank.account_number))
                     old_bank_history_df = pd.DataFrame(old_bank_history)
-                    # Compare 2 dataframes using compare
-                    differences = old_bank_history_df.compare(final_new_bank_history_df)
-                    if not differences.empty:
+                    # Compare 2 dataframes using equals
+                    differences = old_bank_history_df.equals(final_new_bank_history_df)
+                    if not differences:
                         diff = old_bank_history_df.merge(final_new_bank_history_df, how='outer', indicator=True)
                         unique_rows_new = diff[diff['_merge'] == 'right_only'].drop(columns=['_merge'])
                         for _, row in unique_rows_new.iterrows():
