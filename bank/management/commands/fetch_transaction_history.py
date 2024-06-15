@@ -41,10 +41,20 @@ class Command(BaseCommand):
                         for _, row in unique_rows_new.iterrows():
                             if row['type'] == 'IN':
                                 transaction_type = '+'
+                                transaction_color = '🟢'  # Green circle emoji for IN transactions
                             else:
                                 transaction_type = '-'
+                                transaction_color = '🔴'  # Red circle emoji for OUT transactions
+
                             formatted_amount = '{:,.2f}'.format(row['amount'])
-                            alert = 'NEW TRANSACTION\nBank Account:*{}*-{}\nMemo: {}\nAmount: {}{} VND\nType: {}\nDatetime: {}'.format(bank.account_number, bank.account_name, row['description'], transaction_type, formatted_amount,row['type'], row['active_datetime'])
+                            alert = (
+                                '🚨 *NEW TRANSACTION* 🚨\n'
+                                f'🏦 *Bank Account:* {bank.account_number} - {bank.account_name}\n'
+                                f'📝 *Memo:* {row["description"]}\n'
+                                f'💰 *Amount:* {transaction_color} {transaction_type}{formatted_amount} VND\n'
+                                f'🔍 *Type:* {row["type"]}\n'
+                                f'🕒 *Datetime:* {row["active_datetime"]}'
+                            )
                             send_telegram_message(alert)
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
