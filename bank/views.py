@@ -38,6 +38,11 @@ def bank_transaction_history(request, account_number):
     page_obj = paginator.get_page(page_number)
     return render(request=request, template_name='bank_transaction_history.html',context={'page_obj':page_obj})
 
+@login_required(login_url='login')
+def record_book(request):
+    list_user_bank = BankAccount.objects.filter(user=request.user)
+    return render(request=request, template_name='record_book.html', context={'list_user_bank':list_user_bank})
+
 @method_decorator(csrf_exempt, name='dispatch')
 class AddBankView(View):
     def post(self, request, *args, **kwargs):
@@ -87,10 +92,6 @@ def update_transaction_history(request):
     # Concatenate all transaction DataFrames
     if all_transactions:
         all_transactions_df = pd.concat(all_transactions)
-
-        # Convert the 'active_datetime' column to datetime if it's not already
-        # if not pd.api.types.is_datetime64_any_dtype(all_transactions_df['active_datetime']):
-        #     all_transactions_df['active_datetime'] = pd.to_datetime(all_transactions_df['active_datetime'])
 
         # Sort by 'active_datetime' in descending order and get the top 10
         sorted_transactions = all_transactions_df.sort_values(by='active_datetime', ascending=False).head(10)

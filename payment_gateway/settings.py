@@ -82,11 +82,11 @@ WSGI_APPLICATION = 'payment_gateway.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('DB_NAME', 'payment'),
-        'USER': 'root',
-        'PASSWORD': 'ngocnam2210',
-        'HOST': 'localhost',  # Change this if your MySQL server is on a different host
-        'PORT': '3306',
+        'NAME': os.environ.get('MYSQL_DATABASE'),
+        'USER': os.environ.get('MYSQL_USERNAME'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
+        'HOST': os.environ.get('MYSQL_HOST'),  # Change this if your MySQL server is on a different host
+        'PORT': os.environ.get('MYSQL_PORT'),
     }
 }
 
