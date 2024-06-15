@@ -59,7 +59,7 @@
         <div class="col-md-6">
             <input type="text" class="form-control search-box" id="searchMemo" placeholder="Search by Memo">
         </div>
-        <div class="col-md-6 text-right">
+        <div class="col-md-6 text-right" style="font-size: 13px">
             <div class="btn-group filter-buttons" role="group">
                 <button type="button" class="btn btn-secondary" data-filter="all">All</button>
                 <button type="button" class="btn btn-secondary" data-filter="today">Today</button>
@@ -73,14 +73,14 @@
     <div class="table-responsive">
         <table class="table">
             <thead class="thead-light">
-                <tr>
+                <tr style="font-size: 13px">
                     <th>Transaction Number</th>
                     <th>Amount</th>
                     <th>Date</th>
                     <th>Memo</th>
                 </tr>
             </thead>
-            <tbody id="transactionTableBody">
+            <tbody id="transactionTableBody" style="font-size: 13px">
                 {% if page_obj.object_list %}
                 {% for history in page_obj.object_list%}
                 <tr>

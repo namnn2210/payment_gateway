@@ -8,8 +8,8 @@ from django.views import View
 from django.core.paginator import Paginator
 from .utils import get_acb_bank_transaction_history, get_bank, unix_to_datetime
 from .database import redis_connect
+from datetime import datetime, timedelta
 import json
-import redis
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -71,8 +71,7 @@ class AddBankView(View):
         
         return JsonResponse({'status': '500', 'message': 'Failed to add bank'})
     
-
-def update_transaction_history(request):
+def get_all_transactions(request):
     redis_client = redis_connect()
     bank_accounts = BankAccount.objects.filter(user=request.user)
     
@@ -88,6 +87,71 @@ def update_transaction_history(request):
 
     # Close the Redis connection
     redis_client.close()
+    if len(all_transactions) > 0:
+        return all_transactions
+    return None
+
+def filter_data(df, filter_type):
+    filtered_df = df.copy()
+    filtered_df = filtered_df.sort_values(by='active_datetime', ascending=False)
+    now = datetime.now()
+    filtered_df['active_datetime'] = pd.to_datetime(filtered_df['active_datetime'], format='%Y-%m-%d %H:%M:%S')
+    if filter_type == "10_last_histories":
+        filtered_df = filtered_df.head(10)
+        # filtered_df = filtered_df.head(10)
+    elif filter_type == "today":
+        filtered_df = filtered_df[filtered_df['active_datetime'].dt.date == now.date()]
+    elif filter_type == "yesterday":
+        yesterday = now - timedelta(1)
+        filtered_df = filtered_df[filtered_df['active_datetime'].dt.date == yesterday.date()]
+    elif filter_type == "7_latest_days":
+        last_week = now - timedelta(7)
+        filtered_df = filtered_df[filtered_df['active_datetime'] >= last_week]
+    elif filter_type == "this_week":
+        start_of_week = now - timedelta(days=now.weekday())
+        filtered_df = filtered_df[filtered_df['active_datetime'] >= start_of_week]
+    elif filter_type == "last_week":
+        start_of_last_week = (now - timedelta(days=now.weekday() + 7))
+        end_of_last_week = start_of_last_week + timedelta(days=6)
+        filtered_df = filtered_df[(filtered_df['active_datetime'] >= start_of_last_week) & (filtered_df['active_datetime'] <= end_of_last_week)]
+    elif filter_type == "30_latest_days":
+        last_month = now - timedelta(30)
+        filtered_df = filtered_df[filtered_df['active_datetime'] >= last_month]
+    elif filter_type == "all_time":
+        pass  # No filtering needed for all time
+    filtered_df['active_datetime'] = filtered_df['active_datetime'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
+    filtered_df = filtered_df.fillna('')
+    return filtered_df.to_dict(orient='records')
+
+def get_transaction_history_with_filter(request):
+    if request.method == 'POST':
+        list_bank_account = BankAccount.objects.filter(user=request.user)
+        all_transactions = []
+        for bank_account in list_bank_account:
+            histories = get_acb_bank_transaction_history(bank_account)
+            columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
+            df = pd.DataFrame(list(histories))
+            df[columns_to_convert] = df[columns_to_convert].apply(unix_to_datetime, axis=1)
+            df = df.fillna('')
+            all_transactions.append(df)
+        if all_transactions:
+            all_transactions_df = pd.concat(all_transactions)
+            all_transactions_df.to_csv('a.csv', index=False)
+            data = json.loads(request.body)
+            filter = data.get('filter')
+            bank_account = data.get('account')
+            print(bank_account, filter)
+            if bank_account == 'ALL':
+                filtered_data = filter_data(all_transactions_df, filter)
+                return JsonResponse({'status': 200, 'message': 'Done', 'data': filtered_data})
+            else:
+                filtered_data = filter_data(all_transactions_df[all_transactions_df['account'] == int(bank_account)], filter)
+                return JsonResponse({'status': 200, 'message': 'Done', 'data': filtered_data})
+    return JsonResponse({'status': 500, 'message': 'Error'})
+
+
+def update_transaction_history(request):
+    all_transactions = get_all_transactions(request)
 
     # Concatenate all transaction DataFrames
     if all_transactions:

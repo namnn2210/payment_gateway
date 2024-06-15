@@ -1,158 +1,259 @@
 {% extends "layout/layout.html" %}
 {% load humanize %}
-{% block title %}Bank History{% endblock %}
+{% block title %}Record Book{% endblock %}
 {% block content %}
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination a, .pagination span {
+        margin: 0 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: #007bff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+    .pagination a.active {
+        background-color: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    .pagination a:hover:not(.active) {
+        background-color: #ddd;
+    }
+</style>
 <div class="container-fluid">
     <div class="row">
         <nav class="col-md-2">
             <div class="card">
                 <div class="card-body">
-                  <!-- List group with Links and buttons -->
-                  <div class="list-group choose-bank">
-                    <button type="button" class="list-group-item list-group-item-action" aria-current="true">
-                        ALL
-                      </button>
-                    {% for bank in list_user_bank %}
-                    <button type="button" class="list-group-item list-group-item-action" aria-current="true">
-                      {{bank.account_number}} - {{bank.bank_name}}
-                    </button>
-                    {% endfor %}
-                    </div><!-- End List group with Links and buttons -->
-                    <div class="list-group choose-filter">
-                        <button type="button" class="list-group-item list-group-item-action active" aria-current="true">
-                          10 latest histories
+                    <!-- List group with Links and buttons -->
+                    <div class="list-group choose-bank" style="font-size: 13px">
+                        <button type="button" class="list-group-item list-group-item-action active" aria-current="true" data-account="ALL">
+                            ALL
                         </button>
-                        <button type="button" class="list-group-item list-group-item-action">Today</button>
-                        <button type="button" class="list-group-item list-group-item-action">Yesterday</button>
-                        <button type="button" class="list-group-item list-group-item-action">7 latest days</button>
-                        <button type="button" class="list-group-item list-group-item-action">This week</button>
-                        <button type="button" class="list-group-item list-group-item-action">Last week</button>
-                        <button type="button" class="list-group-item list-group-item-action">30 latest days</button>
-                        <button type="button" class="list-group-item list-group-item-action">All time</button>
-                      </div><!-- End List group with Links and buttons -->
-    
+                        {% for bank in list_user_bank %}
+
+                        <button type="button" class="list-group-item list-group-item-action" data-account="{{ bank.account_number }}">
+                            {{ bank.account_number }} - {{ bank.bank_name }}
+                        </button>
+                        {% endfor %}
+                    </div><!-- End List group with Links and buttons -->
+                    <div class="list-group choose-filter mt-3" style="font-size: 13px">
+                        <button type="button" class="list-group-item list-group-item-action active" aria-current="true" data-filter="10_last_histories">
+                            10 latest histories
+                        </button>
+                        <button type="button" class="list-group-item list-group-item-action" data-filter="today">Today</button>
+                        <button type="button" class="list-group-item list-group-item-action" data-filter="yesterday">Yesterday</button>
+                        <button type="button" class="list-group-item list-group-item-action" data-filter="7_latest_days">7 latest days</button>
+                        <button type="button" class="list-group-item list-group-item-action" data-filter="this_week">This week</button>
+                        <button type="button" class="list-group-item list-group-item-action" data-filter="last_week">Last week</button>
+                        <button type="button" class="list-group-item list-group-item-action" data-filter="30_latest_days">30 latest days</button>
+                        <button type="button" class="list-group-item list-group-item-action" data-filter="all_time">All time</button>
+                    </div><!-- End List group with Links and buttons -->
                 </div>
             </div>
-            
         </nav>
-        <main role="main" class="col-md-10 ml-sm-auto px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">Transaction History</h1>
+        <div class="card col-md-10">
+            <div class="card-body" style="font-size: 13px">
+              <h5 class="card-title">Record Book</h5>
+              <div class="d-flex justify-content-between">
+                <div>
+                    <label for="rowsPerPage">Rows per page:</label>
+                    <select id="rowsPerPage" class="form-control" style="width: auto; display: inline-block; font-size: 13px;">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
             </div>
-            <div class="table-responsive">
-                <table class="table table-striped table-sm">
-                    <thead>
-                        <tr>
-                            <th>.check</th>
-                            <th>Ref</th>
-                            <th>Account</th>
-                            <th>Virtual</th>
-                            <th>Money</th>
-                            <th>Date</th>
-                            <th>Memo</th>
-                            <th>.code</th>
-                            <th>.name</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionTableBody">
-                        {% if page_obj.object_list %}
-                        {% for history in page_obj.object_list %}
-                        <tr>
-                            <td>✔</td>
-                            <td>{{ history.transaction_number }}</td>
-                            <td>{{ history.account }}</td>
-                            <td>{{ history.virtual }}</td>
-                            <td>{{ history.money | intcomma }}</td>
-                            <td>{{ history.date }}</td>
-                            <td>{{ history.memo }}</td>
-                            <td>{{ history.code }}</td>
-                            <td>{{ history.name }}</td>
-                        </tr>
-                        {% endfor %}
-                        {% else %}
-                        <tr>
-                            <td colspan="9">No data found.</td>
-                        </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
+              <!-- Small tables -->
+              <table class="table table-sm">
+                <thead>
+                    <tr class="text-center" style="font-size: 13px">
+                        <th>Account Number</th>
+                        <th>Transaction Number</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+                        <th>Memo</th>
+                    </tr>
+                    <tr>
+                        <th><input type="text" class="form-control" id="searchAccountNumber"></th>
+                        <th><input type="text" class="form-control" id="searchTransactionNumber"></th>
+                        <th><input type="text" class="form-control" id="searchAmount"></th>
+                        <th><input type="text" class="form-control" id="searchDate"></th>
+                        <th><input type="text" class="form-control" id="searchMemo"></th>
+                    </tr>
+                </thead>
+                <tbody id="transactionTableBody" class="text-center">
+                    <tr>
+                        <td colspan="5"><div class="spinner-border" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div><!-- End Border spinner --></td>
+                    </tr>
+                </tbody>
+              </table>
+              <!-- End small tables -->
+              <div class="pagination" id="paginationLinks">
+                <!-- Pagination links will be inserted here by JavaScript -->
             </div>
-            <div class="pagination">
-                <span class="step-links">
-                    {% if page_obj.has_previous %}
-                    <a href="?page=1">&laquo; first</a>
-                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                    {% endif %}
-
-                    <span class="current">
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                    </span>
-
-                    {% if page_obj.has_next %}
-                    <a href="?page={{ page_obj.next_page_number }}">next</a>
-                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                    {% endif %}
-                </span>
             </div>
-        </main>
+          </div>
     </div>
 </div>
 {% endblock %}
 {% block script %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+    
     $(document).ready(function () {
-        // Handle search by memo
-        $('#searchMemo').on('keyup', function () {
-            var value = $(this).val().toLowerCase();
-            $('#transactionTableBody tr').filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
-            });
-        });
+        const csrftoken = getCookie('csrftoken');
+        let itemsPerPage = parseInt($('#rowsPerPage').val());
+        let allTransactions = [];
+        let currentPage = 1;
+        function fetchTransactions(account, filter) {
+            $.ajax({
+                url: '{% url "get_transaction_history_with_filter" %}',
+                method: 'POST',
+                data: JSON.stringify({
+                    account: account,
+                    filter: filter
+                }),
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function (data) {
+                    allTransactions = data.data;
+                    currentPage = 1;
+                    displayPage(currentPage);
+                    setupPagination();
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Handle the error response here
+                    console.error('Error:', textStatus, errorThrown);
 
-        // Handle filter buttons
-        $('.filter-buttons .btn-secondary').on('click', function () {
-            $('.filter-buttons .btn-secondary').removeClass('active');
-            $(this).addClass('active');
-            var filter = $(this).data('filter');
-            filterTransactions(filter);
-        });
-
-        function filterTransactions(filter) {
-            var today = new Date();
-            var startDate, endDate;
-
-            if (filter === 'all') {
-                $('#transactionTableBody tr').show();
-                return;
-            }
-
-            if (filter === 'today') {
-                startDate = endDate = today;
-            } else if (filter === 'yesterday') {
-                startDate = endDate = new Date(today.setDate(today.getDate() - 1));
-            } else if (filter === 'this_week') {
-                var dayOfWeek = today.getDay();
-                startDate = new Date(today.setDate(today.getDate() - dayOfWeek));
-                endDate = new Date(today.setDate(today.getDate() + (6 - dayOfWeek)));
-            } else if (filter === 'last_week') {
-                var dayOfWeek = today.getDay();
-                startDate = new Date(today.setDate(today.getDate() - dayOfWeek - 7));
-                endDate = new Date(today.setDate(today.getDate() + 6));
-            } else if (filter === 'last_30_days') {
-                startDate = new Date(today.setDate(today.getDate() - 30));
-                endDate = today;
-            }
-
-            $('#transactionTableBody tr').each(function () {
-                var date = new Date($(this).find('td:eq(5)').text());
-                if (date >= startDate && date <= endDate) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
                 }
             });
         }
+
+        function displayPage(page) {
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const transactionsToShow = allTransactions.slice(startIndex, endIndex);
+
+            const tbody = $('#transactionTableBody');
+            tbody.empty();
+
+            if (transactionsToShow.length > 0) {
+                transactionsToShow.forEach(function (transaction) {
+                    const color = transaction.type === 'OUT' ? 'red' : 'green';
+                    const row = '<tr style="font-size: 12px">' +
+                        '<td style="font-weight:bold">' + transaction.account + '</td>' +
+                        '<td>' + transaction.transaction_number + '</td>' +
+                        '<td style="color:' + color + '">' + transaction.amount.toLocaleString() + '</td>' +
+                        '<td>' + transaction.active_datetime + '</td>' +
+                        '<td>' + transaction.description + '</td>' +
+                        '</tr>';
+                    tbody.append(row);
+                });
+            } else {
+                tbody.append('<tr><td colspan="5">No data found.</td></tr>');
+            }
+        }
+
+        function setupPagination() {
+            const totalPages = Math.ceil(allTransactions.length / itemsPerPage);
+            const paginationLinks = $('#paginationLinks');
+            paginationLinks.empty();
+
+            if (totalPages <= 1) return;
+
+            const maxVisiblePages = 5; // Number of page links to show around the current page
+            const halfMax = Math.floor(maxVisiblePages / 2);
+            let startPage = Math.max(1, currentPage - halfMax);
+            let endPage = Math.min(totalPages, currentPage + halfMax);
+
+            if (currentPage <= halfMax) {
+                endPage = Math.min(totalPages, maxVisiblePages);
+            } else if (currentPage + halfMax >= totalPages) {
+                startPage = Math.max(1, totalPages - maxVisiblePages + 1);
+            }
+
+            if (currentPage > 1) {
+                paginationLinks.append('<a href="#" class="page-link" data-page="1">&laquo; first</a>');
+                paginationLinks.append('<a href="#" class="page-link" data-page="' + (currentPage - 1) + '">previous</a>');
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const link = $('<a href="#" class="page-link">' + i + '</a>');
+                if (i === currentPage) {
+                    link.addClass('active');
+                }
+                link.on('click', function (e) {
+                    e.preventDefault();
+                    currentPage = i;
+                    displayPage(currentPage);
+                    setupPagination();
+                });
+                paginationLinks.append(link);
+            }
+
+            if (currentPage < totalPages) {
+                paginationLinks.append('<a href="#" class="page-link" data-page="' + (currentPage + 1) + '">next</a>');
+                paginationLinks.append('<a href="#" class="page-link" data-page="' + totalPages + '">last &raquo;</a>');
+            }
+
+            // Handle pagination link clicks
+            $('.page-link').on('click', function (e) {
+                e.preventDefault();
+                const page = $(this).data('page');
+                if (page) {
+                    currentPage = page;
+                    displayPage(currentPage);
+                    setupPagination();
+                }
+            });
+        }
+
+        $('#rowsPerPage').on('change', function () {
+                itemsPerPage = parseInt($(this).val());
+                displayPage(1);
+                setupPagination();
+            });
+
+        // Handle account buttons
+        $('.choose-bank .list-group-item-action').on('click', function () {
+            $('.choose-bank .list-group-item-action').removeClass('active');
+            $(this).addClass('active');
+            var account = $(this).data('account');
+            var filter = $('.choose-filter .active').data('filter');
+            fetchTransactions(account, filter);
+        });
+
+        // Handle filter buttons
+        $('.choose-filter .list-group-item-action').on('click', function () {
+            $('.choose-filter .list-group-item-action').removeClass('active');
+            $(this).addClass('active');
+            var filter = $(this).data('filter');
+            var account = $('.choose-bank .active').data('account');
+            fetchTransactions(account, filter);
+        });
+
+        // Handle search input
+        $('#searchAccountNumber, #searchTransactionNumber, #searchAmount, #searchDate, #searchMemo').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            var columnIndex = $(this).parent().index();
+            $('#transactionTableBody tr').filter(function () {
+                $(this).toggle($(this).find('td').eq(columnIndex).text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+
+        // Fetch default data
+        fetchTransactions('ALL', '10_last_histories');
     });
 </script>
 {% endblock %}

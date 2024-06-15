@@ -5,26 +5,6 @@
 <div class="container mt-4">
     <div class="row">
         {% for bank_account in list_user_bank %}
-        <!-- <div class="col-md-3 mb-3">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <div class="card-content">
-                            <div class="ml-3">
-                                <h5 class="card-title">{{bank_account.account_name}}</h5>
-                                <p class="balance">{{bank_account.balance | intcomma}} <span class="text-success">đ</span></p>
-                                <p class="card-text">{{bank_account.account_number}}</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <span>Today:</span>
-                        <div class="today-stats">
-                            <span class="text-success">+0 ~ 0</span>
-                            <span class="text-danger">-0 ~ 0</span>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
         <div class="col-xxl-4 col-md-6">
             <div class="card info-card revenue-card">
 
@@ -38,9 +18,8 @@
                         </div>
                         <div class="ps-3">
                             <h6>{{bank_account.balance | intcomma}} <span class="text-success">đ</span></h6>
-                            <span class="text-success small pt-1 fw-bold">8%</span> <span
-                                class="text-muted small pt-2 ps-1">increase</span>
-
+                            <span class="text-success small pt-1 fw-bold">+0</span> / <span class="text-danger small pt-1 fw-bold">-0</span> <span
+                                class="text-muted small pt-2 ps-1">Today</span>
                         </div>
                     </div>
                 </div>
@@ -54,24 +33,23 @@
     <div class="card recent-sales overflow-auto">
 
         <div class="card-body">
-            <h5 class="card-title">Latest Transaction History</h5>
-
-            <table class="table table-borderless datatable">
-                <thead>
-                    <tr class="text-center">
-                        <th>Account Number</th>
-                        <th>Reference Number</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Memo</th>
-                    </tr>
-                </thead>
-                <tbody id="transaction-table-body">
-                    <!-- Data will be appended here -->
+            <h5 class="card-title">Latest transaction history</h5>
+            <!-- Small tables -->
+            <table class="table table-sm">
+              <thead>
+                <tr class="text-center" style="font-size: 13px">
+                    <th>Account Number</th>
+                    <th>Reference Number</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Memo</th>
+                </tr>
+              </thead>
+              <tbody id="transaction-table-body" style="font-size: 13px">
+                <!-- Data will be appended here -->
                 </tbody>
             </table>
-
-        </div>
+          </div>
 
     </div>
 </div><!-- End Recent Sales -->
@@ -96,7 +74,6 @@
                     }
                     tableBody.innerHTML = ''; // Clear existing table rows
                     data.data.forEach(transaction => {
-                        console.log(transaction)
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${transaction.account}</td>
