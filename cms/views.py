@@ -9,9 +9,7 @@ from bank.models import BankAccount
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
-    list_user_bank = BankAccount.objects.filter(user=request.user).order_by('-balance')[:4]
-    for user_bank in list_user_bank:
-        pass
+    list_user_bank = BankAccount.objects.filter(user=request.user, status=True)
     return render(request=request, template_name='index.html',context={'list_user_bank':list_user_bank})
 
 def login(request):

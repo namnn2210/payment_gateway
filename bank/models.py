@@ -24,6 +24,7 @@ class BankAccount(models.Model):
     username = models.CharField(max_length=255, default='')
     password = models.CharField(max_length=255, default='')
     balance = models.BigIntegerField(default=0)
+    bank_type = models.CharField(max_length=255, default='IN')
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

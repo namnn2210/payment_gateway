@@ -56,9 +56,6 @@
 <div class="container-fluid">
     <h2>Transaction History</h2>
     <div class="row">
-        <div class="col-md-6">
-            <input type="text" class="form-control search-box" id="searchMemo" placeholder="Search by Memo">
-        </div>
         <div class="col-md-6 text-right" style="font-size: 13px">
             <div class="btn-group filter-buttons" role="group">
                 <button type="button" class="btn btn-secondary" data-filter="all">All</button>
@@ -74,16 +71,25 @@
         <table class="table">
             <thead class="thead-light">
                 <tr style="font-size: 13px">
+                    <th>Account Number</th>
                     <th>Transaction Number</th>
                     <th>Amount</th>
                     <th>Date</th>
                     <th>Memo</th>
+                </tr>
+                <tr>
+                    <th><input type="text" class="form-control" id="searchAccountNumber"></th>
+                    <th><input type="text" class="form-control" id="searchTransactionNumber"></th>
+                    <th><input type="text" class="form-control" id="searchAmount"></th>
+                    <th><input type="text" class="form-control" id="searchDate"></th>
+                    <th><input type="text" class="form-control" id="searchMemo"></th>
                 </tr>
             </thead>
             <tbody id="transactionTableBody" style="font-size: 13px">
                 {% if page_obj.object_list %}
                 {% for history in page_obj.object_list%}
                 <tr>
+                    <td><b>{{history.account}}</b></td>
                     <td><b>{{history.transaction_number}}</b></td>
                     {% if history.type == 'IN' %}
                     <td><span class="text-success">+{{history.amount | intcomma}}</span></td>
@@ -122,11 +128,12 @@
 {% block script %}
 <script>
     $(document).ready(function () {
-        // Handle search by memo
-        $('#searchMemo').on('keyup', function () {
+
+        $('#searchAccountNumber, #searchTransactionNumber, #searchAmount, #searchDate, #searchMemo').on('keyup', function () {
             var value = $(this).val().toLowerCase();
+            var columnIndex = $(this).parent().index();
             $('#transactionTableBody tr').filter(function () {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+                $(this).toggle($(this).find('td').eq(columnIndex).text().toLowerCase().indexOf(value) > -1);
             });
         });
 

@@ -50,7 +50,13 @@ class AddBankView(View):
         bank_number = data.get('bankNumber')
         bank_username = data.get('bankUsername')
         bank_password = data.get('bankPassword')
+        bank_type = data.get('bankType')
         bank_name = data.get('bankName')
+        
+        # Check if any bank_account with the same type is ON
+        existed_bank_account = BankAccount.objects.filter(user=request.user, bank_type=bank_type, status=True).first()
+        if existed_bank_account:
+            return JsonResponse({'status': 505, 'message': 'Existed bank account with the same type. Please switch off the current bank account'})
 
         # Process the data and save to the database
         # (e.g., create a new Bank object and save it)
@@ -63,33 +69,30 @@ class AddBankView(View):
                 account_number=bank_account.get('accountNumber'),
                 account_name=bank_account.get('owner'),
                 balance=bank_account.get('balance'),
+                bank_type=bank_type,
                 username=bank_username,
                 password=bank_password
             )
             bank_account.save()
             return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         
-        return JsonResponse({'status': '500', 'message': 'Failed to add bank'})
+        return JsonResponse({'status': 500, 'message': 'Failed to add bank'})
     
-def get_all_transactions(request):
-    redis_client = redis_connect()
-    bank_accounts = BankAccount.objects.filter(user=request.user)
-    
-    all_transactions = []
-
-    for bank_account in bank_accounts:
-        bank_redis = redis_client.get(bank_account.account_number)
-        if bank_redis:
-            json_data = json.loads(bank_redis)
-            df = pd.DataFrame(json_data)
-            df = df[df['type'] == 'IN']
-            all_transactions.append(df)
-
-    # Close the Redis connection
-    redis_client.close()
-    if len(all_transactions) > 0:
-        return all_transactions
-    return None
+@csrf_exempt
+def toggle_bank_status(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            bank_account = BankAccount.objects.get(id=data['id'])
+            new_status = False
+            if data['status'] == 'ON':
+                new_status = True
+            bank_account.status = new_status
+            bank_account.save()
+            return JsonResponse({'status': 200, 'message': 'Status updated successfully'})
+        except BankAccount.DoesNotExist:
+            return JsonResponse({'status': 404, 'message': 'Bank account not found'})
+    return JsonResponse({'status': 400, 'message': 'Invalid request'})
 
 def filter_data(df, filter_type):
     filtered_df = df.copy()
@@ -151,19 +154,47 @@ def get_transaction_history_with_filter(request):
 
 
 def update_transaction_history(request):
-    all_transactions = get_all_transactions(request)
+    # all_transactions = get_all_transactions(request)
+    redis_client = redis_connect()
+    bank_accounts = BankAccount.objects.filter(user=request.user)
+    
+    in_transaction_df = pd.DataFrame([])
+    out_transaction_df = pd.DataFrame([])
 
-    # Concatenate all transaction DataFrames
-    if all_transactions:
-        all_transactions_df = pd.concat(all_transactions)
+    for bank_account in bank_accounts:
+        bank_redis = redis_client.get(bank_account.account_number)
+        if bank_redis:
+            json_data = json.loads(bank_redis)
+            df = pd.DataFrame(json_data)
+            if bank_account.bank_type == 'IN':
+                in_transaction_df = df[df['type'] == 'IN']
+            else:
+                out_transaction_df = df[df['type'] == 'OUT']
 
+    # Close the Redis connection
+    redis_client.close()
+
+    if not in_transaction_df.empty and out_transaction_df.empty:
         # Sort by 'active_datetime' in descending order and get the top 10
-        sorted_transactions = all_transactions_df.sort_values(by='active_datetime', ascending=False).head(10)
+        sorted_transactions_in = in_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
+        sorted_transactions_out = out_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
 
         # Convert the sorted DataFrame to JSON
-        top_transactions_json = sorted_transactions.to_json(orient='records', date_format='iso')
+        top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
+        top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
     else:
-        top_transactions_json = json.dumps([])  # Empty list if no transactions
+        top_transactions_json_in = json.dumps([])  # Empty list if no transactions
+        top_transactions_json_out = json.dumps([])
 
-    return JsonResponse({'status': 200, 'message': 'Done', 'data': json.loads(top_transactions_json)})
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':json.loads(top_transactions_json_in), 'out':json.loads(top_transactions_json_out)}})
 
+def update_balance(request):
+    bank_accounts = BankAccount.objects.filter(user=request.user)
+    in_balance = 0
+    out_balance = 0
+    for bank_account in bank_accounts:
+        if bank_account.bank_type == 'IN':
+            in_balance = int(bank_account.balance)
+        else:
+            out_balance = int(bank_account.balance)
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':in_balance, 'out':out_balance}})

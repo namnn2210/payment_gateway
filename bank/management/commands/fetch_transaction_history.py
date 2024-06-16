@@ -48,12 +48,11 @@ class Command(BaseCommand):
 
                             formatted_amount = '{:,.2f}'.format(row['amount'])
                             alert = (
-                                '🚨 *NEW TRANSACTION* 🚨\n'
-                                f'🏦 *Bank Account:* {bank.account_number} - {bank.account_name}\n'
-                                f'📝 *Memo:* {row["description"]}\n'
-                                f'💰 *Amount:* {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                                f'🔍 *Type:* {row["type"]}\n'
-                                f'🕒 *Datetime:* {row["active_datetime"]}'
+                                f'🏦 {bank.account_number} - {bank.account_name}\n'
+                                f'📝 {row["description"]}\n'
+                                f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
+                                f'🔍 {row["type"]}\n'
+                                f'🕒 {row["active_datetime"]}'
                             )
                             send_telegram_message(alert)
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))

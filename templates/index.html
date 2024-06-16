@@ -2,14 +2,40 @@
 {% load humanize %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<div class="container mt-4">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3">
+                            <h6 class="balance-total"><span class="text-success">đ</span></h6>
+                            <span class="text-success small pt-1 fw-bold">+0</span> / <span class="text-danger small pt-1 fw-bold">-0</span> <span
+                                class="text-muted small pt-2 ps-1">Today</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
     <div class="row">
         {% for bank_account in list_user_bank %}
         <div class="col-xxl-4 col-md-6">
             <div class="card info-card revenue-card">
 
                 <div class="card-body">
-                    <h5 class="card-title">{{bank_account.account_number}} <span>| {{bank_account.account_name}}</span>
+                    <h5 class="card-title">
+                        {% if bank_account.bank_type == 'IN'%}
+                            <span class="text-success small pt-1 fw-bold">IN</span>
+                            {% else %}
+                            <span class="text-danger small pt-1 fw-bold">OUT</span>
+                            {% endif %}
+                         - {{bank_account.account_number}} <span>| {{bank_account.account_name}}</span>
                     </h5>
 
                     <div class="d-flex align-items-center">
@@ -17,9 +43,14 @@
                             <i class="bi bi-currency-dollar"></i>
                         </div>
                         <div class="ps-3">
-                            <h6>{{bank_account.balance | intcomma}} <span class="text-success">đ</span></h6>
-                            <span class="text-success small pt-1 fw-bold">+0</span> / <span class="text-danger small pt-1 fw-bold">-0</span> <span
-                                class="text-muted small pt-2 ps-1">Today</span>
+                            {% if bank_account.bank_type == 'IN'%}
+                            <h6 class="account-balance-in">{{bank_account.balance | intcomma}} <span class="text-success">đ</span></h6>
+                            <span class="text-success small pt-1 fw-bold">+0</span>
+                            {% else %}
+                            <h6 class="account-balance-out">{{bank_account.balance | intcomma}} <span class="text-success">đ</span></h6>
+                            <span class="text-danger small pt-1 fw-bold">-0</span>
+                            {% endif %}
+                            <span class="text-muted small pt-2 ps-1">Today</span>
                         </div>
                     </div>
                 </div>
@@ -29,30 +60,58 @@
         {% endfor %}
     </div>
 </div>
-<div class="col-12">
-    <div class="card recent-sales overflow-auto">
-
-        <div class="card-body">
-            <h5 class="card-title">Latest transaction history</h5>
-            <!-- Small tables -->
-            <table class="table table-sm">
-              <thead>
-                <tr class="text-center" style="font-size: 13px">
-                    <th>Account Number</th>
-                    <th>Reference Number</th>
-                    <th>Amount</th>
-                    <th>Date</th>
-                    <th>Memo</th>
-                </tr>
-              </thead>
-              <tbody id="transaction-table-body" style="font-size: 13px">
-                <!-- Data will be appended here -->
-                </tbody>
-            </table>
-          </div>
-
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-6">
+            <div class="card recent-sales overflow-auto">
+        
+                <div class="card-body">
+                    <h5 class="card-title">Latest transaction <span class="text-success">IN</span> history</h5>
+                    <!-- Small tables -->
+                    <table class="table table-sm table-in">
+                      <thead>
+                        <tr class="text-center" style="font-size: 11px">
+                            <th>Account Number</th>
+                            <th>Reference Number</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Memo</th>
+                        </tr>
+                      </thead>
+                      <tbody id="transaction-table-body" style="font-size: 11px">
+                        <!-- Data will be appended here -->
+                        </tbody>
+                    </table>
+                  </div>
+        
+            </div>
+        </div><!-- End Recent Sales -->
+        <div class="col-6">
+            <div class="card recent-sales overflow-auto">
+        
+                <div class="card-body">
+                    <h5 class="card-title">Latest transaction <span class="text-danger">OUT</span> history</h5>
+                    <!-- Small tables -->
+                    <table class="table table-sm table-out">
+                      <thead>
+                        <tr class="text-center" style="font-size: 11px">
+                            <th>Account Number</th>
+                            <th>Reference Number</th>
+                            <th>Amount</th>
+                            <th>Date</th>
+                            <th>Memo</th>
+                        </tr>
+                      </thead>
+                      <tbody id="transaction-table-body" style="font-size: 11px">
+                        <!-- Data will be appended here -->
+                        </tbody>
+                    </table>
+                  </div>
+        
+            </div>
+        </div><!-- End Recent Sales -->
     </div>
-</div><!-- End Recent Sales -->
+</div>
 </div>
 {% endblock %}
 {% block script %}
@@ -67,13 +126,13 @@
                     return response.json();
                 })
                 .then(data => {
-                    const tableBody = document.querySelector('table.table tbody');
-                    if (!tableBody) {
+                    const tableBodyIn = document.querySelector('table.table-in tbody');
+                    if (!tableBodyIn) {
                         console.error('Table body element not found');
                         return;
                     }
-                    tableBody.innerHTML = ''; // Clear existing table rows
-                    data.data.forEach(transaction => {
+                    tableBodyIn.innerHTML = ''; // Clear existing table rows
+                    data.data.in.forEach(transaction => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
                             <td>${transaction.account}</td>
@@ -82,19 +141,74 @@
                             <td>${transaction.active_datetime}</td>
                             <td>${transaction.description}</td>
                         `;
-                        tableBody.appendChild(row);
+                        tableBodyIn.appendChild(row);
+                    });
+
+                    const tableBodyOut = document.querySelector('table.table-out tbody');
+                    if (!tableBodyOut) {
+                        console.error('Table body element not found');
+                        return;
+                    }
+                    tableBodyOut.innerHTML = ''; // Clear existing table rows
+                    data.data.out.forEach(transaction => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${transaction.account}</td>
+                            <td>${transaction.transaction_number}</td>
+                            <td class="text-danger">${transaction.amount.toLocaleString()}</td>
+                            <td>${transaction.active_datetime}</td>
+                            <td>${transaction.description}</td>
+                        `;
+                        tableBodyOut.appendChild(row);
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching transactions:', error);
                 });
-        }
+        };
+
+        function fetchBalance() {
+            fetch('{% url "update_balance" %}')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const balanceIn = document.querySelector('.account-balance-in');
+                    if (!balanceIn) {
+                        console.error('Element not found');
+                        return;
+                    }
+                    balanceIn.innerHTML = data.data.in.toLocaleString() + ' <span class="text-success">đ</span>'; // Clear existing table rows
+
+                    const balanceOut = document.querySelector('.account-balance-out');
+                    if (!balanceOut) {
+                        console.error('Element not found');
+                        return;
+                    }
+                    balanceOut.innerHTML = data.data.out.toLocaleString() + ' <span class="text-success">đ</span> '; // Clear existing table rows
+
+                    const balanceTotal = document.querySelector('.balance-total');
+                    if (!balanceTotal) {
+                        console.error('Element not found');
+                        return;
+                    }
+                    balanceTotal.innerHTML = (data.data.in + data.data.out).toLocaleString() + ' <span class="text-success">đ</span> ';
+                })
+                .catch(error => {
+                    console.error('Error fetching balance:', error);
+                });
+        };
 
         // Fetch transactions when the page loads
         fetchLatestTransactions();
+        fetchBalance();
 
         // Optionally, set an interval to fetch the data periodically
         setInterval(fetchLatestTransactions, 15000); // Fetch every 30 seconds
+        setInterval(fetchBalance, 15000);
     });
 </script>
 {% endblock %}
