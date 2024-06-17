@@ -31,12 +31,12 @@
 
                 <div class="card-body">
                     <h5 class="card-title">
+                        BANK ACCOUNT -
                         {% if bank_account.bank_type == 'IN'%}
-                        <span class="text-success small pt-1 fw-bold">IN</span>
+                        <span class="text-success fw-bold">IN</span> - <span class="total-in"></span>
                         {% else %}
-                        <span class="text-danger small pt-1 fw-bold">OUT</span>
+                        <span class="text-danger fw-bold">OUT</span> - <span class="total-out"></span>
                         {% endif %}
-                        - {{bank_account.account_number}} <span>| {{bank_account.account_name}}</span>
                     </h5>
 
                     <div class="d-flex align-items-center">
@@ -44,22 +44,27 @@
                             <i class="bi bi-currency-dollar"></i>
                         </div>
                         <div class="ps-3">
-                            {% if bank_account.bank_type == 'IN'%}
-                            <h6 class="account-balance-in">{{bank_account.balance | intcomma}} <span
-                                    class="text-success">đ</span></h6>
-                            <span class="text-success small pt-1 fw-bold">+0</span>
-                            {% else %}
-                            <h6 class="account-balance-out">{{bank_account.balance | intcomma}} <span
-                                    class="text-success">đ</span></h6>
-                            <span class="text-danger small pt-1 fw-bold">-0</span>
-                            {% endif %}
-                            <span class="text-muted small pt-2 ps-1">Today</span>
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Account Number</th>
+                                        <th scope="col">Balance</th>
+                                    </tr>
+                                </thead>
+                                {% if bank_account.bank_type == 'IN'%}
+                                <tbody class="tbody-in">
+                                </tbody>
+                                {% else %}
+                                <tbody class="tbody-out">
+                                </tbody>
+                                {% endif %}
+                            </table>
+
                         </div>
                     </div>
                 </div>
-
             </div>
-        </div><!-- End Revenue Card -->
+        </div>
         {% endfor %}
     </div>
 </div>
@@ -179,27 +184,61 @@
                     return response.json();
                 })
                 .then(data => {
-                    const balanceIn = document.querySelector('.account-balance-in');
-                    if (!balanceIn) {
-                        console.error('Element not found');
-                        return;
-                    }
-                    balanceIn.innerHTML = data.data.in.toLocaleString() + ' <span class="text-success">đ</span>'; // Clear existing table rows
 
-                    const balanceOut = document.querySelector('.account-balance-out');
-                    if (!balanceOut) {
-                        console.error('Element not found');
+                    let totalIn = 0;
+                    let totalOut = 0;
+                    const spanTotalIn = document.querySelector('span.total-in');
+                    const spanTotalOut = document.querySelector('span.total-out');
+
+                    const tableBodyIn = document.querySelector('table.table-borderless tbody.tbody-in');
+                    if (!tableBodyIn) {
+                        console.error('Table body element not found');
                         return;
                     }
-                    balanceOut.innerHTML = data.data.out.toLocaleString() + ' <span class="text-success">đ</span> '; // Clear existing table rows
+
+                    const tableBodyOut = document.querySelector('table.table-borderless tbody.tbody-out');
+                    if (!tableBodyOut) {
+                        console.error('Table body element not found');
+                        return;
+                    }
+
+                    tableBodyIn.innerHTML = '';
+                    tableBodyOut.innerHTML = '';
+
+                    data.data.balance.forEach(bank => {
+                        const row = document.createElement('tr');
+                        if (bank.bank_type === 'IN') {
+                            accountClass = 'account-balance-in'
+                        }
+                        else {
+                            accountClass = 'account-balance-out'
+                        }
+                        row.innerHTML = `
+                            <th>${bank.account_number}</td>
+                            <td><b class=${accountClass}>${bank.balance.toLocaleString()}<spanclass="text-success">đ</span></b></td>
+                        `;
+                        if (bank.bank_type === 'IN') {
+                            totalIn += bank.balance
+                            tableBodyIn.appendChild(row);
+                        }
+                        else {
+                            totalOut += bank.balance
+                            tableBodyOut.appendChild(row);
+                        }
+
+                    });
+
+                    spanTotalIn.innerHTML = totalIn.toLocaleString() + ' <span class="text-success">đ</span> ';
+                    spanTotalOut.innerHTML = totalOut.toLocaleString() + ' <span class="text-success">đ</span> ';
 
                     const balanceTotal = document.querySelector('.balance-total');
                     if (!balanceTotal) {
                         console.error('Element not found');
                         return;
                     }
-                    balanceTotal.innerHTML = (data.data.in + data.data.out).toLocaleString() + ' <span class="text-success">đ</span> ';
+                    balanceTotal.innerHTML = (totalIn + totalOut).toLocaleString() + ' <span class="text-success">đ</span> ';
                 })
+
                 .catch(error => {
                     console.error('Error fetching balance:', error);
                 });

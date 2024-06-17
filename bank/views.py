@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.core.paginator import Paginator
+from django.forms.models import model_to_dict
 from .utils import get_acb_bank_transaction_history, get_bank, unix_to_datetime
 from .database import redis_connect
 from datetime import datetime, timedelta
@@ -54,9 +55,13 @@ class AddBankView(View):
         bank_name = data.get('bankName')
         
         # Check if any bank_account with the same type is ON
-        existed_bank_account = BankAccount.objects.filter(user=request.user, bank_type=bank_type, status=True).first()
+        existed_bank_account = BankAccount.objects.filter(
+            user=request.user,
+            account_number=bank_number,
+            username=bank_username,
+            password=bank_password).first()
         if existed_bank_account:
-            return JsonResponse({'status': 505, 'message': 'Existed bank account with the same type. Please switch off the current bank account'})
+            return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
 
         # Process the data and save to the database
         # (e.g., create a new Bank object and save it)
@@ -169,14 +174,14 @@ def update_transaction_history(request):
             if bank_account.bank_type == 'IN':
                 in_transaction_df = df[df['type'] == 'IN']
                 if not in_transaction_df.empty:
-                    sorted_transactions_in = in_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
+                    sorted_transactions_in = in_transaction_df.sort_values(by='active_datetime', ascending=False).head(5)
                     top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
                 else:
                      top_transactions_json_in = json.dumps([])  # Empty list if no transactions
             else:
                 out_transaction_df = df[df['type'] == 'OUT']
                 if not out_transaction_df.empty:
-                    sorted_transactions_out = out_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
+                    sorted_transactions_out = out_transaction_df.sort_values(by='active_datetime', ascending=False).head(5)
                     top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
                 else:
                     top_transactions_json_out = json.dumps([])
@@ -189,11 +194,9 @@ def update_transaction_history(request):
 
 def update_balance(request):
     bank_accounts = BankAccount.objects.filter(user=request.user)
-    in_balance = 0
-    out_balance = 0
+    # in_balance = 0
+    # out_balance = 0
+    list_dict_accounts = []
     for bank_account in bank_accounts:
-        if bank_account.bank_type == 'IN':
-            in_balance = int(bank_account.balance)
-        else:
-            out_balance = int(bank_account.balance)
-    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':in_balance, 'out':out_balance}})
+        list_dict_accounts.append(model_to_dict(bank_account))
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'balance':list_dict_accounts}})
