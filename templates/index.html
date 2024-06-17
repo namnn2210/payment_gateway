@@ -25,18 +25,12 @@
 </div>
 <div class="container-fluid">
     <div class="row">
-        {% for bank_account in list_user_bank %}
         <div class="col-xxl-4 col-md-6 col-sm-12">
             <div class="card info-card revenue-card">
-
                 <div class="card-body">
                     <h5 class="card-title">
                         BANK ACCOUNT -
-                        {% if bank_account.bank_type == 'IN'%}
                         <span class="text-success fw-bold">IN</span> - <span class="total-in"></span>
-                        {% else %}
-                        <span class="text-danger fw-bold">OUT</span> - <span class="total-out"></span>
-                        {% endif %}
                     </h5>
 
                     <div class="d-flex align-items-center">
@@ -51,13 +45,8 @@
                                         <th scope="col">Balance</th>
                                     </tr>
                                 </thead>
-                                {% if bank_account.bank_type == 'IN'%}
                                 <tbody class="tbody-in">
                                 </tbody>
-                                {% else %}
-                                <tbody class="tbody-out">
-                                </tbody>
-                                {% endif %}
                             </table>
 
                         </div>
@@ -65,7 +54,35 @@
                 </div>
             </div>
         </div>
-        {% endfor %}
+        <div class="col-xxl-4 col-md-6 col-sm-12">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        BANK ACCOUNT -
+                        <span class="text-danger fw-bold">OUT</span> - <span class="total-out"></span>
+                    </h5>
+
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="ps-3">
+                            <table class="table table-borderless">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Account Number</th>
+                                        <th scope="col">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="tbody-out">
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div class="container-fluid">

@@ -25,9 +25,15 @@ def get_acb_bank(bank_number, bank_username, bank_password):
     response = requests.post(url=url, headers=headers, data=payload)
     if response.status_code == 200:
         list_bank_account = response.json()['data']
-        for bank_account in list_bank_account:
-            if bank_account['accountNumber'] == bank_number:
-                return bank_account
+        if isinstance(list_bank_account, list):
+            for bank_account in list_bank_account:
+                if bank_account['accountNumber'] == bank_number:
+                    return bank_account
+        elif isinstance(list_bank_account, dict):
+            if list_bank_account['accountNumber'] == bank_number:
+                    return list_bank_account
+        else:
+            return None
     return None
 
 def get_acb_bank_transaction_history(bank_account):
