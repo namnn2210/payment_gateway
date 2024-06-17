@@ -163,7 +163,6 @@ def update_transaction_history(request):
 
     for bank_account in bank_accounts:
         bank_redis = redis_client.get(bank_account.account_number)
-        print(bank_redis)
         if bank_redis:
             json_data = json.loads(bank_redis)
             df = pd.DataFrame(json_data)
