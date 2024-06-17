@@ -163,28 +163,28 @@ def update_transaction_history(request):
 
     for bank_account in bank_accounts:
         bank_redis = redis_client.get(bank_account.account_number)
+        print(bank_redis)
         if bank_redis:
             json_data = json.loads(bank_redis)
             df = pd.DataFrame(json_data)
             if bank_account.bank_type == 'IN':
                 in_transaction_df = df[df['type'] == 'IN']
+                if not in_transaction_df.empty:
+                    sorted_transactions_in = in_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
+                    top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
+                else:
+                     top_transactions_json_in = json.dumps([])  # Empty list if no transactions
             else:
                 out_transaction_df = df[df['type'] == 'OUT']
+                if not out_transaction_df.empty:
+                    sorted_transactions_out = out_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
+                    top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
+                else:
+                    top_transactions_json_out = json.dumps([])
 
+        
     # Close the Redis connection
     redis_client.close()
-
-    if not in_transaction_df.empty and out_transaction_df.empty:
-        # Sort by 'active_datetime' in descending order and get the top 10
-        sorted_transactions_in = in_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
-        sorted_transactions_out = out_transaction_df.sort_values(by='active_datetime', ascending=False).head(10)
-
-        # Convert the sorted DataFrame to JSON
-        top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
-        top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
-    else:
-        top_transactions_json_in = json.dumps([])  # Empty list if no transactions
-        top_transactions_json_out = json.dumps([])
 
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':json.loads(top_transactions_json_in), 'out':json.loads(top_transactions_json_out)}})
 
