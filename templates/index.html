@@ -215,7 +215,7 @@
                         }
                         row.innerHTML = `
                             <th>${bank.account_number}</td>
-                            <td><b class=${accountClass}>${bank.balance.toLocaleString()}<spanclass="text-success">đ</span></b></td>
+                            <td><b class=${accountClass}>${bank.balance.toLocaleString()}<span class="text-success">đ</span></b></td>
                         `;
                         if (bank.bank_type === 'IN') {
                             totalIn += bank.balance
