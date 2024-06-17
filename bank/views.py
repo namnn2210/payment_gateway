@@ -7,11 +7,12 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
-from .utils import get_acb_bank_transaction_history, get_bank, unix_to_datetime
+from .utils import get_acb_bank_transaction_history, get_bank, unix_to_datetime, send_telegram_message
 from .database import redis_connect
 from datetime import datetime, timedelta
 import json
 import pandas as pd
+import os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,6 +28,13 @@ def list_bank(request):
 def bank_transaction_history(request, account_number):
     bank_account = BankAccount.objects.filter(account_number=account_number).first()
     histories = get_acb_bank_transaction_history(bank_account)
+    if len(histories) == 0:
+        alert = (
+            f'🔴 - SYSTEM ALERT\n'
+            f'Get transaction history from {bank_account.account_number} - {bank_account.bank_name} empty\n'
+            f'Date: {datetime.now()}'
+        )
+        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
     columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
     df = pd.DataFrame(list(histories))
     df[columns_to_convert] = df[columns_to_convert].apply(unix_to_datetime, axis=1)
@@ -137,6 +145,13 @@ def get_transaction_history_with_filter(request):
         all_transactions = []
         for bank_account in list_bank_account:
             histories = get_acb_bank_transaction_history(bank_account)
+            if len(histories) == 0:
+                alert = (
+                        f'🔴 - SYSTEM ALERT\n'
+                        f'Get transaction history from {bank_account.account_number} - {bank_account.bank_name} empty\n'
+                        f'Date: {datetime.now()}'
+                    )
+                send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
             df = pd.DataFrame(list(histories))
             df[columns_to_convert] = df[columns_to_convert].apply(unix_to_datetime, axis=1)

@@ -6,7 +6,11 @@ from bank.utils import get_acb_bank_transaction_history, unix_to_datetime, send_
 from bank.database import redis_connect
 import time
 import pandas as pd
+import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Command(BaseCommand):
@@ -23,7 +27,12 @@ class Command(BaseCommand):
                 new_bank_history = get_acb_bank_transaction_history(bank)
                 new_bank_history_df = pd.DataFrame(new_bank_history)
                 if new_bank_history_df.empty:
-                    continue
+                    alert = (
+                        f'🔴 - SYSTEM ALERT\n'
+                        f'Get transaction history from {bank.account_number} - {bank.bank_name} empty\n'
+                        f'Date: {datetime.now()}'
+                    )
+                    send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
                 # Convert Unix timestamp to datetime and replace nan values
                 new_bank_history_df[columns_to_convert] = new_bank_history_df[columns_to_convert].apply(unix_to_datetime, axis=1)
                 final_new_bank_history_df = new_bank_history_df.fillna('')
@@ -54,7 +63,7 @@ class Command(BaseCommand):
                                 f'🔍 {row["type"]}\n'
                                 f'🕒 {row["active_datetime"]}'
                             )
-                            send_telegram_message(alert)
+                            send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:

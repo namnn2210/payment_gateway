@@ -63,8 +63,8 @@ def unix_to_datetime(unix_time):
     formatted_dt = dt_gmt_plus_7.dt.strftime('%Y-%m-%d %H:%M:%S')
     return formatted_dt
 
-def send_telegram_message(message: str):
-    data_dict = {'chat_id': os.environ.get('CHAT_ID'),
+def send_telegram_message(message: str, api_key, chat_id):
+    data_dict = {'chat_id': chat_id,
                  'text': message,
                  'parse_mode': 'HTML',
                  'disable_notification': True}
@@ -75,7 +75,7 @@ def send_telegram_message(message: str):
         'parse_mode': 'Markdown'
     }
     API_KEY = os.environ.get('API_KEY')
-    url = f'https://api.telegram.org/bot{API_KEY}/sendMessage'
+    url = f'https://api.telegram.org/bot{api_key}/sendMessage'
     response = requests.post(url,
                              data=data,
                              headers=headers,

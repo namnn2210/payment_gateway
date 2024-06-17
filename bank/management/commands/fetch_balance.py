@@ -2,8 +2,9 @@ import json
 import redis
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.utils import get_acb_bank
+from bank.utils import get_acb_bank, send_telegram_message
 import time
+import os
 import pandas as pd
 from datetime import datetime
 
@@ -25,4 +26,11 @@ class Command(BaseCommand):
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:
                         print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                else:
+                    alert = (
+                        f'🔴 - SYSTEM ALERT\n'
+                        f'Get transaction history from {bank.account_number} - {bank.bank_name} empty\n'
+                        f'Date: {datetime.now()}'
+                    )
+                    send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             time.sleep(15)
