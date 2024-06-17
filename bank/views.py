@@ -40,8 +40,8 @@ def bank_transaction_history(request, account_number):
     return render(request=request, template_name='bank_transaction_history.html',context={'page_obj':page_obj})
 
 @login_required(login_url='login')
-def record_book(request):
-    list_user_bank = BankAccount.objects.filter(user=request.user)
+def record_book(request, bank_type):
+    list_user_bank = BankAccount.objects.filter(user=request.user, bank_type=bank_type)
     return render(request=request, template_name='record_book.html', context={'list_user_bank':list_user_bank})
 
 @method_decorator(csrf_exempt, name='dispatch')
