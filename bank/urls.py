@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import list_bank, AddBankView, bank_transaction_history, update_transaction_history, update_balance, record_book, get_transaction_history_with_filter, toggle_bank_status
+from .views import list_bank, AddBankView, update_transaction_history, update_balance, record_book, get_transaction_history_with_filter, toggle_bank_status
 
 urlpatterns = [
     path('list', list_bank, name='list_bank'),
