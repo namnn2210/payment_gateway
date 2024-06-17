@@ -4,7 +4,7 @@ from .views import list_bank, AddBankView, bank_transaction_history, update_tran
 urlpatterns = [
     path('list', list_bank, name='list_bank'),
     path('add', AddBankView.as_view(), name='add_bank'),
-    path('history/<str:account_number>', bank_transaction_history, name='bank_transaction_history'),
+    # path('history/<str:account_number>', bank_transaction_history, name='bank_transaction_history'),
     path('update_transaction_history', update_transaction_history, name='update_transaction_history'),
     path('toggle_bank_status/', toggle_bank_status, name='toggle_bank_status'),
     path('update_balance', update_balance, name='update_balance'),

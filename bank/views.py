@@ -25,29 +25,6 @@ def list_bank(request):
     return render(request=request, template_name='bank.html',context={'list_bank_option':list_bank_option, 'list_user_bank':list_user_bank})
 
 @login_required(login_url='login')
-def bank_transaction_history(request, account_number):
-    bank_account = BankAccount.objects.filter(account_number=account_number).first()
-    histories = get_acb_bank_transaction_history(bank_account)
-    if not histories:
-        alert = (
-            f'🔴 - SYSTEM ALERT\n'
-            f'Get transaction history from {bank_account.account_number} - {bank_account.bank_name} empty\n'
-            f'Date: {datetime.now()}'
-        )
-        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-    columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
-    df = pd.DataFrame(list(histories))
-    df[columns_to_convert] = df[columns_to_convert].apply(unix_to_datetime, axis=1)
-    df = df.fillna('')
-    histories = df.to_dict(orient='records')
-    # Paginate the data
-    paginator = Paginator(histories, 10)  # Show 10 items per page
-
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    return render(request=request, template_name='bank_transaction_history.html',context={'page_obj':page_obj})
-
-@login_required(login_url='login')
 def record_book(request, bank_type):
     list_user_bank = BankAccount.objects.filter(user=request.user, bank_type=bank_type)
     return render(request=request, template_name='record_book.html', context={'list_user_bank':list_user_bank})
@@ -154,6 +131,7 @@ def get_transaction_history_with_filter(request):
                         f'Date: {datetime.now()}'
                     )
                 send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                continue
             # columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
             # df = pd.DataFrame(list(histories))
             # df[columns_to_convert] = df[columns_to_convert].apply(unix_to_datetime, axis=1)

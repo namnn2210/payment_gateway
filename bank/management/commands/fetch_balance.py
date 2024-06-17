@@ -33,4 +33,5 @@ class Command(BaseCommand):
                         f'Date: {datetime.now()}'
                     )
                     send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                    continue
             time.sleep(15)

@@ -33,6 +33,7 @@ class Command(BaseCommand):
                         f'Date: {datetime.now()}'
                     )
                     send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                    continue
                 # Convert Unix timestamp to datetime and replace nan values
                 new_bank_history_df[columns_to_convert] = new_bank_history_df[columns_to_convert].apply(unix_to_datetime, axis=1)
                 final_new_bank_history_df = new_bank_history_df.fillna('')
