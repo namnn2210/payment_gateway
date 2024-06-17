@@ -160,6 +160,19 @@
                             <hr class="dropdown-divider">
                         </li>
 
+                        {% if user.is_superuser %}
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="/admin">
+                                <i class="bi bi-gear"></i>
+                                <span>Go to Admin</span>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
 
                         <li>
                             <a class="dropdown-item d-flex align-items-center" href="{% url 'user_logout' %}">
@@ -195,12 +208,12 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link collapsed" href="#">
                     <i class="bi bi-envelope"></i>
                     <span>Settings</span>
                 </a>
-            </li>
+            </li> -->
 
         </ul>
 
