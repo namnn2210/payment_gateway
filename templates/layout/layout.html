@@ -195,7 +195,7 @@
         <ul class="sidebar-nav" id="sidebar-nav">
 
             <li class="nav-item">
-                <a class="nav-link " href="{% url 'index' %}">
+                <a class="nav-link" href="{% url 'index' %}">
                     <i class="bi bi-grid"></i>
                     <span>Dashboard</span>
                 </a>
@@ -269,6 +269,12 @@
             }
             return cookieValue;
         }
+        document.addEventListener('DOMContentLoaded', function () {
+            $('a.nav-link').on('click', function () {
+                $('a.nav-link').addClass('collapsed');
+                $(this).removeClass('collapsed');
+            });
+        });
     </script>
     {% block script %}
     {% endblock %}
