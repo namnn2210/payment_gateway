@@ -243,16 +243,16 @@
                 contentType: 'application/json',
                 success: function (response) {
                     if (response.status === 200) {
-                        showAlert(response.message, 'success');
+                        showAlert(response.message, 'success', $('#modalAlertContainer'));
                         button.data('status', newStatus);
                         button.toggleClass('btn-success btn-danger');
                         button.text(newStatus === 'ON' ? 'OFF' : 'ON');
                     } else {
-                        showAlert('Failed to update status.', 'danger');
+                        showAlert('Failed to update status.', 'danger', $('#modalAlertContainer'));
                     }
                 },
                 error: function (response) {
-                    showAlert('An error occurred. Please try again.', 'danger');
+                    showAlert('An error occurred. Please try again.', 'danger', $('#modalAlertContainer'));
                 }
             });
         });

@@ -161,7 +161,7 @@ def get_transaction_history_with_filter(request):
 def update_transaction_history(request):
     # all_transactions = get_all_transactions(request)
     redis_client = redis_connect()
-    bank_accounts = BankAccount.objects.filter(user=request.user)
+    bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
     
     list_df_in = []
     list_df_out = []
@@ -195,7 +195,7 @@ def update_transaction_history(request):
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':json.loads(top_transactions_json_in), 'out':json.loads(top_transactions_json_out)}})
 
 def update_balance(request):
-    bank_accounts = BankAccount.objects.filter(user=request.user)
+    bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
     list_dict_accounts = []
     for bank_account in bank_accounts:
         list_dict_accounts.append(model_to_dict(bank_account))

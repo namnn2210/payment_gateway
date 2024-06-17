@@ -12,7 +12,7 @@ class BankAdmin(admin.ModelAdmin):
 @admin.register(BankAccount)
 class BankAccountAdmin(admin.ModelAdmin):
     list_display = ('user', 'account_name', 'account_number', 'balance', 'bank_name', 'username','password','bank_type', 'created_at', 'updated_at')
-    list_filter = ('bank_type', 'bank_name_id','created_at',)
+    list_filter = ('user', 'bank_type', 'bank_name_id','created_at',)
     search_fields = ('account_name', 'account_number','bank_type')
     
     # def user_username(self, obj):
