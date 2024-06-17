@@ -163,8 +163,8 @@ def update_transaction_history(request):
     redis_client = redis_connect()
     bank_accounts = BankAccount.objects.filter(user=request.user)
     
-    in_transaction_df = pd.DataFrame([])
-    out_transaction_df = pd.DataFrame([])
+    list_df_in = []
+    list_df_out = []
 
     for bank_account in bank_accounts:
         bank_redis = redis_client.get(bank_account.account_number)
@@ -174,19 +174,21 @@ def update_transaction_history(request):
             if bank_account.bank_type == 'IN':
                 in_transaction_df = df[df['type'] == 'IN']
                 if not in_transaction_df.empty:
-                    sorted_transactions_in = in_transaction_df.sort_values(by='active_datetime', ascending=False).head(5)
-                    top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
-                else:
-                     top_transactions_json_in = json.dumps([])  # Empty list if no transactions
+                    list_df_in.append(in_transaction_df)
             else:
                 out_transaction_df = df[df['type'] == 'OUT']
                 if not out_transaction_df.empty:
-                    sorted_transactions_out = out_transaction_df.sort_values(by='active_datetime', ascending=False).head(5)
-                    top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
-                else:
-                    top_transactions_json_out = json.dumps([])
-
-        
+                    list_df_out.append(out_transaction_df)
+                    
+    df_in = pd.concat(list_df_in)
+    df_out = pd.concat(list_df_out)
+    
+    sorted_transactions_in = df_in.sort_values(by='active_datetime', ascending=False).head(5)
+    top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
+    
+    sorted_transactions_out = df_out.sort_values(by='active_datetime', ascending=False).head(5)
+    top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
+    
     # Close the Redis connection
     redis_client.close()
 
@@ -194,8 +196,6 @@ def update_transaction_history(request):
 
 def update_balance(request):
     bank_accounts = BankAccount.objects.filter(user=request.user)
-    # in_balance = 0
-    # out_balance = 0
     list_dict_accounts = []
     for bank_account in bank_accounts:
         list_dict_accounts.append(model_to_dict(bank_account))
