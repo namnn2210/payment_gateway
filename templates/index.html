@@ -13,7 +13,8 @@
                         </div>
                         <div class="ps-3">
                             <h6 class="balance-total"><span class="text-success">đ</span></h6>
-                            <span class="text-success small pt-1 fw-bold">+0</span> / <span class="text-danger small pt-1 fw-bold">-0</span> <span
+                            <span class="text-success small pt-1 fw-bold">+0</span> / <span
+                                class="text-danger small pt-1 fw-bold">-0</span> <span
                                 class="text-muted small pt-2 ps-1">Today</span>
                         </div>
                     </div>
@@ -31,11 +32,11 @@
                 <div class="card-body">
                     <h5 class="card-title">
                         {% if bank_account.bank_type == 'IN'%}
-                            <span class="text-success small pt-1 fw-bold">IN</span>
-                            {% else %}
-                            <span class="text-danger small pt-1 fw-bold">OUT</span>
-                            {% endif %}
-                         - {{bank_account.account_number}} <span>| {{bank_account.account_name}}</span>
+                        <span class="text-success small pt-1 fw-bold">IN</span>
+                        {% else %}
+                        <span class="text-danger small pt-1 fw-bold">OUT</span>
+                        {% endif %}
+                        - {{bank_account.account_number}} <span>| {{bank_account.account_name}}</span>
                     </h5>
 
                     <div class="d-flex align-items-center">
@@ -44,10 +45,12 @@
                         </div>
                         <div class="ps-3">
                             {% if bank_account.bank_type == 'IN'%}
-                            <h6 class="account-balance-in">{{bank_account.balance | intcomma}} <span class="text-success">đ</span></h6>
+                            <h6 class="account-balance-in">{{bank_account.balance | intcomma}} <span
+                                    class="text-success">đ</span></h6>
                             <span class="text-success small pt-1 fw-bold">+0</span>
                             {% else %}
-                            <h6 class="account-balance-out">{{bank_account.balance | intcomma}} <span class="text-success">đ</span></h6>
+                            <h6 class="account-balance-out">{{bank_account.balance | intcomma}} <span
+                                    class="text-success">đ</span></h6>
                             <span class="text-danger small pt-1 fw-bold">-0</span>
                             {% endif %}
                             <span class="text-muted small pt-2 ps-1">Today</span>
@@ -64,50 +67,50 @@
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="card recent-sales overflow-auto">
-        
+
                 <div class="card-body">
                     <h5 class="card-title">Latest transaction <span class="text-success">IN</span> history</h5>
                     <!-- Small tables -->
                     <table class="table table-sm table-in">
-                      <thead>
-                        <tr class="text-center" style="font-size: 11px">
-                            <th>Account Number</th>
-                            <th>Reference Number</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                            <th>Memo</th>
-                        </tr>
-                      </thead>
-                      <tbody id="transaction-table-body" style="font-size: 11px">
-                        <!-- Data will be appended here -->
+                        <thead>
+                            <tr class="text-center" style="font-size: 12px">
+                                <th>Account Number</th>
+                                <th>Reference Number</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Memo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center" id="transaction-table-body" style="font-size: 12px">
+                            <!-- Data will be appended here -->
                         </tbody>
                     </table>
-                  </div>
-        
+                </div>
+
             </div>
         </div><!-- End Recent Sales -->
         <div class="col-md-6 col-sm-12">
             <div class="card recent-sales overflow-auto">
-        
+
                 <div class="card-body">
                     <h5 class="card-title">Latest transaction <span class="text-danger">OUT</span> history</h5>
                     <!-- Small tables -->
                     <table class="table table-sm table-out">
-                      <thead>
-                        <tr class="text-center" style="font-size: 11px">
-                            <th>Account Number</th>
-                            <th>Reference Number</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                            <th>Memo</th>
-                        </tr>
-                      </thead>
-                      <tbody id="transaction-table-body" style="font-size: 11px">
-                        <!-- Data will be appended here -->
+                        <thead>
+                            <tr class="text-center" style="font-size: 12px">
+                                <th>Account Number</th>
+                                <th>Reference Number</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                                <th>Memo</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-center" id="transaction-table-body" style="font-size: 12px">
+                            <!-- Data will be appended here -->
                         </tbody>
                     </table>
-                  </div>
-        
+                </div>
+
             </div>
         </div><!-- End Recent Sales -->
     </div>
@@ -116,7 +119,7 @@
 {% endblock %}
 {% block script %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         function fetchLatestTransactions() {
             fetch('{% url "update_transaction_history" %}')
                 .then(response => {
