@@ -27,3 +27,9 @@ def login(request):
 def user_logout(request):
     logout(request)
     return redirect('index')
+
+
+def user_callback(request):
+    print("eheheheheh")
+    print(request)
+    return "OK"
