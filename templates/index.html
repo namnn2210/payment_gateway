@@ -28,17 +28,15 @@
         <div class="col-xxl-4 col-md-6 col-sm-12">
             <div class="card info-card revenue-card">
                 <div class="card-body">
-                    <span class="card-title">BANK</span> <span class="card-title text-success"> IN </span> - <span class="total-in"></span>
+                    <span class="card-title">BANK</span> <span class="card-title text-success"> IN </span> - <b class="total-in"></b>
 
                     <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-currency-dollar"></i>
-                        </div>
                         <div class="ps-3">
-                            <table class="table table-borderless table-sm">
+                            <table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
                                         <th scope="col">Account Number</th>
+                                        <th scope="col">Account Name</th>
                                         <th scope="col">Balance</th>
                                     </tr>
                                 </thead>
@@ -54,17 +52,14 @@
         <div class="col-xxl-4 col-md-6 col-sm-12">
             <div class="card info-card revenue-card">
                 <div class="card-body">
-                    <span class="card-title">BANK</span> <span class="card-title text-danger"> OUT </span> - <span class="total-out"></span>
-
+                    <span class="card-title">BANK</span> <span class="card-title text-danger"> OUT </span> - <b class="total-out"></b>
                     <div class="d-flex align-items-center">
-                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-currency-dollar"></i>
-                        </div>
                         <div class="ps-3">
-                            <table class="table table-borderless table-sm">
+                            <table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
                                         <th scope="col">Account Number</th>
+                                        <th scope="col">Account Name</th>
                                         <th scope="col">Balance</th>
                                     </tr>
                                 </thead>
@@ -210,8 +205,8 @@
 
                     let totalIn = 0;
                     let totalOut = 0;
-                    const spanTotalIn = document.querySelector('span.total-in');
-                    const spanTotalOut = document.querySelector('span.total-out');
+                    const spanTotalIn = document.querySelector('b.total-in');
+                    const spanTotalOut = document.querySelector('b.total-out');
 
                     const tableBodyIn = document.querySelector('table.table-borderless tbody.tbody-in');
                     if (!tableBodyIn) {
@@ -237,8 +232,11 @@
                             accountClass = 'account-balance-out'
                         }
                         row.innerHTML = `
-                            <th>${bank.account_number}</td>
-                            <td><b class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-success">đ</span></b></td>
+                            <td>
+                                ${bank.account_number}
+                            </td>
+                            <td>${bank.account_name}</td>
+                            <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-success">đ</span></span></td>
                         `;
                         if (bank.bank_type === 'IN') {
                             totalIn += bank.balance
