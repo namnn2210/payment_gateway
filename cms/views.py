@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import logout
+from django.http import JsonResponse
 
 from bank.models import BankAccount
 
@@ -32,4 +33,4 @@ def user_logout(request):
 def user_callback(request):
     print("eheheheheh")
     print(request)
-    return "OK"
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': {}})
