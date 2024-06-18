@@ -33,4 +33,4 @@ def user_logout(request):
 def user_callback(request):
     print("eheheheheh")
     print(request)
-    return JsonResponse({'status': 200, 'message': 'Done', 'data': {}})
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': str(request)})
