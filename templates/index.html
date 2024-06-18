@@ -35,6 +35,7 @@
                             <table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
+                                        <th scope="col">#</th>
                                         <th scope="col">Account Number</th>
                                         <th scope="col">Account Name</th>
                                         <th scope="col">Balance</th>
@@ -58,6 +59,7 @@
                             <table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
+                                        <th scope="col">#</th>
                                         <th scope="col">Account Number</th>
                                         <th scope="col">Account Name</th>
                                         <th scope="col">Balance</th>
@@ -205,6 +207,8 @@
 
                     let totalIn = 0;
                     let totalOut = 0;
+                    let indexIn = 0;
+                    let indexOut = 0;
                     const spanTotalIn = document.querySelector('b.total-in');
                     const spanTotalOut = document.querySelector('b.total-out');
 
@@ -223,26 +227,33 @@
                     tableBodyIn.innerHTML = '';
                     tableBodyOut.innerHTML = '';
 
-                    data.data.balance.forEach(bank => {
+                    data.data.balance.forEach((bank,index) => {
                         const row = document.createElement('tr');
                         if (bank.bank_type === 'IN') {
-                            accountClass = 'account-balance-in'
-                        }
-                        else {
-                            accountClass = 'account-balance-out'
-                        }
-                        row.innerHTML = `
-                            <td>
-                                ${bank.account_number}
-                            </td>
-                            <td>${bank.account_name}</td>
-                            <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-success">đ</span></span></td>
-                        `;
-                        if (bank.bank_type === 'IN') {
+                            accountClass = 'account-balance-in';
+                            indexIn += 1;
+                            row.innerHTML = `
+                                <td>${indexIn}</td>
+                                <td>
+                                    ${bank.account_number}
+                                </td>
+                                <td>${bank.account_name}</td>
+                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-success">đ</span></span></td>
+                            `;
                             totalIn += bank.balance
                             tableBodyIn.appendChild(row);
                         }
                         else {
+                            accountClass = 'account-balance-out';
+                            indexOut += 1;
+                            row.innerHTML = `
+                                <td>${indexOut}</td>
+                                <td>
+                                    ${bank.account_number}
+                                </td>
+                                <td>${bank.account_name}</td>
+                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-danger">đ</span></span></td>
+                            `;
                             totalOut += bank.balance
                             tableBodyOut.appendChild(row);
                         }
