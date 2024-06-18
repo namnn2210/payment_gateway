@@ -20,10 +20,26 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            return redirect('index')  # Replace 'home' with your home page URL name
+            return redirect('index') 
         else:
-            messages.error(request, 'Invalid username or password.')
+            return render(request=request, template_name='login.html', context={'error': 'Invalid username or password. Contact admin for support'})
     return render(request=request, template_name='login.html')
+
+def profile(request):
+    if request.method == 'POST':
+        current_password = request.POST.get('password')
+        new_password = request.POST.get('newpassword')
+        new_password2 = request.POST.get('renewpassword')
+        if not current_password or not new_password or not new_password2:
+            return render(request=request, template_name='profile.html', context={'error': 'Please fill all fields'})
+        if new_password != new_password2:
+            return render(request=request, template_name='profile.html', context={'error': 'Passwords do not match'})
+        if not request.user.check_password(current_password):
+            return render(request=request, template_name='profile.html', context={'error': 'Current password is incorrect'})
+        request.user.set_password(new_password)
+        request.user.save()
+        return render(request=request, template_name='profile.html', context={'success': 'Password changed successfully'})
+    return render(request=request, template_name='profile.html', context={'error': None})
 
 def user_logout(request):
     logout(request)
