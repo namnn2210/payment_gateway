@@ -63,7 +63,7 @@ def unix_to_datetime(unix_time):
     formatted_dt = dt_gmt_plus_7.dt.strftime('%Y-%m-%d %H:%M:%S')
     return formatted_dt
 
-def send_telegram_message(message: str, api_key, chat_id):
+def send_telegram_message(message: str, chat_id, api_key):
     data_dict = {'chat_id': chat_id,
                  'text': message,
                  'parse_mode': 'HTML',
