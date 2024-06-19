@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'cms',
     'bank',
-    'acb'
+    'acb',
+    'notification'
 ]
 
 MIDDLEWARE = [

@@ -6,12 +6,16 @@ from django.contrib.auth import logout
 from django.http import JsonResponse
 
 from bank.models import BankAccount
+from notification.models import Notification
 
 # Create your views here.
 @login_required(login_url='login')
 def index(request):
+    Notification.objects.create(recipient=request.user, message='Welcome to our website!')
     list_user_bank = BankAccount.objects.filter(user=request.user, status=True)
-    return render(request=request, template_name='index.html',context={'list_user_bank':list_user_bank})
+    notifications = request.user.notifications.filter(read=False).order_by('-created_at')
+    # print(list(notifications)
+    return render(request=request, template_name='index.html',context={'list_user_bank':list_user_bank,'notifications':list(notifications)})
 
 def login(request):
     if request.method == 'POST':
