@@ -7,11 +7,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def get_bank(bank_name,bank_number, bank_username, bank_password):
-    if bank_name == 'ACB':
-        return get_acb_bank(bank_number, bank_username, bank_password)
+    return get_bank_balance(bank_number, bank_username, bank_password, bank_name)
 
-def get_acb_bank(bank_number, bank_username, bank_password):
-    url = "https://api.httzip.com/api/bank/ACB/balance"
+def get_bank_balance(bank_number, bank_username, bank_password, bank_name):
+    url = f"https://api.httzip.com/api/bank/{bank_name}/balance"
     headers = {
         'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
         'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
@@ -36,8 +35,8 @@ def get_acb_bank(bank_number, bank_username, bank_password):
             return None
     return None
 
-def get_acb_bank_transaction_history(bank_account):
-    url = 'https://api.httzip.com/api/bank/ACB/transactions'
+def get_bank_transaction_history(bank_account):
+    url = f'https://api.httzip.com/api/bank/{bank_account.bank_name}/transactions'
     headers = {
         'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
         'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',

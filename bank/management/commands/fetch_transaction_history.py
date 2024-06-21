@@ -2,7 +2,7 @@ import json
 import redis
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.utils import get_acb_bank_transaction_history, unix_to_datetime, send_telegram_message
+from bank.utils import get_bank_transaction_history, unix_to_datetime, send_telegram_message
 from bank.database import redis_connect
 import time
 import pandas as pd
@@ -35,7 +35,7 @@ class Command(BaseCommand):
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:
                 bank_exists = redis_client.get(bank.account_number)
-                new_bank_history = get_acb_bank_transaction_history(bank)
+                new_bank_history = get_bank_transaction_history(bank)
                 new_bank_history_df = pd.DataFrame(new_bank_history)
                 if new_bank_history_df.empty:
                     alert = (
@@ -66,22 +66,23 @@ class Command(BaseCommand):
                                 
                                 order_number = self.find_substring(row['description'])
                                 if order_number:
+                                    pass
                                     # Create order in partner system
-                                    url = 'https://p2p.jzc899.com/be_en/ashx/control.ashx'
-                                    headers = {
-                                        'Cookie':'ASP.NET_SessionId=wrcv4xdc1uhpjm1lvhyw5fmz; cf_clearance=tOj4ybSlDyTdYrQed1U9289CWBgHUizgfc3UPHiybmg-1718865515-1.0.1.1-vIcefcRai1OePod6Kt3.Pj7OLR_v5oc8IsJdgakeT9.dmvzP1.svYa3Q09oR5wznyfd8.qcvDySrkdXzAHs0Yg'
-                                    }
-                                    data = {
-                                        'todo':'addbankorder',
-                                        'bkid':'8684',
-                                        'money':"{:.2f}".format(row['amount']),
-                                        'postscript':order_number,
-                                        'payname':'nam',
-                                        'payacctno':'3783',
-                                        'txid':''
-                                    }
-                                    response = requests.post(url=url, headers=headers, data=data)
-                                    print('===', response.json())
+                                    # url = 'https://p2p.jzc899.com/be_en/ashx/control.ashx'
+                                    # headers = {
+                                    #     'Cookie':'ASP.NET_SessionId=wrcv4xdc1uhpjm1lvhyw5fmz; cf_clearance=tOj4ybSlDyTdYrQed1U9289CWBgHUizgfc3UPHiybmg-1718865515-1.0.1.1-vIcefcRai1OePod6Kt3.Pj7OLR_v5oc8IsJdgakeT9.dmvzP1.svYa3Q09oR5wznyfd8.qcvDySrkdXzAHs0Yg'
+                                    # }
+                                    # data = {
+                                    #     'todo':'addbankorder',
+                                    #     'bkid':'8684',
+                                    #     'money':"{:.2f}".format(row['amount']),
+                                    #     'postscript':order_number,
+                                    #     'payname':'nam',
+                                    #     'payacctno':'3783',
+                                    #     'txid':''
+                                    # }
+                                    # response = requests.post(url=url, headers=headers, data=data)
+                                    # print('===', response.json())
                                 
                             else:
                                 transaction_type = '-'
@@ -95,7 +96,7 @@ class Command(BaseCommand):
                                 f'🔍 {row["type"]}\n'
                                 f'🕒 {row["active_datetime"]}'
                             )
-                            # send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                            send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:

@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
-from .utils import get_acb_bank_transaction_history, get_bank, unix_to_datetime, send_telegram_message
+from .utils import get_bank_transaction_history, get_bank, unix_to_datetime, send_telegram_message
 from .database import redis_connect
 from datetime import datetime, timedelta
 import json

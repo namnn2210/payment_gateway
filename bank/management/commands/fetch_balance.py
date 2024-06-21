@@ -2,7 +2,7 @@ import json
 import redis
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.utils import get_acb_bank, send_telegram_message
+from bank.utils import get_bank_balance, send_telegram_message
 import time
 import os
 import pandas as pd
@@ -17,7 +17,7 @@ class Command(BaseCommand):
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:
-                bank_account = get_acb_bank(bank.account_number, bank.username, bank.password)
+                bank_account = get_bank_balance(bank.account_number, bank.username, bank.password, bank.bank_name)
                 if bank_account:
                     if bank.balance != bank_account.get('balance'):
                         bank.balance = bank_account.get('balance')
