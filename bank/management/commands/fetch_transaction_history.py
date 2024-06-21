@@ -66,23 +66,23 @@ class Command(BaseCommand):
                                 
                                 order_number = self.find_substring(row['description'])
                                 if order_number:
-                                    pass
+                                    
                                     # Create order in partner system
-                                    # url = 'https://p2p.jzc899.com/be_en/ashx/control.ashx'
-                                    # headers = {
-                                    #     'Cookie':'ASP.NET_SessionId=wrcv4xdc1uhpjm1lvhyw5fmz; cf_clearance=tOj4ybSlDyTdYrQed1U9289CWBgHUizgfc3UPHiybmg-1718865515-1.0.1.1-vIcefcRai1OePod6Kt3.Pj7OLR_v5oc8IsJdgakeT9.dmvzP1.svYa3Q09oR5wznyfd8.qcvDySrkdXzAHs0Yg'
-                                    # }
-                                    # data = {
-                                    #     'todo':'addbankorder',
-                                    #     'bkid':'8684',
-                                    #     'money':"{:.2f}".format(row['amount']),
-                                    #     'postscript':order_number,
-                                    #     'payname':'nam',
-                                    #     'payacctno':'3783',
-                                    #     'txid':''
-                                    # }
-                                    # response = requests.post(url=url, headers=headers, data=data)
-                                    # print('===', response.json())
+                                    url = 'https://p2p.jzc899.com/be_en/ashx/control.ashx'
+                                    headers = {
+                                        'Cookie':'ASP.NET_SessionId=w4sjettikktqegx44msxg1zn; cf_clearance=WA9ya0Cl0xszsqR0xx8uSDFx6mURzUXS95fh_PJfQj4-1718945064-1.0.1.1-VfztMNhtfmVMn1B.m8fW8T0Y3XpavCiX2qs5lZG2fwkJrpOELAWDRLY2y3vdXANj5aB2yMk3ng.I9xtLF2kzQQ'
+                                    }
+                                    data = {
+                                        'todo':'addbankorder',
+                                        'bkid':'8698',
+                                        'money':"{:.2f}".format(row['amount']),
+                                        'postscript':order_number,
+                                        'payname':'NA',
+                                        'payacctno':'5997',
+                                        'txid':row['transaction_number']
+                                    }
+                                    response = requests.post(url=url, headers=headers, data=data)
+                                    print('===', response.json())
                                 
                             else:
                                 transaction_type = '-'
