@@ -21,7 +21,7 @@ load_dotenv()
 @login_required(login_url='login')
 def list_bank(request):
     list_bank_option = Bank.objects.filter(status=True)
-    list_user_bank = BankAccount.objects.filter(user=request.user)
+    list_user_bank = BankAccount.objects.all()
     return render(request=request, template_name='bank.html',context={'list_bank_option':list_bank_option, 'list_user_bank':list_user_bank})
 
 @login_required(login_url='login')

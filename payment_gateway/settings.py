@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'cms',
     'bank',
     'acb',
-    'notification'
+    'notification',
+    'payout'
 ]
 
 MIDDLEWARE = [
@@ -157,3 +158,11 @@ CSRF_TRUSTED_ORIGINS = [
     # 'http://103.241.43.107:7979',
     'https://226pay.com'
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# Set the session cookie age (in seconds)
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+# Set session to expire when the user closes the browser
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+# Optionally set session expiration on inactivity
+SESSION_SAVE_EVERY_REQUEST = True

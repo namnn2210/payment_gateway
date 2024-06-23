@@ -81,8 +81,8 @@ class Command(BaseCommand):
                                         'payacctno':'5997',
                                         'txid':row['transaction_number']
                                     }
-                                    response = requests.post(url=url, headers=headers, data=data)
-                                    print('===', response.json())
+                                    # response = requests.post(url=url, headers=headers, data=data)
+                                    # print('===', response.json())
                                 
                             else:
                                 transaction_type = '-'

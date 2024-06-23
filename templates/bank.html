@@ -69,13 +69,13 @@
                                     <a href="{% url 'record_book' 'in' %}"><button
                                             class="btn btn-sm btn-success">History</button>
                                     </a>
-                                    {% if bank_account.status %}
+                                    <!-- {% if bank_account.status %}
                                     <button class="btn btn-sm btn-danger btn-toggle-status"
                                         data-account-id="{{ bank_account.id }}" data-status="ON">OFF</button>
                                     {% else %}
                                     <button class="btn btn-sm btn-success btn-toggle-status"
                                         data-account-id="{{ bank_account.id }}" data-status="OFF">ON</button>
-                                    {% endif %}
+                                    {% endif %} -->
                                 </td>
                             </tr>
                             {% endif %}
@@ -115,14 +115,14 @@
                                     <a href="{% url 'record_book' 'out' %}"><button
                                             class="btn btn-sm btn-success">History</button>
                                     </a>
-                                    {% if bank_account.status %}
+                                    <!-- {% if bank_account.status %}
                                     <button class="btn btn-sm btn-danger btn-toggle-status"
                                         data-account-id="{{ bank_account.id }}" data-status="ON">OFF</button>
                                     {% else %}
                                     <button class="btn btn-sm btn-success btn-toggle-status"
                                         data-account-id="{{ bank_account.id }}" data-status="OFF">ON</button>
                                     {% endif %}
-                                </td>
+                                </td> -->
                             </tr>
                             {% endif %}
                             {% endfor %}

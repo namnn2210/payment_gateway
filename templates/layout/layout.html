@@ -169,17 +169,23 @@
 
             <li class="nav-item">
                 <a class="nav-link collapsed" href="{% url 'list_bank' %}">
-                    <i class="bi bi-person"></i>
+                    <i class="bi bi-bank"></i>
                     <span>Bank Account</span>
                 </a>
             </li>
 
-            <!-- <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
-                    <i class="bi bi-envelope"></i>
-                    <span>Settings</span>
+            <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+                  <i class="bi bi-cash"></i><span>Payout</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
-            </li> -->
+                <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+                  <li>
+                    <a href="{% url 'list_payout' %}">
+                      <i class="bi bi-circle"></i><span>Proccessing Payout</span>
+                    </a>
+                  </li>
+                </ul>
+              </li><!-- End Components Nav -->
 
         </ul>
 
