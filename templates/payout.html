@@ -7,9 +7,6 @@
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body">
                 <h5 class="card-title">List payout</h5>
-                <div class="input-group mb-3">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by Order No or Order ID" onkeyup="searchTable()">
-                </div>
                 <table class="table table-borderless" id="payoutTable">
                     <thead>
                     <tr>
@@ -89,6 +86,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-success done-btn-modal" data-item-id="">Done</button>
                 <button type="button" class="btn btn-danger">Report</button>
+                <button type="button" class="btn btn-danger">Report</button>
             </div>
         </div>
     </div>
@@ -106,27 +104,6 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    function searchTable() {
-        var input, filter, table, tr, td, i, j, txtValue;
-        input = document.getElementById("searchInput");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("payoutTable");
-        tr = table.getElementsByTagName("tr");
-
-        for (i = 1; i < tr.length; i++) {
-            tr[i].style.display = "none";
-            td = tr[i].getElementsByTagName("td");
-            for (j = 0; j < td.length; j++) {
-                if (td[j]) {
-                    txtValue = td[j].textContent || td[j].innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     $(document).ready(function() {
         var itemsData = JSON.parse($('#items-data').text());

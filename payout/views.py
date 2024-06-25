@@ -24,6 +24,9 @@ def list_payout(request):
         'items_json': json.dumps(items),
     })
 
+def search_payout(request):
+    return render(request=request, template_name='payout_history.html')
+
 @csrf_exempt
 @require_POST
 def update_payout(request):
