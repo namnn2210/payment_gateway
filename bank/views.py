@@ -119,7 +119,7 @@ def filter_data(df, filter_type):
 def get_transaction_history_with_filter(request):
     redis_client = redis_connect()
     if request.method == 'POST':
-        list_bank_account = BankAccount.objects.filter(user=request.user)
+        list_bank_account = BankAccount.objects.filter()
         all_transactions = []
         for bank_account in list_bank_account:
             # histories = get_acb_bank_transaction_history(bank_account)
