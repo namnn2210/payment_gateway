@@ -13,8 +13,8 @@ def get_bank(bank_name,bank_number, bank_username, bank_password):
 def get_bank_balance(bank_number, bank_username, bank_password, bank_name):
     url = f"https://api.httzip.com/api/bank/{bank_name}/balance"
     headers = {
-        'x-api-key': '3928789a-c690-478b-ba3e-8e1201d26520key',
-        'x-api-secret': 'a8f4ff8f-d761-481d-b2a6-aaf6193625d0secret',
+        'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
+        'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
         'Content-Type': 'application/json'
     }
     payload = json.dumps({
@@ -23,6 +23,7 @@ def get_bank_balance(bank_number, bank_username, bank_password, bank_name):
     })
 
     response = requests.post(url=url, headers=headers, data=payload)
+    print(response.json())
     if response.status_code == 200:
         list_bank_account = response.json()['data']
         if isinstance(list_bank_account, list):
@@ -39,8 +40,8 @@ def get_bank_balance(bank_number, bank_username, bank_password, bank_name):
 def get_bank_transaction_history(bank_account):
     url = f'https://api.httzip.com/api/bank/{bank_account.bank_name}/transactions'
     headers = {
-        'x-api-key': '3928789a-c690-478b-ba3e-8e1201d26520key',
-        'x-api-secret': 'a8f4ff8f-d761-481d-b2a6-aaf6193625d0secret',
+        'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
+        'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
         'Content-Type': 'application/json'
     }
     payload = json.dumps({
@@ -58,8 +59,8 @@ def get_bank_transaction_history(bank_account):
 def check_bank_info(row):
     url = 'https://api.httzip.com/api/bank/id-lookup-prod'
     headers = {
-        'x-api-key': '3928789a-c690-478b-ba3e-8e1201d26520key',
-        'x-api-secret': 'a8f4ff8f-d761-481d-b2a6-aaf6193625d0secret',
+        'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
+        'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
         'Content-Type': 'application/json'
     }
     if row['bank_code'] is not None:
