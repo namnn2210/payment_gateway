@@ -183,6 +183,7 @@ def update_transaction_history(request):
         df_in = pd.concat(list_df_in)
         sorted_transactions_in = df_in.sort_values(by='active_datetime', ascending=False).head(5)
         top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
+        top_transactions_json_in = json.loads(top_transactions_json_in)
     else:
         top_transactions_json_in = {}
 
@@ -190,13 +191,14 @@ def update_transaction_history(request):
         df_out = pd.concat(list_df_out)
         sorted_transactions_out = df_out.sort_values(by='active_datetime', ascending=False).head(5)
         top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
+        top_transactions_json_out = json.loads(top_transactions_json_out)
     else:
         top_transactions_json_out = {}
     
     # Close the Redis connection
     redis_client.close()
 
-    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':json.loads(top_transactions_json_in), 'out':json.loads(top_transactions_json_out)}})
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':top_transactions_json_in, 'out':top_transactions_json_out}})
 
 def update_balance(request):
     bank_accounts = BankAccount.objects.filter(status=True)
