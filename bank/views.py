@@ -178,15 +178,20 @@ def update_transaction_history(request):
                 out_transaction_df = df[df['type'] == 'OUT']
                 if not out_transaction_df.empty:
                     list_df_out.append(out_transaction_df)
-                    
-    df_in = pd.concat(list_df_in)
-    df_out = pd.concat(list_df_out)
-    
-    sorted_transactions_in = df_in.sort_values(by='active_datetime', ascending=False).head(5)
-    top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
-    
-    sorted_transactions_out = df_out.sort_values(by='active_datetime', ascending=False).head(5)
-    top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
+
+    if len(list_df_in) > 0:
+        df_in = pd.concat(list_df_in)
+        sorted_transactions_in = df_in.sort_values(by='active_datetime', ascending=False).head(5)
+        top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
+    else:
+        top_transactions_json_in = {}
+
+    if len(list_df_out) > 0:
+        df_out = pd.concat(list_df_out)
+        sorted_transactions_out = df_out.sort_values(by='active_datetime', ascending=False).head(5)
+        top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
+    else:
+        top_transactions_json_out = {}
     
     # Close the Redis connection
     redis_client.close()
