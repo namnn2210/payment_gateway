@@ -47,7 +47,8 @@ def get_bank_transaction_history(bank_account):
     payload = json.dumps({
         "login_id": bank_account.username,
         "login_password": bank_account.password,
-        "filter_account":bank_account.account_number
+        "filter_account":bank_account.account_number,
+        "last_x_day":30
     })
     
     response = requests.post(url=url, headers=headers, data=payload)
