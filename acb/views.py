@@ -41,7 +41,7 @@ def transfer_callback_2(request):
         return JsonResponse({'status': 200, 'message': 'Transfer callback 2 successful'})
     return JsonResponse({'status': 405, 'message': 'Error'})
 
-def find_substring(self, text):
+def find_substring(text):
         # Regex pattern to find a substring starting with 'Z' and having 7 characters
         pattern = r'Z.{6}'
         match = re.search(pattern, text)
