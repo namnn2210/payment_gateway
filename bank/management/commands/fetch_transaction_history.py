@@ -69,7 +69,7 @@ class Command(BaseCommand):
                                     f'Confirmed by order: {row['transaction_number']}\n'
                                     f'Received amount💲: {formatted_amount} VND\n'
                                     f'Memo: {row['description']}\n'
-                                    f'Code: NA\n'
+                                    f'Code: {self.find_substring(row['description'])}\n'
                                     f'Time: {row["active_datetime"]}'
                                 )
                                 send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
