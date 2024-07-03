@@ -5,6 +5,7 @@ import os
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from datetime import datetime
 from bank.views import send_telegram_message
 
 # Create your views here.
@@ -16,6 +17,8 @@ def new_transaction(request):
         transactions = body_requests.get('requestParams').get('transactions')
         for transaction in transactions:
             formatted_amount = '{:,.2f}'.format(transaction['amount'])
+            dt_object = datetime.strptime(transaction["transactionDate"], "%Y-%m-%dT%H:%M:%S.%fZ")
+            formatted_datetime = dt_object.strftime("%Y-%m-%d %H:%M:%S")
             alert = (
                 f'Hi,\n'
                 f'\n'
@@ -29,7 +32,7 @@ def new_transaction(request):
                 f'\n'
                 f'Code: {find_substring(transaction['transactionContent'])}\n'
                 f'\n'
-                f'Time: {transaction["transactionDate"]}\n'
+                f'Time: {formatted_datetime}\n'
                 f'\n'
                 f'Reason of not be credited: Order not found!!!'
             )
