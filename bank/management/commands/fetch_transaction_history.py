@@ -65,11 +65,12 @@ class Command(BaseCommand):
                                 transaction_color = '🟢'  # Green circle emoji for IN transactions
                                 formatted_amount = '{:,.2f}'.format(row['amount'])
                                 alert = (
-                                    f'🏦 {bank.account_number} - {bank.account_name}\n'
-                                    f'📝 {row["description"]}\n'
-                                    f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                                    f'🔍 {row["type"]}\n'
-                                    f'🕒 {row["active_datetime"]}'
+                                    f'Hi,\n'
+                                    f'Confirmed by order: {row['transaction_number']}\n'
+                                    f'Received amount💲: {formatted_amount} VND\n'
+                                    f'Memo: {row['description']}\n'
+                                    f'Code: NA\n'
+                                    f'Time: {row["active_datetime"]}'
                                 )
                                 send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                             else:
