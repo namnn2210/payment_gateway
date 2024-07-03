@@ -18,12 +18,19 @@ def new_transaction(request):
             formatted_amount = '{:,.2f}'.format(transaction['amount'])
             alert = (
                 f'Hi,\n'
+                f'\n'
                 f'Account: {transaction['accountNumber']}\n'
+                f'\n'
                 f'Confirmed by order: {transaction['transactionCode']}\n'
+                f'\n'
                 f'Received amount💲: {formatted_amount} VND\n'
+                f'\n'
                 f'Memo: {transaction['transactionContent']}\n'
+                f'\n'
                 f'Code: {find_substring(transaction['transactionContent'])}\n'
+                f'\n'
                 f'Time: {transaction["transactionDate"]}\n'
+                f'\n'
                 f'Reason of not be credited: Order not found!!!'
             )
             send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
