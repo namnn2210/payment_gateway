@@ -26,7 +26,7 @@ def get_bank_balance(bank_number, bank_username, bank_password, bank_name):
     print(response.json())
     if response.status_code == 200:
         list_bank_account = response.json()['data']
-        if isinstance(list_bank_account, list):
+        if isinstance(list_bank_account, list): 
             for bank_account in list_bank_account:
                 if bank_account['accountNumber'] == bank_number:
                     return bank_account

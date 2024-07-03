@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'cms',
     'bank',
     'acb',
+    'mb',
     'notification',
     'payout'
 ]
