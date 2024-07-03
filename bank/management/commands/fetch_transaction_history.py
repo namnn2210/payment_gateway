@@ -63,40 +63,28 @@ class Command(BaseCommand):
                             if row['type'] == 'IN':
                                 transaction_type = '+'
                                 transaction_color = '🟢'  # Green circle emoji for IN transactions
-                                
-                                order_number = self.find_substring(row['description'])
-                                if order_number:
-                                    
-                                    # Create order in partner system
-                                    url = 'https://p2p.jzc899.com/be_en/ashx/control.ashx'
-                                    headers = {
-                                        'Cookie':'ASP.NET_SessionId=w4sjettikktqegx44msxg1zn; cf_clearance=WA9ya0Cl0xszsqR0xx8uSDFx6mURzUXS95fh_PJfQj4-1718945064-1.0.1.1-VfztMNhtfmVMn1B.m8fW8T0Y3XpavCiX2qs5lZG2fwkJrpOELAWDRLY2y3vdXANj5aB2yMk3ng.I9xtLF2kzQQ'
-                                    }
-                                    data = {
-                                        'todo':'addbankorder',
-                                        'bkid':'8698',
-                                        'money':"{:.2f}".format(row['amount']),
-                                        'postscript':order_number,
-                                        'payname':'NA',
-                                        'payacctno':'5997',
-                                        'txid':row['transaction_number']
-                                    }
-                                    # response = requests.post(url=url, headers=headers, data=data)
-                                    # print('===', response.json())
-                                
+                                formatted_amount = '{:,.2f}'.format(row['amount'])
+                                alert = (
+                                    f'🏦 {bank.account_number} - {bank.account_name}\n'
+                                    f'📝 {row["description"]}\n'
+                                    f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
+                                    f'🔍 {row["type"]}\n'
+                                    f'🕒 {row["active_datetime"]}'
+                                )
+                                send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                             else:
                                 transaction_type = '-'
                                 transaction_color = '🔴'  # Red circle emoji for OUT transactions
-
-                            formatted_amount = '{:,.2f}'.format(row['amount'])
-                            alert = (
-                                f'🏦 {bank.account_number} - {bank.account_name}\n'
-                                f'📝 {row["description"]}\n'
-                                f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                                f'🔍 {row["type"]}\n'
-                                f'🕒 {row["active_datetime"]}'
-                            )
-                            send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                                formatted_amount = '{:,.2f}'.format(row['amount'])
+                                alert = (
+                                    f'🏦 {bank.account_number} - {bank.account_name}\n'
+                                    f'📝 {row["description"]}\n'
+                                    f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
+                                    f'🔍 {row["type"]}\n'
+                                    f'🕒 {row["active_datetime"]}'
+                                )
+                                send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                            
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:

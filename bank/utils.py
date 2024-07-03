@@ -57,6 +57,40 @@ def get_bank_transaction_history(bank_account):
         return list_bank_account
     return None
 
+def add_bank(bank_account):
+    url = f'https://api.httzip.com/api/bank/{bank_account.bank_name}/add'
+    headers = {
+        'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
+        'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
+        'Content-Type': 'application/json'
+    }
+    payload = json.dumps({
+        "login_id": bank_account.username,
+        "login_password": bank_account.password,
+    })
+    
+    response = requests.post(url=url, headers=headers, data=payload)
+    if response.status_code == 200:
+        return True
+    return False
+
+def check_bank_status(bank_account):
+    url = f'https://api.httzip.com/api/bank/{bank_account.bank_name}/status'
+    headers = {
+        'x-api-key': '4bc524c2-9b8a-4168-b7ea-a149dbc2e03ckey',
+        'x-api-secret': 'f48dc692-3a82-4fdd-a43e-b180c7ba7176secret',
+        'Content-Type': 'application/json'
+    }
+    payload = json.dumps({
+        "login_id": bank_account.username,
+        "login_password": bank_account.password,
+    })
+    
+    response = requests.post(url=url, headers=headers, data=payload)
+    if response.status_code == 200:
+        return True
+    return False
+
 def check_bank_info(row):
     url = 'https://api.httzip.com/api/bank/id-lookup-prod'
     headers = {
