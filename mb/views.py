@@ -17,7 +17,7 @@ def mb_login(username, password, account_number):
         "password": password,
         "accountNumber": account_number
     }
-    response = requests.post(os.environ.get("MB_URL"), json=body).json()
+    response = requests.post(os.environ.get("MB_URL"), json=body)
     with open('response.txt', 'w') as file:
         file.write(response.text)
     return False
