@@ -38,6 +38,8 @@ def new_transaction(request):
             )
             send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
     return JsonResponse({'status': 200, 'message': 'OK'})
+
+
 @csrf_exempt
 def transfer_callback_1(request):
     if request.method == 'POST':

@@ -35,7 +35,7 @@ client = ''
 
 # Create your views here.
 @csrf_exempt
-def login(request):
+def mb_login(request):
     global captcha_image
     if request.method == 'POST':
         body_request_json = json.loads(request.body)
