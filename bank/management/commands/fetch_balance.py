@@ -17,7 +17,8 @@ class Command(BaseCommand):
         while True:
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
-            for bank in bank_accounts:                
+            for bank in bank_accounts:
+                print(bank.username, bank.password, bank.bank_name, bank.account_number)           
                 if bank.bank_name == 'MB':
                     print('MB detected')
                     print('MB logging in..')
