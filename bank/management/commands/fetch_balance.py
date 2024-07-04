@@ -26,6 +26,7 @@ class Command(BaseCommand):
                     if mb_logged_in:
                         print('MB logged in..')
                         balance = mb_balance(bank.username, bank.password, bank.account_number)
+                        print('new balance: ', balance)
                         if balance == bank.balance:
                             print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                             continue
@@ -37,7 +38,7 @@ class Command(BaseCommand):
                         else:
                             alert = (
                                 f'🔴 - SYSTEM ALERT\n'
-                                f'Get transaction history from {bank.account_number} - {bank.bank_name} empty\n'
+                                f'Get balance from {bank.account_number} - {bank.bank_name} 0\n'
                                 f'Date: {datetime.now()}'
                             )
                             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
