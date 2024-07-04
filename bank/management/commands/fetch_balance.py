@@ -19,8 +19,11 @@ class Command(BaseCommand):
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:                
                 if bank.bank_name == 'MB':
+                    print('MB detected')
+                    print('MB logging in..')
                     mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
                     if mb_logged_in:
+                        print('MB logged in..')
                         balance = mb_balance(bank.username, bank.password, bank.account_number)
                         if balance == bank.balance:
                             print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
