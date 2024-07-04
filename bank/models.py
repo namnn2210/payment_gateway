@@ -37,16 +37,3 @@ class BankAccount(models.Model):
     class Meta:
         db_table = 'bank_account'
 
-    def save(self, *args, **kwargs):
-        # Add your custom processing logic here
-        body = {
-            "action": "login",
-            "username": self.username,
-            "password": self.password,
-            "accountNumber": self.account_number
-        }
-        response = requests.post(os.environ.get('MB_URL'), json=body)
-        if response.status_code == 200:
-            # Call the original save method
-            super(BankAccount, self).save(*args, **kwargs)
-
