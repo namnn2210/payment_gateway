@@ -18,8 +18,8 @@ def mb_login(username, password, account_number):
         "accountNumber": account_number
     }
     response = requests.post(os.environ.get("MB_URL"), json=body)
-    with open('response.txt', 'w') as file:
-        file.write(response.text)
+    a = json.loads(response.text)
+    print(a)
     return False
     
 def mb_transactions(request):
