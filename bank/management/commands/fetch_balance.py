@@ -3,7 +3,7 @@ import redis
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
 from bank.utils import get_bank_balance, send_telegram_message
-from mb.views import mb_balance
+from mb.views import mb_balance, mb_login
 import time
 import os
 import pandas as pd
@@ -17,23 +17,24 @@ class Command(BaseCommand):
         while True:
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
-            for bank in bank_accounts:
-                print(bank.username, bank.password, bank.account_number, bank.bank_name)
+            for bank in bank_accounts:                
                 if bank.bank_name == 'MB':
-                    balance = mb_balance(bank.username, bank.password, bank.account_number)
-                    if balance == bank.balance:
-                        print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-                        continue
-                    if balance != 0:
-                        bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        bank.save()
-                        print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-                    else:
-                        alert = (
-                            f'🔴 - SYSTEM ALERT\n'
-                            f'Get transaction history from {bank.account_number} - {bank.bank_name} empty\n'
-                            f'Date: {datetime.now()}'
-                        )
-                        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-                        continue
+                    mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
+                    if mb_logged_in:
+                        balance = mb_balance(bank.username, bank.password, bank.account_number)
+                        if balance == bank.balance:
+                            print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                            continue
+                        if balance != 0:
+                            bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            bank.save()
+                            print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                        else:
+                            alert = (
+                                f'🔴 - SYSTEM ALERT\n'
+                                f'Get transaction history from {bank.account_number} - {bank.bank_name} empty\n'
+                                f'Date: {datetime.now()}'
+                            )
+                            send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                            continue
             time.sleep(15)

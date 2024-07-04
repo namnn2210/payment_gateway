@@ -10,7 +10,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-
+def mb_login(username, password, account_number):
+    body = {
+        "action": "login",
+        "username": username,
+        "password": password,
+        "accountNumber": account_number
+    }
+    response = requests.post(os.environ.get("MB_URL"), json=body).json()
+    print('login response: ', response)
+    if response['status'] == True:
+        return True
+    return False
+    
 def mb_transactions(request):
     pass
 
