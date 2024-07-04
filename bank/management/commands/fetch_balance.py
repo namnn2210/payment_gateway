@@ -30,6 +30,7 @@ class Command(BaseCommand):
                             print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                             continue
                         if balance != 0:
+                            bank.balance = balance
                             bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             bank.save()
                             print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
