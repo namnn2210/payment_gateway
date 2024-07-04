@@ -5,6 +5,7 @@ from django.http import JsonResponse
 import requests
 import json
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,8 +19,13 @@ def mb_login(username, password, account_number):
         "accountNumber": account_number
     }
     response = requests.post(os.environ.get("MB_URL"), json=body)
-    a = json.loads(response.text)
-    print(a)
+    match = re.search(r'{"refNo".*', response.text)
+    if match:
+        extracted_text = match.group(0)
+        print(extracted_text)
+        json_response = json.loads(extracted_text)
+        print(json_response)
+        return True
     return False
     
 def mb_transactions(request):
