@@ -17,8 +17,8 @@ def mb_login(username, password, account_number):
         "password": password,
         "accountNumber": account_number
     }
-    response = requests.post(os.environ.get("MB_URL"), json=body).json()
-    print('login response: ', response)
+    response = requests.post(os.environ.get("MB_URL"), json=body)
+    print('login response: ', response.text)
     if response['status'] == True:
         return True
     return False
