@@ -22,10 +22,9 @@ def mb_login(username, password, account_number):
     match = re.search(r'{"refNo".*', response.text)
     if match:
         extracted_text = match.group(0)
-        print(extracted_text)
         json_response = json.loads(extracted_text)
-        print(json_response)
-        return True
+        if json_response['result']['ok']:
+            return True
     return False
     
 def mb_transactions(request):
