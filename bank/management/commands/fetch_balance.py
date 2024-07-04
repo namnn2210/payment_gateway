@@ -19,7 +19,7 @@ class Command(BaseCommand):
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:
                 print(bank.username, bank.password, bank.bank_name, bank.account_number)      
-                if bank.bank_name.strip() == 'MB':
+                if bank.bank_name.name == 'MB':
                     print('MB detected')
                     print('MB logging in..')
                     mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
