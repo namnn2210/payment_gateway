@@ -23,5 +23,4 @@ urlpatterns = [
     path('bank/', include('bank.urls')),
     path('payout/', include('payout.urls')),
     path('acb/', include('acb.urls')),
-    path('mb/', include('mb.urls'))
 ]
