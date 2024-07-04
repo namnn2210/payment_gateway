@@ -18,7 +18,7 @@ class Command(BaseCommand):
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:
-                print(bank.username, bank.password, bank.account_number)
+                print(bank.username, bank.password, bank.account_number, bank.bank_name)
                 if bank.bank_name == 'MB':
                     balance = mb_balance(bank.username, bank.password, bank.account_number)
                     if balance == bank.balance:
