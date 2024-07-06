@@ -9,7 +9,7 @@ from bank.models import BankAccount
 from notification.models import Notification
 
 # Create your views here.
-@login_required(login_url='login')
+@login_required(login_url='user_login')
 def index(request):
     Notification.objects.create(recipient=request.user, message='Welcome to our website!')
     list_user_bank = BankAccount.objects.filter(user=request.user, status=True)
@@ -17,7 +17,7 @@ def index(request):
     # print(list(notifications)
     return render(request=request, template_name='index.html',context={'list_user_bank':list_user_bank,'notifications':list(notifications)})
 
-def login(request):
+def user_login(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
