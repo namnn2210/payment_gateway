@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['226pay.com','www.226pay.com']
 
 
 # Application definition
@@ -154,11 +154,11 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://127.0.0.1:2210',
-    "http://localhost:2210",
-    # 'http://103.241.43.107:7979',
-    'https://226pay.com'
+    'https://226pay.com',
+    'https://www.226pay.com'
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # Set the session cookie age (in seconds)
