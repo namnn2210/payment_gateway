@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['226pay.com','www.226pay.com']
 
