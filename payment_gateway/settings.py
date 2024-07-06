@@ -147,10 +147,8 @@ MEDIA_URL = '/media/'
 
 # LOGOUT_REDIRECT_URL = 'login'
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:2210',
-    "http://localhost:2210",
-    # "http://103.241.43.107:7979",
-    'https://226pay.com'
+    'https://226pay.com',
+    'https://www.226pay.com'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
