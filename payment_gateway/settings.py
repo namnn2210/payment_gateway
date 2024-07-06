@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'https://226pay.com/', '226pay.com', 'www.226pay.com', '15.235.131.24']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
