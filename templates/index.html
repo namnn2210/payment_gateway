@@ -163,10 +163,10 @@
                     data.data.in.forEach(transaction => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${transaction.account}</td>
+                            <td>${transaction.account_number}</td>
                             <td>${transaction.transaction_number}</td>
                             <td class="text-success">${transaction.amount.toLocaleString()}</td>
-                            <td>${transaction.active_datetime}</td>
+                            <td>${transaction.transaction_date}</td>
                             <td>${transaction.description}</td>
                         `;
                         tableBodyIn.appendChild(row);
@@ -181,10 +181,10 @@
                     data.data.out.forEach(transaction => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${transaction.account}</td>
+                            <td>${transaction.account_number}</td>
                             <td>${transaction.transaction_number}</td>
                             <td class="text-danger">${transaction.amount.toLocaleString()}</td>
-                            <td>${transaction.active_datetime}</td>
+                            <td>${transaction.transaction_date}</td>
                             <td>${transaction.description}</td>
                         `;
                         tableBodyOut.appendChild(row);

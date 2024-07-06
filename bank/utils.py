@@ -7,6 +7,26 @@ from dotenv import load_dotenv
 load_dotenv()
 bank_data = json.load(open('bank.json'))
 
+
+class Transaction:
+    def __init__(self, transaction_number, transaction_date, transaction_type, account_number, description, amount) -> None:
+        self.transaction_number = transaction_number
+        self.transaction_date = transaction_date
+        self.transaction_type = transaction_type
+        self.account_number = account_number
+        self.description = description
+        self.amount = amount
+
+    def __dict__(self) -> dict:
+        return {
+            'transaction_number':self.transaction_number,
+            'transaction_date':self.transaction_date,
+            'transaction_type':self.transaction_type,
+            'account_number':self.account_number,
+            'description':self.description, 
+            'amount':self.amount
+        }
+
 def get_bank(bank_name,bank_number, bank_username, bank_password):
     return get_bank_balance(bank_number, bank_username, bank_password, bank_name)
 
@@ -118,8 +138,6 @@ def find_bank_code(bankname):
     bank_mapping_extended.update({bank['code'].lower(): bank for bank in bank_data})
     bank_object = bank_mapping_extended.get(bankname.lower(), None)
     return bank_object['code'] if bank_object else None
-
-
 
 def unix_to_datetime(unix_time):
     # Convert Unix time to datetime with UTC timezone

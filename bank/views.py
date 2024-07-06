@@ -18,13 +18,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Create your views here.
-@login_required(login_url='login')
+@login_required(login_url='user_login')
 def list_bank(request):
     list_bank_option = Bank.objects.filter(status=True)
     list_user_bank = BankAccount.objects.all()
     return render(request=request, template_name='bank.html',context={'list_bank_option':list_bank_option, 'list_user_bank':list_user_bank})
 
-@login_required(login_url='login')
+@login_required(login_url='user_login')
 def record_book(request, bank_type):
     list_user_bank = BankAccount.objects.filter(bank_type=bank_type)
     return render(request=request, template_name='record_book.html', context={'list_user_bank':list_user_bank})
@@ -86,33 +86,33 @@ def toggle_bank_status(request):
 
 def filter_data(df, filter_type):
     filtered_df = df.copy()
-    filtered_df = filtered_df.sort_values(by='active_datetime', ascending=False)
+    filtered_df = filtered_df.sort_values(by='transaction_date', ascending=False)
     now = datetime.now()
-    filtered_df['active_datetime'] = pd.to_datetime(filtered_df['active_datetime'], format='%Y-%m-%d %H:%M:%S')
+    filtered_df['transaction_date'] = pd.to_datetime(filtered_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
     if filter_type == "10_last_histories":
         filtered_df = filtered_df.head(10)
         # filtered_df = filtered_df.head(10)
     elif filter_type == "today":
-        filtered_df = filtered_df[filtered_df['active_datetime'].dt.date == now.date()]
+        filtered_df = filtered_df[filtered_df['transaction_date'].dt.date == now.date()]
     elif filter_type == "yesterday":
         yesterday = now - timedelta(1)
-        filtered_df = filtered_df[filtered_df['active_datetime'].dt.date == yesterday.date()]
+        filtered_df = filtered_df[filtered_df['transaction_date'].dt.date == yesterday.date()]
     elif filter_type == "7_latest_days":
         last_week = now - timedelta(7)
-        filtered_df = filtered_df[filtered_df['active_datetime'] >= last_week]
+        filtered_df = filtered_df[filtered_df['transaction_date'] >= last_week]
     elif filter_type == "this_week":
         start_of_week = now - timedelta(days=now.weekday())
-        filtered_df = filtered_df[filtered_df['active_datetime'] >= start_of_week]
+        filtered_df = filtered_df[filtered_df['transaction_date'] >= start_of_week]
     elif filter_type == "last_week":
         start_of_last_week = (now - timedelta(days=now.weekday() + 7))
         end_of_last_week = start_of_last_week + timedelta(days=6)
-        filtered_df = filtered_df[(filtered_df['active_datetime'] >= start_of_last_week) & (filtered_df['active_datetime'] <= end_of_last_week)]
+        filtered_df = filtered_df[(filtered_df['transaction_date'] >= start_of_last_week) & (filtered_df['transaction_date'] <= end_of_last_week)]
     elif filter_type == "30_latest_days":
         last_month = now - timedelta(30)
-        filtered_df = filtered_df[filtered_df['active_datetime'] >= last_month]
+        filtered_df = filtered_df[filtered_df['transaction_date'] >= last_month]
     elif filter_type == "all_time":
         pass  # No filtering needed for all time
-    filtered_df['active_datetime'] = filtered_df['active_datetime'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S'))
+    filtered_df['transaction_date'] = filtered_df['transaction_date'].apply(lambda x: x.strftime('%d-%m-%Y %H:%M:%S'))
     filtered_df = filtered_df.fillna('')
     return filtered_df.to_dict(orient='records')
 
@@ -171,17 +171,20 @@ def update_transaction_history(request):
             json_data = json.loads(bank_redis)
             df = pd.DataFrame(json_data)
             if bank_account.bank_type == 'IN':
-                in_transaction_df = df[df['type'] == 'IN']
+                in_transaction_df = df[df['transaction_type'] == 'IN']
                 if not in_transaction_df.empty:
                     list_df_in.append(in_transaction_df)
             else:
-                out_transaction_df = df[df['type'] == 'OUT']
+                out_transaction_df = df[df['transaction_type'] == 'OUT']
                 if not out_transaction_df.empty:
                     list_df_out.append(out_transaction_df)
 
     if len(list_df_in) > 0:
         df_in = pd.concat(list_df_in)
-        sorted_transactions_in = df_in.sort_values(by='active_datetime', ascending=False).head(5)
+        print(df_in.head(5))
+        df_in['transaction_date'] = pd.to_datetime(df_in['transaction_date'], format='%d/%m/%Y %H:%M:%S')
+        sorted_transactions_in = df_in.sort_values(by='transaction_date', ascending=False).head(5)
+        print(sorted_transactions_in)
         top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
         top_transactions_json_in = json.loads(top_transactions_json_in)
     else:
@@ -189,7 +192,8 @@ def update_transaction_history(request):
 
     if len(list_df_out) > 0:
         df_out = pd.concat(list_df_out)
-        sorted_transactions_out = df_out.sort_values(by='active_datetime', ascending=False).head(5)
+        df_out['transaction_date'] = pd.to_datetime(df_out['transaction_date'], format='%d/%m/%Y %H:%M:%S')
+        sorted_transactions_out = df_out.sort_values(by='transaction_date', ascending=False).head(5)
         top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
         top_transactions_json_out = json.loads(top_transactions_json_out)
     else:

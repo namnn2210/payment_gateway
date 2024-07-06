@@ -26,11 +26,11 @@ class Command(BaseCommand):
                     if mb_logged_in:
                         print('MB logged in..')
                         balance = mb_balance(bank.username, bank.password, bank.account_number)
-                        print('new balance: ', balance)
                         if balance == bank.balance:
                             print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                             continue
-                        if balance != 0:
+                        if balance != 0 and balance != bank.balance:
+                            print('new balance: ', balance)
                             bank.balance = balance
                             bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                             bank.save()
