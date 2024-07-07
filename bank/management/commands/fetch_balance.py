@@ -33,12 +33,13 @@ class Command(BaseCommand):
                     if balance == bank.balance:
                         print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                         continue
-                    if balance != 0 and balance != bank.balance:
-                        print('new balance: ', balance)
-                        bank.balance = balance
-                        bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                        bank.save()
-                        print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+                    if balance:
+                        if balance != 0 and balance != bank.balance:
+                            print('new balance: ', balance)
+                            bank.balance = balance
+                            bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                            bank.save()
+                            print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
                     else:
                         alert = (
                             f'🔴 - SYSTEM ALERT\n'
