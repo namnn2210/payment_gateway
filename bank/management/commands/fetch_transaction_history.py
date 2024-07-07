@@ -82,11 +82,17 @@ class Command(BaseCommand):
                                 formatted_amount = '{:,.2f}'.format(row['amount'])
                                 alert = (
                                     f'Hi,\n'
+                                    f'\n'
                                     f'Confirmed by order: {row['transaction_number']}\n'
+                                    f'\n'
                                     f'Received amount💲: {formatted_amount} VND\n'
+                                    f'\n'
                                     f'Memo: {row['description']}\n'
+                                    f'\n'
                                     f'Code: {self.find_substring(row['description'])}\n'
+                                    f'\n'
                                     f'Time: {row["transaction_date"]}\n'
+                                    f'\n'
                                     f'Reason of not be credited: Order not found!!!'
                                 )
                                 send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
