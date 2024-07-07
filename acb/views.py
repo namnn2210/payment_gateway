@@ -20,8 +20,13 @@ def acb_login(username, password, account_number):
         "accountNo": account_number,
         "action":"login"
     }
-    response = requests.post(os.environ.get("MB_URL"), json=body)
-    print(response.text)
+    response = requests.post(os.environ.get("ACB_URL"), json=body)
+    match = re.search(r'{"refNo".*', response.text)
+    if match:
+        extracted_text = match.group(0)
+        json_response = json.loads(extracted_text)
+        if json_response['result']['ok']:
+            return True
     
     return False
     
