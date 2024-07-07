@@ -104,7 +104,7 @@ class Command(BaseCommand):
                                     f'🏦 {bank.account_number} - {bank.account_name}\n'
                                     f'📝 {row["description"]}\n'
                                     f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                                    f'🔍 {row["type"]}\n'
+                                    f'🔍 {row["transaction_type"]}\n'
                                     f'🕒 {row["transaction_date"]}'
                                 )
                                 send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
