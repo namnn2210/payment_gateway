@@ -184,7 +184,7 @@ def update_transaction_history(request):
         print(df_in.head(5))
         df_in['transaction_date'] = pd.to_datetime(df_in['transaction_date'], format='%d/%m/%Y %H:%M:%S')
         sorted_transactions_in = df_in.sort_values(by='transaction_date', ascending=False).head(5)
-        print(sorted_transactions_in)
+        sorted_transactions_in['transaction_date'] = sorted_transactions_in['transaction_date'].dt.strftime('%d/%m/%Y %H:%M:%S')
         top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
         top_transactions_json_in = json.loads(top_transactions_json_in)
     else:
@@ -194,6 +194,7 @@ def update_transaction_history(request):
         df_out = pd.concat(list_df_out)
         df_out['transaction_date'] = pd.to_datetime(df_out['transaction_date'], format='%d/%m/%Y %H:%M:%S')
         sorted_transactions_out = df_out.sort_values(by='transaction_date', ascending=False).head(5)
+        sorted_transactions_out['transaction_date'] = sorted_transactions_out['transaction_date'].dt.strftime('%d/%m/%Y %H:%M:%S')
         top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
         top_transactions_json_out = json.loads(top_transactions_json_out)
     else:

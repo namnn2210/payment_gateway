@@ -21,12 +21,10 @@ def mb_login(username, password, account_number):
         "accountNumber": account_number
     }
     response = requests.post(os.environ.get("MB_URL"), json=body)
-    print(response.text)
     match = re.search(r'{"refNo".*', response.text)
     if match:
         extracted_text = match.group(0)
         json_response = json.loads(extracted_text)
-        print(json_response)
         if json_response['result']['ok']:
             return True
     return False
@@ -86,7 +84,7 @@ def mb_balance(username, password, account_number):
             for account in acc_list:
                 if account['acctNo'] == account_number:
                     return account['currentBalance']
-    return 0
+    return None
 
 def mb_transfer(request):
     pass
