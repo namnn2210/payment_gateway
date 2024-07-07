@@ -161,7 +161,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.226pay.com'
 ]
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # Set the session cookie age (in seconds)
