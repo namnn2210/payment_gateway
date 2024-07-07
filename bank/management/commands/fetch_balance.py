@@ -24,6 +24,7 @@ class Command(BaseCommand):
                     balance = mb_balance(bank.username, bank.password, bank.account_number)
                     while balance is not None:
                         error_count += 1
+                        print('Retry logging in: ', error_count)
                         if error_count > 3:
                             break
                         mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)

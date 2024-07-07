@@ -34,10 +34,16 @@ class Command(BaseCommand):
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:
+                error_count = 0
                 bank_exists = redis_client.get(bank.account_number)
+                print(bank.account_name, bank.account_number, bank.bank_name.name, bank.username, bank.password)
                 if bank.bank_name.name == 'MB':
                     transactions = mb_transactions(bank.username, bank.password, bank.account_number)
                     while transactions is None:
+                        error_count += 1
+                        print('Retry logging in: ', error_count)
+                        if error_count > 3:
+                            break
                         mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
                         if mb_logged_in:
                             transactions = mb_transactions(bank.username, bank.password, bank.account_number)
