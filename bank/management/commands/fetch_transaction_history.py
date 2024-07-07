@@ -83,6 +83,8 @@ class Command(BaseCommand):
                                 alert = (
                                     f'Hi,\n'
                                     f'\n'
+                                    f'Account: {row['account_number']}'
+                                    f'\n'
                                     f'Confirmed by order: {row['transaction_number']}\n'
                                     f'\n'
                                     f'Received amount💲: {formatted_amount} VND\n'
