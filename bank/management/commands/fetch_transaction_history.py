@@ -74,34 +74,34 @@ class Command(BaseCommand):
                     if not differences:
                         diff = old_bank_history_df.merge(final_new_bank_history_df, how='outer', indicator=True)
                         unique_rows_new = diff[diff['_merge'] == 'right_only'].drop(columns=['_merge'])
-                        if bank.bank_name.name == "ACB":
-                            for _, row in unique_rows_new.iterrows():
-                                if row['type'] == 'IN':
-                                    transaction_type = '+'
-                                    transaction_color = '🟢'  # Green circle emoji for IN transactions
-                                    formatted_amount = '{:,.2f}'.format(row['amount'])
-                                    alert = (
-                                        f'Hi,\n'
-                                        f'Confirmed by order: {row['transaction_number']}\n'
-                                        f'Received amount💲: {formatted_amount} VND\n'
-                                        f'Memo: {row['description']}\n'
-                                        f'Code: {self.find_substring(row['description'])}\n'
-                                        f'Time: {row["transaction_date"]}\n'
-                                        f'Reason of not be credited: Order not found!!!'
-                                    )
-                                    send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-                                else:
-                                    transaction_type = '-'
-                                    transaction_color = '🔴'  # Red circle emoji for OUT transactions
-                                    formatted_amount = '{:,.2f}'.format(row['amount'])
-                                    alert = (
-                                        f'🏦 {bank.account_number} - {bank.account_name}\n'
-                                        f'📝 {row["description"]}\n'
-                                        f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                                        f'🔍 {row["type"]}\n'
-                                        f'🕒 {row["transaction_date"]}'
-                                    )
-                                    send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        
+                        for _, row in unique_rows_new.iterrows():
+                            if row['transaction_type'] == 'IN':
+                                transaction_type = '+'
+                                transaction_color = '🟢'  # Green circle emoji for IN transactions
+                                formatted_amount = '{:,.2f}'.format(row['amount'])
+                                alert = (
+                                    f'Hi,\n'
+                                    f'Confirmed by order: {row['transaction_number']}\n'
+                                    f'Received amount💲: {formatted_amount} VND\n'
+                                    f'Memo: {row['description']}\n'
+                                    f'Code: {self.find_substring(row['description'])}\n'
+                                    f'Time: {row["transaction_date"]}\n'
+                                    f'Reason of not be credited: Order not found!!!'
+                                )
+                                send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                            else:
+                                transaction_type = '-'
+                                transaction_color = '🔴'  # Red circle emoji for OUT transactions
+                                formatted_amount = '{:,.2f}'.format(row['amount'])
+                                alert = (
+                                    f'🏦 {bank.account_number} - {bank.account_name}\n'
+                                    f'📝 {row["description"]}\n'
+                                    f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
+                                    f'🔍 {row["type"]}\n'
+                                    f'🕒 {row["transaction_date"]}'
+                                )
+                                send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                             
                         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
