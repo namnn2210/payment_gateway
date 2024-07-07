@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 print(bank.username, bank.password, bank.bank_name, bank.account_number)      
                 if bank.bank_name.name == 'MB':
                     balance = mb_balance(bank.username, bank.password, bank.account_number)
-                    while balance is not None:
+                    while balance is None:
                         error_count += 1
                         print('Retry logging in: ', error_count)
                         if error_count > 3:
