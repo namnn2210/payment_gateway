@@ -181,7 +181,6 @@ def update_transaction_history(request):
 
     if len(list_df_in) > 0:
         df_in = pd.concat(list_df_in)
-        print(df_in.head(5))
         df_in['transaction_date'] = pd.to_datetime(df_in['transaction_date'], format='%d/%m/%Y %H:%M:%S')
         sorted_transactions_in = df_in.sort_values(by='transaction_date', ascending=False).head(5)
         sorted_transactions_in['transaction_date'] = sorted_transactions_in['transaction_date'].dt.strftime('%d/%m/%Y %H:%M:%S')
