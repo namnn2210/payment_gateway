@@ -77,6 +77,7 @@ def mb_balance(username, password, account_number):
         "password": password
     }
     response = requests.post(os.environ.get("MB_URL"), json=body)
+    print(response.text)
     if response.status_code == 200:
         data = response.json()
         if data:
