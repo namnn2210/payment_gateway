@@ -21,6 +21,7 @@ def acb_login(username, password, account_number):
         "action":"login"
     }
     response = requests.post(os.environ.get("ACB_URL"), json=body)
+    print(response.text)
     match = re.search(r'{"refNo".*', response.text)
     if match:
         extracted_text = match.group(0)
