@@ -20,9 +20,10 @@ def acb_login(username, password, account_number):
         "accountNo": account_number,
         "action":"login"
     }
-    response = requests.post(os.environ.get("ACB_URL"), json=body).json()
-    if response['success']:
-        return True
+    response = requests.post(os.environ.get("ACB_URL"), json=body)
+    print(response.text)
+    # if response['success']:
+    #     return True
     
     return False
     
