@@ -81,11 +81,12 @@ def mb_balance(username, password, account_number):
     if response.status_code == 200:
         data = response.json()
         if data:
-            if data['result']['ok']:
-                acc_list = data['acct_list']
-                for account in acc_list:
-                    if account['acctNo'] == account_number:
-                        return account['currentBalance']
+            if data['result']:
+                if data['result']['ok']:
+                    acc_list = data['acct_list']
+                    for account in acc_list:
+                        if account['acctNo'] == account_number:
+                            return account['currentBalance']
     return None
 
 def mb_transfer(request):
