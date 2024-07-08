@@ -18,60 +18,60 @@ def get_balance(bank):
     error_count = 0
     # bank_exists = redis_client.get(bank.account_number)
     print('Fetching bank balance: ', bank['account_name'], bank['account_number'], bank['bank_name'], bank['username'], bank['password'])
-    
+    print(bank['bank_name']['name'])
     # Get balance
-    if bank.bank_name.name == 'MB':
-        bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
-    elif bank.bank_name.name == 'ACB':
-        bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
-    else:
-        bank_balance = None
+    # if bank.bank_name.name == 'MB':
+    #     bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+    # elif bank.bank_name.name == 'ACB':
+    #     bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+    # else:
+    #     bank_balance = None
 
-    while bank_balance is None:
-        print('Error fetching bank balance, try to login')
-        error_count += 1
-        print('Retry logging in: ', error_count)
-        if error_count > 3:
-            alert = (
-                f'🔴 - SYSTEM ALERT\n'
-                f'Get bank info: {bank.account_number} - {bank.bank_name} empty\n'
-                f'Date: {datetime.now()}'
-            )
-            send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+    # while bank_balance is None:
+    #     print('Error fetching bank balance, try to login')
+    #     error_count += 1
+    #     print('Retry logging in: ', error_count)
+    #     if error_count > 3:
+    #         alert = (
+    #             f'🔴 - SYSTEM ALERT\n'
+    #             f'Get bank info: {bank.account_number} - {bank.bank_name} empty\n'
+    #             f'Date: {datetime.now()}'
+    #         )
+    #         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             
-        if bank.bank_name.name == 'MB':
-            mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
-        elif bank.bank_name.name == 'ACB':
-            mb_logged_in = acb_login(bank.username, bank.password, bank.account_number)
+    #     if bank.bank_name.name == 'MB':
+    #         mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
+    #     elif bank.bank_name.name == 'ACB':
+    #         mb_logged_in = acb_login(bank.username, bank.password, bank.account_number)
             
-        if mb_logged_in:
-            if bank.bank_name.name == 'MB':
-                bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
-            elif bank.bank_name.name == 'ACB':
-                bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
-            else:
-                bank_balance = None
+    #     if mb_logged_in:
+    #         if bank.bank_name.name == 'MB':
+    #             bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+    #         elif bank.bank_name.name == 'ACB':
+    #             bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+    #         else:
+    #             bank_balance = None
                                 
-    if bank_balance: 
-        if int(bank_balance) != int(bank.balance):
-            bank.balance = bank_balance
-            bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            bank.save()
-            print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    # if bank_balance: 
+    #     if int(bank_balance) != int(bank.balance):
+    #         bank.balance = bank_balance
+    #         bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    #         bank.save()
+    #         print('Update for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
-            # Get transactions
+    #         # Get transactions
             
-            get_transaction.delay(bank)
+    #         get_transaction.delay(bank)
             
-        else:
-            print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-    else:
-        alert = (
-            f'🔴 - SYSTEM ALERT\n'
-            f'Get balance from {bank.account_number} - {bank.bank_name} 0\n'
-            f'Date: {datetime.now()}'
-        )
-        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+    #     else:
+    #         print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+    # else:
+    #     alert = (
+    #         f'🔴 - SYSTEM ALERT\n'
+    #         f'Get balance from {bank.account_number} - {bank.bank_name} 0\n'
+    #         f'Date: {datetime.now()}'
+    #     )
+    #     send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
 
     
 
