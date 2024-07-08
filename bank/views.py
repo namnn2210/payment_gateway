@@ -151,7 +151,7 @@ def get_transaction_history_with_filter(request):
                 filtered_data = filter_data(all_transactions_df, filter)
                 return JsonResponse({'status': 200, 'message': 'Done', 'data': filtered_data})
             else:
-                filtered_data = filter_data(all_transactions_df[all_transactions_df['account'] == int(bank_account)], filter)
+                filtered_data = filter_data(all_transactions_df[all_transactions_df['account_number'] == bank_account], filter)
                 return JsonResponse({'status': 200, 'message': 'Done', 'data': filtered_data})
     
     return JsonResponse({'status': 500, 'message': 'Error'})
