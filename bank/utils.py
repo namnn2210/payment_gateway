@@ -81,5 +81,5 @@ def unix_to_datetime(unix_time):
     # Convert to GMT+7
     dt_gmt_plus_7 = dt_utc.astimezone(pytz.timezone('Asia/Bangkok'))
     # Format the datetime
-    formatted_dt = dt_gmt_plus_7.strftime('%Y-%m-%d %H:%M:%S')
+    formatted_dt = dt_gmt_plus_7.strftime('%d/%m/%Y %H:%M:%S')
     return formatted_dt
