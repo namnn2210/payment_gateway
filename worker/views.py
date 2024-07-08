@@ -9,6 +9,7 @@ from datetime import datetime
 import pandas as pd
 import json
 import os
+import pytz
 from bank.database import redis_connect
 
 load_dotenv()
@@ -33,7 +34,7 @@ def get_balance(bank):
             alert = (
                 f'🔴 - SYSTEM ALERT\n'
                 f'Get bank info: {bank.account_number} empty\n'
-                f'Date: {datetime.now()}'
+                f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
             )
             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             
@@ -53,7 +54,7 @@ def get_balance(bank):
     if bank_balance: 
         if int(bank_balance) != int(bank.balance):
             bank.balance = bank_balance
-            bank.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            bank.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
             # bank_account.save()
             print('Update for bank: %s. Updated at %s' % (bank.account_number, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
@@ -67,7 +68,7 @@ def get_balance(bank):
         alert = (
             f'🔴 - SYSTEM ALERT\n'
             f'Get balance from {bank.account_number} 0\n'
-            f'Date: {datetime.now()}'
+            f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
 
@@ -87,7 +88,7 @@ def get_transaction(bank):
         alert = (
             f'🔴 - SYSTEM ALERT\n'
             f'Get transaction history from {bank.account_number} empty\n'
-            f'Date: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}'
+            f'Date: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
     final_new_bank_history_df = new_bank_history_df.fillna('')
@@ -140,6 +141,6 @@ def get_transaction(bank):
                     send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                 
             redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
-            print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
-            print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
