@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import os
 import re
+import pytz
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
@@ -76,8 +77,9 @@ def find_substring(text):
     
 def unix_to_datetime(unix_time):
     # Convert Unix time to datetime with UTC timezone
-    dt_utc = pd.to_datetime(unix_time, unit='ms', utc=True)
+    dt_utc = datetime.utcfromtimestamp(unix_time / 1000).replace(tzinfo=pytz.utc)
     # Convert to GMT+7
-    dt_gmt_plus_7 = dt_utc.dt.tz_convert(tz='Asia/Bangkok')
-    formatted_dt = dt_gmt_plus_7.dt.strftime('%Y-%m-%d %H:%M:%S')
+    dt_gmt_plus_7 = dt_utc.astimezone(pytz.timezone('Asia/Bangkok'))
+    # Format the datetime
+    formatted_dt = dt_gmt_plus_7.strftime('%Y-%m-%d %H:%M:%S')
     return formatted_dt
