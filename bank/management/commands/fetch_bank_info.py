@@ -2,7 +2,7 @@ import json
 import redis
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.utils import get_bank_transaction_history, unix_to_datetime, send_telegram_message
+from bank.utils import unix_to_datetime, send_telegram_message
 from bank.database import redis_connect
 from mb.views import mb_login, mb_transactions
 import time
