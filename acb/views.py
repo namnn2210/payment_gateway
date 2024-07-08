@@ -69,6 +69,5 @@ def acb_transactions(username,password,account_number):
                 amount=transaction['amount']
             )
             formatted_transactions.append(new_formatted_transaction.__dict__())
-        print(formatted_transactions)
         return formatted_transactions
     return None
