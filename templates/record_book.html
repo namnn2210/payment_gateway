@@ -155,10 +155,10 @@
                 transactionsToShow.forEach(function (transaction) {
                     const color = transaction.type === 'OUT' ? 'red' : 'green';
                     const row = '<tr style="font-size: 12px">' +
-                        '<td style="font-weight:bold">' + transaction.account + '</td>' +
+                        '<td style="font-weight:bold">' + transaction.account_number + '</td>' +
                         '<td>' + transaction.transaction_number + '</td>' +
                         '<td style="color:' + color + '">' + transaction.amount.toLocaleString() + '</td>' +
-                        '<td>' + transaction.active_datetime + '</td>' +
+                        '<td>' + transaction.transaction_date + '</td>' +
                         '<td>' + transaction.description + '</td>' +
                         '</tr>';
                     tbody.append(row);
