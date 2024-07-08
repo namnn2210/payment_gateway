@@ -23,8 +23,9 @@ def acb_login(username, password, account_number):
     response = requests.post(os.environ.get("ACB_URL"), json=body)
     if response.status_code == 200:
         data = response.json()
-        if data['accessToken']:
-            return True
+        if 'accessToken' in data.keys():
+            if data['accessToken']:
+                return True
     return False
     
     
