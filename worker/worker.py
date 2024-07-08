@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from bank.utils import send_telegram_message, find_substring
-from bank.models import BankAccount
+# from bank.models import BankAccount
 from datetime import datetime
 import pandas as pd
 import json
