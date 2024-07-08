@@ -56,14 +56,14 @@ def get_balance(bank):
             bank.balance = bank_balance
             bank.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
             # bank_account.save()
-            print('Update for bank: %s. Updated at %s' % (bank.account_number, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            print('Update for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
 
             # Get transactions
             
             get_transaction(bank)
             
         else:
-            print('No new data for bank: %s. Updated at %s' % (bank.account_number, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
+            print('No new data for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
     else:
         alert = (
             f'🔴 - SYSTEM ALERT\n'
