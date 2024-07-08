@@ -1,16 +1,7 @@
-import json
-import redis
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.utils import unix_to_datetime, send_telegram_message
 from bank.database import redis_connect
-from mb.views import mb_login, mb_transactions
 import time
-import pandas as pd
-import os
-import requests
-import re
-from datetime import datetime
 from dotenv import load_dotenv
 from worker.worker import get_balance
 
@@ -26,6 +17,6 @@ class Command(BaseCommand):
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:
-                get_balance.delay(bank=bank.as_dict(), redis_client=redis_client)
+                get_balance.delay(bank=bank.as_dict())
             redis_client.close()
             time.sleep(15)

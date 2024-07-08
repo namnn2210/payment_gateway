@@ -7,13 +7,14 @@ from datetime import datetime
 import pandas as pd
 import json
 import os
+from bank.database import redis_connect
 
 load_dotenv()
 
 app = Celery('226Pay Transaction Queue', broker=f'redis://{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/{os.environ.get('REDIS_MULTITHREAD_DB')}')
 
 @app.task(name='get_balance')
-def get_balance(bank, redis_client):
+def get_balance(bank):
     error_count = 0
     # bank_exists = redis_client.get(bank.account_number)
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name.name, bank.username, bank.password)
@@ -60,7 +61,7 @@ def get_balance(bank, redis_client):
 
             # Get transactions
             
-            get_transaction.delay(bank, redis_client)
+            get_transaction.delay(bank)
             
         else:
             print('No new data for bank: %s - %s. Updated at %s' % (bank.account_number, bank.bank_name, datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
@@ -75,7 +76,8 @@ def get_balance(bank, redis_client):
     
 
 @app.task(name='get_transaction')
-def get_transaction(bank, redis_client):
+def get_transaction(bank):
+    redis_client = redis_connect()
     bank_exists = redis_client.get(bank.account_number)
     if bank.bank_name.name == 'MB':
         transactions = mb_transactions(bank.username, bank.password, bank.account_number)
