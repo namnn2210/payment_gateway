@@ -55,7 +55,7 @@ def get_balance(bank):
         if int(bank_balance) != int(bank.balance):
             bank.balance = bank_balance
             bank.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
-            # bank_account.save()
+            bank.save()
             print('Update for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
 
             # Get transactions
