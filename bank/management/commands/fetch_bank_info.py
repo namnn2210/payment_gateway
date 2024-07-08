@@ -17,6 +17,7 @@ class Command(BaseCommand):
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(status=True)
             for bank in bank_accounts:
+                print(bank.as_dict())
                 get_balance.delay(bank=bank.as_dict())
             redis_client.close()
             time.sleep(30)
