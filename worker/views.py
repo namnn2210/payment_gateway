@@ -131,7 +131,7 @@ def get_transaction(bank):
                     transaction_color = '🔴'  # Red circle emoji for OUT transactions
                     formatted_amount = '{:,.2f}'.format(row['amount'])
                     alert = (
-                        f'🏦 {bank.account_number} - {bank['account_name']}\n'
+                        f'🏦 {bank.account_number} - {bank.account_name}\n'
                         f'📝 {row["description"]}\n'
                         f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
                         f'🔍 {row["transaction_type"]}\n'
