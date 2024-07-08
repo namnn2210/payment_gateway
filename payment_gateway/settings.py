@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'acb',
     'mb',
     'notification',
-    'payout'
+    'payout',
+    'worker'
 ]
 
 MIDDLEWARE = [
