@@ -106,39 +106,41 @@ def get_transaction(bank):
             
             for _, row in unique_rows_new.iterrows():
                 if row['transaction_type'] == 'IN':
-                    transaction_type = '+'
-                    transaction_color = '🟢'  # Green circle emoji for IN transactions
-                    formatted_amount = '{:,.2f}'.format(row['amount'])
-                    alert = (
-                        f'Hi,\n'
-                        f'\n'
-                        f'Account: {row.account_number}'
-                        f'\n'
-                        f'Confirmed by order: {row['transaction_number']}\n'
-                        f'\n'
-                        f'Received amount💲: {formatted_amount} VND\n'
-                        f'\n'
-                        f'Memo: {row['description']}\n'
-                        f'\n'
-                        f'Code: {find_substring(row['description'])}\n'
-                        f'\n'
-                        f'Time: {row["transaction_date"]}\n'
-                        f'\n'
-                        f'Reason of not be credited: Order not found!!!'
-                    )
-                    send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                    if bank.bank_type == 'IN':
+                        transaction_type = '+'
+                        transaction_color = '🟢'  # Green circle emoji for IN transactions
+                        formatted_amount = '{:,.2f}'.format(row['amount'])
+                        alert = (
+                            f'Hi,\n'
+                            f'\n'
+                            f'Account: {row.account_number}'
+                            f'\n'
+                            f'Confirmed by order: {row['transaction_number']}\n'
+                            f'\n'
+                            f'Received amount💲: {formatted_amount} VND\n'
+                            f'\n'
+                            f'Memo: {row['description']}\n'
+                            f'\n'
+                            f'Code: {find_substring(row['description'])}\n'
+                            f'\n'
+                            f'Time: {row["transaction_date"]}\n'
+                            f'\n'
+                            f'Reason of not be credited: Order not found!!!'
+                        )
+                        send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                 else:
-                    transaction_type = '-'
-                    transaction_color = '🔴'  # Red circle emoji for OUT transactions
-                    formatted_amount = '{:,.2f}'.format(row['amount'])
-                    alert = (
-                        f'🏦 {bank.account_number} - {bank.account_name}\n'
-                        f'📝 {row["description"]}\n'
-                        f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                        f'🔍 {row["transaction_type"]}\n'
-                        f'🕒 {row["transaction_date"]}'
-                    )
-                    send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                    if bank.bank_type == 'OUT':
+                        transaction_type = '-'
+                        transaction_color = '🔴'  # Red circle emoji for OUT transactions
+                        formatted_amount = '{:,.2f}'.format(row['amount'])
+                        alert = (
+                            f'🏦 {bank.account_number} - {bank.account_name}\n'
+                            f'📝 {row["description"]}\n'
+                            f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
+                            f'🔍 {row["transaction_type"]}\n'
+                            f'🕒 {row["transaction_date"]}'
+                        )
+                        send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                 
             redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
             print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
