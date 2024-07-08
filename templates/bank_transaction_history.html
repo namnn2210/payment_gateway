@@ -89,14 +89,14 @@
                 {% if page_obj.object_list %}
                 {% for history in page_obj.object_list%}
                 <tr>
-                    <td><b>{{history.account}}</b></td>
+                    <td><b>{{history.account_number}}</b></td>
                     <td><b>{{history.transaction_number}}</b></td>
                     {% if history.type == 'IN' %}
                     <td><span class="text-success">+{{history.amount | intcomma}}</span></td>
                     {% else %}
                     <td><span class="text-danger">-{{history.amount | intcomma}}</span></td>
                     {% endif %}
-                    <td>{{history.active_datetime}}</td>
+                    <td>{{history.transaction_date}}</td>
                     <td>{{history.description}}</td>
                 </tr>
                 {% endfor %}
