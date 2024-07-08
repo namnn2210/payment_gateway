@@ -19,4 +19,4 @@ class Command(BaseCommand):
             for bank in bank_accounts:
                 get_balance(bank=bank)
             redis_client.close()
-            time.sleep(30)
+            time.sleep(15)
