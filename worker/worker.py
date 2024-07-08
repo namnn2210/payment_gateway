@@ -55,15 +55,15 @@ def get_balance(bank):
                                 
     if bank_balance: 
         if int(bank_balance) != int(bank['balance']):
-            bank_account = BankAccount.objects.filter(username=bank['username'], password=bank['password'], account_number=bank['account_number']).first()
-            bank_account.balance = bank_balance
-            bank_account.updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            bank_account.save()
+            # bank_account = BankAccount.objects.filter(username=bank['username'], password=bank['password'], account_number=bank['account_number']).first()
+            bank['balance'] = bank_balance
+            bank['updated_at'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            # bank_account.save()
             print('Update for bank: %s. Updated at %s' % (bank['account_number'], datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
 
             # Get transactions
             
-            get_transaction.delay(bank_account.as_dict())
+            get_transaction.delay(bank)
             
         else:
             print('No new data for bank: %s. Updated at %s' % (bank['account_number'], datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
