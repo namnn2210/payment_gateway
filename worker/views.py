@@ -27,6 +27,7 @@ def get_balance(bank):
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
     else:
         bank_balance = None
+    print('hahahaha', bank_balance)
     while bank_balance is None:
         print('Error fetching bank balance, try to login')
         error_count += 1
