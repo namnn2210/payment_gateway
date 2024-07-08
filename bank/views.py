@@ -112,7 +112,7 @@ def filter_data(df, filter_type):
         filtered_df = filtered_df[filtered_df['transaction_date'] >= last_month]
     elif filter_type == "all_time":
         pass  # No filtering needed for all time
-    filtered_df['transaction_date'] = filtered_df['transaction_date'].apply(lambda x: x.strftime('%d-%m-%Y %H:%M:%S'))
+    filtered_df['transaction_date'] = filtered_df['transaction_date'].apply(lambda x: x.strftime('%d/%m/%Y %H:%M:%S'))
     filtered_df = filtered_df.fillna('')
     filtered_df = filtered_df.sort_values(by='transaction_date', ascending=False)
     return filtered_df.to_dict(orient='records')
