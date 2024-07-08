@@ -15,7 +15,7 @@ app = Celery('226Pay Transaction Queue', broker=f'redis://{os.environ.get('REDIS
 @app.task(name='get_balance')
 def get_balance(bank, redis_client):
     error_count = 0
-    bank_exists = redis_client.get(bank.account_number)
+    # bank_exists = redis_client.get(bank.account_number)
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name.name, bank.username, bank.password)
     
     # Get balance

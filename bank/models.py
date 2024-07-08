@@ -33,7 +33,24 @@ class BankAccount(models.Model):
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    def as_dict(self):
+        return {
+            "user": self.user.id,
+            "bank_name": self.bank_name.id,
+            "account_number": self.account_number,
+            "account_name": self.account_name,
+            "username": self.username,
+            "password": self.password,
+            "balance": self.balance,
+            "bank_type": self.bank_type,
+            "status": self.status,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+        }
 
     class Meta:
         db_table = 'bank_account'
+        
+    
 
