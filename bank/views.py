@@ -86,7 +86,7 @@ def toggle_bank_status(request):
 
 def filter_data(df, filter_type):
     filtered_df = df.copy()
-    filtered_df = filtered_df.sort_values(by='transaction_date', ascending=False)
+    
     now = datetime.now()
     filtered_df['transaction_date'] = pd.to_datetime(filtered_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
     if filter_type == "10_last_histories":
@@ -114,6 +114,7 @@ def filter_data(df, filter_type):
         pass  # No filtering needed for all time
     filtered_df['transaction_date'] = filtered_df['transaction_date'].apply(lambda x: x.strftime('%d-%m-%Y %H:%M:%S'))
     filtered_df = filtered_df.fillna('')
+    filtered_df = filtered_df.sort_values(by='transaction_date', ascending=False)
     return filtered_df.to_dict(orient='records')
 
 def get_transaction_history_with_filter(request):
