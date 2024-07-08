@@ -50,20 +50,20 @@ class AddBankView(View):
 
         # Process the data and save to the database
         # (e.g., create a new Bank object and save it)
-        bank_account = get_bank(bank_name,bank_number, bank_username, bank_password)
-        if bank_account:
-            bank = Bank.objects.filter(name=bank_name).first()
-            bank_account = BankAccount.objects.create(
-                user=request.user,
-                bank_name=bank,
-                account_number=bank_account.get('accountNumber'),
-                account_name=bank_account.get('owner'),
-                balance=bank_account.get('balance'),
-                bank_type=bank_type,
-                username=bank_username,
-                password=bank_password
-            )
-            bank_account.save()
+        # bank_account = get_bank(bank_name,bank_number, bank_username, bank_password)
+        # if bank_account:
+        #     bank = Bank.objects.filter(name=bank_name).first()
+        #     bank_account = BankAccount.objects.create(
+        #         user=request.user,
+        #         bank_name=bank,
+        #         account_number=bank_account.get('accountNumber'),
+        #         account_name=bank_account.get('owner'),
+        #         balance=bank_account.get('balance'),
+        #         bank_type=bank_type,
+        #         username=bank_username,
+        #         password=bank_password
+        #     )
+        #     bank_account.save()
             return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         
         return JsonResponse({'status': 500, 'message': 'Failed to add bank'})
