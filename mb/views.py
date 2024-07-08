@@ -3,6 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 from bank.utils import Transaction
+from bank.utils import get_dates
 import requests
 import json
 import os
@@ -92,17 +93,5 @@ def mb_balance(username, password, account_number):
 def mb_transfer(request):
     pass
 
-def get_dates(start_date=''):
-    # If start_date is empty, use the current date
-    if start_date == '':
-        start_date = datetime.now()
-    else:
-        # Parse the provided start date
-        start_date = datetime.strptime(start_date, '%d/%m/%Y')
-    
-    # Calculate the date 30 days before the start date
-    date_30_days_before = start_date - timedelta(days=30)
-    
-    # Return the results in the specified format
-    return start_date.strftime('%d/%m/%Y'), date_30_days_before.strftime('%d/%m/%Y')
+
 
