@@ -25,7 +25,6 @@ def get_balance(bank):
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
     else:
         bank_balance = None
-
     while bank_balance is None:
         print('Error fetching bank balance, try to login')
         error_count += 1
@@ -37,6 +36,7 @@ def get_balance(bank):
                 f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
             )
             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            return
             
         if bank.bank_name.name == 'MB':
             mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
