@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 import json
 import pandas as pd
 import os
+from django.core.paginator import Paginator
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,8 +27,20 @@ def list_bank(request):
 
 @login_required(login_url='user_login')
 def record_book(request, bank_type):
-    list_user_bank = BankAccount.objects.filter(bank_type=bank_type)
-    return render(request=request, template_name='record_book.html', context={'list_user_bank':list_user_bank})
+    redis_client = redis_connect()
+    
+    list_banks = BankAccount.objects.all()
+    all_transactions = []
+    for bank in list_banks:
+        transactions_str = redis_client.get(bank.account_number)
+        all_transactions += json.loads(transactions_str)
+    all_transactions_df = pd.DataFrame(all_transactions)
+    list_of_dicts = all_transactions_df.to_dict(orient='records')
+    paginator = Paginator(list_of_dicts, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request=request, template_name='record_book.html', context={'page_obj': page_obj})
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddBankView(View):
@@ -84,78 +97,7 @@ def toggle_bank_status(request):
             return JsonResponse({'status': 404, 'message': 'Bank account not found'})
     return JsonResponse({'status': 400, 'message': 'Invalid request'})
 
-def filter_data(df, filter_type):
-    filtered_df = df.copy()
-    
-    now = datetime.now()
-    filtered_df['transaction_date'] = pd.to_datetime(filtered_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
-    if filter_type == "10_last_histories":
-        filtered_df = filtered_df.head(10)
-        # filtered_df = filtered_df.head(10)
-    elif filter_type == "today":
-        filtered_df = filtered_df[filtered_df['transaction_date'].dt.date == now.date()]
-    elif filter_type == "yesterday":
-        yesterday = now - timedelta(1)
-        filtered_df = filtered_df[filtered_df['transaction_date'].dt.date == yesterday.date()]
-    elif filter_type == "7_latest_days":
-        last_week = now - timedelta(7)
-        filtered_df = filtered_df[filtered_df['transaction_date'] >= last_week]
-    elif filter_type == "this_week":
-        start_of_week = now - timedelta(days=now.weekday())
-        filtered_df = filtered_df[filtered_df['transaction_date'] >= start_of_week]
-    elif filter_type == "last_week":
-        start_of_last_week = (now - timedelta(days=now.weekday() + 7))
-        end_of_last_week = start_of_last_week + timedelta(days=6)
-        filtered_df = filtered_df[(filtered_df['transaction_date'] >= start_of_last_week) & (filtered_df['transaction_date'] <= end_of_last_week)]
-    elif filter_type == "30_latest_days":
-        last_month = now - timedelta(30)
-        filtered_df = filtered_df[filtered_df['transaction_date'] >= last_month]
-    elif filter_type == "all_time":
-        pass  # No filtering needed for all time
-    filtered_df['transaction_date'] = filtered_df['transaction_date'].apply(lambda x: x.strftime('%d/%m/%Y %H:%M:%S'))
-    filtered_df = filtered_df.fillna('')
-    filtered_df = filtered_df.sort_values(by='transaction_date', ascending=False)
-    return filtered_df.to_dict(orient='records')
 
-def get_transaction_history_with_filter(request):
-    redis_client = redis_connect()
-    if request.method == 'POST':
-        list_bank_account = BankAccount.objects.filter()
-        all_transactions = []
-        for bank_account in list_bank_account:
-            # histories = get_acb_bank_transaction_history(bank_account)
-            bank_redis = redis_client.get(bank_account.account_number)
-            if not bank_redis:
-                alert = (
-                        f'🔴 - SYSTEM ALERT\n'
-                        f'Get transaction history from {bank_account.account_number} - {bank_account.bank_name} empty\n'
-                        f'Date: {datetime.now()}'
-                    )
-                send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-                continue
-            # columns_to_convert = ['posting_date', 'active_datetime', 'effective_date']
-            # df = pd.DataFrame(list(histories))
-            # df[columns_to_convert] = df[columns_to_convert].apply(unix_to_datetime, axis=1)
-            # df = df.fillna('')
-            json_data = json.loads(bank_redis)
-            df = pd.DataFrame(json_data)
-            all_transactions.append(df)
-        redis_client.close()
-        if all_transactions:
-            all_transactions_df = pd.concat(all_transactions)
-            all_transactions_df.to_csv('a.csv', index=False)
-            data = json.loads(request.body)
-            filter = data.get('filter')
-            bank_account = data.get('account')
-            print(bank_account, filter)
-            if bank_account == 'ALL':
-                filtered_data = filter_data(all_transactions_df, filter)
-                return JsonResponse({'status': 200, 'message': 'Done', 'data': filtered_data})
-            else:
-                filtered_data = filter_data(all_transactions_df[all_transactions_df['account_number'] == bank_account], filter)
-                return JsonResponse({'status': 200, 'message': 'Done', 'data': filtered_data})
-    
-    return JsonResponse({'status': 500, 'message': 'Error'})
 
 
 def update_transaction_history(request):

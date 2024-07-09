@@ -3,31 +3,7 @@
 {% block title %}Record Book{% endblock %}
 {% block content %}
 <style>
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
 
-    .pagination a,
-    .pagination span {
-        margin: 0 5px;
-        padding: 8px 16px;
-        text-decoration: none;
-        color: #007bff;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-    }
-
-    .pagination a.active {
-        background-color: #007bff;
-        color: white;
-        border-color: #007bff;
-    }
-
-    .pagination a:hover:not(.active) {
-        background-color: #ddd;
-    }
 </style>
 <div class="container-fluid">
     <div class="row">
@@ -57,26 +33,35 @@
                                     <th>Date</th>
                                     <th>Memo</th>
                                 </tr>
-                                <tr>
-                                    <th><input type="text" class="form-control" id="searchAccountNumber"></th>
-                                    <th><input type="text" class="form-control" id="searchTransactionNumber"></th>
-                                    <th><input type="text" class="form-control" id="searchAmount"></th>
-                                    <th><input type="text" class="form-control" id="searchDate"></th>
-                                    <th><input type="text" class="form-control" id="searchMemo"></th>
-                                </tr>
                             </thead>
                             <tbody id="transactionTableBody" class="text-center">
+                                {% for item in page_obj %}
                                 <tr>
-                                    <td colspan="5">
-                                        <div class="spinner-border" role="status">
-                                            <span class="visually-hidden">Loading...</span>
-                                        </div><!-- End Border spinner -->
-                                    </td>
+                                    <td>{{item.account_number}}</td>
+                                    <td>{{item.transaction_number}}</td>
+                                    <td>{{item.amount}}</td>
+                                    <td>{{item.transaction_date}}</td>
+                                    <td>{{item.description}}</td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
-                        <div class="pagination" id="paginationLinks">
+                        <div class="pagination">
+                            <span class="step-links">
+                                {% if page_obj.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                                {% endif %}
 
+                                <span class="current">
+                                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                                </span>
+
+                                {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                                {% endif %}
+                            </span>
                         </div>
                     </div>
                 </div>

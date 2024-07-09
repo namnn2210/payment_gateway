@@ -56,7 +56,6 @@ def acb_transactions(username,password,account_number):
         "action":"transactions"
     }
     response = requests.post(os.environ.get("ACB_URL"), json=body).json()
-    print(response)
     if response['codeStatus'] == 200:
         transactions = response['data']
         formatted_transactions = []
