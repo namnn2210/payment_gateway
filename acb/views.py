@@ -38,12 +38,13 @@ def acb_balance(username, password, account_number):
         "action":"balance"
     }
     response = requests.post(os.environ.get("ACB_URL"), json=body).json()
-    if 'codeStatus' in response.keys(): 
-        if response['codeStatus'] == 200:
-            acc_list = response['data']
-            for account in acc_list:
-                if account['accountNumber'] == account_number:
-                    return account['balance']
+    if response:
+        if 'codeStatus' in response.keys(): 
+            if response['codeStatus'] == 200:
+                acc_list = response['data']
+                for account in acc_list:
+                    if account['accountNumber'] == account_number:
+                        return account['balance']
     return None
 
 def acb_transactions(username,password,account_number):
