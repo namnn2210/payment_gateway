@@ -67,7 +67,7 @@
                                     <td>{{bank_account.balance |intcomma }} <span class="text-success">đ</span></td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     <td>
-                                        <a href="{% url 'record_book' 'in' %}"><button
+                                        <a href="{% url 'record_book' %}"><button
                                                 class="btn btn-sm btn-success">History</button>
                                         </a>
                                         {% if bank_account.status %}
@@ -115,7 +115,7 @@
                                     <td>{{bank_account.balance |intcomma }} <span class="text-success">đ</span></td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     <td>
-                                        <a href="{% url 'record_book' 'out' %}"><button
+                                        <a href="{% url 'record_book' %}"><button
                                                 class="btn btn-sm btn-success">History</button>
                                         </a>
                                         {% if bank_account.status %}

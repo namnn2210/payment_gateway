@@ -26,7 +26,7 @@ def list_bank(request):
     return render(request=request, template_name='bank.html',context={'list_bank_option':list_bank_option, 'list_user_bank':list_user_bank})
 
 @login_required(login_url='user_login')
-def record_book(request, bank_type):
+def record_book(request):
     redis_client = redis_connect()
     
     list_banks = BankAccount.objects.all()

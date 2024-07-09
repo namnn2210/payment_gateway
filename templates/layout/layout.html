@@ -175,6 +175,13 @@
             </li>
 
             <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'record_book' %}">
+                    <i class="bi bi-book"></i>
+                    <span>Record Book</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
                     <i class="bi bi-cash"></i><span>Payout</span><i class="bi bi-chevron-down ms-auto"></i>
                 </a>
@@ -242,6 +249,15 @@
             return cookieValue;
         }
         document.addEventListener('DOMContentLoaded', function () {
+            const currentUrl = window.location.pathname;
+
+            // Highlight the active link
+            document.querySelectorAll('.sidebar-nav a.nav-link').forEach(link => {
+                if (link.href.includes(currentUrl)) {
+                    link.classList.add('active');
+                }
+            });
+
             $('a.nav-link').on('click', function () {
                 $('a.nav-link').addClass('collapsed');
                 $(this).removeClass('collapsed');
