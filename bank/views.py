@@ -35,10 +35,7 @@ def record_book(request, bank_type):
         transactions_str = redis_client.get(bank.account_number)
         all_transactions += json.loads(transactions_str)
     all_transactions_df = pd.DataFrame(all_transactions)
-    list_of_dicts = all_transactions_df.to_dict(orient='records')
-    paginator = Paginator(list_of_dicts, 10)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = all_transactions_df.to_dict(orient='records')
 
     return render(request=request, template_name='record_book.html', context={'page_obj': page_obj})
 
