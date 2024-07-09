@@ -19,58 +19,60 @@
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body">
                 <h5 class="card-title">List payout</h5>
-                <table class="table table-borderless" id="payoutTable">
-                    <thead>
-                        <tr>
-                            <th scope="col">CID</th>
-                            <th scope="col">Order ID</th>
-                            <th scope="col">Money</th>
-                            <th scope="col">Account Number</th>
-                            <th scope="col">Account Name</th>
-                            <th scope="col">Bank Code</th>
-                            <th scope="col">Created At</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Auto/Manual</th>
-                            <th scope="col">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in page_obj %}
-                        <tr>
-                            <th>{{ item.scode }}</th>
-                            <td>{{ item.orderid }}</td>
-                            <td>{{ item.money|intcomma }} đ</td>
-                            <td>{{ item.accountno }}</td>
-                            <td>{{ item.accountname }}</td>
-                            <td>{{ item.bankcode }}</td>
-                            <td>{{ item.created_at }}</td>
-                            <td>
-                                {% if item.status %}
-                                <span class="btn btn-sm bg-success">Done</span>
-                                {% else %}
-                                <span class="btn btn-sm bg-warning">Pending</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if item.is_auto %}
-                                <span class="btn btn-sm bg-success">Auto</span>
-                                {% else %}
-                                <span class="btn btn-sm bg-warning">Manual</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if not item.status %}
-                                <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
-                                    data-bs-target="#payModal" data-item-id="{{ item.id }}"
-                                    data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
-                                    data-accountname="{{ item.accountname }}" data-money="{{ item.money }}">Pay</button>
-                                {% endif %}
-                                <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="table table-borderless" id="payoutTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">CID</th>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Money</th>
+                                <th scope="col">Account Number</th>
+                                <th scope="col">Account Name</th>
+                                <th scope="col">Bank Code</th>
+                                <th scope="col">Created At</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Auto/Manual</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in page_obj %}
+                            <tr>
+                                <th>{{ item.scode }}</th>
+                                <td>{{ item.orderid }}</td>
+                                <td>{{ item.money|intcomma }} đ</td>
+                                <td>{{ item.accountno }}</td>
+                                <td>{{ item.accountname }}</td>
+                                <td>{{ item.bankcode }}</td>
+                                <td>{{ item.created_at }}</td>
+                                <td>
+                                    {% if item.status %}
+                                    <span class="btn btn-sm bg-success">Done</span>
+                                    {% else %}
+                                    <span class="btn btn-sm bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.is_auto %}
+                                    <span class="btn btn-sm bg-success">Auto</span>
+                                    {% else %}
+                                    <span class="btn btn-sm bg-warning">Manual</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not item.status %}
+                                    <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
+                                        data-bs-target="#payModal" data-item-id="{{ item.id }}"
+                                        data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
+                                        data-accountname="{{ item.accountname }}" data-money="{{ item.money }}">Pay</button>
+                                    {% endif %}
+                                    <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
                 <div class="pagination">
                     <span class="step-links">
                         {% if page_obj.has_previous %}
