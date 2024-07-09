@@ -12,28 +12,30 @@
                 <div class="card-body" style="font-size: 13px">
                     <h5 class="card-title">Record Book</h5>
                     <div class="card-body" style="font-size: 13px">
-                        <table id="transactionTable" class="table table-sm display">
-                            <thead>
-                                <tr class="text-center" style="font-size: 13px">
-                                    <th>Account Number</th>
-                                    <th>Transaction Number</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Memo</th>
-                                </tr>
-                            </thead>
-                            <tbody id="transactionTableBody" class="text-center">
-                                {% for item in page_obj %}
-                                <tr>
-                                    <td>{{ item.account_number }}</td>
-                                    <td>{{ item.transaction_number }}</td>
-                                    <td>{{ item.amount }}</td>
-                                    <td>{{ item.transaction_date }}</td>
-                                    <td>{{ item.description }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                        <div class="table-responsive">
+                            <table id="transactionTable" class="table table-sm display">
+                                <thead>
+                                    <tr class="text-center" style="font-size: 13px">
+                                        <th>Account Number</th>
+                                        <th>Transaction Number</th>
+                                        <th>Amount</th>
+                                        <th>Date</th>
+                                        <th>Memo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionTableBody" class="text-center">
+                                    {% for item in page_obj %}
+                                    <tr>
+                                        <td>{{ item.account_number }}</td>
+                                        <td>{{ item.transaction_number }}</td>
+                                        <td>{{ item.amount }}</td>
+                                        <td>{{ item.transaction_date }}</td>
+                                        <td>{{ item.description }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
