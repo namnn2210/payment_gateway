@@ -8,25 +8,29 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from urllib.parse import parse_qs
+from bank.utils import send_telegram_message
+from dotenv import load_dotenv
+import os
 import json
+
+load_dotenv()
 # Create your views here.
 def list_payout(request):
     
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     
     if request.user.is_superuser:
-        list_payout = Payout.objects.all().order_by('-created_at','-status')
+        list_payout = Payout.objects.all().order_by('-status')
     else:
-        list_payout = Payout.objects.filter(user=request.user).order_by('-created_at','-status')
-    paginator = Paginator(list_payout, 10)  # Show 10 items per page
+        list_payout = Payout.objects.filter(user=request.user).order_by('-status')
+    # paginator = Paginator(list_payout, 10)  # Show 10 items per page
 
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-    items = [model_to_dict(item) for item in page_obj]
+    # page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
+    items = [model_to_dict(item) for item in list_payout]
 
     return render(request, 'payout.html', {
-        'page_obj': page_obj, 'items_json':items, 'bank_data':bank_data})
+        'list_payout': list_payout, 'items_json':items, 'bank_data':bank_data})
 
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
@@ -34,11 +38,8 @@ def search_payout(request):
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPayoutView(View):
     def post(self, request, *args, **kwargs):
-        print(request.body)
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
-        
-        print('++++++++++++++++', data)
         scode = data.get('scode')
         orderid = data.get('orderid')
         money = data.get('money')
@@ -59,10 +60,9 @@ class AddPayoutView(View):
             scode=scode,
             orderno=orderid,
             orderid=orderid,
-            money=money,
+            money=int(float(money)),
             accountno=accountno,
             accountname=accountname,
-            
             bankcode=bankcode,
             is_auto=False
         )
@@ -80,6 +80,15 @@ def update_payout(request):
         payout = get_object_or_404(Payout, id=payout_id)
         payout.status = True  # Assuming 'True' marks the payout as done
         payout.save()
+        formatted_amount = '{:,.2f}'.format(payout.money)
+        alert = (
+                f'Order ID: {payout.orderid}\n'
+                f'Amount: {formatted_amount} VND\n'
+                f'Bank name: {payout.bankcode}\n'
+                f'Account name: {payout.accountname}\n'
+                f'Account number: {payout.accountno}'
+            )
+        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': 'Done','success': False})

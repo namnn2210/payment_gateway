@@ -35,8 +35,18 @@ def record_book(request, bank_type):
         transactions_str = redis_client.get(bank.account_number)
         all_transactions += json.loads(transactions_str)
     all_transactions_df = pd.DataFrame(all_transactions)
-    page_obj = all_transactions_df.to_dict(orient='records')
+    # Convert the 'transaction_date' column to datetime format if it exists
+    if 'transaction_date' in all_transactions_df.columns:
+        all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
 
+    # Sort the dataframe by 'transaction_date' in descending order if the column exists
+    if 'transaction_date' in all_transactions_df.columns:
+        sorted_transactions_new = all_transactions_df.sort_values(by='transaction_date', ascending=False)
+    else:
+        sorted_transactions_new = all_transactions_df  # If no 'transaction_date', do not sort
+    
+    page_obj = sorted_transactions_new.to_dict(orient='records')
+    
     return render(request=request, template_name='record_book.html', context={'page_obj': page_obj})
 
 @method_decorator(csrf_exempt, name='dispatch')

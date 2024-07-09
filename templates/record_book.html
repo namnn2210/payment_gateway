@@ -12,6 +12,16 @@
                 <div class="card-body" style="font-size: 13px">
                     <h5 class="card-title">Record Book</h5>
                     <div class="card-body" style="font-size: 13px">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="start_date">Start Date</label>
+                                <input type="date" id="start_date" class="form-control" />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="end_date">End Date</label>
+                                <input type="date" id="end_date" class="form-control" />
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table id="transactionTable" class="table table-sm display">
                                 <thead>
@@ -28,8 +38,12 @@
                                     <tr>
                                         <td>{{ item.account_number }}</td>
                                         <td>{{ item.transaction_number }}</td>
-                                        <td>{{ item.amount }}</td>
-                                        <td>{{ item.transaction_date }}</td>
+                                        {% if item.transaction_type == 'IN'%}
+                                        <td class="text-success">{{ item.amount|intcomma }}</td>
+                                        {% else %}
+                                        <td class="text-danger">{{ item.amount|intcomma }}</td>
+                                        {% endif %}
+                                        <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
                                         <td>{{ item.description }}</td>
                                     </tr>
                                     {% endfor %}
@@ -51,10 +65,46 @@
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#transactionTable').DataTable({
+        // Initialize DataTable
+        var table = $('#transactionTable').DataTable({
             "pageLength": 10,  // Set default page length
             "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
-            "order": [[3, "desc"]]  // Set default sorting order (optional)
+            "ordering": false
+        });
+
+        // Custom filtering function to filter data by date range
+        $.fn.dataTable.ext.search.push(
+            function(settings, data, dataIndex) {
+                var min = $('#start_date').val();
+                var max = $('#end_date').val();
+                var date = new Date(data[3]); // Use the index of your date column
+
+                // Convert min and max to Date objects
+                if (min) {
+                    min = new Date(min);
+                }
+                if (max) {
+                    max = new Date(max);
+                }
+
+                console.log('==========', min)
+                console.log(date);
+                console.log(max);
+                if (
+                    (min === '' && max === '') ||
+                    (min === '' && date <= new Date(max)) ||
+                    (min <= date && max === '') ||
+                    (min <= date && date <= new Date(max))
+                ) {
+                    return true;
+                }
+                return false;
+            }
+        );
+
+        // Event listener to the date range filtering inputs to redraw on input
+        $('#start_date, #end_date').on('change', function () {
+            table.draw();
         });
     });
 </script>
