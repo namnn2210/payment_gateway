@@ -16,9 +16,9 @@ def list_payout(request):
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     
     if request.user.is_superuser:
-        list_payout = Payout.objects.all()
+        list_payout = Payout.objects.all().order_by('-created_at','-status')
     else:
-        list_payout = Payout.objects.filter(user=request.user)
+        list_payout = Payout.objects.filter(user=request.user).order_by('-created_at','-status')
     paginator = Paginator(list_payout, 10)  # Show 10 items per page
 
     page_number = request.GET.get('page')
