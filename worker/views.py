@@ -115,7 +115,7 @@ def get_transaction(bank):
                             f'\n'
                             f'Account: {row.account_number}'
                             f'\n'
-                            f'Confirmed by order: {row['transaction_number']}\n'
+                            f'Confirmed by order: \n'
                             f'\n'
                             f'Received amount💲: {formatted_amount} VND\n'
                             f'\n'
