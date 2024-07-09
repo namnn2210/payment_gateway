@@ -4,11 +4,17 @@ from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
+from django.views import View
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from urllib.parse import parse_qs
 import json
 # Create your views here.
 def list_payout(request):
+    
+    bank_data = json.load(open('bank.json', encoding='utf-8'))
+    
     if request.user.is_superuser:
         list_payout = Payout.objects.all()
     else:
@@ -20,12 +26,49 @@ def list_payout(request):
     items = [model_to_dict(item) for item in page_obj]
 
     return render(request, 'payout.html', {
-        'page_obj': page_obj,
-        'items_json': json.dumps(items),
-    })
+        'page_obj': page_obj, 'items_json':items, 'bank_data':bank_data})
 
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
+
+@method_decorator(csrf_exempt, name='dispatch')
+class AddPayoutView(View):
+    def post(self, request, *args, **kwargs):
+        print(request.body)
+        decoded_str = request.body.decode('utf-8')
+        data = json.loads(decoded_str)
+        
+        print('++++++++++++++++', data)
+        scode = data.get('scode')
+        orderid = data.get('orderid')
+        money = data.get('money')
+        accountno = data.get('accountno')
+        accountname = data.get('accountname')
+        bankcode = data.get('bankcode')
+        
+        # Check if any bank_account with the same type is ON
+        existed_bank_account = Payout.objects.filter(
+            orderid=orderid).first()
+        if existed_bank_account:
+            return JsonResponse({'status': 505, 'message': 'Existed payout. Please try again'})
+
+        #Process the data and save to the database
+    
+        payout = Payout.objects.create(
+            user=request.user,
+            scode=scode,
+            orderno=orderid,
+            orderid=orderid,
+            money=money,
+            accountno=accountno,
+            accountname=accountname,
+            
+            bankcode=bankcode,
+            is_auto=False
+        )
+        payout.save()
+        return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
+
 
 @csrf_exempt
 @require_POST

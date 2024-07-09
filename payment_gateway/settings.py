@@ -141,7 +141,9 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -150,12 +152,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # LOGOUT_REDIRECT_URL = 'login'
 CORS_ALLOWED_ORIGINS = [
     'https://226pay.com',
-    'https://www.226pay.com'
+    'https://www.226pay.com',
+    'http://localhost:8000'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://226pay.com',
-    'https://www.226pay.com'
+    'https://www.226pay.com',
+    'http://localhost:8000'
 ]
 
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
 load_dotenv()
-bank_data = json.load(open('bank.json'))
+# bank_data = json.load(open('bank.json'))
 
 
 class Transaction:

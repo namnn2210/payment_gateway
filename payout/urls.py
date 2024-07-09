@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import list_payout, update_payout, search_payout
+from .views import list_payout, AddPayoutView, update_payout
 
 urlpatterns = [
     path('list', list_payout, name='list_payout'),
-    path('update', update_payout, name='update_payout'),
-    path('list/search', search_payout, name='search_payout')
+    path('add', AddPayoutView.as_view(), name='add_payout'),
+    path('update_payout', update_payout, name='update_payout'),
 ]

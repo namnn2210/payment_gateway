@@ -4,44 +4,71 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
+        <div class="col-md-6">
+            <!-- <input type="text" class="form-control search-box" id="searchAccountNumber"
+                placeholder="Search by Account Number"> -->
+        </div>
+        {% if user.is_superuser%}
+        <div class="col-md-6 text-right">
+            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">Add
+                Payout</button>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row mt-4">
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body">
                 <h5 class="card-title">List payout</h5>
                 <table class="table table-borderless" id="payoutTable">
                     <thead>
-                    <tr>
-                        <th scope="col">CID</th>
-                        <th scope="col">Order No</th>
-                        <th scope="col">Order ID</th>
-                        <th scope="col">Money</th>
-                        <th scope="col">Created At</th>
-                        <th scope="col">Status</th>
-                        <th scope="col">Action</th>
-                    </tr>
+                        <tr>
+                            <th scope="col">CID</th>
+                            <th scope="col">Order ID</th>
+                            <th scope="col">Money</th>
+                            <th scope="col">Account Number</th>
+                            <th scope="col">Account Name</th>
+                            <th scope="col">Bank Code</th>
+                            <th scope="col">Created At</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Auto/Manual</th>
+                            <th scope="col">Action</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    {% for item in page_obj %}
-                    <tr>
-                        <th>{{ item.scode }}</th>
-                        <td>{{ item.orderno }}</td>
-                        <td>{{ item.orderid }}</td>
-                        <td>{{ item.money|intcomma }} đ</td>
-                        <td>{{ item.created_at }}</td>
-                        <td>
-                            {% if item.status %}
-                            <span class="badge bg-success">Done</span>
-                            {% else %}
-                            <span class="badge bg-warning">Pending</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not item.status %}
-                            <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#payModal" data-item-id="{{ item.id }}">Pay</button>
-                            <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
+                        {% for item in page_obj %}
+                        <tr>
+                            <th>{{ item.scode }}</th>
+                            <td>{{ item.orderid }}</td>
+                            <td>{{ item.money|intcomma }} đ</td>
+                            <td>{{ item.accountno }}</td>
+                            <td>{{ item.accountname }}</td>
+                            <td>{{ item.bankcode }}</td>
+                            <td>{{ item.created_at }}</td>
+                            <td>
+                                {% if item.status %}
+                                <span class="btn btn-sm bg-success">Done</span>
+                                {% else %}
+                                <span class="btn btn-sm bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if item.is_auto %}
+                                <span class="btn btn-sm bg-success">Auto</span>
+                                {% else %}
+                                <span class="btn btn-sm bg-warning">Manual</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if not item.status %}
+                                <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
+                                    data-bs-target="#payModal" data-item-id="{{ item.id }}"
+                                    data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
+                                    data-accountname="{{ item.accountname }}" data-money="{{ item.money }}">Pay</button>
+                                {% endif %}
+                                <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
+                            </td>
+                        </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
                 <div class="pagination">
@@ -65,8 +92,60 @@
         </div><!-- End Card with an image on left -->
     </div>
 </div>
-
-<!-- Modal -->
+<div class="modal fade" id="addPayoutModal" tabindex="-1" aria-labelledby="addPayoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPayoutModalLabel">Add Payout</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modalAlertContainer"></div>
+                <form id="addPayoutForm">
+                    <div class="form-group">
+                        <label for="scode">CID</label>
+                        <select class="form-select" id="scode" name="scode" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="orderid">Order ID</label>
+                        <input type="text" class="form-control" id="orderid" name="orderid" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" class="form-control" id="money" name="money" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="accountno">Account Number</label>
+                        <input type="text" class="form-control" id="accountno" name="accountno" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="accountname">Account Name</label>
+                        <input type="text" class="form-control" id="accountname" name="accountname" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankcode">Bank</label>
+                        <select class="form-select" id="bankcode" name="bankcode" required>
+                            {% for bank in bank_data %}
+                            <option value={{bank.code}}>{{bank.short_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade" id="payModal" tabindex="-1" aria-labelledby="payModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -75,56 +154,66 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p><strong>Order ID:</strong> <span id="modalOrderId"></span></p>
-                <p><strong>Order No:</strong> <span id="modalOrderNo"></span></p>
-                <p><strong>Account No:</strong> <span id="modalAccountNo"></span></p>
-                <p><strong>Bank Name:</strong> <span id="modalBankName"></span></p>
-                <p><strong>Account Name:</strong> <span id="modalAccountName"></span></p>
-                <p><strong>Money:</strong> <span id="modalMoney"></span> đ</p>
                 <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success done-btn-modal" data-item-id="">Done</button>
-                <button type="button" class="btn btn-danger">Report</button>
-                <button type="button" class="btn btn-danger">Report</button>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Hidden JSON data -->
 <script type="application/json" id="items-data">
     {{ items_json|safe }}
 </script>
 {% endblock %}
 {% block script %}
-<!-- Include jQuery and SweetAlert2 CSS and JS -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 <script>
 
-    $(document).ready(function() {
-        var itemsData = JSON.parse($('#items-data').text());
-        var payModal = $('#payModal');
-        payModal.on('show.bs.modal', function(event) {
-            var button = $(event.relatedTarget);
-            var itemId = button.data('item-id');
-            var item = itemsData.find(item => item.id == itemId);
+    $('#addPayoutForm').on('submit', function (e) {
+        e.preventDefault();
+        var formData = {
+            scode: $('#scode').val(),
+            orderid: $('#orderid').val(),
+            money: $('#money').val(),
+            accountno: $('#accountno').val(),
+            accountname: $('#accountname').val(),
+            bankcode: $('#bankcode').val()
+        };
 
-            $('#modalOrderId').text(item.orderid);
-            $('#modalOrderNo').text(item.orderno);
-            $('#modalAccountNo').text(item.accountno);
-            $('#modalBankName').text(item.bankcode);
-            $('#modalAccountName').text(item.accountname.toUpperCase());
-            $('#modalMoney').text(item.money.toLocaleString());
-            $('#modalQrImage').attr('src', `https://vietqr.me/api/generate/${item.bankcode}/${item.accountno}/${item.accountname}?amount=${item.money}&memo=Z${item.accountname}&is_mask=0&bg=7`);
-            
-            $('.done-btn-modal').data('item-id', itemId);
+        $.ajax({
+            type: 'POST',
+            url: '{% url "add_payout" %}',  // Ensure this URL name matches your urls.py
+            data: JSON.stringify(formData),
+            contentType: 'application/json',
+            success: function (response) {
+                if (response.status === 200) {
+                    $('#addPayoutModal').modal('hide');
+                    location.reload();
+                } else {
+                }
+            },
+            error: function (response) {
+                console.log(response.message);
+            }
         });
+    });
 
-        $('.done-btn-modal').click(function() {
+    $(document).on('click', '.pay-btn', function () {
+        var itemId = $(this).data('item-id');
+        var bankcode = $(this).data('bankcode');
+        var accountno = $(this).data('accountno');
+        var accountname = $(this).data('accountname');
+        var money = $(this).data('money');
+
+        var qrUrl = `https://vietqr.me/api/generate/${bankcode}/${accountno}/${accountname}?amount=${money}&memo=Z${accountname}&is_mask=0&bg=7`;
+
+        $('#modalQrImage').attr('src', qrUrl);
+        $('.done-btn-modal').data('item-id', itemId);
+
+        $('.done-btn-modal').click(function () {
             var itemId = $(this).data('item-id');
             const csrftoken = getCookie('csrftoken');
             Swal.fire({
@@ -145,7 +234,7 @@
                         headers: {
                             'X-CSRFToken': csrftoken
                         },
-                        success: function(data) {
+                        success: function (data) {
                             if (data.success) {
                                 Swal.fire(
                                     'Marked!',
@@ -167,5 +256,6 @@
             });
         });
     });
+
 </script>
 {% endblock %}
