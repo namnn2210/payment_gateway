@@ -67,7 +67,7 @@ class AddPayoutView(View):
             is_auto=False,
             is_cancel=False,
             is_report=False,
-            created_at=datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
+            created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
         )
         payout.save()
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})

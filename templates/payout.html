@@ -50,7 +50,7 @@
                                 <td>{{ item.created_at|date:"d/m/Y H:i:s" }}</td>
                                 <td class="fw-bold">{{ item.user }}</td>
                                 {% if item.updated_by %}
-                                <td>{{ item.updated_at }}</td>
+                                <td>{{ item.updated_at|date:"d/m/Y H:i:s" }}</td>
                                 {% else %}
                                 <td></td>
                                 {% endif%}
@@ -62,8 +62,10 @@
                                 <td>
                                     {% if item.status %}
                                     <span class="btn btn-sm bg-success text-center">Done</span>
-                                    {% else %}
+                                    {% elif not item.status and not item.is_cancel %}
                                     <span class="btn btn-sm bg-warning text-center">Pending</span>
+                                    {% else %}
+                                    <span></span>
                                     {% endif %}
                                 </td>
                                 <td>
