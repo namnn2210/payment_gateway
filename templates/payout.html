@@ -31,10 +31,10 @@
                                 <th scope="col">Bank Code</th>
                                 <th scope="col">Created At</th>
                                 <th scope="col">Status</th>
-                                <th scope="col">Auto/Manual</th>
+                                <th scope="col">Action</th>
                                 <th scope="col">Report</th>
                                 <th scope="col">Cancel</th>
-                                <th scope="col">Action</th>
+                                <th scope="col">Auto/Manual</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,11 +55,15 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if item.is_auto %}
-                                    <span class="btn btn-sm bg-success">Auto</span>
-                                    {% else %}
-                                    <span class="btn btn-sm bg-warning">Manual</span>
+                                    {% if not item.status and not item.is_cancel %}
+                                    <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
+                                        data-bs-target="#payModal" data-item-id="{{ item.id }}"
+                                        data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
+                                        data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
+                                        data-is-report="{{item.is_report}}"
+                                        data-is-cancel="{{item.is_cancel}}">Pay</button>
                                     {% endif %}
+                                    <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
                                 </td>
                                 <td>
                                     {% if item.is_report %}
@@ -72,15 +76,11 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    {% if not item.status and not item.is_cancel %}
-                                    <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
-                                        data-bs-target="#payModal" data-item-id="{{ item.id }}"
-                                        data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
-                                        data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
-                                        data-is-report="{{item.is_report}}"
-                                        data-is-cancel="{{item.is_cancel}}">Pay</button>
+                                    {% if item.is_auto %}
+                                    <span class="btn btn-sm bg-success">Auto</span>
+                                    {% else %}
+                                    <span class="btn btn-sm bg-warning">Manual</span>
                                     {% endif %}
-                                    <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
                                 </td>
                             </tr>
                             {% endfor %}
