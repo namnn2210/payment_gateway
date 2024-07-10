@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from bank.utils import Transaction, unix_to_datetime
 import requests
+from django.views.decorators.csrf import csrf_exempt
 import os
 from dotenv import load_dotenv
 
@@ -69,6 +70,7 @@ def acb_transactions(username,password,account_number):
         return formatted_transactions
     return None
 
+@csrf_exempt
 def new_transaction(request):
     print('New transaction: ', request.body)
     return JsonResponse({'status': 200, 'message': 'Done'})
