@@ -124,7 +124,7 @@ def update_payout(request, update_type):
         elif update_type == 'cancel':
             payout.is_cancel = True
             alert = (
-                f'Failed !\n'
+                f'🔴🔴🔴Failed🔴🔴🔴\n'
                 f'\n'
                 f'Order ID: {payout.orderid}\n'
                 f'\n'
