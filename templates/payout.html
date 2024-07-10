@@ -29,6 +29,7 @@
                                 <th scope="col">Bank Code</th>
                                 <th scope="col">Created At</th>
                                 <th scope="col">Created By</th>
+                                <th scope="col">Updated At</th>
                                 <th scope="col">Updated By</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Action</th>
@@ -48,6 +49,11 @@
                                 <td>{{ item.bankcode }}</td>
                                 <td>{{ item.created_at|date:"d/m/Y H:i:s" }}</td>
                                 <td class="fw-bold">{{ item.user }}</td>
+                                {% if item.updated_by %}
+                                <td class="fw-bold">{{ item.updated_at }}</td>
+                                {% else %}
+                                <td></td>
+                                {% endif%}
                                 {% if item.updated_by %}
                                 <td class="fw-bold">{{ item.updated_by }}</td>
                                 {% else %}
