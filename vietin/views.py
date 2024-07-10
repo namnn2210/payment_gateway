@@ -46,7 +46,7 @@ def vietin_balance(username, password, account_number):
     return None
 
 def vietin_transactions(username,password,account_number):
-    try
+    try:
         page = 0
         fetch_transactions = []
         formatted_transactions = []
