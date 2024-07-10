@@ -14,6 +14,8 @@ class Payout(models.Model):
     accountname = models.CharField(max_length=255)
     bankcode = models.CharField(max_length=255)
     is_auto = models.BooleanField(default=False)
+    is_cancel = models.BooleanField(default=False)
+    is_report = models.BooleanField(default=False)
     status = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -64,7 +64,9 @@ class AddPayoutView(View):
             accountno=accountno,
             accountname=accountname,
             bankcode=bankcode,
-            is_auto=False
+            is_auto=False,
+            is_cancel=False,
+            is_report=False,
         )
         payout.save()
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
