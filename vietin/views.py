@@ -63,6 +63,7 @@ def vietin_transactions(username,password,account_number):
             "page": page,
             "action": "transactions"
         })
+        print(body)
         response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body).json()
         print(response)
         if response:
