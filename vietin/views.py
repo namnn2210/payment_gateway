@@ -60,6 +60,7 @@ def vietin_transactions(username,password,account_number):
             "action": "transactions"
         }
         response = requests.post(os.environ.get("VIETIN_URL"), json=body).json()
+        print(response)
         if response:
             if 'error' in response.keys():
                 if not response['error']:
