@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'corsheaders',
+    'channels',
     'cms',
     'bank',
     'acb',
@@ -50,7 +51,8 @@ INSTALLED_APPS = [
     'notification',
     'payout',
     'worker',
-    'partner'
+    'partner',
+    
 ]
 
 MIDDLEWARE = [
@@ -83,6 +85,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'payment_gateway.wsgi.application'
+
+# Redis configuration for channel layers
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],  # Update this with your Redis server details
+        },
+    },
+}
 
 
 # Database

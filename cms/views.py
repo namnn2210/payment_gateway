@@ -7,6 +7,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from bank.models import BankAccount
 from notification.models import Notification
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
 
 import subprocess
 import hmac
@@ -50,6 +53,18 @@ def profile(request):
         request.user.save()
         return render(request=request, template_name='profile.html', context={'success': 'Password changed successfully'})
     return render(request=request, template_name='profile.html', context={'error': None})
+
+@csrf_exempt
+def send_notification(request):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'notifications',
+        {
+            'type': 'send_notification',
+            'message': 'Hello, this is a real-time notification!'
+        }
+    )
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': 'ok'})
 
 @csrf_exempt
 def webhook(request):
