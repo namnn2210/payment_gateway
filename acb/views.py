@@ -2,10 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from bank.utils import Transaction, unix_to_datetime
 import requests
-from datetime import datetime, timedelta
-import json
 import os
-import re
 from dotenv import load_dotenv
 
 
@@ -71,3 +68,7 @@ def acb_transactions(username,password,account_number):
             formatted_transactions.append(new_formatted_transaction.__dict__())
         return formatted_transactions
     return None
+
+def new_transaction(request):
+    print('New transaction: ', request.body)
+    return JsonResponse({'status': 200, 'message': 'Done'})

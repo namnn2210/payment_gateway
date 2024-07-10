@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('cms.urls')),
     path('bank/', include('bank.urls')),
     path('payout/', include('payout.urls')),
+    path('acb/', include('acb.urls')),
 ]
 
 if settings.DEBUG:
