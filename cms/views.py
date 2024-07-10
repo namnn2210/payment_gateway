@@ -4,9 +4,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import JsonResponse
-
+from django.views.decorators.csrf import csrf_exempt
 from bank.models import BankAccount
 from notification.models import Notification
+
+import subprocess
+import hmac
+import hashlib
+import json
+import os
 
 # Create your views here.
 @login_required(login_url='user_login')
@@ -44,6 +50,42 @@ def profile(request):
         request.user.save()
         return render(request=request, template_name='profile.html', context={'success': 'Password changed successfully'})
     return render(request=request, template_name='profile.html', context={'error': None})
+
+@csrf_exempt
+def webhook(request):
+    if request.method == 'POST':
+        try:
+            # Verify the payload signature
+            secret = os.environ.get('GITHUB_WEBHOOK_SECRET', '226pay')
+            signature = request.META.get('HTTP_X_HUB_SIGNATURE')
+            if not signature:
+                return JsonResponse({'status': 'error', 'message': 'Missing signature'}, status=400)
+
+            sha_name, signature = signature.split('=')
+            if sha_name != 'sha1':
+                return JsonResponse({'status': 'error', 'message': 'Unsupported signature format'}, status=400)
+
+            mac = hmac.new(secret.encode(), msg=request.body, digestmod=hashlib.sha1)
+            if not hmac.compare_digest(mac.hexdigest(), signature):
+                return JsonResponse({'status': 'error', 'message': 'Invalid signature'}, status=400)
+
+            # Load JSON payload
+            payload = json.loads(request.body.decode('utf-8'))
+
+            # Check the branch (refs/heads/main for the main branch)
+            if payload.get('ref') == 'refs/heads/main':  # Change 'main' to your branch if needed
+                # Get the current working directory
+                cwd = os.getcwd()
+                # Run the deployment script
+                subprocess.call(['git', '-C', cwd, 'pull'])
+
+                return JsonResponse({'status': 'success', 'message': 'Deployment script executed.'}, status=200)
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Branch not matched'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 def user_logout(request):
     logout(request)

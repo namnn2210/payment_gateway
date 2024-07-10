@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, user_login, user_logout, user_callback, profile
+from .views import index, user_login, user_logout, user_callback, profile, webhook
 
 urlpatterns = [
     path('', index, name='index'),
@@ -7,4 +7,5 @@ urlpatterns = [
     path('profile', profile, name='profile'),
     path('user/logout', user_logout, name='user_logout'),
     path('callback', user_callback, name='user_callback'),
+    path('webhook/', webhook, name='webhook'),
 ]
