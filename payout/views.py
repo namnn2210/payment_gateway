@@ -120,7 +120,7 @@ def update_payout(request, update_type):
                 f'\n'
                 f'Reason: The receiving account information is incorrect!'
             )
-            send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+            send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         elif update_type == 'cancel':
             payout.is_cancel = True
             alert = (
