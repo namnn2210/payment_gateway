@@ -4,6 +4,7 @@ from bank.utils import Transaction, unix_to_datetime
 import requests
 from django.views.decorators.csrf import csrf_exempt
 import os
+import json
 from dotenv import load_dotenv
 
 
@@ -50,16 +51,19 @@ def vietin_transactions(username,password,account_number):
     page = 0
     fetch_transactions = []
     formatted_transactions = []
+    headers = {
+        'Content-Type': 'application/json'
+    }
     while True:
-        body = {
+        body = json.dumps({
             "rows": 1000,
             "username": username,
             "password": password,
             "accountNo": account_number,
             "page": page,
             "action": "transactions"
-        }
-        response = requests.post(os.environ.get("VIETIN_URL"), json=body).json()
+        })
+        response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body).json()
         print(response)
         if response:
             if 'error' in response.keys():
