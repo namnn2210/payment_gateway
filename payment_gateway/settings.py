@@ -166,7 +166,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 # Set the session cookie age (in seconds)
-SESSION_COOKIE_AGE = 1800  # 30 minutes
+SESSION_COOKIE_AGE = 21600  # 30 minutes
 # Set session to expire when the user closes the browser
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Optionally set session expiration on inactivity
