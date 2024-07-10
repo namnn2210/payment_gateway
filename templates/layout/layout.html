@@ -40,33 +40,36 @@
     <style>
         .notification-popup {
             position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background-color: #323232;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;  /* Green background */
             color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             display: none;
             opacity: 0;
             transition: opacity 0.5s ease, bottom 0.5s ease;
+            font-size: 16px;
+            max-width: 300px;
         }
 
         .notification-popup.show {
             display: block;
             opacity: 1;
-            bottom: 20px;
+            bottom: 40px;
         }
 
         .notification-popup h4 {
-            margin: 0 0 5px;
-            font-size: 16px;
+            margin: 0 0 10px;
+            font-size: 20px;
+            color: #ffffff;
         }
 
         .notification-popup p {
             margin: 0;
-            font-size: 14px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -240,6 +243,7 @@
     </main><!-- End #main -->
 
     <div id="notification-popup" class="notification-popup">
+        <h4>New Notification</h4>
         <p id="notification-message"></p>
     </div>
 
@@ -313,23 +317,24 @@
             }, 5000);  // Hide after 5 seconds
         };
 
-        const socket = new WebSocket('wss://' + window.location.host + '/ws/notifications/');
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const socket = new WebSocket(protocol + window.location.host + '/ws/notifications/');
 
-        socket.onmessage = function (event) {
+        socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
             const message = data.message;
             showNotification(message);
         };
 
-        socket.onopen = function () {
+        socket.onopen = function() {
             console.log('WebSocket connection established');
         };
 
-        socket.onclose = function () {
+        socket.onclose = function() {
             console.log('WebSocket connection closed');
         };
 
-        socket.onerror = function (error) {
+        socket.onerror = function(error) {
             console.error('WebSocket error:', error);
         };
     </script>
