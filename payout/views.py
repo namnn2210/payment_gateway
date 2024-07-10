@@ -98,9 +98,9 @@ def update_payout(request, update_type):
                 f'\n'
                 f'Account name: {payout.accountname}\n'
                 f'\n'
-                f'Account number: {payout.accountno}'
+                f'Account number: {payout.accountno}\n'
                 f'\n'
-                f'Created by: {payout.user}'
+                f'Created by: {payout.user}\n'
                 f'\n'
                 f'Done by: {request.user}'
             )
