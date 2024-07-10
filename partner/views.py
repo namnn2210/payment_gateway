@@ -46,7 +46,7 @@ def create_deposit_order(request):
         
         if response.status_code == 200:
             response_data = response.json()
-            return JsonResponse({'status': 'success', 'message': 'done', 'data':response_data}, status=200)
+            return JsonResponse(response_data, status=200)
         else:
             return JsonResponse({'status': 'error', 'message': 'Failed to reach the API'}, status=500)
         
