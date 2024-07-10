@@ -64,6 +64,7 @@ class AddPayoutView(View):
             accountno=accountno,
             accountname=accountname,
             bankcode=bankcode,
+            updated_by=None,
             is_auto=False,
             is_cancel=False,
             is_report=False,
@@ -95,6 +96,10 @@ def update_payout(request, update_type):
                 f'Account name: {payout.accountname}\n'
                 f'\n'
                 f'Account number: {payout.accountno}'
+                f'\n'
+                f'Created by: {payout.user}'
+                f'\n'
+                f'Done by: {request.user}'
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         elif update_type == 'report':
@@ -134,6 +139,7 @@ def update_payout(request, update_type):
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done','success': False})
+        payout.updated_by = request.user
         payout.save()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
