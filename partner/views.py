@@ -18,10 +18,10 @@ def create_deposit_order(request):
         scode = 'CID00101'
         payeeaccountno = '11112225541112'
         amount = '2000000.00'
-        transfercode = 'Z7BS7R'
+        transfercode = 'Z7BN7R'
         payername = 'PHAN THANH DAI'
         payeraccountno = '0478373733'
-        hashid = '453345'
+        hashid = '4444'
         cardtype = 1
         key = '!QAZ2wsx'
         
@@ -29,9 +29,6 @@ def create_deposit_order(request):
         sign_string = f"{scode}|{payeeaccountno}|{amount}|{transfercode}|{payername}|{payeraccountno}|{hashid}|{cardtype}:{key}"
         # Generate MD5 signature
         sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
-        print('===')
-        print(sign_string)
-        print(sign)
         
         payload = {
             'scode': scode,
@@ -44,16 +41,12 @@ def create_deposit_order(request):
             'hashid': hashid,
             'sign': sign,
         }
-        print(payload)
-        print('partner', os.environ.get('PARTNER'))
-        # print(os.environ.get('ABC'))
         
         response = requests.post(os.environ.get('PARTNER'), data=payload, headers=headers)
         
         if response.status_code == 200:
-            # response_data = response.json()
-            print('++++++++++++++++', response.text)
-            return JsonResponse({'status': 'success', 'message': 'done', 'data':response.text}, status=200)
+            response_data = response.json()
+            return JsonResponse({'status': 'success', 'message': 'done', 'data':response_data}, status=200)
         else:
             return JsonResponse({'status': 'error', 'message': 'Failed to reach the API'}, status=500)
         
