@@ -87,7 +87,7 @@ def vietin_transactions(username,password,account_number):
         else:
             transaction_type='OUT'
         transaction_date = datetime.strptime(transaction['processDate'], '%d-%m-%Y %H:%M:%S')
-        transaction_date = make_aware(transaction_date)  # Ensure timezone aware datetime
+        transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')  # Ensure timezone aware datetime
         new_formatted_transaction = Transaction(
             transaction_number=transaction['trxId'],
             transaction_date=transaction_date,
