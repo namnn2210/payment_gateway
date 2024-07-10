@@ -5,12 +5,14 @@ from django.views.decorators.csrf import csrf_exempt
 import hashlib
 import os
 import requests
+from django.core.cache import cache
 
 load_dotenv()
 
 @csrf_exempt
 def create_deposit_order(request):
     try:
+        cache.clear()
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         
         scode = 'CID00101'
@@ -43,8 +45,10 @@ def create_deposit_order(request):
             'sign': sign,
         }
         print(payload)
+        print('partner', os.environ.get('PARTNER'))
+        # print(os.environ.get('ABC'))
         
-        response = requests.post(os.environ.get('PARTNER_URL'), data=payload, headers=headers)
+        response = requests.post(os.environ.get('PARTNER'), data=payload, headers=headers)
         
         if response.status_code == 200:
             # response_data = response.json()
