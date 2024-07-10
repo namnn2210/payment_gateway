@@ -91,4 +91,5 @@ def vietin_transactions(username,password,account_number):
             formatted_transactions.append(new_formatted_transaction.to_dict())
         return formatted_transactions
     except Exception as ex:
+        print(str(ex))
         return None
