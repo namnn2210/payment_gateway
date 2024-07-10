@@ -7,5 +7,5 @@ urlpatterns = [
     path('profile', profile, name='profile'),
     path('user/logout', user_logout, name='user_logout'),
     path('callback', user_callback, name='user_callback'),
-    path('webhook/', webhook, name='webhook'),
+    path('webhook', webhook, name='webhook'),
 ]
