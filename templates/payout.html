@@ -28,6 +28,8 @@
                                 <th scope="col">Account Name</th>
                                 <th scope="col">Bank Code</th>
                                 <th scope="col">Created At</th>
+                                <th scope="col">Created By</th>
+                                <th scope="col">Updated By</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Action</th>
                                 <th scope="col">Report</th>
@@ -37,7 +39,7 @@
                         </thead>
                         <tbody>
                             {% for item in list_payout %}
-                            <tr>
+                            <tr class="text-center">
                                 <th>{{ item.scode }}</th>
                                 <td>{{ item.orderid }}</td>
                                 <td>{{ item.money|intcomma }} đ</td>
@@ -45,6 +47,12 @@
                                 <td>{{ item.accountname }}</td>
                                 <td>{{ item.bankcode }}</td>
                                 <td>{{ item.created_at|date:"d/m/Y H:i:s" }}</td>
+                                <td class="fw-bold">{{ item.user }}</td>
+                                {% if item.updated_by %}
+                                <td class="fw-bold">{{ item.updated_by }}</td>
+                                {% else %}
+                                <td></td>
+                                {% endif%}
                                 <td>
                                     {% if item.status %}
                                     <span class="btn btn-sm bg-success text-center">Done</span>

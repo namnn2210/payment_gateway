@@ -10,6 +10,8 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from bank.utils import send_telegram_message
 from dotenv import load_dotenv
+from datetime import datetime
+import pytz
 import os
 import json
 
@@ -68,6 +70,7 @@ class AddPayoutView(View):
             is_auto=False,
             is_cancel=False,
             is_report=False,
+            created_at=datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
         )
         payout.save()
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
@@ -135,11 +138,16 @@ def update_payout(request, update_type):
                 f'Account name: {payout.accountname}\n'
                 f'\n'
                 f'Account number: {payout.accountno}'
+                f'\n'
+                f'Created by: {payout.user}'
+                f'\n'
+                f'Done by: {request.user}'
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done','success': False})
         payout.updated_by = request.user
+        payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
         payout.save()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
