@@ -94,6 +94,6 @@ def vietin_transactions(username,password,account_number):
             description=transaction['remark'],
             amount=transaction['amount']
         )
-        formatted_transactions.append(new_formatted_transaction.to_dict())
+        formatted_transactions.append(new_formatted_transaction.__dict__())
     return formatted_transactions
     
