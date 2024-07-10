@@ -24,7 +24,7 @@ def get_balance(bank):
         bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
-    elif bank.bank_name.name == 'Vietin':
+    elif bank.bank_name.name == 'Vietinbank':
         bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
     else:
         bank_balance = None
@@ -45,7 +45,7 @@ def get_balance(bank):
             mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'ACB':
             mb_logged_in = acb_login(bank.username, bank.password, bank.account_number)
-        elif bank.bank_name.name == 'Vietin':
+        elif bank.bank_name.name == 'Vietinbank':
             mb_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
             
         if mb_logged_in:
@@ -53,7 +53,7 @@ def get_balance(bank):
                 bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'ACB':
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
-            elif bank.bank_name.name == 'Vietin':
+            elif bank.bank_name.name == 'Vietinbank':
                 bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
             else:
                 bank_balance = None
@@ -87,7 +87,7 @@ def get_transaction(bank):
         transactions = mb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         transactions = acb_transactions(bank.username, bank.password, bank.account_number)
-    elif bank.bank_name.name == 'Vietin':
+    elif bank.bank_name.name == 'Vietinbank':
         transactions = vietin_transactions(bank.username, bank.password, bank.account_number)
     else:
         transactions = None
