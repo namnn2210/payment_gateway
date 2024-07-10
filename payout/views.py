@@ -20,9 +20,9 @@ def list_payout(request):
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     
     if request.user.is_superuser:
-        list_payout = Payout.objects.all().order_by('-status')
+        list_payout = Payout.objects.all().order_by('-status','-created_at')
     else:
-        list_payout = Payout.objects.filter(user=request.user).order_by('-status')
+        list_payout = Payout.objects.filter(user=request.user).order_by('-status','-created_at')
     # paginator = Paginator(list_payout, 10)  # Show 10 items per page
 
     # page_number = request.GET.get('page')
@@ -74,23 +74,67 @@ class AddPayoutView(View):
 
 @csrf_exempt
 @require_POST
-def update_payout(request):
+def update_payout(request, update_type):
     # if request.method == 'POST':
     try:
         data = json.loads(request.body)
         payout_id = data.get('id')
         payout = get_object_or_404(Payout, id=payout_id)
-        payout.status = True  # Assuming 'True' marks the payout as done
-        payout.save()
         formatted_amount = '{:,.2f}'.format(payout.money)
-        alert = (
+        if update_type == 'done':
+            payout.status = True
+            alert = (
+                f'Success !\n'
+                f'\n'
                 f'Order ID: {payout.orderid}\n'
+                f'\n'
                 f'Amount: {formatted_amount} VND\n'
+                f'\n'
                 f'Bank name: {payout.bankcode}\n'
+                f'\n'
                 f'Account name: {payout.accountname}\n'
+                f'\n'
                 f'Account number: {payout.accountno}'
             )
-        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+        elif update_type == 'report':
+            payout.is_report = True
+            alert = (
+                f'Hi team !\n'
+                f'Please check this payout :\n'
+                f'\n'
+                f'Order ID: {payout.orderid}\n'
+                f'\n'
+                f'Amount: {formatted_amount} VND\n'
+                f'\n'
+                f'Bank name: {payout.bankcode}\n'
+                f'\n'
+                f'Account name: {payout.accountname}\n'
+                f'\n'
+                f'Account number: {payout.accountno}\n'
+                f'\n'
+                f'Reason: The receiving account information is incorrect!'
+            )
+            send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+        elif update_type == 'cancel':
+            payout.is_cancel = True
+            alert = (
+                f'Failed !\n'
+                f'\n'
+                f'Order ID: {payout.orderid}\n'
+                f'\n'
+                f'Amount: {formatted_amount} VND\n'
+                f'\n'
+                f'Bank name: {payout.bankcode}\n'
+                f'\n'
+                f'Account name: {payout.accountname}\n'
+                f'\n'
+                f'Account number: {payout.accountno}'
+            )
+            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+        else:
+            return JsonResponse({'status': 422, 'message': 'Done','success': False})
+        payout.save()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': 'Done','success': False})

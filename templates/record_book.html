@@ -74,7 +74,7 @@
 
         // Custom filtering function to filter data by date range
         $.fn.dataTable.ext.search.push(
-            function(settings, data, dataIndex) {
+            function (settings, data, dataIndex) {
                 var min = $('#start_date').val();
                 var max = $('#end_date').val();
                 var date = new Date(data[3]); // Use the index of your date column
@@ -87,9 +87,6 @@
                     max = new Date(max);
                 }
 
-                console.log('==========', min)
-                console.log(date);
-                console.log(max);
                 if (
                     (min === '' && max === '') ||
                     (min === '' && date <= new Date(max)) ||
