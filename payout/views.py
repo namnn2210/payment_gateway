@@ -85,7 +85,7 @@ def update_payout(request, update_type):
         if update_type == 'done':
             payout.status = True
             alert = (
-                f'Success !\n'
+                f'🟢🟢🟢Success🟢🟢🟢\n'
                 f'\n'
                 f'Order ID: {payout.orderid}\n'
                 f'\n'
