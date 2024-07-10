@@ -391,7 +391,8 @@
         $('#payoutTable').DataTable({
             "pageLength": 10,  // Set default page length
             "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
-            "order": [[7, "desc"]]  // Set default sorting order (optional)
+            // "order": [[7, "desc"]]  // Set default sorting order (optional)
+            "ordering": false
         });
     });
 </script>
