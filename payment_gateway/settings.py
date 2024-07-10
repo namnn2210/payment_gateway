@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'bank',
     'acb',
     'mb',
+    'vietin',
     'notification',
     'payout',
     'worker',

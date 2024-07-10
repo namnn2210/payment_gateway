@@ -3,6 +3,7 @@ from celery import Celery
 from dotenv import load_dotenv
 from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
+from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from bank.utils import send_telegram_message, find_substring
 from bank.models import BankAccount
 from datetime import datetime
@@ -23,6 +24,8 @@ def get_balance(bank):
         bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.name == 'Vietin':
+        bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
     else:
         bank_balance = None
     while bank_balance is None:
@@ -42,12 +45,16 @@ def get_balance(bank):
             mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'ACB':
             mb_logged_in = acb_login(bank.username, bank.password, bank.account_number)
+        elif bank.bank_name.name == 'Vietin':
+            mb_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
             
         if mb_logged_in:
             if bank.bank_name.name == 'MB':
                 bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'ACB':
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+            elif bank.bank_name.name == 'Vietin':
+                bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
             else:
                 bank_balance = None
                                 
@@ -80,6 +87,8 @@ def get_transaction(bank):
         transactions = mb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         transactions = acb_transactions(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.name == 'Vietin':
+        transactions = vietin_transactions(bank.username, bank.password, bank.account_number)
     else:
         transactions = None
     new_bank_history = transactions
