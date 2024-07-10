@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from bank.utils import Transaction, unix_to_datetime
+from bank.utils import Transaction
 import requests
 from django.views.decorators.csrf import csrf_exempt
 import os
+from datetime import datetime
+from django.utils.timezone import make_aware
 import json
 from dotenv import load_dotenv
 
@@ -63,9 +65,7 @@ def vietin_transactions(username,password,account_number):
             "page": page,
             "action": "transactions"
         })
-        print(body)
         response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body).json()
-        print(response)
         if response:
             if 'error' in response.keys():
                 if not response['error']:
@@ -86,9 +86,11 @@ def vietin_transactions(username,password,account_number):
             transaction_type='IN'
         else:
             transaction_type='OUT'
+        transaction_date = datetime.strptime(transaction['processDate'], '%d-%m-%Y %H:%M:%S')
+        transaction_date = make_aware(transaction_date)  # Ensure timezone aware datetime
         new_formatted_transaction = Transaction(
             transaction_number=transaction['trxId'],
-            transaction_date=transaction['processDate'],
+            transaction_date=transaction_date,
             transaction_type=transaction_type,
             account_number=account_number,
             description=transaction['remark'],
