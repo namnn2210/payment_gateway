@@ -12,6 +12,7 @@ from bank.utils import send_telegram_message
 from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
+from django.db.models import BooleanField, Case, Value, When, IntegerField
 import pytz
 import os
 import json
@@ -22,7 +23,16 @@ def list_payout(request):
     
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     
-    list_payout = Payout.objects.all().order_by('status','-created_at')
+    list_payout = Payout.objects.annotate(
+        sort_order=Case(
+            When(is_cancel=True, then=Value(3)),
+            When(is_report=True, then=Value(2)),
+            When(status=False, then=Value(0)),
+            When(status=True, then=Value(1)),
+            default=Value(4),
+            output_field=BooleanField()
+        )
+    ).order_by('sort_order', '-created_at')
     # paginator = Paginator(list_payout, 10)  # Show 10 items per page
 
     # page_number = request.GET.get('page')
