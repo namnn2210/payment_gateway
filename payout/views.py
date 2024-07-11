@@ -57,6 +57,14 @@ class AddPayoutView(View):
         accountname = data.get('accountname')
         bankcode = data.get('bankcode')
         
+        try:
+            float(money)
+        except Exception as ex:
+            return JsonResponse({'status': 504, 'message': 'Invalid amount value'})
+        
+        if '.00' not in money:
+            return JsonResponse({'status': 503, 'message': 'Amount must be end with .00'})
+        
         # Check if any bank_account with the same type is ON
         existed_bank_account = Payout.objects.filter(
             orderid=orderid).first()
