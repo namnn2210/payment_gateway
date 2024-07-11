@@ -68,7 +68,7 @@ def get_dates(start_date=''):
 
 def find_substring(text):
     # Regex pattern to find a substring starting with 'Z' and having 7 characters
-    pattern = r'Z.{6}'
+    pattern = r'[Zz].{6}'
     match = re.search(pattern, text)
     if match:
         return match.group()
