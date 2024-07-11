@@ -87,7 +87,7 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'payment_gateway.wsgi.application'
+WSGI_APPLICATION = 'payment_gateway.wsgi.application'
 ASGI_APPLICATION = "payment_gateway.asgi.application"
 
 # Redis configuration for channel layers
