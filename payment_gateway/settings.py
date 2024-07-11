@@ -181,6 +181,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://0.0.0.0:2210'
 ]
 
+USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
