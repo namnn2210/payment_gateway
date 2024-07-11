@@ -69,9 +69,9 @@
                                 <td>
                                     {% if item.status %}
                                     <span class="btn btn-sm bg-success text-center">Done</span>
-                                    {% elif not item.status and not item.is_cancel %}
+                                    {% elif item.status == False %}
                                     <span class="btn btn-sm bg-warning text-center">Pending</span>
-                                    {% else %}
+                                    {% elif item.status is None %}
                                     <span></span>
                                     {% endif %}
                                 </td>
