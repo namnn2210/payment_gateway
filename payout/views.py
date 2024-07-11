@@ -44,7 +44,6 @@ def list_payout(request):
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
 
-@login_required(login_url='user_login')
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPayoutView(View):
     def post(self, request, *args, **kwargs):
@@ -95,7 +94,6 @@ class AddPayoutView(View):
 
 @csrf_exempt
 @require_POST
-@login_required(login_url='user_login')
 def update_payout(request, update_type):
     # if request.method == 'POST':
     try:

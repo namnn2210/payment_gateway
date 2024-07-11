@@ -89,7 +89,6 @@ class AddBankView(View):
         return JsonResponse({'status': 500, 'message': 'Failed to add bank'})
     
 @csrf_exempt
-@login_required(login_url='user_login')
 def toggle_bank_status(request):
     if request.method == 'POST':
         data = json.loads(request.body)
