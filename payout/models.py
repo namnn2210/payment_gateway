@@ -16,7 +16,7 @@ class Payout(models.Model):
     is_auto = models.BooleanField(default=False)
     is_cancel = models.BooleanField(default=False)
     is_report = models.BooleanField(default=False)
-    status = models.BooleanField(default=False)
+    status = models.BooleanField(default=False,null=True)
     updated_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='payout_created_by', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
