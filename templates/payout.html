@@ -12,6 +12,7 @@
                 <option value="Pending">Pending</option>
                 <option value="Done">Done</option>
                 <option value="Canceled">Canceled</option>
+                <option value="Reported">Reported</option>
             </select>
         </div>
         <div class="col-md-6 col-sm-12 text-right mt-4">
@@ -413,8 +414,13 @@
                 var status = $('#statusFilter').val();
                 var statusColumn = data[10]; // Index of the status column
                 var cancelColumn = data[13];
+                var reportColumn = data[12];
 
                 if (status === 'Canceled' && status === cancelColumn) {
+                    return true;
+                }
+
+                if (status === 'Reported' && status === reportColumn) {
                     return true;
                 }
 
