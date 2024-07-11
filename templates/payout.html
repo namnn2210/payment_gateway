@@ -219,7 +219,10 @@
             success: function (response) {
                 if (response.status === 200) {
                     $('#addPayoutModal').modal('hide');
-                    location.reload();
+                    toastr.success('Payout added successfully' || 'Done add');
+                    setTimeout(function(){
+                        location.reload();
+                    }, 3000);
                 } else {
                     toastr.error(response.message || 'An error occurred while adding the payout.');
                 }
