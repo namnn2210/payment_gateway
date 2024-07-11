@@ -8,16 +8,17 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 """
 
 
-from django.core.asgi import get_asgi_application
-django_application = get_asgi_application()
+
+
 import os
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from channels.security.websocket import AllowedHostsOriginValidator
 import payment_gateway.routing
+from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'payment_gateway.settings')
-
+django_application = get_asgi_application()
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
