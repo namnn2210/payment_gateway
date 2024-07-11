@@ -2,6 +2,7 @@
 {% load humanize %}
 {% load static %}
 {% block title %}List Payout{% endblock %}
+{% block head %}{% endblock %}
 {% block content %}
 <div class="container-fluid">
     <div class="row">
@@ -194,6 +195,10 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
     $('#addPayoutForm').on('submit', function (e) {
         e.preventDefault();
@@ -216,10 +221,11 @@
                     $('#addPayoutModal').modal('hide');
                     location.reload();
                 } else {
+                    toastr.error(response.message || 'An error occurred while adding the payout.');
                 }
             },
             error: function (response) {
-                console.log(response.message);
+                toastr.error(response.message || 'An error occurred while adding the payout.');
             }
         });
     });
