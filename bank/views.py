@@ -161,3 +161,35 @@ def update_balance(request):
     for bank_account in bank_accounts:
         list_dict_accounts.append(model_to_dict(bank_account))
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'balance':list_dict_accounts}})
+
+def update_amount_by_date(transaction_type, amount):
+    redis_client = redis_connect(3)
+    today_str = datetime.now().strftime('%Y-%m-%d')
+    
+    # Initialize today's key if it doesn't exist
+    if not redis_client.exists(today_str):
+        initial_value = json.dumps({'in': 0, 'out': 0})
+        redis_client.set(today_str, initial_value)
+        
+    # Retrieve current totals
+    current_totals = json.loads(redis_client.get(today_str))
+    
+    # Update totals based on payout status
+    if transaction_type == 'OUT':  # Assuming status False indicates an "out" payout
+        current_totals['out'] += amount
+    else:  # Assuming any other status indicates an "in" payout
+        current_totals['in'] += amount
+
+    # Save updated totals back to Redis
+    redis_client.set(today_str, json.dumps(current_totals))
+    
+def get_amount_today(request):
+    redis_client = redis_connect(3)
+    today_str = datetime.now().strftime('%Y-%m-%d')
+    if redis_client.exists(today_str):
+        current_totals = json.loads(redis_client.get(today_str))
+        return JsonResponse({'status': 200, 'message': 'Done', 'data': current_totals})
+    else:
+        return JsonResponse({'status': 500, 'message': 'Invalid request'})
+    
+    

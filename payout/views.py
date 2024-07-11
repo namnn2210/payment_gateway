@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from bank.utils import send_telegram_message
+from bank.views import update_amount_by_date
 from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
@@ -121,6 +122,7 @@ def update_payout(request, update_type):
                 f'Done by: {request.user}'
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+            update_amount_by_date('OUT',payout.money)
         elif update_type == 'report':
             payout.is_report = True
             alert = (
@@ -142,6 +144,7 @@ def update_payout(request, update_type):
             send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         elif update_type == 'cancel':
             payout.is_cancel = True
+            payout.status = None
             alert = (
                 f'🔴🔴🔴Failed🔴🔴🔴\n'
                 f'\n'

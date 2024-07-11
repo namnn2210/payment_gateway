@@ -5,6 +5,7 @@ from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from bank.utils import send_telegram_message, find_substring
+from bank.views import update_amount_by_date
 from bank.models import BankAccount
 from datetime import datetime
 import pandas as pd
@@ -121,8 +122,6 @@ def get_transaction(bank):
                         transaction_type = '+'
                         transaction_color = '🟢'  # Green circle emoji for IN transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-                        print('===================', row['description'])
-                        print(find_substring(row['description']))
                         alert = (
                             f'Hi,\n'
                             f'\n'
@@ -141,6 +140,7 @@ def get_transaction(bank):
                             f'Reason of not be credited: Order not found!!!'
                         )
                         send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        update_amount_by_date('IN',row['amount'])
                 else:
                     if bank.bank_type == 'OUT':
                         transaction_type = '-'
