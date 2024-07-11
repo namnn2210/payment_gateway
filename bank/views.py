@@ -89,6 +89,7 @@ class AddBankView(View):
         return JsonResponse({'status': 500, 'message': 'Failed to add bank'})
     
 @csrf_exempt
+@login_required(login_url='user_login')
 def toggle_bank_status(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -106,7 +107,7 @@ def toggle_bank_status(request):
 
 
 
-
+@login_required(login_url='user_login')
 def update_transaction_history(request):
     # all_transactions = get_all_transactions(request)
     redis_client = redis_connect()
@@ -154,6 +155,7 @@ def update_transaction_history(request):
 
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':top_transactions_json_in, 'out':top_transactions_json_out}})
 
+@login_required(login_url='user_login')
 def update_balance(request):
     bank_accounts = BankAccount.objects.filter(status=True)
     list_dict_accounts = []

@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.views import View
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from bank.utils import send_telegram_message
@@ -19,6 +20,7 @@ import json
 
 load_dotenv()
 # Create your views here.
+@login_required(login_url='user_login')
 def list_payout(request):
     
     bank_data = json.load(open('bank.json', encoding='utf-8'))
@@ -42,6 +44,7 @@ def list_payout(request):
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
 
+@login_required(login_url='user_login')
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPayoutView(View):
     def post(self, request, *args, **kwargs):
@@ -92,6 +95,7 @@ class AddPayoutView(View):
 
 @csrf_exempt
 @require_POST
+@login_required(login_url='user_login')
 def update_payout(request, update_type):
     # if request.method == 'POST':
     try:
