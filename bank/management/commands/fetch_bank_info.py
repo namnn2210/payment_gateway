@@ -4,6 +4,10 @@ from bank.database import redis_connect
 import time
 from dotenv import load_dotenv
 from worker.views import get_balance
+from bank.utils import send_telegram_message
+from datetime import datetime
+import pytz
+import os
 
 load_dotenv()
 
@@ -15,8 +19,16 @@ class Command(BaseCommand):
         redis_client = redis_connect()
         while True:
             # Get all active bank accounts
-            bank_accounts = BankAccount.objects.filter(status=True)
-            for bank in bank_accounts:
-                get_balance(bank=bank)
-            redis_client.close()
-            time.sleep(15)
+            try:
+                bank_accounts = BankAccount.objects.filter(status=True)
+                for bank in bank_accounts:
+                    get_balance(bank=bank)
+                redis_client.close()
+                time.sleep(15)
+            except Exception as ex:
+                alert = (
+                f'🔴 - SYSTEM ALERT\n'
+                f'Fetch bank info error: {str(ex)}\n'
+                f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+            )
+            send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
