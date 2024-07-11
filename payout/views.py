@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from bank.utils import send_telegram_message
+from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
 import pytz
@@ -70,6 +71,7 @@ class AddPayoutView(View):
             created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
         )
         payout.save()
+        send_notification('New payout added. Please check and process')
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
