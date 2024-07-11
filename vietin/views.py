@@ -49,53 +49,55 @@ def vietin_balance(username, password, account_number):
     return None
 
 def vietin_transactions(username,password,account_number):
-    
-    page = 0
-    fetch_transactions = []
-    formatted_transactions = []
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    while True:
-        body = json.dumps({
-            "rows": 1000,
-            "username": username,
-            "password": password,
-            "accountNumber": account_number,
-            "page": page,
-            "action": "transactions"
-        })
-        response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body).json()
-        if response:
-            if 'error' in response.keys():
-                if not response['error']:
-                    transactions = response['transactions']
-                    if not transactions:  # If the transactions list is empty, break the loop
-                        break
-                    fetch_transactions += transactions
-                    page += 1  # Increment the page number
+    try:
+        page = 0
+        fetch_transactions = []
+        formatted_transactions = []
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        while True:
+            body = json.dumps({
+                "rows": 1000,
+                "username": username,
+                "password": password,
+                "accountNumber": account_number,
+                "page": page,
+                "action": "transactions"
+            })
+            response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body).json()
+            if response:
+                if 'error' in response.keys():
+                    if not response['error']:
+                        transactions = response['transactions']
+                        if not transactions:  # If the transactions list is empty, break the loop
+                            break
+                        fetch_transactions += transactions
+                        page += 1  # Increment the page number
+                    else:
+                        break  # If there's an error, stop fetching
                 else:
-                    break  # If there's an error, stop fetching
+                    break  # If 'error' key is missing, stop fetching
             else:
-                break  # If 'error' key is missing, stop fetching
-        else:
-            break  # If response is empty, stop fetching
-        
-    for transaction in fetch_transactions:
-        if transaction['sendingBankId'] == '':
-            transaction_type='IN'
-        else:
-            transaction_type='OUT'
-        transaction_date = datetime.strptime(transaction['processDate'], '%d-%m-%Y %H:%M:%S')
-        transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')  # Ensure timezone aware datetime
-        new_formatted_transaction = Transaction(
-            transaction_number=transaction['trxId'],
-            transaction_date=transaction_date,
-            transaction_type=transaction_type,
-            account_number=account_number,
-            description=transaction['remark'],
-            amount=transaction['amount']
-        )
-        formatted_transactions.append(new_formatted_transaction.__dict__())
-    return formatted_transactions
+                break  # If response is empty, stop fetching
+            
+        for transaction in fetch_transactions:
+            if transaction['sendingBankId'] == '':
+                transaction_type='IN'
+            else:
+                transaction_type='OUT'
+            transaction_date = datetime.strptime(transaction['processDate'], '%d-%m-%Y %H:%M:%S')
+            transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')  # Ensure timezone aware datetime
+            new_formatted_transaction = Transaction(
+                transaction_number=transaction['trxId'],
+                transaction_date=transaction_date,
+                transaction_type=transaction_type,
+                account_number=account_number,
+                description=transaction['remark'],
+                amount=transaction['amount']
+            )
+            formatted_transactions.append(new_formatted_transaction.__dict__())
+        return formatted_transactions
+    except Exception as ex:
+        return None
     

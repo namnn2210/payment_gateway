@@ -96,7 +96,7 @@ def get_transaction(bank):
     if new_bank_history_df.empty:
         alert = (
             f'🔴 - SYSTEM ALERT\n'
-            f'Get transaction history from {bank.account_number} empty\n'
+            f'Get transaction history from {bank.account_number} - {bank.bank_name.name} empty\n'
             f'Date: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
@@ -118,6 +118,7 @@ def get_transaction(bank):
                     if bank.bank_type == 'IN':
                         transaction_type = '+'
                         transaction_color = '🟢'  # Green circle emoji for IN transactions
+                        print(row['amount'])
                         formatted_amount = '{:,.2f}'.format(row['amount'])
                         alert = (
                             f'Hi,\n'
