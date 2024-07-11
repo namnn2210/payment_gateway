@@ -3,7 +3,14 @@
 {% block title %}Record Book{% endblock %}
 {% block content %}
 <style>
-    /* Add any custom styling here */
+    .table-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .table-wrapper {
+        width: 48%;
+    }
 </style>
 <div class="container-fluid">
     <div class="row">
@@ -13,42 +20,72 @@
                     <h5 class="card-title">Record Book</h5>
                     <div class="card-body" style="font-size: 13px">
                         <div class="row mb-3">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <label for="search_box">Search</label>
+                                <input type="text" id="search_box" class="form-control" placeholder="Search" />
+                            </div>
+                            <div class="col-md-4">
                                 <label for="start_date">Start Date</label>
                                 <input type="date" id="start_date" class="form-control" />
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="end_date">End Date</label>
                                 <input type="date" id="end_date" class="form-control" />
                             </div>
                         </div>
-                        <div class="table-responsive">
-                            <table id="transactionTable" class="table table-sm display">
-                                <thead>
-                                    <tr class="text-center" style="font-size: 13px">
-                                        <th>Account Number</th>
-                                        <th>Transaction Number</th>
-                                        <th>Amount</th>
-                                        <th>Date</th>
-                                        <th>Memo</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="transactionTableBody" class="text-center">
-                                    {% for item in page_obj %}
-                                    <tr>
-                                        <td>{{ item.account_number }}</td>
-                                        <td>{{ item.transaction_number }}</td>
-                                        {% if item.transaction_type == 'IN'%}
-                                        <td class="text-success">{{ item.amount|intcomma }}</td>
-                                        {% else %}
-                                        <td class="text-danger">{{ item.amount|intcomma }}</td>
+                        <div class="table-container row">
+                            <div class="table-responsive col-md-6 col-sm-12">
+                                <table id="inTransactionTable" class="table table-sm display">
+                                    <thead>
+                                        <tr class="text-center" style="font-size: 13px">
+                                            <th>Account Number</th>
+                                            <th>Transaction Number</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Memo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inTransactionTableBody" class="text-center">
+                                        {% for item in page_obj %}
+                                        {% if item.transaction_type == 'IN' %}
+                                        <tr>
+                                            <td>{{ item.account_number }}</td>
+                                            <td>{{ item.transaction_number }}</td>
+                                            <td class="text-success">{{ item.amount|intcomma }}</td>
+                                            <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
+                                            <td>{{ item.description }}</td>
+                                        </tr>
                                         {% endif %}
-                                        <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
-                                        <td>{{ item.description }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-responsive col-md-6 col-sm-12">
+                                <table id="outTransactionTable" class="table table-sm display">
+                                    <thead>
+                                        <tr class="text-center" style="font-size: 13px">
+                                            <th>Account Number</th>
+                                            <th>Transaction Number</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Memo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="outTransactionTableBody" class="text-center">
+                                        {% for item in page_obj %}
+                                        {% if item.transaction_type == 'OUT' %}
+                                        <tr>
+                                            <td>{{ item.account_number }}</td>
+                                            <td>{{ item.transaction_number }}</td>
+                                            <td class="text-danger">{{ item.amount|intcomma }}</td>
+                                            <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
+                                            <td>{{ item.description }}</td>
+                                        </tr>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -65,8 +102,14 @@
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {
-        // Initialize DataTable
-        var table = $('#transactionTable').DataTable({
+        // Initialize DataTables for both IN and OUT transactions
+        var inTable = $('#inTransactionTable').DataTable({
+            "pageLength": 10,  // Set default page length
+            "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
+            "ordering": false
+        });
+
+        var outTable = $('#outTransactionTable').DataTable({
             "pageLength": 10,  // Set default page length
             "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
             "ordering": false
@@ -101,7 +144,14 @@
 
         // Event listener to the date range filtering inputs to redraw on input
         $('#start_date, #end_date').on('change', function () {
-            table.draw();
+            inTable.draw();
+            outTable.draw();
+        });
+
+        // Single search box for both tables
+        $('#search_box').on('keyup', function () {
+            inTable.search(this.value).draw();
+            outTable.search(this.value).draw();
         });
     });
 </script>

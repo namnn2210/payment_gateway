@@ -118,7 +118,6 @@ def get_transaction(bank):
                     if bank.bank_type == 'IN':
                         transaction_type = '+'
                         transaction_color = '🟢'  # Green circle emoji for IN transactions
-                        print(row['amount'])
                         formatted_amount = '{:,.2f}'.format(row['amount'])
                         alert = (
                             f'Hi,\n'

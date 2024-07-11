@@ -58,6 +58,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -152,25 +153,23 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-
 # LOGOUT_REDIRECT_URL = 'login'
 CORS_ALLOWED_ORIGINS = [
     'https://226pay.com',
     'https://www.226pay.com',
-    'http://localhost:8000'
+    'http://0.0.0.0:2210'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'https://226pay.com',
     'https://www.226pay.com',
-    'http://localhost:8000'
+    'http://0.0.0.0:2210'
 ]
 
 # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -182,3 +181,5 @@ SESSION_COOKIE_AGE = 21600  # 30 minutes
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Optionally set session expiration on inactivity
 SESSION_SAVE_EVERY_REQUEST = True
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
