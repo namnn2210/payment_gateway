@@ -109,6 +109,8 @@ def get_transaction(bank):
         old_bank_history_df = pd.DataFrame(old_bank_history)
         # Compare 2 dataframes using equals
         differences = old_bank_history_df.equals(final_new_bank_history_df)
+        old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
+        final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
         if not differences:
             diff = old_bank_history_df.merge(final_new_bank_history_df, how='outer', indicator=True)
             unique_rows_new = diff[diff['_merge'] == 'right_only'].drop(columns=['_merge'])
