@@ -19,6 +19,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'payment_gateway.settings')
 django_application = get_asgi_application()
 
 application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "https": get_asgi_application(),
     "websocket": AuthMiddlewareStack(
         URLRouter(
             payment_gateway.routing.websocket_urlpatterns
