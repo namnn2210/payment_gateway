@@ -81,7 +81,7 @@ def get_balance(bank):
 
     
 def get_transaction(bank):
-    redis_client = redis_connect()
+    redis_client = redis_connect(1)
     bank_exists = redis_client.get(bank.account_number)
     if bank.bank_name.name == 'MB':
         transactions = mb_transactions(bank.username, bank.password, bank.account_number)

@@ -16,14 +16,12 @@ class Command(BaseCommand):
     help = 'Get all bank transaction history to redis'
 
     def handle(self, *args, **kwargs):
-        redis_client = redis_connect()
         while True:
             # Get all active bank accounts
             try:
                 bank_accounts = BankAccount.objects.filter(status=True)
                 for bank in bank_accounts:
                     get_balance(bank=bank)
-                redis_client.close()
                 time.sleep(15)
             except Exception as ex:
                 alert = (

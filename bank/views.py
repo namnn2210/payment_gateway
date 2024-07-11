@@ -27,7 +27,7 @@ def list_bank(request):
 
 @login_required(login_url='user_login')
 def record_book(request):
-    redis_client = redis_connect()
+    redis_client = redis_connect(1)
     
     list_banks = BankAccount.objects.all()
     all_transactions = []
@@ -109,7 +109,7 @@ def toggle_bank_status(request):
 
 def update_transaction_history(request):
     # all_transactions = get_all_transactions(request)
-    redis_client = redis_connect()
+    redis_client = redis_connect(1)
     bank_accounts = BankAccount.objects.filter(status=True)
     
     list_df_in = []
