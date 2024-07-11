@@ -35,7 +35,7 @@ def send_telegram_message(message: str, chat_id, api_key):
     data_dict = {'chat_id': chat_id,
                  'text': message,
                  'parse_mode': 'HTML',
-                 'disable_notification': True}
+                 'disable_notification': False}
     headers = {'Content-Type': 'application/json',
                'Proxy-Authorization': 'Basic base64'}
     data = json.dumps(data_dict)
