@@ -119,6 +119,8 @@ def get_transaction(bank):
                         transaction_type = '+'
                         transaction_color = '🟢'  # Green circle emoji for IN transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
+                        print('===================', row['description'])
+                        print(find_substring(row['description']))
                         alert = (
                             f'Hi,\n'
                             f'\n'
