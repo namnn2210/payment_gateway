@@ -36,6 +36,7 @@ ALLOWED_HOSTS = ['226pay.com','www.226pay.com','localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
+    "daphne",
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -86,7 +87,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'payment_gateway.wsgi.application'
+# WSGI_APPLICATION = 'payment_gateway.wsgi.application'
+ASGI_APPLICATION = "payment_gateway.asgi.application"
 
 # Redis configuration for channel layers
 CHANNEL_LAYERS = {
