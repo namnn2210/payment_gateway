@@ -23,7 +23,7 @@ class Command(BaseCommand):
                         f'🔴 - PAYOUT ALERT\n'
                         f'Pending payouts still remain to be processed. Please check !!"\n'
                     )
-                    send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('PENDING_PAYOUT_CHAT_ID'))
+                    send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
                 time.sleep(120)
             except Exception as ex:
                 alert = (
