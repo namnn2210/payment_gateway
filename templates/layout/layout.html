@@ -286,7 +286,7 @@
         };
 
         const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const socket = new WebSocket(protocol + window.location.hostname + ':' + window.location.port + '/ws/notifications/');
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/notifications/');
 
         socket.onmessage = function (event) {
             const data = JSON.parse(event.data);
