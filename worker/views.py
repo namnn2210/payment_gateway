@@ -40,7 +40,7 @@ def get_balance(bank):
                 f'Get bank info: {bank.account_number} empty\n'
                 f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
             )
-            send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            # send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             return
             
         if bank.bank_name.name == 'MB':
@@ -79,7 +79,7 @@ def get_balance(bank):
             f'Get balance from {bank.account_number} 0\n'
             f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
         )
-        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+        # send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
 
     
 def get_transaction(bank):
@@ -101,7 +101,7 @@ def get_transaction(bank):
             f'Get transaction history from {bank.account_number} - {bank.bank_name.name} empty\n'
             f'Date: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
-        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+        # send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
     final_new_bank_history_df = new_bank_history_df.fillna('')
     if not bank_exists:
         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
