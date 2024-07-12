@@ -140,11 +140,12 @@ def get_transaction(bank):
                             f'\n'
                             f'Reason of not be credited: Order not found!!!'
                         )
+                        redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         if str(row['account_number']) == '17392991':
                             result = create_deposit_order(row)
                             if result:
                                 if result['prc'] == '1' and result['errcode'] == '00':
-                                    if result['msg'] == 'The transfercode does not match.':
+                                    if result['orderno'] == '':
                                         update_transaction_history_status(str(row['account_number']), row['transfer_code'], False)
                                     else:
                                         update_transaction_history_status(str(row['account_number']), row['transfer_code'], True)
@@ -163,9 +164,10 @@ def get_transaction(bank):
                             f'🔍 {row["transaction_type"]}\n'
                             f'🕒 {row["transaction_date"]}'
                         )
+                        redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                 
-            redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+            
             print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
             print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))

@@ -168,13 +168,20 @@
                     tableBodyIn.innerHTML = ''; // Clear existing table rows
                     data.data.in.forEach(transaction => {
                         const row = document.createElement('tr');
+                        var transactionStatus = ''
+                        if (!transaction.status) {
+                            transactionStatus = 'Failed'
+                        }
+                        else {
+                            transactionStatus = 'Success'
+                        }
                         row.innerHTML = `
                             <td>${transaction.account_number}</td>
                             <td>${transaction.transaction_number}</td>
                             <td class="text-success">${transaction.amount.toLocaleString()}</td>
                             <td>${transaction.transaction_date}</td>
                             <td>${transaction.description}</td>
-                            <td>${transaction.status}</td>
+                            <td>${transactionStatus}</td>
                         `;
                         tableBodyIn.appendChild(row);
                     });
@@ -187,13 +194,19 @@
                     tableBodyOut.innerHTML = ''; // Clear existing table rows
                     data.data.out.forEach(transaction => {
                         const row = document.createElement('tr');
+                        if (!transaction.status) {
+                            transactionStatus = 'Failed'
+                        }
+                        else {
+                            transactionStatus = 'Success'
+                        }
                         row.innerHTML = `
                             <td>${transaction.account_number}</td>
                             <td>${transaction.transaction_number}</td>
                             <td class="text-danger">${transaction.amount.toLocaleString()}</td>
                             <td>${transaction.transaction_date}</td>
                             <td>${transaction.description}</td>
-                            <td>${transaction.status}</td>
+                            <td>${transactionStatus}</td>
                         `;
                         tableBodyOut.appendChild(row);
                     });
