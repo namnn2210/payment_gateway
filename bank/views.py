@@ -192,4 +192,11 @@ def get_amount_today(request):
     else:
         return JsonResponse({'status': 500, 'message': 'Invalid request'})
     
+
+def update_transaction_history_status(account_number, transfer_code):
+    redis_client = redis_connect(1)
+    
+    
+    
+    
     

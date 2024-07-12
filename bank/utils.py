@@ -12,12 +12,14 @@ load_dotenv()
 
 
 class Transaction:
-    def __init__(self, transaction_number, transaction_date, transaction_type, account_number, description, amount) -> None:
+    def __init__(self, transaction_number, transaction_date, transaction_type, account_number, description, transfer_code, amount) -> None:
         self.transaction_number = transaction_number
         self.transaction_date = transaction_date
         self.transaction_type = transaction_type
         self.account_number = account_number
         self.description = description
+        self.transfer_code = transfer_code
+        self.status = None
         self.amount = amount
 
     def __dict__(self) -> dict:
@@ -27,6 +29,8 @@ class Transaction:
             'transaction_type':self.transaction_type,
             'account_number':self.account_number,
             'description':self.description, 
+            'transfer_code':self.transfer_code,
+            'status':self.status,
             'amount':self.amount
         }
         

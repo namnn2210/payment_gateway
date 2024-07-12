@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from bank.utils import Transaction, unix_to_datetime
+from bank.utils import Transaction, unix_to_datetime, find_substring
 import requests
 from django.views.decorators.csrf import csrf_exempt
 import os
@@ -64,6 +64,7 @@ def acb_transactions(username,password,account_number):
                 transaction_type=transaction['type'],
                 account_number=transaction['account'],
                 description=transaction['description'],
+                transfer_code=find_substring(transaction['description']),
                 amount=transaction['amount']
             )
             formatted_transactions.append(new_formatted_transaction.__dict__())

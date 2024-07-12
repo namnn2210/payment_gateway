@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 from bank.utils import Transaction
-from bank.utils import get_dates
+from bank.utils import get_dates, find_substring
 import requests
 import json
 import os
@@ -62,6 +62,7 @@ def mb_transactions(username, password, account_number, start=''):
                         transaction_type= transaction_type,
                         account_number=transaction['accountNo'],
                         description=transaction['description'],
+                        transfer_code=find_substring(transaction['description']),
                         amount=amount
                     )
                     formatted_transactions.append(new_formatted_transaction.__dict__())

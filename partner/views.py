@@ -1,29 +1,30 @@
 from django.shortcuts import render
 from dotenv import load_dotenv
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 import hashlib
+import pandas as pd
 import os
 import requests
-from django.core.cache import cache
 
 load_dotenv()
 
-@csrf_exempt
-def create_deposit_order(request):
+def create_deposit_order(transaction):
     try:
-        cache.clear()
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        key_df = pd.read_csv(os.environ.get('MID_KEY'))
+        scode = key_df[key_df['bankno'] == transaction['account_number']]['scode'].values
+        cardtype = key_df[key_df['bankno'] == transaction['account_number']]['cardtype'].values
+        key = key_df[key_df['bankno'] == transaction['account_number']]['key'].values
         
-        scode = 'CID00101'
-        payeeaccountno = '11112225541112'
-        amount = '2000000.00'
-        transfercode = 'Z7BN7R'
-        payername = 'PHAN THANH DAI'
-        payeraccountno = '0478373733'
-        hashid = '4444'
-        cardtype = 1
-        key = '!QAZ2wsx'
+        print(transaction['account_number'], scode, cardtype, key)
+        payeeaccountno = transaction['account_number']
+        amount = f'{str(transaction['amount'])}.00'
+        
+        transfercode = transaction['transfer_code']
+        payername = 'NA'
+        payeraccountno = transaction['account_number'][-4:]
+        
+        hashid = transaction['transaction_number']
         
         # Create the sign string
         sign_string = f"{scode}|{payeeaccountno}|{amount}|{transfercode}|{payername}|{payeraccountno}|{hashid}|{cardtype}:{key}"

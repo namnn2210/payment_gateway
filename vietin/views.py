@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from bank.utils import Transaction
+from bank.utils import Transaction, find_substring
 import requests
 from django.views.decorators.csrf import csrf_exempt
 import os
@@ -94,6 +94,7 @@ def vietin_transactions(username,password,account_number):
                 transaction_type=transaction_type,
                 account_number=account_number,
                 description=transaction['remark'],
+                transfer_code=find_substring(transaction['description']),
                 amount=int(transaction['amount'])
             )
             formatted_transactions.append(new_formatted_transaction.__dict__())

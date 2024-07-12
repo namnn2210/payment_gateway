@@ -7,6 +7,7 @@ from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from bank.utils import send_telegram_message, find_substring
 from bank.views import update_amount_by_date
 from bank.models import BankAccount
+from partner.views import create_deposit_order
 from datetime import datetime
 import pandas as pd
 import json
@@ -141,6 +142,8 @@ def get_transaction(bank):
                         )
                         send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         update_amount_by_date('IN',row['amount'])
+                        if bank.account_number == '17392991':
+                            create_deposit_order(row)
                 else:
                     if bank.bank_type == 'OUT':
                         transaction_type = '-'
