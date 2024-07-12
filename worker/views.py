@@ -5,7 +5,7 @@ from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from bank.utils import send_telegram_message, find_substring
-from bank.views import update_amount_by_date
+from bank.views import update_amount_by_date, update_transaction_history_status
 from bank.models import BankAccount
 from partner.views import create_deposit_order
 from datetime import datetime
@@ -141,7 +141,11 @@ def get_transaction(bank):
                             f'Reason of not be credited: Order not found!!!'
                         )
                         if str(row['account_number']) == '17392991':
-                            print(create_deposit_order(row))
+                            result = create_deposit_order(row)
+                            if result['msg'] == 'The transfercode does not match.':
+                                update_transaction_history_status(str(row['account_number']), row['transfer_code'], False)
+                            else:
+                                update_transaction_history_status(str(row['account_number']), row['transfer_code'], True)
                         send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         update_amount_by_date('IN',row['amount'])
                         

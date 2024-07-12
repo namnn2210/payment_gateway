@@ -193,9 +193,12 @@ def get_amount_today(request):
         return JsonResponse({'status': 500, 'message': 'Invalid request'})
     
 
-def update_transaction_history_status(account_number, transfer_code):
+def update_transaction_history_status(account_number, transfer_code, status):
     redis_client = redis_connect(1)
-    
+    transactions = json.loads(redis_client.get(account_number))
+    transactions_df = pd.DataFrame(transactions)
+    transactions_df.loc[transactions_df['transfer_code'] == transfer_code, 'status'] = status
+    redis_client.set(account_number, json.dumps(transactions_df.to_dict(orient='records'), default=str))
     
     
     
