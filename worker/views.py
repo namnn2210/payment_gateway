@@ -146,7 +146,7 @@ def get_transaction(bank):
                                 update_transaction_history_status(str(row['account_number']), row['transfer_code'], False)
                             else:
                                 update_transaction_history_status(str(row['account_number']), row['transfer_code'], True)
-                        send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        # send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         update_amount_by_date('IN',row['amount'])
                         
                 else:
@@ -161,7 +161,7 @@ def get_transaction(bank):
                             f'🔍 {row["transaction_type"]}\n'
                             f'🕒 {row["transaction_date"]}'
                         )
-                        send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        # send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                 
             redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
             print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
