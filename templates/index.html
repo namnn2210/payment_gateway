@@ -293,13 +293,13 @@
                     const totalOutElem = document.querySelector('.total-out');
                     
                     if (totalInElem) {
-                        totalInElem.innerHTML = `+${data.in.toLocaleString()} <span class="text-success">đ</span>`;
+                        totalInElem.innerHTML = `+${data.data.in.toLocaleString()} <span class="text-success">đ</span>`;
                     } else {
                         console.error('Total In element not found');
                     }
 
                     if (totalOutElem) {
-                        totalOutElem.innerHTML = `-${data.out.toLocaleString()} <span class="text-danger">đ</span>`;
+                        totalOutElem.innerHTML = `-${data.data.out.toLocaleString()} <span class="text-danger">đ</span>`;
                     } else {
                         console.error('Total Out element not found');
                     }
