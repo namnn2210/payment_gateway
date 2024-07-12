@@ -33,7 +33,8 @@ def record_book(request):
     all_transactions = []
     for bank in list_banks:
         transactions_str = redis_client.get(bank.account_number)
-        all_transactions += json.loads(transactions_str)
+        if transactions_str:
+            all_transactions += json.loads(transactions_str)
     all_transactions_df = pd.DataFrame(all_transactions)
     # Convert the 'transaction_date' column to datetime format if it exists
     if 'transaction_date' in all_transactions_df.columns:
