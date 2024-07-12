@@ -46,12 +46,12 @@ def create_deposit_order(transaction):
         print(response.json())
         if response.status_code == 200:
             response_data = response.json()
-            return JsonResponse(response_data, status=200)
+            return response_data
         else:
-            return JsonResponse({'status': 'error', 'msg': 'Failed to reach the API'}, status=500)
+            return None
         
     except Exception as e:
-            return JsonResponse({'status': 'error', 'msg': str(e)}, status=500)
+            return None
     
 
     
