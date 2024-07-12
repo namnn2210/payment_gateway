@@ -143,6 +143,7 @@ def get_transaction(bank):
                         send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         update_amount_by_date('IN',row['amount'])
                         if bank.account_number == '17392991':
+                            print('=============')
                             create_deposit_order(row)
                 else:
                     if bank.bank_type == 'OUT':
