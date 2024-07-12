@@ -142,6 +142,7 @@ def get_transaction(bank):
                         )
                         if str(row['account_number']) == '17392991':
                             result = create_deposit_order(row)
+                            print(result)
                             if result['msg'] == 'The transfercode does not match.':
                                 update_transaction_history_status(str(row['account_number']), row['transfer_code'], False)
                             else:
