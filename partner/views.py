@@ -12,19 +12,18 @@ def create_deposit_order(transaction):
     try:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         key_df = pd.read_csv(os.environ.get('MID_KEY'))
-        scode = key_df[key_df['bankno'] == transaction['account_number']]['scode'].values
-        cardtype = key_df[key_df['bankno'] == transaction['account_number']]['cardtype'].values
-        key = key_df[key_df['bankno'] == transaction['account_number']]['key'].values
+        scode = key_df[key_df['bankno'] == transaction['account_number']]['scode'].iloc[0]
+        cardtype = key_df[key_df['bankno'] == transaction['account_number']]['cardtype'].iloc[0]
+        key = key_df[key_df['bankno'] == transaction['account_number']]['key'].iloc[0]
         
-        print(transaction['account_number'], scode, cardtype, key)
-        payeeaccountno = transaction['account_number']
+        payeeaccountno = str(transaction['account_number'])
         amount = f'{str(transaction['amount'])}.00'
         
         transfercode = transaction['transfer_code']
         payername = 'NA'
-        payeraccountno = transaction['account_number'][-4:]
+        payeraccountno = str(transaction['account_number'])[-4:]
         
-        hashid = transaction['transaction_number']
+        hashid = str(transaction['transaction_number'])
         
         # Create the sign string
         sign_string = f"{scode}|{payeeaccountno}|{amount}|{transfercode}|{payername}|{payeraccountno}|{hashid}|{cardtype}:{key}"
@@ -44,7 +43,7 @@ def create_deposit_order(transaction):
         }
         
         response = requests.post(os.environ.get('PARTNER'), data=payload, headers=headers)
-        
+        print(response.json())
         if response.status_code == 200:
             response_data = response.json()
             return JsonResponse(response_data, status=200)

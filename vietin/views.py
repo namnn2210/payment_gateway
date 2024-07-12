@@ -66,6 +66,7 @@ def vietin_transactions(username,password,account_number):
                 "action": "transactions"
             })
             response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body).json()
+            print(response)
             if response:
                 if 'error' in response.keys():
                     if not response['error']:
@@ -97,6 +98,7 @@ def vietin_transactions(username,password,account_number):
                 transfer_code=find_substring(transaction['description']),
                 amount=int(transaction['amount'])
             )
+            print(new_formatted_transaction)
             formatted_transactions.append(new_formatted_transaction.__dict__())
         return formatted_transactions
     except Exception as ex:

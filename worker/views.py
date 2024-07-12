@@ -126,7 +126,7 @@ def get_transaction(bank):
                         alert = (
                             f'Hi,\n'
                             f'\n'
-                            f'Account: {row.account_number}'
+                            f'Account: {row['account_number']}'
                             f'\n'
                             f'Confirmed by order: \n'
                             f'\n'
@@ -140,11 +140,11 @@ def get_transaction(bank):
                             f'\n'
                             f'Reason of not be credited: Order not found!!!'
                         )
+                        if str(row['account_number']) == '17392991':
+                            print(create_deposit_order(row))
                         send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         update_amount_by_date('IN',row['amount'])
-                        if bank.account_number == '17392991':
-                            print('=============')
-                            create_deposit_order(row)
+                        
                 else:
                     if bank.bank_type == 'OUT':
                         transaction_type = '-'
