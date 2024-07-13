@@ -138,7 +138,7 @@ def get_transaction(bank):
                         f'\n'
                         f'Reason of not be credited: Order not found!!!'
                     )
-                    send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                    send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))
                 
                 if row['transaction_type'] == 'IN':
                     if bank.bank_type == 'IN':
@@ -194,7 +194,7 @@ def get_transaction(bank):
                                                 f'\n'
                                                 f'Reason of not be credited: Order not found!!!'
                                             )
-                                            send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                                            send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))
                         update_amount_by_date('IN',row['amount'])
                         
                 else:
