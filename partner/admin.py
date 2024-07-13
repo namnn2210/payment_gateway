@@ -6,7 +6,7 @@ from .models import CID, PartnerMapping
 class CIDAdmin(admin.ModelAdmin):
     list_display = ('name', 'status', 'created_at', 'updated_at')
     list_filter = ('name','status',)
-    search_fields = ('name')
+    search_fields = ('name',)
     
 
 @admin.register(PartnerMapping)
