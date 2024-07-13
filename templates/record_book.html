@@ -55,6 +55,7 @@
                                             <th>Amount</th>
                                             <th>Date</th>
                                             <th>Memo</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="inTransactionTableBody" class="text-center">
@@ -66,6 +67,7 @@
                                             <td class="text-success">{{ item.amount|intcomma }}</td>
                                             <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
                                             <td>{{ item.description }}</td>
+                                            <td>{{ item.status}}</td>
                                         </tr>
                                         {% endif %}
                                         {% endfor %}
@@ -81,6 +83,7 @@
                                             <th>Amount</th>
                                             <th>Date</th>
                                             <th>Memo</th>
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody id="outTransactionTableBody" class="text-center">
@@ -92,6 +95,7 @@
                                             <td class="text-danger">{{ item.amount|intcomma }}</td>
                                             <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
                                             <td>{{ item.description }}</td>
+                                            <td>{{ item.status}}</td>
                                         </tr>
                                         {% endif %}
                                         {% endfor %}
