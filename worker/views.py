@@ -136,7 +136,7 @@ def get_transaction(bank):
                                 result = create_deposit_order(row,partner_mapping)
                                 print(result)
                                 if result:
-                                    if result['errcode'] == '11':
+                                    if result['msg'] == 'transfercode is null':
                                         update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')                                     
                                         
                                         alert = (
@@ -154,7 +154,7 @@ def get_transaction(bank):
                                             f'\n'
                                             f'Time: {row["transaction_date"]}\n'
                                             f'\n'
-                                            f'Reason of not be credited: Order not found!!!'
+                                            f'Reason of not be credited: No transfer code!!!'
                                         )
                                         send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))
                                     
