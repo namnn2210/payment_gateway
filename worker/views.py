@@ -119,7 +119,7 @@ def get_transaction(bank):
         # Update Redis
         redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
         if not new_transaction_df.empty:
-            for _, row in updated_df.iterrows():
+            for _, row in new_transaction_df.iterrows():
                 if row['transaction_type'] == 'IN':
                     if bank.bank_type == 'IN':
                         transaction_type = '+'
