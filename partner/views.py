@@ -8,13 +8,13 @@ import requests
 
 load_dotenv()
 
-def create_deposit_order(transaction):
+def create_deposit_order(transaction,partner_mapping):
     try:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        key_df = pd.read_csv(os.environ.get('MID_KEY'))
-        scode = key_df[key_df['bankno'] == transaction['account_number']]['scode'].iloc[0]
-        cardtype = key_df[key_df['bankno'] == transaction['account_number']]['cardtype'].iloc[0]
-        key = key_df[key_df['bankno'] == transaction['account_number']]['key'].iloc[0]
+        # key_df = pd.read_csv(os.environ.get('MID_KEY'))
+        scode = partner_mapping.cid
+        cardtype = partner_mapping.cardtype
+        key = partner_mapping.key
         
         payeeaccountno = str(transaction['account_number'])
         amount = f'{str(transaction['amount'])}.00'
@@ -41,6 +41,8 @@ def create_deposit_order(transaction):
             'hashid': hashid,
             'sign': sign,
         }
+        
+        print(payload)
         
         response = requests.post(os.environ.get('PARTNER'), data=payload, headers=headers)
         print(response.json())

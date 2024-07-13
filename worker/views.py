@@ -144,10 +144,13 @@ def get_transaction(bank):
                         )
                         # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
+                        print('bank', bank_account)
                         if bank_account:
                             partner_mapping = PartnerMapping.objects.filter(bank=bank_account).first()
+                            print('partner mapping', partner_mapping)
                             if partner_mapping: 
-                                result = create_deposit_order(row)
+                                result = create_deposit_order(row,partner_mapping)
+                                print(result)
                                 if result:
                                     if result['prc'] == '1' and result['errcode'] == '00':
                                         if result['orderno'] == '':
