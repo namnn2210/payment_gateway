@@ -431,6 +431,8 @@
             }
         );
 
+        $('#statusFilter').val('Pending').trigger('change');
+
         // Event listener to the status filter dropdown to redraw on change
         $('#statusFilter').on('change', function () {
             table.draw();
