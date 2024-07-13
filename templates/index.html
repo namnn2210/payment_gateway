@@ -169,10 +169,10 @@
                     data.data.in.forEach(transaction => {
                         const row = document.createElement('tr');
                         var transactionStatus = ''
-                        if (!transaction.status) {
+                        if (transaction.status === false) {
                             transactionStatus = 'Failed'
                         }
-                        else if (transaction.status) {
+                        else if (transaction.status === true) {
                             transactionStatus = 'Success'
                         }
                         else {
@@ -197,10 +197,10 @@
                     tableBodyOut.innerHTML = ''; // Clear existing table rows
                     data.data.out.forEach(transaction => {
                         const row = document.createElement('tr');
-                        if (!transaction.status) {
+                        if (transaction.status === false) {
                             transactionStatus = 'Failed'
                         }
-                        else if (transaction.status) {
+                        else if (transaction.status === true) {
                             transactionStatus = 'Success'
                         }
                         else {
