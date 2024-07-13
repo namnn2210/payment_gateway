@@ -154,9 +154,9 @@ def get_transaction(bank):
                                 if result:
                                     if result['prc'] == '1' and result['errcode'] == '00':
                                         if result['orderno'] == '':
-                                            update_transaction_history_status(str(row['account_number']), row['transfer_code'], False)
+                                            update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')
                                         else:
-                                            update_transaction_history_status(str(row['account_number']), row['transfer_code'], True)    
+                                            update_transaction_history_status(row['account_number'], row['transfer_code'], 'Success')    
                         send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                         update_amount_by_date('IN',row['amount'])
                         
