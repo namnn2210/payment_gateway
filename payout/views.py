@@ -119,7 +119,9 @@ def update_payout(request, update_type):
                 f'\n'
                 f'Created by: {payout.user}\n'
                 f'\n'
-                f'Done by: {request.user}'
+                f'Done by: {request.user}\n'
+                f'\n'
+                f'Date: {payout.updated_at}'
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
             update_amount_by_date('OUT',payout.money)
@@ -160,7 +162,9 @@ def update_payout(request, update_type):
                 f'\n'
                 f'Created by: {payout.user}\n'
                 f'\n'
-                f'Done by: {request.user}'
+                f'Done by: {request.user}\n'
+                f'\n'
+                f'Date: {payout.updated_at}'
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         else:

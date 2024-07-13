@@ -136,7 +136,7 @@ def get_transaction(bank):
                                 result = create_deposit_order(row,partner_mapping)
                                 print(result)
                                 if result:
-                                    if result['errcode'] == '00':
+                                    if result['errcode'] == '11':
                                         update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')                                     
                                         
                                         alert = (
