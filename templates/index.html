@@ -172,8 +172,11 @@
                         if (!transaction.status) {
                             transactionStatus = 'Failed'
                         }
-                        else {
+                        else if (transaction.status) {
                             transactionStatus = 'Success'
+                        }
+                        else {
+                            transactionStatus = ''
                         }
                         row.innerHTML = `
                             <td>${transaction.account_number}</td>
@@ -197,8 +200,11 @@
                         if (!transaction.status) {
                             transactionStatus = 'Failed'
                         }
-                        else {
+                        else if (transaction.status) {
                             transactionStatus = 'Success'
+                        }
+                        else {
+                            transactionStatus = ''
                         }
                         row.innerHTML = `
                             <td>${transaction.account_number}</td>
