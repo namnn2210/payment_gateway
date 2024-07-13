@@ -35,7 +35,7 @@ class BankAccount(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return self.bank_name.name
+        return self.account_number
     
     def as_dict(self):
         return {
