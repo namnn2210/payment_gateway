@@ -246,7 +246,7 @@
         console.log(isReport);
         console.log(isCancel);
 
-        var qrUrl = `https://vietqr.me/api/generate/${bankcode}/${accountno}/${accountname}?amount=${money}&memo=Z${accountname}&is_mask=0&bg=7`;
+        var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${accountname}/print.jpg`;
 
         $('#modalQrImage').attr('src', qrUrl);
         $('.done-btn-modal').data('item-id', itemId);
