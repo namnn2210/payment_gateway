@@ -203,7 +203,7 @@ def update_transaction_history_status(account_number, transfer_code, status):
     for transaction in transactions:
         if transaction['transfer_code'] == transfer_code:
             print(transaction)
-            transaction['status'] == status
+            transaction['status'] = status
             break
     # transactions_df = pd.DataFrame(transactions)
     # transactions_df.loc[transactions_df['transfer_code'] == transfer_code, 'status'] = status
