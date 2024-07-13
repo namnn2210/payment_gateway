@@ -107,18 +107,19 @@ def get_transaction(bank):
     if not bank_exists:
         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
     else:
-        # Get data from redis by key, load data as json and convert to dataframe, compare with final_new_bank_history_df, if differences is found, update redis
+        # Transform current transactions history and new transaction history
         old_bank_history = json.loads(redis_client.get(bank.account_number))
         old_bank_history_df = pd.DataFrame(old_bank_history)
-        # Compare 2 dataframes using equals
-        differences = old_bank_history_df.equals(final_new_bank_history_df)
         old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
         final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
-        if not differences:
-            diff = old_bank_history_df.merge(final_new_bank_history_df, how='outer', indicator=True)
-            unique_rows_new = diff[diff['_merge'] == 'right_only'].drop(columns=['_merge'])
-            
-            for _, row in unique_rows_new.iterrows():
+        # Detect new transactions
+        new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(subset='transaction_number', keep='last')
+        # Add new transactions to current history
+        updated_df = pd.concat([old_bank_history_df, new_transaction_df])
+        # Update Redis
+        redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
+        if not new_transaction_df.empty:
+            for _, row in updated_df.iterrows():
                 if row['transaction_type'] == 'IN':
                     if bank.bank_type == 'IN':
                         transaction_type = '+'
@@ -141,7 +142,7 @@ def get_transaction(bank):
                             f'\n'
                             f'Reason of not be credited: Order not found!!!'
                         )
-                        redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                        # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                         if bank_account:
                             partner_mapping = PartnerMapping.objects.filter(bank=bank_account).first()
@@ -168,10 +169,8 @@ def get_transaction(bank):
                             f'🔍 {row["transaction_type"]}\n'
                             f'🕒 {row["transaction_date"]}'
                         )
-                        redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                        # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-                
-            
             print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
             print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
