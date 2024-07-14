@@ -37,9 +37,9 @@ def get_balance(bank):
         print('Retry logging in: ', error_count)
         if error_count > 3:
             alert = (
-                f'🔴 - SYSTEM ALERT\n'
-                f'Get bank info: {bank.account_number} empty\n'
-                f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+                f'🔴 - LỖI HỆ THỐNG\n'
+                f'Dữ liệu tài khoản: {bank.account_number} trống\n'
+                f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
             )
             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             return
@@ -73,12 +73,13 @@ def get_balance(bank):
             get_transaction(bank)
             
         else:
-            print('No new data for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+            pass
+            # print('No new data for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
     else:
         alert = (
-            f'🔴 - SYSTEM ALERT\n'
-            f'Get balance from {bank.account_number} 0\n'
-            f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+            f'🔴 - LỖI HỆ THỐNG\n'
+            f'Lấy số dư tài khoản {bank.account_number} - {bank.bank_name.name} không thành công\n'
+            f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
 
@@ -98,9 +99,9 @@ def get_transaction(bank):
     new_bank_history_df = pd.DataFrame(new_bank_history)
     if new_bank_history_df.empty:
         alert = (
-            f'🔴 - SYSTEM ALERT\n'
-            f'Get transaction history from {bank.account_number} - {bank.bank_name.name} empty\n'
-            f'Date: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
+            f'🔴 - LỖI HỆ THỐNG\n'
+            f'Lỗi lấy lịch sử giao dịch từ {bank.account_number} - {bank.bank_name.name} empty\n'
+            f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
     final_new_bank_history_df = new_bank_history_df.fillna('')
@@ -183,7 +184,7 @@ def get_transaction(bank):
                                         else:
                                             update_transaction_history_status(row['account_number'], row['transfer_code'], 'Success')    
                                             alert = (
-                                                f'Hi, success\n'
+                                                f'🟩🟩🟩 Success!\n'
                                                 f'\n'
                                                 f'Account: {row['account_number']}'
                                                 f'\n'
@@ -206,14 +207,19 @@ def get_transaction(bank):
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
                         alert = (
+                            f'PAYOUT DONE - Đã trừ tiền\n'
+                            f'\n'
                             f'🏦 {bank.account_number} - {bank.account_name}\n'
-                            f'📝 {row["description"]}\n'
+                            f'\n'
+                            f'Nội dung: {row["description"]}\n'
+                            f'\n'
                             f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                            f'🔍 {row["transaction_type"]}\n'
+                            f'\n'
                             f'🕒 {row["transaction_date"]}'
                         )
                         # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
-                        send_telegram_message(alert, os.environ.get('BANK_OUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
-            print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+            pass
+            # print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))

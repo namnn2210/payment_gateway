@@ -1,6 +1,7 @@
 {% extends "layout/layout.html" %}
 {% load humanize %}
-{% block title %}Record Book{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Record Book" %}{% endblock %}
 {% block content %}
 <style>
     .table-container {
@@ -28,20 +29,20 @@
         <div class="col-md-12 col-sm-12">
             <div class="card">
                 <div class="card-body" style="font-size: 13px">
-                    <h5 class="card-title">Record Book</h5>
+                    <h5 class="card-title">{% trans "Record Book" %}</h5>
                     <div class="card-body" style="font-size: 13px">
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <label for="search_box">Search</label>
+                                <label for="search_box">{% trans "Search" %}</label>
                                 <input type="text" id="search_box" class="form-control"
-                                    placeholder="Search everything here..." />
+                                    placeholder="{% trans 'Search everything here...' %}" />
                             </div>
                             <div class="col-md-4">
-                                <label for="start_date">Start Date</label>
+                                <label for="start_date">{% trans "Start Date" %}</label>
                                 <input type="date" id="start_date" class="form-control" />
                             </div>
                             <div class="col-md-4">
-                                <label for="end_date">End Date</label>
+                                <label for="end_date">{% trans "End Date" %}</label>
                                 <input type="date" id="end_date" class="form-control" />
                             </div>
                         </div>
@@ -50,12 +51,12 @@
                                 <table id="inTransactionTable" class="table table-sm display">
                                     <thead>
                                         <tr class="text-center" style="font-size: 13px">
-                                            <th>Account Number</th>
-                                            <th>Transaction Number</th>
-                                            <th>Amount</th>
-                                            <th>Date</th>
-                                            <th>Memo</th>
-                                            <th>Status</th>
+                                            <th>{% trans "Account Number" %}</th>
+                                            <th>{% trans "Transaction Number" %}</th>
+                                            <th>{% trans "Amount" %}</th>
+                                            <th>{% trans "Date" %}</th>
+                                            <th>{% trans "Memo" %}</th>
+                                            <th>{% trans "Status" %}</th>
                                         </tr>
                                     </thead>
                                     <tbody id="inTransactionTableBody" class="text-center">
@@ -78,12 +79,12 @@
                                 <table id="outTransactionTable" class="table table-sm display">
                                     <thead>
                                         <tr class="text-center" style="font-size: 13px">
-                                            <th>Account Number</th>
-                                            <th>Transaction Number</th>
-                                            <th>Amount</th>
-                                            <th>Date</th>
-                                            <th>Memo</th>
-                                            <th>Status</th>
+                                            <th>{% trans "Account Number" %}</th>
+                                            <th>{% trans "Transaction Number" %}</th>
+                                            <th>{% trans "Amount" %}</th>
+                                            <th>{% trans "Date" %}</th>
+                                            <th>{% trans "Memo" %}</th>
+                                            <th>{% trans "Status" %}</th>
                                         </tr>
                                     </thead>
                                     <tbody id="outTransactionTableBody" class="text-center">

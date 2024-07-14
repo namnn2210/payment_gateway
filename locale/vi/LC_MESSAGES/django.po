@@ -1,0 +1,338 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-07-14 16:29+0700\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: payment_gateway/settings.py:138
+msgid "English"
+msgstr "Tiếng Anh"
+
+#: payment_gateway/settings.py:139
+msgid "Vietnamese"
+msgstr "Tiếng Việt"
+
+#: templates/bank.html:4 templates/layout/layout.html:167
+msgid "Bank Account"
+msgstr "Tài khoản ngân hàng"
+
+#: templates/bank.html:35
+#, fuzzy
+#| msgid "Account Number"
+msgid "Search by Account Number"
+msgstr "Số tài khoản"
+
+#: templates/bank.html:39 templates/bank.html:181
+msgid "Add Bank"
+msgstr "Thêm ngân hàng"
+
+#: templates/bank.html:47 templates/bank.html:95
+msgid "Bank List"
+msgstr "Danh sách ngân hàng"
+
+#: templates/bank.html:47 templates/index.html:32 templates/index.html:86
+msgid "IN"
+msgstr "VÀO"
+
+#: templates/bank.html:53 templates/bank.html:101 templates/index.html:40
+#: templates/index.html:64 templates/index.html:92 templates/index.html:125
+#: templates/payout.html:34 templates/payout.html:148
+#: templates/record_book.html:54 templates/record_book.html:82
+msgid "Account Number"
+msgstr "Số tài khoản"
+
+#: templates/bank.html:54 templates/bank.html:102 templates/bank.html:174
+msgid "Bank Name"
+msgstr "Tên ngân hàng"
+
+#: templates/bank.html:55 templates/bank.html:103 templates/index.html:42
+#: templates/index.html:66
+msgid "Balance"
+msgstr "Số dư"
+
+#: templates/bank.html:56 templates/bank.html:104
+msgid "Last Update"
+msgstr "Cập nhật gần nhất"
+
+#: templates/bank.html:57 templates/bank.html:105
+msgid "Actions"
+msgstr "Hoạt động"
+
+#: templates/bank.html:72 templates/bank.html:120
+#, fuzzy
+#| msgid "history"
+msgid "History"
+msgstr "lịch sử"
+
+#: templates/bank.html:76 templates/bank.html:124
+msgid "OFF"
+msgstr "TẮT"
+
+#: templates/bank.html:79 templates/bank.html:127
+msgid "ON"
+msgstr "BẬT"
+
+#: templates/bank.html:95 templates/index.html:57 templates/index.html:119
+msgid "OUT"
+msgstr "RA"
+
+#: templates/bank.html:146
+msgid "Add New Bank"
+msgstr "Thêm ngân hàng mới"
+
+#: templates/bank.html:155
+#, fuzzy
+#| msgid "Account Number"
+msgid "Bank Number"
+msgstr "Số tài khoản"
+
+#: templates/bank.html:159
+msgid "Bank Username"
+msgstr "Tên đăng nhập ngân hàng"
+
+#: templates/bank.html:163
+msgid "Bank Password"
+msgstr "Mật khẩu ngân hàng"
+
+#: templates/bank.html:167
+msgid "Bank TYPE"
+msgstr "Loại ngân hàng"
+
+#: templates/index.html:4 templates/layout/layout.html:160
+msgid "Dashboard"
+msgstr "Bảng điều khiển"
+
+#: templates/index.html:19
+msgid "Today"
+msgstr "Hôm nay"
+
+#: templates/index.html:32 templates/index.html:57
+msgid "BANK"
+msgstr "NGÂN HÀNG"
+
+#: templates/index.html:41 templates/index.html:65 templates/payout.html:35
+#: templates/payout.html:152
+msgid "Account Name"
+msgstr "Tên tài khoản"
+
+#: templates/index.html:86 templates/index.html:119
+msgid "Latest transaction"
+msgstr "Giao dịch gần nhất"
+
+#: templates/index.html:86 templates/index.html:119
+msgid "history"
+msgstr "lịch sử"
+
+#: templates/index.html:93 templates/index.html:126
+msgid "Reference Number"
+msgstr "Mã giao dịch"
+
+#: templates/index.html:94 templates/index.html:127 templates/payout.html:33
+#: templates/payout.html:144 templates/record_book.html:56
+#: templates/record_book.html:84
+msgid "Amount"
+msgstr "Số tiền"
+
+#: templates/index.html:95 templates/index.html:128
+#: templates/record_book.html:57 templates/record_book.html:85
+msgid "Date"
+msgstr "Thời gian"
+
+#: templates/index.html:96 templates/index.html:129
+#: templates/record_book.html:58 templates/record_book.html:86
+msgid "Memo"
+msgstr "Nội dung"
+
+#: templates/index.html:97 templates/index.html:130 templates/payout.html:41
+#: templates/record_book.html:59 templates/record_book.html:87
+msgid "Status"
+msgstr "Trạng thái"
+
+#: templates/layout/layout.html:13
+msgid "Title"
+msgstr ""
+
+#: templates/layout/layout.html:55
+msgid "226Pay"
+msgstr ""
+
+#: templates/layout/layout.html:65
+msgid "Language"
+msgstr "Ngôn ngữ"
+
+#: templates/layout/layout.html:69
+msgid "Select Language"
+msgstr "Lựa chọn ngôn ngữ"
+
+#: templates/layout/layout.html:107
+msgid "Dev"
+msgstr ""
+
+#: templates/layout/layout.html:116
+msgid "Profile"
+msgstr "Tài khoản"
+
+#: templates/layout/layout.html:128
+msgid "Go to Admin"
+msgstr "Truy cập Admin"
+
+#: templates/layout/layout.html:140
+msgid "Sign Out"
+msgstr "Đăng xuất"
+
+#: templates/layout/layout.html:174 templates/record_book.html:4
+#: templates/record_book.html:32
+msgid "Record Book"
+msgstr "Quản lí giao dịch"
+
+#: templates/layout/layout.html:180
+msgid "Payout"
+msgstr "Rút tiền"
+
+#: templates/layout/layout.html:185
+msgid "Processing Payout"
+msgstr "Xử lí rút tiền"
+
+#: templates/payout.html:5 templates/payout.html:26
+#, fuzzy
+#| msgid "Payout"
+msgid "List Payout"
+msgstr "Rút tiền"
+
+#: templates/payout.html:12
+msgid "All"
+msgstr "Tất cả"
+
+#: templates/payout.html:13 templates/payout.html:73
+msgid "Pending"
+msgstr "Chờ xử lí"
+
+#: templates/payout.html:14 templates/payout.html:71 templates/payout.html:184
+msgid "Done"
+msgstr "Hoàn thành"
+
+#: templates/payout.html:15 templates/payout.html:96
+msgid "Canceled"
+msgstr "Đã hủy"
+
+#: templates/payout.html:20 templates/payout.html:119
+#, fuzzy
+#| msgid "Payout"
+msgid "Add Payout"
+msgstr "Rút tiền"
+
+#: templates/payout.html:31 templates/payout.html:128
+msgid "CID"
+msgstr ""
+
+#: templates/payout.html:32 templates/payout.html:140
+msgid "Order ID"
+msgstr "Mã đơn hàng"
+
+#: templates/payout.html:36
+msgid "Bank Code"
+msgstr "Mã ngân hàng"
+
+#: templates/payout.html:37
+msgid "Created At"
+msgstr "Thời gian khởi tạo"
+
+#: templates/payout.html:38
+msgid "Created By"
+msgstr "Người khởi tạo"
+
+#: templates/payout.html:39
+msgid "Updated At"
+msgstr "Thời gian cập nhật"
+
+#: templates/payout.html:40
+msgid "Updated By"
+msgstr "Người cập nhật"
+
+#: templates/payout.html:42
+msgid "Action"
+msgstr "Hoạt động"
+
+#: templates/payout.html:43 templates/payout.html:182
+msgid "Report"
+msgstr "Báo cáo"
+
+#: templates/payout.html:44 templates/payout.html:183
+#, fuzzy
+#| msgid "Balance"
+msgid "Cancel"
+msgstr "Số dư"
+
+#: templates/payout.html:45
+msgid "Auto/Manual"
+msgstr "Tự động/Thủ công"
+
+#: templates/payout.html:85
+#, fuzzy
+#| msgid "Payout"
+msgid "Pay"
+msgstr "Rút tiền"
+
+#: templates/payout.html:91
+msgid "Reported"
+msgstr "Đã báo cáo"
+
+#: templates/payout.html:101
+msgid "Auto"
+msgstr "Tự động"
+
+#: templates/payout.html:103
+msgid "Manual"
+msgstr "Thủ công"
+
+#: templates/payout.html:156
+msgid "Bank"
+msgstr "Ngân hàng"
+
+#: templates/payout.html:164
+msgid "Add"
+msgstr "Thêm"
+
+#: templates/payout.html:174
+#, fuzzy
+#| msgid "Payout"
+msgid "Payout Details"
+msgstr "Rút tiền"
+
+#: templates/record_book.html:36
+msgid "Search"
+msgstr "Tìm kiếm"
+
+#: templates/record_book.html:38
+msgid "Search everything here..."
+msgstr "Tìm kiếm mọi thứ ở đây..."
+
+#: templates/record_book.html:41
+msgid "Start Date"
+msgstr "Ngày bắt đầu"
+
+#: templates/record_book.html:45
+#, fuzzy
+#| msgid "Date"
+msgid "End Date"
+msgstr "Thời gian"
+
+#: templates/record_book.html:55 templates/record_book.html:83
+#, fuzzy
+#| msgid "Account Number"
+msgid "Transaction Number"
+msgstr "Số tài khoản"

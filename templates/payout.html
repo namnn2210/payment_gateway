@@ -1,48 +1,48 @@
 {% extends "layout/layout.html" %}
 {% load humanize %}
 {% load static %}
-{% block title %}List Payout{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "List Payout" %}{% endblock %}
 {% block head %}{% endblock %}
 {% block content %}
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 col-sm-12 mt-4">
             <select id="statusFilter" class="form-select">
-                <option value="">All</option>
-                <option value="Pending" selected>Pending</option>
-                <option value="Done">Done</option>
-                <option value="Canceled">Canceled</option>
-                <option value="Reported">Reported</option>
+                <option value="">{% trans "All" %}</option>
+                <option value="Pending" selected>{% trans "Pending" %}</option>
+                <option value="Done">{% trans "Done" %}</option>
+                <option value="Canceled">{% trans "Canceled" %}</option>
+                <option value="Reported"></option>
             </select>
         </div>
         <div class="col-md-6 col-sm-12 text-right mt-4">
-            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">Add
-                Payout</button>
+            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Payout" %}</button>
         </div>
     </div>
     <div class="row mt-4">
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body" style="font-size: 13px">
-                <h5 class="card-title">List payout</h5>
+                <h5 class="card-title">{% trans "List Payout" %}</h5>
                 <div class="table-responsive">
                     <table class="table table-sm display" id="payoutTable">
                         <thead>
                             <tr class="text-center" style="font-size: 13px">
-                                <th scope="col">CID</th>
-                                <th scope="col">Order ID</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Account Number</th>
-                                <th scope="col">Account Name</th>
-                                <th scope="col">Bank Code</th>
-                                <th scope="col">Created At</th>
-                                <th scope="col">Created By</th>
-                                <th scope="col">Updated At</th>
-                                <th scope="col">Updated By</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Action</th>
-                                <th scope="col">Report</th>
-                                <th scope="col">Cancel</th>
-                                <th scope="col">Auto/Manual</th>
+                                <th scope="col">{% trans "CID" %}</th>
+                                <th scope="col">{% trans "Order ID" %}</th>
+                                <th scope="col">{% trans "Amount" %}</th>
+                                <th scope="col">{% trans "Account Number" %}</th>
+                                <th scope="col">{% trans "Account Name" %}</th>
+                                <th scope="col">{% trans "Bank Code" %}</th>
+                                <th scope="col">{% trans "Created At" %}</th>
+                                <th scope="col">{% trans "Created By" %}</th>
+                                <th scope="col">{% trans "Updated At" %}</th>
+                                <th scope="col">{% trans "Updated By" %}</th>
+                                <th scope="col">{% trans "Status" %}</th>
+                                <th scope="col">{% trans "Action" %}</th>
+                                <th scope="col">{% trans "Report" %}</th>
+                                <th scope="col">{% trans "Cancel" %}</th>
+                                <th scope="col">{% trans "Auto/Manual" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -68,9 +68,9 @@
                                 {% endif%}
                                 <td>
                                     {% if item.status %}
-                                    <span class="btn btn-sm bg-success text-center">Done</span>
+                                    <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
                                     {% elif item.status == False %}
-                                    <span class="btn btn-sm bg-warning text-center">Pending</span>
+                                    <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
                                     {% elif item.status is None %}
                                     <span></span>
                                     {% endif %}
@@ -82,25 +82,25 @@
                                         data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
                                         data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
                                         data-is-report="{{item.is_report}}"
-                                        data-is-cancel="{{item.is_cancel}}">Pay</button>
+                                        data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
                                     {% endif %}
                                     <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
                                 </td>
                                 <td>
                                     {% if item.is_report %}
-                                    <span class="btn btn-sm bg-danger">Reported</span>
+                                    <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if item.is_cancel %}
-                                    <span class="btn btn-sm bg-danger">Canceled</span>
+                                    <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
                                     {% endif %}
                                 </td>
                                 <td>
                                     {% if item.is_auto %}
-                                    <span class="btn btn-sm bg-success">Auto</span>
+                                    <span class="btn btn-sm bg-success">{% trans "Auto" %}</span>
                                     {% else %}
-                                    <span class="btn btn-sm bg-warning">Manual</span>
+                                    <span class="btn btn-sm bg-warning">{% trans "Manual" %}</span>
                                     {% endif %}
                                 </td>
                             </tr>
@@ -116,7 +116,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addPayoutModalLabel">Add Payout</h5>
+                <h5 class="modal-title" id="addPayoutModalLabel">{% trans "Add Payout" %}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -125,7 +125,7 @@
                 <div id="modalAlertContainer"></div>
                 <form id="addPayoutForm">
                     <div class="form-group">
-                        <label for="scode">CID</label>
+                        <label for="scode">{% trans "CID" %}</label>
                         <select class="form-select" id="scode" name="scode" required>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -137,23 +137,23 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="orderid">Order ID</label>
+                        <label for="orderid">{% trans "Order ID" %}</label>
                         <input type="text" class="form-control" id="orderid" name="orderid" required>
                     </div>
                     <div class="form-group">
-                        <label for="amount">Amount</label>
+                        <label for="amount">{% trans "Amount" %}</label>
                         <input type="text" class="form-control" id="money" name="money" required>
                     </div>
                     <div class="form-group">
-                        <label for="accountno">Account Number</label>
+                        <label for="accountno">{% trans "Account Number" %}</label>
                         <input type="text" class="form-control" id="accountno" name="accountno" required>
                     </div>
                     <div class="form-group">
-                        <label for="accountname">Account Name</label>
+                        <label for="accountname">{% trans "Account Name" %}</label>
                         <input type="text" class="form-control" id="accountname" name="accountname" required>
                     </div>
                     <div class="form-group">
-                        <label for="bankcode">Bank</label>
+                        <label for="bankcode">{% trans "Bank" %}</label>
                         <select class="form-select" id="bankcode" name="bankcode" required>
                             {% for bank in bank_data %}
                             <option value={{bank.code}} data-bank-name="{{bank.short_name}}">{{bank.short_name}}
@@ -161,7 +161,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Add</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Add" %}</button>
                 </form>
             </div>
         </div>
@@ -171,7 +171,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="payModalLabel">Payout Details</h5>
+                <h5 class="modal-title" id="payModalLabel">{% trans "Payout Details" %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -179,9 +179,9 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger report-btn" data-item-id="">Report</button>
-                <button type="button" class="btn btn-warning cancel-btn" data-item-id="">Cancel</button>
-                <button type="button" class="btn btn-success done-btn-modal" data-item-id="">Done</button>
+                <button type="button" class="btn btn-danger report-btn" data-item-id="">{% trans "Report" %}</button>
+                <button type="button" class="btn btn-warning cancel-btn" data-item-id="">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-success done-btn-modal" data-item-id="">{% trans "Done" %}</button>
             </div>
         </div>
     </div>

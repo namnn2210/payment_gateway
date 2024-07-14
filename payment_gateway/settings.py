@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from django.utils.translation import gettext_lazy as _
 
 load_dotenv()
 
@@ -29,14 +30,14 @@ SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['226pay.com','www.226pay.com','localhost']
+ALLOWED_HOSTS = ['226pay.com', 'www.226pay.com', 'localhost']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    "daphne",
+    'daphne',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -54,15 +55,14 @@ INSTALLED_APPS = [
     'payout',
     'worker',
     'partner',
-    
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # Locale middleware for i18n
     'django.middleware.common.CommonMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -82,6 +82,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',  # Context processor for i18n
             ],
         },
     },
@@ -90,12 +91,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'payment_gateway.wsgi.application'
 ASGI_APPLICATION = "payment_gateway.asgi.application"
 
-# Redis configuration for channel layers
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels.layers.InMemoryChannelLayer',
-#     },
-# }
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -118,8 +113,6 @@ DATABASES = {
     }
 }
 
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -138,28 +131,33 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
+LANGUAGES = [
+    ('en', _('English')),
+    ('vi', _('Vietnamese')),
+]
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
+
 LANGUAGE_CODE = 'en-us'
+
+# Use internationalization
+USE_I18N = True
+
+# Enable timezone support
+USE_L10N = True
+
+# Enable timezone support
+USE_TZ = True
 
 TIME_ZONE = 'Asia/Bangkok'
 
-USE_I18N = True
-
-USE_TZ = True
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-# STATIC_URL = '/static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
@@ -168,7 +166,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# LOGOUT_REDIRECT_URL = 'login'
 CORS_ALLOWED_ORIGINS = [
     'https://226pay.com',
     'https://www.226pay.com',
@@ -185,11 +182,9 @@ USE_X_FORWARDED_HOST = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'http')
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-# Set the session cookie age (in seconds)
-SESSION_COOKIE_AGE = 21600  # 30 minutes
-# Set session to expire when the user closes the browser
+SESSION_COOKIE_AGE = 21600  # 6 hours
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-# Optionally set session expiration on inactivity
 SESSION_SAVE_EVERY_REQUEST = True
 
+# Uncomment if using WhiteNoise for static file management
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

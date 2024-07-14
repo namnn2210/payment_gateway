@@ -25,8 +25,8 @@ class Command(BaseCommand):
                 time.sleep(15)
             except Exception as ex:
                 alert = (
-                    f'🔴 - SYSTEM ALERT\n'
-                    f'Fetch Vietinbank bank info error: {str(ex)}\n'
-                    f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+                    f'🔴 - LỖI HỆ THỐNG\n'
+                    f'Lỗi lấy dữ liệu Vietinbank: {str(ex)}\n'
+                    f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
                 )
                 send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))

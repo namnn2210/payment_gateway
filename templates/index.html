@@ -1,6 +1,7 @@
 {% extends "layout/layout.html" %}
 {% load humanize %}
-{% block title %}Dashboard{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block content %}
 <div class="container-fluid">
     <div class="row">
@@ -15,7 +16,7 @@
                             <h6 class="balance-total"><span class="text-success">đ</span></h6>
                             <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span
                                 class="text-danger small pt-1 fw-bold total-out">-0</span> <span
-                                class="text-muted small pt-2 ps-1">Today</span>
+                                class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
                         </div>
                     </div>
                 </div>
@@ -28,7 +29,7 @@
         <div class="col-xxl-4 col-md-6 col-sm-12">
             <div class="card info-card revenue-card">
                 <div class="card-body">
-                    <span class="card-title">BANK</span> <span class="card-title text-success"> IN </span> - <b class="total-in"></b>
+                    <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-success"> {% trans "IN" %} </span> - <b class="total-in"></b>
 
                     <div class="d-flex align-items-center">
                         <div class="ps-3">
@@ -36,9 +37,9 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Account Number</th>
-                                        <th scope="col">Account Name</th>
-                                        <th scope="col">Balance</th>
+                                        <th scope="col">{% trans "Account Number" %}</th>
+                                        <th scope="col">{% trans "Account Name" %}</th>
+                                        <th scope="col">{% trans "Balance" %}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="tbody-in">
@@ -53,16 +54,16 @@
         <div class="col-xxl-4 col-md-6 col-sm-12">
             <div class="card info-card revenue-card">
                 <div class="card-body">
-                    <span class="card-title">BANK</span> <span class="card-title text-danger"> OUT </span> - <b class="total-out"></b>
+                    <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-danger"> {% trans "OUT" %} </span> - <b class="total-out"></b>
                     <div class="d-flex align-items-center">
                         <div class="ps-3">
                             <table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Account Number</th>
-                                        <th scope="col">Account Name</th>
-                                        <th scope="col">Balance</th>
+                                        <th scope="col">{% trans "Account Number" %}</th>
+                                        <th scope="col">{% trans "Account Name" %}</th>
+                                        <th scope="col">{% trans "Balance" %}</th>
                                     </tr>
                                 </thead>
                                 <tbody class="tbody-out">
@@ -82,18 +83,18 @@
             <div class="card recent-sales overflow-auto">
 
                 <div class="card-body">
-                    <h5 class="card-title">Latest transaction <span class="text-success">IN</span> history</h5>
+                    <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-success">{% trans "IN" %}</span> {% trans "history" %}</h5>
                     <!-- Small tables -->
                     <div class="table-responsive">
                         <table class="table table-sm table-in">
                             <thead>
                                 <tr class="text-center" style="font-size: 12px">
-                                    <th>Account Number</th>
-                                    <th>Reference Number</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Memo</th>
-                                    <th>Status</th>
+                                    <th>{% trans "Account Number" %}</th>
+                                    <th>{% trans "Reference Number" %}</th>
+                                    <th>{% trans "Amount" %}</th>
+                                    <th>{% trans "Date" %}</th>
+                                    <th>{% trans "Memo" %}</th>
+                                    <th>{% trans "Status" %}</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center" id="transaction-table-body" style="font-size: 12px">
@@ -115,18 +116,18 @@
             <div class="card recent-sales overflow-auto">
 
                 <div class="card-body">
-                    <h5 class="card-title">Latest transaction <span class="text-danger">OUT</span> history</h5>
+                    <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-danger">{% trans "OUT" %}</span> {% trans "history" %}</h5>
                     <!-- Small tables -->
                     <div class="table-responsive">
                         <table class="table table-sm table-out">
                             <thead>
                                 <tr class="text-center" style="font-size: 12px">
-                                    <th>Account Number</th>
-                                    <th>Reference Number</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Memo</th>
-                                    <th>Status</th>
+                                    <th>{% trans "Account Number" %}</th>
+                                    <th>{% trans "Reference Number" %}</th>
+                                    <th>{% trans "Amount" %}</th>
+                                    <th>{% trans "Date" %}</th>
+                                    <th>{% trans "Memo" %}</th>
+                                    <th>{% trans "Status" %}</th>
                                 </tr>
                             </thead>
                             <tbody class="text-center" id="transaction-table-body" style="font-size: 12px">

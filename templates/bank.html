@@ -1,6 +1,7 @@
 {% extends "layout/layout.html" %}
 {% load humanize %}
-{% block title %}Bank Account{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "Bank Account" %}{% endblock %}
 {% block content %}
 <style>
     .container {
@@ -31,11 +32,11 @@
     <div class="row">
         <div class="col-md-6">
             <input type="text" class="form-control search-box" id="searchAccountNumber"
-                placeholder="Search by Account Number">
+                placeholder="{% trans 'Search by Account Number' %}">
         </div>
         {% if user.is_superuser%}
         <div class="col-md-6 text-right">
-            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addBankModal">Add Bank</button>
+            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addBankModal">{% trans 'Add Bank' %}</button>
         </div>
         {% endif %}
     </div>
@@ -43,17 +44,17 @@
         <div class="col-md-6 col-sm-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Bank List - <span class="text-success small pt-1 fw-bold">IN</span></h5>
+                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-success small pt-1 fw-bold">{% trans "IN" %}</span></h5>
                     <!-- Default Table -->
                     <div class="table-responsive">
                         <table class="table table-borderless table-sm">
                             <thead style="font-size: 14px">
                                 <tr>
-                                    <th>Account Number</th>
-                                    <th>Bank Name</th>
-                                    <th>Balance</th>
-                                    <th>Last Update</th>
-                                    <th>Actions</th>
+                                    <th>{% trans "Account Number" %}</th>
+                                    <th>{% trans "Bank Name" %}</th>
+                                    <th>{% trans "Balance" %}</th>
+                                    <th>{% trans "Last Update" %}</th>
+                                    <th>{% trans "Actions" %}</th>
                             </thead>
                             <tbody id="bankList" style="font-size: 13px">
                                 {% for bank_account in list_user_bank %}
@@ -68,14 +69,14 @@
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     <td>
                                         <a href="{% url 'record_book' %}"><button
-                                                class="btn btn-sm btn-success">History</button>
+                                                class="btn btn-sm btn-success">{% trans "History" %}</button>
                                         </a>
                                         {% if bank_account.status %}
                                         <button class="btn btn-sm btn-danger btn-toggle-status"
-                                            data-account-id="{{ bank_account.id }}" data-status="ON">OFF</button>
+                                            data-account-id="{{ bank_account.id }}" data-status="ON">{% trans "OFF" %}</button>
                                         {% else %}
                                         <button class="btn btn-sm btn-success btn-toggle-status"
-                                            data-account-id="{{ bank_account.id }}" data-status="OFF">ON</button>
+                                            data-account-id="{{ bank_account.id }}" data-status="OFF">{% trans "ON" %}</button>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -91,17 +92,17 @@
         <div class="col-md-6 col-sm-12">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">Bank List - <span class="text-danger small pt-1 fw-bold">OUT</span></h5>
+                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-danger small pt-1 fw-bold">{% trans "OUT" %}</span></h5>
                     <!-- Default Table -->
                     <div class="table-responsive">
                         <table class="table table-borderless table-sm">
                             <thead style="font-size: 14px">
                                 <tr>
-                                    <th>Account Number</th>
-                                    <th>Bank Name</th>
-                                    <th>Balance</th>
-                                    <th>Last Update</th>
-                                    <th>Actions</th>
+                                    <th>{% trans "Account Number" %}</th>
+                                    <th>{% trans "Bank Name" %}</th>
+                                    <th>{% trans "Balance" %}</th>
+                                    <th>{% trans "Last Update" %}</th>
+                                    <th>{% trans "Actions" %}</th>
                             </thead>
                             <tbody id="bankList" style="font-size: 13px">
                                 {% for bank_account in list_user_bank %}
@@ -116,14 +117,14 @@
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     <td>
                                         <a href="{% url 'record_book' %}"><button
-                                                class="btn btn-sm btn-success">History</button>
+                                                class="btn btn-sm btn-success">{% trans "History" %}</button>
                                         </a>
                                         {% if bank_account.status %}
                                         <button class="btn btn-sm btn-danger btn-toggle-status"
-                                            data-account-id="{{ bank_account.id }}" data-status="ON">OFF</button>
+                                            data-account-id="{{ bank_account.id }}" data-status="ON">{% trans "OFF" %}</button>
                                         {% else %}
                                         <button class="btn btn-sm btn-success btn-toggle-status"
-                                            data-account-id="{{ bank_account.id }}" data-status="OFF">ON</button>
+                                            data-account-id="{{ bank_account.id }}" data-status="OFF">{% trans "ON" %}</button>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -142,7 +143,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addBankModalLabel">Add New Bank</h5>
+                <h5 class="modal-title" id="addBankModalLabel">{% trans "Add New Bank" %}</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -151,33 +152,33 @@
                 <div id="modalAlertContainer"></div>
                 <form id="addBankForm">
                     <div class="form-group">
-                        <label for="bankNumber">Bank Number</label>
+                        <label for="bankNumber">{% trans "Bank Number" %}</label>
                         <input type="text" class="form-control" id="bankNumber" name="bankNumber" required>
                     </div>
                     <div class="form-group">
-                        <label for="bankUsername">Bank Username</label>
+                        <label for="bankUsername">{% trans "Bank Username" %}</label>
                         <input type="text" class="form-control" id="bankUsername" name="bankUsername" required>
                     </div>
                     <div class="form-group">
-                        <label for="bankPassword">Bank Password</label>
+                        <label for="bankPassword">{% trans "Bank Password" %}</label>
                         <input type="password" class="form-control" id="bankPassword" name="bankPassword" required>
                     </div>
                     <div class="form-group">
-                        <label for="bankType">Bank TYPE</label>
+                        <label for="bankType">{% trans "Bank TYPE" %}</label>
                         <select class="form-control" id="bankType" name="bankType" required>
                             <option value="IN">IN</option>
                             <option value="OUT">OUT</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="bankName">Bank Name</label>
+                        <label for="bankName">{% trans "Bank Name" %}</label>
                         <select class="form-control" id="bankName" name="bankName" required>
                             {% for bank in list_bank_option %}
                             <option value="{{ bank.name }}">{{ bank.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Add Bank</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Add Bank" %}</button>
                 </form>
             </div>
         </div>
