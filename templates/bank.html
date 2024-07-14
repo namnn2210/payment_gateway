@@ -65,7 +65,7 @@
                                         <i>{{bank_account.account_name}}</i>
                                     </td>
                                     <td>{{bank_account.bank_name}}</td>
-                                    <td>{{bank_account.balance |intcomma }} <span class="text-success">đ</span></td>
+                                    <td>{{bank_account.balance|floatformat:2|intcomma }} <span class="text-success">đ</span></td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     <td>
                                         <a href="{% url 'record_book' %}"><button
@@ -113,7 +113,7 @@
                                         <i>{{bank_account.account_name}}</i>
                                     </td>
                                     <td>{{bank_account.bank_name}}</td>
-                                    <td>{{bank_account.balance |intcomma }} <span class="text-success">đ</span></td>
+                                    <td>{{bank_account.balance|floatformat:2|intcomma }} <span class="text-success">đ</span></td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     <td>
                                         <a href="{% url 'record_book' %}"><button
