@@ -13,11 +13,21 @@
                 <option value="Pending" selected>{% trans "Pending" %}</option>
                 <option value="Done">{% trans "Done" %}</option>
                 <option value="Canceled">{% trans "Canceled" %}</option>
-                <option value="Reported"></option>
+                <option value="Reported">{% trans "Reported" %}</option>
             </select>
         </div>
         <div class="col-md-6 col-sm-12 text-right mt-4">
             <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Payout" %}</button>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6 col-sm-12">
+            <label for="start_datetime">{% trans "Start Date" %}</label>
+            <input type="datetime-local" id="start_datetime" class="form-control">
+        </div>
+        <div class="col-md-6 col-sm-12">
+            <label for="end_datetime">{% trans "End Date" %}</label>
+            <input type="datetime-local" id="end_datetime" class="form-control">
         </div>
     </div>
     <div class="row mt-4">
@@ -50,7 +60,7 @@
                             <tr class="text-center">
                                 <th>{{ item.scode }}</th>
                                 <td>{{ item.orderid }}</td>
-                                <td>{{ item.money|intcomma }} đ</td>
+                                <td>{{ item.money|floatformat:2|intcomma }} đ</td>
                                 <td>{{ item.accountno }}</td>
                                 <td>{{ item.accountname }}</td>
                                 <td>{{ item.bankcode }}</td>
@@ -60,12 +70,12 @@
                                 <td>{{ item.updated_at|date:"d/m/Y H:i:s" }}</td>
                                 {% else %}
                                 <td></td>
-                                {% endif%}
+                                {% endif %}
                                 {% if item.updated_by %}
                                 <td class="fw-bold">{{ item.updated_by }}</td>
                                 {% else %}
                                 <td></td>
-                                {% endif%}
+                                {% endif %}
                                 <td>
                                     {% if item.status %}
                                     <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
@@ -84,7 +94,6 @@
                                         data-is-report="{{item.is_report}}"
                                         data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
                                     {% endif %}
-                                    <!-- <button class="btn btn-sm btn-success done-btn" data-item-id="{{ item.id }}">Done</button> -->
                                 </td>
                                 <td>
                                     {% if item.is_report %}
@@ -156,8 +165,7 @@
                         <label for="bankcode">{% trans "Bank" %}</label>
                         <select class="form-select" id="bankcode" name="bankcode" required>
                             {% for bank in bank_data %}
-                            <option value={{bank.code}} data-bank-name="{{bank.short_name}}">{{bank.short_name}}
-                            </option>
+                            <option value="{{ bank.code }}" data-bank-name="{{ bank.short_name }}">{{ bank.short_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -177,7 +185,6 @@
             <div class="modal-body">
                 <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger report-btn" data-item-id="">{% trans "Report" %}</button>
                 <button type="button" class="btn btn-warning cancel-btn" data-item-id="">{% trans "Cancel" %}</button>
@@ -404,7 +411,6 @@
         var table = $('#payoutTable').DataTable({
             "pageLength": 10,  // Set default page length
             "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
-            // "order": [[7, "desc"]]  // Set default sorting order (optional)
             "ordering": false
         });
 
@@ -416,6 +422,7 @@
                 var cancelColumn = data[13];
                 var reportColumn = data[12];
 
+                // Filter by status
                 if (status === 'Canceled' && status === cancelColumn) {
                     return true;
                 }
@@ -427,6 +434,32 @@
                 if (status === "" || statusColumn.includes(status)) {
                     return true;
                 }
+
+                // Filter by start and end datetime
+                var min = $('#start_datetime').val();
+                var max = $('#end_datetime').val();
+                console.log(data[6])
+                var createdAt = new Date(data[6]); // Index of the created_at column
+
+                if (min) {
+                    min = new Date(min);
+                }
+                if (max) {
+                    max = new Date(max);
+                }
+
+                console.log('=========');
+                console.log(min);
+                console.log(max);
+                console.log(createdAt);
+                console.log('=========');
+
+                if (
+                    (min <= createdAt && createdAt <= max)
+                ) {
+                    console.log('true')
+                    return true;
+                }
                 return false;
             }
         );
@@ -435,6 +468,11 @@
 
         // Event listener to the status filter dropdown to redraw on change
         $('#statusFilter').on('change', function () {
+            table.draw();
+        });
+
+        // Event listeners for the datetime range inputs to redraw on change
+        $('#start_datetime, #end_datetime').on('change', function () {
             table.draw();
         });
     });

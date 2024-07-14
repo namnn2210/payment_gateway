@@ -207,11 +207,8 @@ msgstr "Rút tiền"
 msgid "Processing Payout"
 msgstr "Xử lí rút tiền"
 
-#: templates/payout.html:5 templates/payout.html:26
-#, fuzzy
-#| msgid "Payout"
 msgid "List Payout"
-msgstr "Rút tiền"
+msgstr "Danh sách lệnh rút tiền"
 
 #: templates/payout.html:12
 msgid "All"
@@ -229,11 +226,8 @@ msgstr "Hoàn thành"
 msgid "Canceled"
 msgstr "Đã hủy"
 
-#: templates/payout.html:20 templates/payout.html:119
-#, fuzzy
-#| msgid "Payout"
 msgid "Add Payout"
-msgstr "Rút tiền"
+msgstr "Thêm lệnh rút tiền"
 
 #: templates/payout.html:31 templates/payout.html:128
 msgid "CID"
@@ -271,21 +265,15 @@ msgstr "Hoạt động"
 msgid "Report"
 msgstr "Báo cáo"
 
-#: templates/payout.html:44 templates/payout.html:183
-#, fuzzy
-#| msgid "Balance"
 msgid "Cancel"
-msgstr "Số dư"
+msgstr "Hủy"
 
 #: templates/payout.html:45
 msgid "Auto/Manual"
 msgstr "Tự động/Thủ công"
 
-#: templates/payout.html:85
-#, fuzzy
-#| msgid "Payout"
 msgid "Pay"
-msgstr "Rút tiền"
+msgstr "Thanh toán"
 
 #: templates/payout.html:91
 msgid "Reported"
@@ -307,11 +295,8 @@ msgstr "Ngân hàng"
 msgid "Add"
 msgstr "Thêm"
 
-#: templates/payout.html:174
-#, fuzzy
-#| msgid "Payout"
 msgid "Payout Details"
-msgstr "Rút tiền"
+msgstr "Chi tiết rút tiền"
 
 #: templates/record_book.html:36
 msgid "Search"
@@ -325,11 +310,8 @@ msgstr "Tìm kiếm mọi thứ ở đây..."
 msgid "Start Date"
 msgstr "Ngày bắt đầu"
 
-#: templates/record_book.html:45
-#, fuzzy
-#| msgid "Date"
 msgid "End Date"
-msgstr "Thời gian"
+msgstr "Ngày kết thúc"
 
 #: templates/record_book.html:55 templates/record_book.html:83
 #, fuzzy

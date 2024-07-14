@@ -12,11 +12,8 @@
     .table-wrapper {
         width: 48%;
         border: 2px solid #dee2e6;
-        /* Add border to the table wrapper */
         border-radius: 8px;
-        /* Optional: add border radius */
         padding: 15px;
-        /* Optional: add padding inside the border */
     }
 
     .table-wrapper h6 {
@@ -38,12 +35,12 @@
                                     placeholder="{% trans 'Search everything here...' %}" />
                             </div>
                             <div class="col-md-4">
-                                <label for="start_date">{% trans "Start Date" %}</label>
-                                <input type="date" id="start_date" class="form-control" />
+                                <label for="start_datetime">{% trans "Start Date" %}</label>
+                                <input type="datetime-local" id="start_datetime" class="form-control" />
                             </div>
                             <div class="col-md-4">
-                                <label for="end_date">{% trans "End Date" %}</label>
-                                <input type="date" id="end_date" class="form-control" />
+                                <label for="end_datetime">{% trans "End Date" %}</label>
+                                <input type="datetime-local" id="end_datetime" class="form-control" />
                             </div>
                         </div>
                         <div class="table-container row">
@@ -65,7 +62,7 @@
                                         <tr>
                                             <td>{{ item.account_number }}</td>
                                             <td>{{ item.transaction_number }}</td>
-                                            <td class="text-success">{{ item.amount|intcomma }}</td>
+                                            <td class="text-success">{{ item.amount|floatformat:2|intcomma }}</td>
                                             <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
                                             <td>{{ item.description }}</td>
                                             <td>{{ item.status}}</td>
@@ -93,7 +90,7 @@
                                         <tr>
                                             <td>{{ item.account_number }}</td>
                                             <td>{{ item.transaction_number }}</td>
-                                            <td class="text-danger">{{ item.amount|intcomma }}</td>
+                                            <td class="text-danger">{{ item.amount|floatformat:2|intcomma }}</td>
                                             <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
                                             <td>{{ item.description }}</td>
                                             <td>{{ item.status}}</td>
@@ -134,11 +131,11 @@
             "dom": 'lrtip' // Hide the default search bar
         });
 
-        // Custom filtering function to filter data by date range
+        // Custom filtering function to filter data by datetime range
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
-                var min = $('#start_date').val();
-                var max = $('#end_date').val();
+                var min = $('#start_datetime').val();
+                var max = $('#end_datetime').val();
                 var date = new Date(data[3]); // Use the index of your date column
 
                 // Convert min and max to Date objects
@@ -151,9 +148,9 @@
 
                 if (
                     (min === '' && max === '') ||
-                    (min === '' && date <= new Date(max)) ||
+                    (min === '' && date <= max) ||
                     (min <= date && max === '') ||
-                    (min <= date && date <= new Date(max))
+                    (min <= date && date <= max)
                 ) {
                     return true;
                 }
@@ -161,8 +158,8 @@
             }
         );
 
-        // Event listener to the date range filtering inputs to redraw on input
-        $('#start_date, #end_date').on('change', function () {
+        // Event listener to the datetime range filtering inputs to redraw on input
+        $('#start_datetime, #end_datetime').on('change', function () {
             inTable.draw();
             outTable.draw();
         });
