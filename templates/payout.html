@@ -443,7 +443,7 @@
                     return true;
                 }
 
-                if (status === 'Reported' && status === 'Đã báo cáo') {
+                if (status === 'Reported' && reportColumn === 'Đã báo cáo') {
                     return true;
                 }
 
@@ -451,11 +451,11 @@
                     return true;
                 }
 
-                if (status === 'Pending' && status === 'Chờ xử lí') {
+                if (status === 'Pending' && statusColumn === 'Chờ xử lí') {
                     return true;
                 }
 
-                if (status === 'Done' && status === 'Hoàn thành') {
+                if (status === 'Done' && statusColumn === 'Hoàn thành') {
                     return true;
                 }
 
