@@ -437,7 +437,6 @@
                 .column(2, { search: 'applied' })
                 .data()
                 .reduce(function (a, b) {
-                    console.log(a, b)
                     return intVal(a) + intVal(b);
                 }, 0);
 
@@ -446,6 +445,7 @@
                 .column(2, { page: 'current' })
                 .data()
                 .reduce(function (a, b) {
+                    console.log(intVal(a), intVal(b))
                     return intVal(a) + intVal(b);
                 }, 0);
 
