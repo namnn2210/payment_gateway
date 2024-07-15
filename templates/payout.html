@@ -419,8 +419,8 @@
 
         const userLang = "{{ request.LANGUAGE_CODE }}";
 
-        $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
-
+        
+ 
 
         // Custom filtering function which will filter data in the DataTable
         $.fn.dataTable.ext.search.push(
@@ -487,6 +487,8 @@
                 return false;
             }
         );
+
+        $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
 
         
         // Event listener to the status filter dropdown to redraw on change
