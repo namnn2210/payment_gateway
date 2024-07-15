@@ -429,7 +429,7 @@
                 if (typeof i === 'string') {
                     console.log(i);
                     // Remove non-numeric characters, except for the decimal point.
-                    let cleanedString = i.replace(',00 đ', '').replace(',','');
+                    let cleanedString = i.replaceAll(',00 đ', '').replaceAll(',','');
                     console.log(cleanedString);
                     console.log(parseInt(cleanedString))
                     return parseInt(cleanedString);
