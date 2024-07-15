@@ -393,6 +393,7 @@
                                     location.reload();  // Reload the page to reflect the changes
                                 });
                             } else {
+                                console.log(data)
                                 Swal.fire(
                                     'Error!',
                                     'An error occurred.',
@@ -427,7 +428,15 @@
                     return true;
                 }
 
+                if (status === 'Đã hủy' && status === cancelColumn) {
+                    return true;
+                }
+
                 if (status === 'Reported' && status === reportColumn) {
+                    return true;
+                }
+
+                if (status === 'Đã báo cáo' && status === reportColumn) {
                     return true;
                 }
 
