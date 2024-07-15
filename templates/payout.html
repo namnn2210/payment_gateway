@@ -416,145 +416,131 @@
     });
 </script>
 <script>
-    function convertStringToDate(dateTimeString) {
-        // Split the input string by space to separate date and time
-        const [datePart, timePart] = dateTimeString.split(' ');
-
-        // Split the date part by '/' to get day, month, and year
-        const [day, month, year] = datePart.split('/').map(Number);
-
-        // Split the time part by ':' to get hours, minutes, and seconds
-        const [hours, minutes, seconds] = timePart.split(':').map(Number);
-
-        // Create a Date object (months are zero-indexed in JavaScript Date object)
-        const date = new Date(year, month - 1, day, hours, minutes, seconds);
-
-        return date;
-    }
-
     $(document).ready(function () {
-        var table = $('#payoutTable').DataTable({
-            "pageLength": 10,  // Set default page length
-            "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
-            "ordering": false,
-            "footerCallback": function (row, data, start, end, display) {
-                var api = this.api(), data;
+    var table = $('#payoutTable').DataTable({
+        "pageLength": 10,  // Set default page length
+        "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
+        "ordering": false,
+        "footerCallback": function (row, data, start, end, display) {
+            var api = this.api();
 
-                // Remove the currency symbol and thousand separators from the data to sum correctly
-                var intVal = function (i) {
-                    return typeof i === 'string' ?
-                        parseFloat(i.replace(/[\đ,]/g, '')) :
-                        typeof i === 'number' ?
-                            i : 0;
-                };
+            // Function to remove the currency symbol and thousand separators
+            var intVal = function (i) {
+                return typeof i === 'string' ?
+                    parseFloat(i.replace(/[\đ,]/g, '')) :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
 
-                // Total over all pages with current filter
-                total = api
-                    .column(2, { search: 'applied' })
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
+            // Total over all pages with current filter
+            var total = api
+                .column(2, { search: 'applied' })
+                .data()
+                .reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
 
-                // Total over this page
-                pageTotal = api
-                    .column(2, { page: 'current' })
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
+            // Total over this page
+            var pageTotal = api
+                .column(2, { page: 'current' })
+                .data()
+                .reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
 
-                // Update footer
-                $('#page-total').html(
-                    pageTotal.toLocaleString() + ' đ'
-                );
+            // Update footer
+            $('#page-total').html(
+                pageTotal.toLocaleString() + ' đ'
+            );
 
-                // Update the grand total in the footer
-                $('#grand-total').html(
-                    total.toLocaleString() + ' đ'
-                );
-            }
-        });
+            // Update the grand total in the footer
+            $('#grand-total').html(
+                total.toLocaleString() + ' đ'
+            );
+        }
+    });
 
-        const userLang = "{{ request.LANGUAGE_CODE }}";
+    // Custom filtering function which will filter data in the DataTable
+    $.fn.dataTable.ext.search.push(
+        function (settings, data, dataIndex) {
+            var status = $('#statusFilter').val();
+            var statusColumn = data[10]; // Index of the status column
+            var cancelColumn = data[13];
+            var reportColumn = data[12];
 
-        // Custom filtering function which will filter data in the DataTable
-        $.fn.dataTable.ext.search.push(
-            function (settings, data, dataIndex) {
-                var status = $('#statusFilter').val();
-                var statusColumn = data[10]; // Index of the status column
-                var cancelColumn = data[13];
-                var reportColumn = data[12];
-
-                // Filter by status
-                if (status === 'Canceled' && status === cancelColumn) {
-                    return true;
-                }
-
+            // Filter by status
+            if (status) {
                 if (status === 'Canceled' && cancelColumn === 'Đã hủy') {
                     return true;
                 }
-
-                if (status === 'Reported' && status === reportColumn) {
-                    return true;
-                }
-
                 if (status === 'Reported' && reportColumn === 'Đã báo cáo') {
                     return true;
                 }
-
-                if (status === "") {
-                    return true;
-                }
-
                 if (status === 'Pending' && statusColumn === 'Chờ xử lí') {
                     return true;
                 }
-
                 if (status === 'Done' && statusColumn === 'Hoàn thành') {
                     return true;
                 }
-
-                // Filter by start and end datetime
-                var min = $('#start_datetime').val();
-                var max = $('#end_datetime').val();
-
-                var createdAt = convertStringToDate(data[6]); // Index of the created_at column
-
-                if (min) {
-                    min = new Date(min);
-                }
-                if (max) {
-                    max = new Date(max);
-                }
-
-                if (
-                    (min <= createdAt && createdAt <= max)
-                ) {
-                    console.log('true')
+                if (status === '') {
                     return true;
                 }
                 return false;
             }
-        );
 
-        $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
+            // Filter by start and end datetime
+            var min = $('#start_datetime').val();
+            var max = $('#end_datetime').val();
+            var createdAt = convertStringToDate(data[6]); // Index of the created_at column
 
-        
-        // Event listener to the status filter dropdown to redraw on change
-        $('#statusFilter').on('change', function () {
-            table.draw();
-        });
+            if (min) {
+                min = new Date(min);
+            }
+            if (max) {
+                max = new Date(max);
+            }
 
-        // Event listeners for the datetime range inputs to redraw on change
-        $('#start_datetime, #end_datetime').on('change', function () {
-            table.draw();
-        });
+            if ((!min || createdAt >= min) && (!max || createdAt <= max)) {
+                return true;
+            }
 
-        // Ensure search box works with the custom filtering
-        $('#payoutTable_filter input').on('keyup', function () {
-            table.search(this.value).draw();
-            });
-        });
+            return false;
+        }
+    );
+
+    $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
+
+    // Event listener to the status filter dropdown to redraw on change
+    $('#statusFilter').on('change', function () {
+        table.draw();
+    });
+
+    // Event listeners for the datetime range inputs to redraw on change
+    $('#start_datetime, #end_datetime').on('change', function () {
+        table.draw();
+    });
+
+    // Ensure search box works with the custom filtering
+    $('#payoutTable_filter input').on('keyup', function () {
+        table.search(this.value).draw();
+    });
+});
+
+function convertStringToDate(dateTimeString) {
+    // Split the input string by space to separate date and time
+    const [datePart, timePart] = dateTimeString.split(' ');
+
+    // Split the date part by '/' to get day, month, and year
+    const [day, month, year] = datePart.split('/').map(Number);
+
+    // Split the time part by ':' to get hours, minutes, and seconds
+    const [hours, minutes, seconds] = timePart.split(':').map(Number);
+
+    // Create a Date object (months are zero-indexed in JavaScript Date object)
+    const date = new Date(year, month - 1, day, hours, minutes, seconds);
+
+    return date;
+}
+
 </script>
 {% endblock %}
