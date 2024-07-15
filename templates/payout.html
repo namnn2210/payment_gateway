@@ -115,6 +115,18 @@
                             </tr>
                             {% endfor %}
                         </tbody>
+                        <tfoot>
+                            <tr class="text-center">
+                                <th colspan="2">{% trans "Page Total" %}</th>
+                                <th id="page-total"></th>
+                                <th colspan="12"></th>
+                            </tr>
+                            <tr class="text-center">
+                                <th colspan="2">{% trans "Grand Total" %}</th>
+                                <th id="grand-total"></th>
+                                <th colspan="12"></th>
+                            </tr>
+                        </tfoot>                        
                     </table>
                 </div>
             </div>
@@ -250,9 +262,6 @@
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
 
-        console.log(isReport);
-        console.log(isCancel);
-
         var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${accountname}/print.jpg`;
 
         $('#modalQrImage').attr('src', qrUrl);
@@ -306,7 +315,6 @@
                                     location.reload();  // Reload the page to reflect the changes
                                 });
                             } else {
-                                console.log(data)
                                 Swal.fire(
                                     'Error!',
                                     'An error occurred.',
@@ -350,7 +358,6 @@
                                     location.reload();  // Reload the page to reflect the changes
                                 });
                             } else {
-                                console.log(data)
                                 Swal.fire(
                                     'Error!',
                                     'An error occurred.',
@@ -395,7 +402,6 @@
                                     location.reload();  // Reload the page to reflect the changes
                                 });
                             } else {
-                                console.log(data)
                                 Swal.fire(
                                     'Error!',
                                     'An error occurred.',
@@ -410,17 +416,67 @@
     });
 </script>
 <script>
+    function convertStringToDate(dateTimeString) {
+        // Split the input string by space to separate date and time
+        const [datePart, timePart] = dateTimeString.split(' ');
+
+        // Split the date part by '/' to get day, month, and year
+        const [day, month, year] = datePart.split('/').map(Number);
+
+        // Split the time part by ':' to get hours, minutes, and seconds
+        const [hours, minutes, seconds] = timePart.split(':').map(Number);
+
+        // Create a Date object (months are zero-indexed in JavaScript Date object)
+        const date = new Date(year, month - 1, day, hours, minutes, seconds);
+
+        return date;
+    }
+
     $(document).ready(function () {
         var table = $('#payoutTable').DataTable({
             "pageLength": 10,  // Set default page length
             "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
-            "ordering": false
+            "ordering": false,
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+
+                // Remove the currency symbol and thousand separators from the data to sum correctly
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        parseFloat(i.replace(/[\đ,]/g, '')) :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+
+                // Total over all pages
+                total = api
+                    .column(2)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Total over this page
+                pageTotal = api
+                    .column(2, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+
+                // Update footer
+                $('#page-total').html(
+                    pageTotal.toLocaleString() + ' đ'
+                );
+
+                // Update the grand total in the footer
+                $('#grand-total').html(
+                    total.toLocaleString() + ' đ'
+                );
+            }
         });
 
         const userLang = "{{ request.LANGUAGE_CODE }}";
-
-        
- 
 
         // Custom filtering function which will filter data in the DataTable
         $.fn.dataTable.ext.search.push(
@@ -462,8 +518,8 @@
                 // Filter by start and end datetime
                 var min = $('#start_datetime').val();
                 var max = $('#end_datetime').val();
-                console.log(data[6])
-                var createdAt = new Date(data[6]); // Index of the created_at column
+
+                var createdAt = convertStringToDate(data[6]); // Index of the created_at column
 
                 if (min) {
                     min = new Date(min);
@@ -471,12 +527,6 @@
                 if (max) {
                     max = new Date(max);
                 }
-
-                console.log('=========');
-                console.log(min);
-                console.log(max);
-                console.log(createdAt);
-                console.log('=========');
 
                 if (
                     (min <= createdAt && createdAt <= max)
