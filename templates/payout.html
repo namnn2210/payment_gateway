@@ -448,9 +448,9 @@
                             i : 0;
                 };
 
-                // Total over all pages
+                // Total over all pages with current filter
                 total = api
-                    .column(2)
+                    .column(2, { search: 'applied' })
                     .data()
                     .reduce(function (a, b) {
                         return intVal(a) + intVal(b);
