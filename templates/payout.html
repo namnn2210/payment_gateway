@@ -417,6 +417,8 @@
             "ordering": false
         });
 
+        const userLang = "{{ request.LANGUAGE_CODE }}";
+
         // Custom filtering function which will filter data in the DataTable
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
@@ -475,7 +477,7 @@
             }
         );
 
-        $('#statusFilter').val('Pending').trigger('change');
+        $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
 
         // Event listener to the status filter dropdown to redraw on change
         $('#statusFilter').on('change', function () {

@@ -176,6 +176,7 @@ def update_payout(request, update_type):
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done','success': False})
+        payout.save()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
