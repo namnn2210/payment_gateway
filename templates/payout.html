@@ -55,6 +55,18 @@
                                 <th scope="col">{% trans "Auto/Manual" %}</th>
                             </tr>
                         </thead>
+                        <tfoot>
+                            <tr class="text-center">
+                                <th colspan="2">{% trans "Page Total" %}</th>
+                                <th id="page-total"></th>
+                                <th colspan="12"></th>
+                            </tr>
+                            <tr class="text-center">
+                                <th colspan="2">{% trans "Grand Total" %}</th>
+                                <th id="grand-total"></th>
+                                <th colspan="12"></th>
+                            </tr>
+                        </tfoot>  
                         <tbody>
                             {% for item in list_payout %}
                             <tr class="text-center">
@@ -114,19 +126,7 @@
                                 </td>
                             </tr>
                             {% endfor %}
-                        </tbody>
-                        <tfoot>
-                            <tr class="text-center">
-                                <th colspan="2">{% trans "Page Total" %}</th>
-                                <th id="page-total"></th>
-                                <th colspan="12"></th>
-                            </tr>
-                            <tr class="text-center">
-                                <th colspan="2">{% trans "Grand Total" %}</th>
-                                <th id="grand-total"></th>
-                                <th colspan="12"></th>
-                            </tr>
-                        </tfoot>                        
+                        </tbody>                      
                     </table>
                 </div>
             </div>
