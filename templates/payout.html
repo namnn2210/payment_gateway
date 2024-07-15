@@ -437,6 +437,7 @@
                 .column(2, { search: 'applied' })
                 .data()
                 .reduce(function (a, b) {
+                    console.log(a, b)
                     return intVal(a) + intVal(b);
                 }, 0);
 
