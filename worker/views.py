@@ -129,40 +129,15 @@ def get_transaction(bank):
                         
                         # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
-                        print('bank', bank_account)
+                        success = False
                         if bank_account:
-                            partner_mapping = PartnerMapping.objects.filter(bank=bank_account).first()
-                            print('partner mapping', partner_mapping)
+                            partner_mapping = PartnerMapping.objects.filter(bank=bank_account)
                             if partner_mapping: 
-                                result = create_deposit_order(row,partner_mapping)
-                                print(result)
-                                if result:
-                                    if result['msg'] == 'transfercode is null':
-                                        update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')                                     
-                                        
-                                        alert = (
-                                            f'Hi, failed\n'
-                                            f'\n'
-                                            f'Account: {row['account_number']}'
-                                            f'\n'
-                                            f'Confirmed by order: \n'
-                                            f'\n'
-                                            f'Received amount💲: {formatted_amount} VND\n'
-                                            f'\n'
-                                            f'Memo: {row['description']}\n'
-                                            f'\n'
-                                            f'Code: {find_substring(row['description'])}\n'
-                                            f'\n'
-                                            f'Time: {row["transaction_date"]}\n'
-                                            f'\n'
-                                            f'Reason of not be credited: No transfer code!!!'
-                                        )
-                                        send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))
-                                    
-                                    if result['prc'] == '1' and result['errcode'] == '00':
-                                        if result['orderno'] == '':
+                                for item in partner_mapping:
+                                    result = create_deposit_order(row,item)
+                                    if result:
+                                        if result['msg'] == 'transfercode is null':
                                             update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')                                     
-                                        
                                             alert = (
                                                 f'Hi, failed\n'
                                                 f'\n'
@@ -178,29 +153,59 @@ def get_transaction(bank):
                                                 f'\n'
                                                 f'Time: {row["transaction_date"]}\n'
                                                 f'\n'
-                                                f'Reason of not be credited: Order not found!!!'
+                                                f'Reason of not be credited: No transfer code!!!'
                                             )
-                                            send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))                                        
+                                            send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))
+                                            break
+                                        
+                                        if result['prc'] == '1' and result['errcode'] == '00':
+                                            if result['orderno'] == '':
+                                                continue                                      
+                                            else:
+                                                update_transaction_history_status(row['account_number'], row['transfer_code'], 'Success')    
+                                                alert = (
+                                                    f'🟩🟩🟩 Success!\n'
+                                                    f'\n'
+                                                    f'Account: {row['account_number']}'
+                                                    f'\n'
+                                                    f'Confirmed by order: \n'
+                                                    f'\n'
+                                                    f'Received amount💲: {formatted_amount} VND\n'
+                                                    f'\n'
+                                                    f'Memo: {row['description']}\n'
+                                                    f'\n'
+                                                    f'Code: {find_substring(row['description'])}\n'
+                                                    f'\n'
+                                                    f'Time: {row["transaction_date"]}\n'
+                                                )
+                                                send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                                                update_amount_by_date('IN',row['amount'])
+                                                success = True
+                                                break 
                                         else:
-                                            update_transaction_history_status(row['account_number'], row['transfer_code'], 'Success')    
-                                            alert = (
-                                                f'🟩🟩🟩 Success!\n'
-                                                f'\n'
-                                                f'Account: {row['account_number']}'
-                                                f'\n'
-                                                f'Confirmed by order: \n'
-                                                f'\n'
-                                                f'Received amount💲: {formatted_amount} VND\n'
-                                                f'\n'
-                                                f'Memo: {row['description']}\n'
-                                                f'\n'
-                                                f'Code: {find_substring(row['description'])}\n'
-                                                f'\n'
-                                                f'Time: {row["transaction_date"]}\n'
-                                            )
-                                            send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))   
-                        update_amount_by_date('IN',row['amount'])
-                        
+                                            continue
+                                    else:
+                                        continue
+                                if not success:
+                                    update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')                                            
+                                    alert = (
+                                        f'Hi, failed\n'
+                                        f'\n'
+                                        f'Account: {row['account_number']}'
+                                        f'\n'
+                                        f'Confirmed by order: \n'
+                                        f'\n'
+                                        f'Received amount💲: {formatted_amount} VND\n'
+                                        f'\n'
+                                        f'Memo: {row['description']}\n'
+                                        f'\n'
+                                        f'Code: {find_substring(row['description'])}\n'
+                                        f'\n'
+                                        f'Time: {row["transaction_date"]}\n'
+                                        f'\n'
+                                        f'Reason of not be credited: Order not found!!!'
+                                    )
+                                    send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))  
                 else:
                     if bank.bank_type == 'OUT':
                         transaction_type = '-'
