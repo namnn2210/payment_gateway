@@ -550,6 +550,11 @@
         $('#start_datetime, #end_datetime').on('change', function () {
             table.draw();
         });
-    });
+
+        // Ensure search box works with the custom filtering
+        $('#payoutTable_filter input').on('keyup', function () {
+            table.search(this.value).draw();
+            });
+        });
 </script>
 {% endblock %}
