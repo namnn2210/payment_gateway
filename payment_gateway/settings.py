@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'vietin',
     'notification',
     'payout',
+    'settle_payout',
     'worker',
     'partner',
 ]
