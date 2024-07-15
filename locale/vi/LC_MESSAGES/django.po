@@ -72,11 +72,8 @@ msgstr "Cập nhật gần nhất"
 msgid "Actions"
 msgstr "Hoạt động"
 
-#: templates/bank.html:72 templates/bank.html:120
-#, fuzzy
-#| msgid "history"
 msgid "History"
-msgstr "lịch sử"
+msgstr "Lịch sử"
 
 #: templates/bank.html:76 templates/bank.html:124
 msgid "OFF"
