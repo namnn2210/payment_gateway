@@ -34,10 +34,13 @@
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body text-center">
                 <div class="row">
-                    <div class="col-md-6 col-sm-12">
+                    <div class="col-md-4 col-sm-12">
                         <strong>{% trans "Page Total" %}:</strong> <strong id="page-total"></strong>
                     </div>
-                    <div class="col-md-6 col-sm-12">
+                    <div class="col-md-4 col-sm-12">
+                        <strong>{% trans "Total Results" %}:</strong> <strong id="total-results"></strong>
+                    </div>
+                    <div class="col-md-4 col-sm-12">
                         <strong>{% trans "Grand Total" %}:</strong> <strong id="grand-total"></strong>
                     </div>
                 </div>
@@ -457,6 +460,11 @@
                 .reduce(function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0);
+
+            // Update the total number of results
+            $('#total-results').html(
+                display.length.toLocaleString()
+            );
 
             // Update footer
             $('#page-total').html(
