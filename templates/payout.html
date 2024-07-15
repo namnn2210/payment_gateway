@@ -419,6 +419,9 @@
 
         const userLang = "{{ request.LANGUAGE_CODE }}";
 
+        $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
+
+
         // Custom filtering function which will filter data in the DataTable
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
@@ -432,7 +435,7 @@
                     return true;
                 }
 
-                if (status === 'Đã hủy' && status === cancelColumn) {
+                if (status === 'Canceled' && cancelColumn === 'Đã hủy') {
                     return true;
                 }
 
@@ -440,11 +443,19 @@
                     return true;
                 }
 
-                if (status === 'Đã báo cáo' && status === reportColumn) {
+                if (status === 'Reported' && status === 'Đã báo cáo') {
                     return true;
                 }
 
-                if (status === "" || statusColumn.includes(status)) {
+                if (status === "") {
+                    return true;
+                }
+
+                if (status === 'Pending' && status === 'Chờ xử lí') {
+                    return true;
+                }
+
+                if (status === 'Done' && status === 'Hoàn thành') {
                     return true;
                 }
 
@@ -477,8 +488,7 @@
             }
         );
 
-        $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
-
+        
         // Event listener to the status filter dropdown to redraw on change
         $('#statusFilter').on('change', function () {
             table.draw();
