@@ -107,6 +107,8 @@ def update_payout(request, update_type):
         payout_id = data.get('id')
         payout = get_object_or_404(Payout, id=payout_id)
         formatted_amount = '{:,.2f}'.format(payout.money)
+        payout.updated_by = request.user
+        payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
         if update_type == 'done':
             payout.status = True
             alert = (
@@ -174,8 +176,6 @@ def update_payout(request, update_type):
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done','success': False})
-        payout.updated_by = request.user
-        payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
         payout.save()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
