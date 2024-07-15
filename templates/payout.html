@@ -460,9 +460,10 @@
         }
     });
 
+    const userLang = "{{ request.LANGUAGE_CODE }}";
+
     // Custom filtering function which will filter data in the DataTable
     $.fn.dataTable.ext.search.push(
-        const userLang = "{{ request.LANGUAGE_CODE }}";
         
         function (settings, data, dataIndex) {
             var status = $('#statusFilter').val();
@@ -511,6 +512,8 @@
             return false;
         }
     );
+    
+    
 
     $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
 
