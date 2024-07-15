@@ -34,10 +34,10 @@
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body text-center">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-sm-12">
                         <strong>{% trans "Page Total" %}:</strong> <strong id="page-total"></strong>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-sm-12">
                         <strong>{% trans "Grand Total" %}:</strong> <strong id="grand-total"></strong>
                     </div>
                 </div>
@@ -525,7 +525,7 @@
     
     
 
-    $('#statusFilter').val(userLang === 'vi' ? 'Chờ xử lí' : 'Pending').trigger('change');
+    $('#statusFilter').val(userLang === 'vi' ? 'Pending' : 'Pending').trigger('change');
 
     // Event listener to the status filter dropdown to redraw on change
     $('#statusFilter').on('change', function () {
