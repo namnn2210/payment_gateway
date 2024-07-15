@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from bank.utils import send_telegram_message
 from bank.views import update_amount_by_date
+from bank.models import Bank
 from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
@@ -38,9 +39,10 @@ def list_payout(request):
     # page_number = request.GET.get('page')
     # page_obj = paginator.get_page(page_number)
     items = [model_to_dict(item) for item in list_payout]
+    banks = Bank.objects.filter(status=True)
 
     return render(request, 'payout.html', {
-        'list_payout': list_payout, 'items_json':items, 'bank_data':bank_data})
+        'list_payout': list_payout, 'items_json':items, 'bank_data':bank_data, 'banks':banks})
 
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
@@ -106,12 +108,15 @@ def update_payout(request, update_type):
     try:
         data = json.loads(request.body)
         payout_id = data.get('id')
+        bank_id = data.get('bank_id')
         payout = get_object_or_404(Payout, id=payout_id)
         formatted_amount = '{:,.2f}'.format(payout.money)
         payout.updated_by = request.user
         payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
         if update_type == 'done':
             payout.status = True
+            bank = Bank.objects.filter(id=bank_id).first()
+            payout.process_bank = bank
             alert = (
                 f'🟢🟢🟢Success🟢🟢🟢\n'
                 f'\n'
@@ -124,6 +129,8 @@ def update_payout(request, update_type):
                 f'Account name: {payout.accountname}\n'
                 f'\n'
                 f'Account number: {payout.accountno}\n'
+                f'\n'
+                f'Process bank: {payout.process_bank.name}\n'
                 f'\n'
                 f'Created by: {payout.user}\n'
                 f'\n'

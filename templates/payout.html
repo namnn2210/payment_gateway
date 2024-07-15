@@ -201,6 +201,27 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger report-btn" data-item-id="">{% trans "Report" %}</button>
                 <button type="button" class="btn btn-warning cancel-btn" data-item-id="">{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#selectPayoutBankModal">{% trans "Done" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="selectPayoutBankModal" tabindex="-1" aria-labelledby="selectPayoutBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="selectPayoutBankModalLabel">{% trans "Select Payout Bank" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="processBank">{% trans "Process Bank" %}</label>
+                <select class="form-select" id="processBank" name="processBank" required>
+                    {% for bank in banks %}
+                    <option value="{{ bank.id }}">{{ bank.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="modal-footer">
                 <button type="button" class="btn btn-success done-btn-modal" data-item-id="">{% trans "Done" %}</button>
             </div>
         </div>
@@ -287,6 +308,7 @@
 
         $('.done-btn-modal').click(function () {
             var itemId = $(this).data('item-id');
+            var bankId = $('#processBank').val();
             const csrftoken = getCookie('csrftoken');
             Swal.fire({
                 title: 'Are you sure?',
@@ -301,7 +323,7 @@
                     $.ajax({
                         url: "{% url 'update_payout' 'done' %}",
                         type: 'POST',
-                        data: JSON.stringify({ id: itemId }),
+                        data: JSON.stringify({ id: itemId, bank_id: bankId }),
                         contentType: 'application/json',
                         headers: {
                             'X-CSRFToken': csrftoken
