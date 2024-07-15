@@ -468,6 +468,8 @@
             var cancelColumn = data[13];
             var reportColumn = data[12];
 
+            const userLang = "{{ request.LANGUAGE_CODE }}";
+
             // Filter by status
             if (status) {
                 if (status === 'Canceled' && cancelColumn === 'Đã hủy') {
