@@ -427,13 +427,13 @@
             // Function to remove the currency symbol and thousand separators
             var intVal = function (i) {
                 if (typeof i === 'string') {
-                    // Remove non-numeric characters, except for the decimal point.
-                    let cleanedString = i.replace('/[^\d]/g', '');
+                    // Remove non-numeric characters.
+                    let cleanedString = i.replace(/[^\d]/g, '');
+                    console.log(cleanedString);
+                    // Remove any trailing zeroes from the cleaned string.
                     if (cleanedString.endsWith('00')) {
                         cleanedString = cleanedString.slice(0, -2); // Remove the last extra zero
                     }
-                    console.log(cleanedString);
-                    console.log(parseInt(cleanedString, 10));
                     // Parse the cleaned string to an integer.
                     return parseInt(cleanedString, 10);
                 } else if (typeof i === 'number') {
