@@ -429,10 +429,12 @@
                 if (typeof i === 'string') {
                     console.log(i);
                     // Remove non-numeric characters, except for the decimal point.
-                    let cleanedString = i.replaceAll(',00 đ', '').replaceAll(',','');
-                    console.log(cleanedString);
-                    console.log(parseInt(cleanedString))
-                    return parseInt(cleanedString);
+                    let cleanedString = i.replace('/[^\d]/g', '');
+                    while (cleanedString.length > 1 && cleanedString.endsWith('0')) {
+                        cleanedString = cleanedString.slice(0, -1);
+                    }
+                    // Parse the cleaned string to an integer.
+                    return parseInt(cleanedString, 10);
                 } else if (typeof i === 'number') {
                     return i;
                 } else {
