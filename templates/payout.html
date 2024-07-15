@@ -462,13 +462,15 @@
 
     // Custom filtering function which will filter data in the DataTable
     $.fn.dataTable.ext.search.push(
+        const userLang = "{{ request.LANGUAGE_CODE }}";
+        
         function (settings, data, dataIndex) {
             var status = $('#statusFilter').val();
             var statusColumn = data[10]; // Index of the status column
             var cancelColumn = data[13];
             var reportColumn = data[12];
 
-            const userLang = "{{ request.LANGUAGE_CODE }}";
+            
 
             // Filter by status
             if (status) {
