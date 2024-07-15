@@ -427,8 +427,11 @@
             // Function to remove the currency symbol and thousand separators
             var intVal = function (i) {
                 if (typeof i === 'string') {
+                    console.log(i);
                     // Remove non-numeric characters, except for the decimal point.
                     let cleanedString = i.replace(',00 đ', '').replace(',','');
+                    console.log(cleanedString);
+                    console.log(parseInt(cleanedString))
                     return parseInt(cleanedString);
                 } else if (typeof i === 'number') {
                     return i;
@@ -450,8 +453,6 @@
                 .column(2, { page: 'current' })
                 .data()
                 .reduce(function (a, b) {
-                    console.log(a, b)
-                    console.log(intVal(a), intVal(b))
                     return intVal(a) + intVal(b);
                 }, 0);
 
