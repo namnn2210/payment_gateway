@@ -81,6 +81,7 @@ class AddPayoutView(View):
             money=int(float(money)),
             accountno=accountno,
             accountname=accountname,
+            bankname='',
             bankcode=bankcode,
             updated_by=None,
             is_auto=False,
