@@ -434,8 +434,6 @@
                     if (cleanedString.endsWith('00')) {
                         cleanedString = cleanedString.slice(0, -2); // Remove the last extra zero
                     }
-                    console.log(cleanedString);
-                    console.log(parseInt(cleanedString, 10));
                     // Parse the cleaned string to an integer.
                     return parseInt(cleanedString, 10);
                 } else if (typeof i === 'number') {
@@ -503,6 +501,18 @@
                     return true;
                 }
                 if (status === 'Done' && statusColumn === 'Hoàn thành') {
+                    return true;
+                }
+                if (status === 'Canceled' && cancelColumn === 'Canceled') {
+                    return true;
+                }
+                if (status === 'Reported' && reportColumn === 'Reported') {
+                    return true;
+                }
+                if (status === 'Pending' && statusColumn === 'Pending') {
+                    return true;
+                }
+                if (status === 'Done' && statusColumn === 'Done') {
                     return true;
                 }
                 if (status === '') {
