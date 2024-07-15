@@ -428,13 +428,8 @@
             var intVal = function (i) {
                 if (typeof i === 'string') {
                     // Remove non-numeric characters, except for the decimal point.
-                    let cleanedString = i.replace(/[^\d.]/g, '');
-                    // If the cleaned string has more than one decimal point, handle it.
-                    let parts = cleanedString.split('.');
-                    // Join only the first part and the first decimal part (if exists).
-                    let processedString = parts[0] + (parts[1] ? '.' + parts[1].slice(0, 2) : '');
-                    // Parse the cleaned string to a float.
-                    return parseFloat(processedString);
+                    let cleanedString = i.replace(',00 đ', '').replace(',','');
+                    return parseInt(processedString);
                 } else if (typeof i === 'number') {
                     return i;
                 } else {
