@@ -430,6 +430,7 @@
                     console.log(i);
                     // Remove non-numeric characters, except for the decimal point.
                     let cleanedString = i.replace('/[^\d]/g', '');
+                    console.log(cleanedString)
                     while (cleanedString.length > 1 && cleanedString.endsWith('0')) {
                         cleanedString = cleanedString.slice(0, -1);
                     }
