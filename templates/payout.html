@@ -533,14 +533,13 @@
                 max = new Date(max);
             }
 
-            if ((!min || createdAt >= min) && (!max || createdAt <= max)) {
+            if ((createdAt >= min && createdAt <= max)) {
                 return true;
             }
 
             return false;
         }
     );
-    
     
 
     $('#statusFilter').val(userLang === 'vi' ? 'Pending' : 'Pending').trigger('change');
@@ -555,10 +554,7 @@
         table.draw();
     });
 
-    // Ensure search box works with the custom filtering
-    $('#payoutTable_filter input').on('keyup', function () {
-        table.search(this.value).draw();
-    });
+
 });
 
 function convertStringToDate(dateTimeString) {
