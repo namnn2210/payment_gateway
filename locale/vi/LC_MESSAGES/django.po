@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-15 10:49+0700\n"
+"POT-Creation-Date: 2024-07-15 11:25+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -72,6 +72,7 @@ msgstr "Cập nhật gần nhất"
 msgid "Actions"
 msgstr "Hoạt động"
 
+#: templates/bank.html:72 templates/bank.html:120
 msgid "History"
 msgstr "Lịch sử"
 
@@ -204,6 +205,33 @@ msgstr "Rút tiền"
 msgid "Processing Payout"
 msgstr "Xử lí rút tiền"
 
+#: templates/login.html:10 templates/login.html:84
+msgid "Login"
+msgstr "Đăng nhập"
+
+#: templates/login.html:60
+msgid "Login to Your Account"
+msgstr "Đăng nhập vào tài khoản của bạn"
+
+#: templates/login.html:61
+msgid "Enter your username & password to login"
+msgstr "Hãy nhập tên đăng nhập và mật khẩu để đăng nhập"
+
+
+msgid "Username"
+msgstr "Tên đăng nhập"
+
+#: templates/login.html:73
+msgid "Please enter your username"
+msgstr "Vui lòng nhập tên đăng nhập"
+
+msgid "Password"
+msgstr "Mật khẩu"
+
+#: templates/login.html:80
+msgid "Please enter your password!"
+msgstr "Vui lòng nhập mật khẩu!"
+
 #: templates/payout.html:5 templates/payout.html:36
 msgid "List Payout"
 msgstr "Danh sách lệnh rút tiền"
@@ -296,7 +324,7 @@ msgstr "Tự động"
 msgid "Manual"
 msgstr "Thủ công"
 
-
+#: templates/payout.html:120
 msgid "Page Total"
 msgstr "Tổng trên trang"
 
