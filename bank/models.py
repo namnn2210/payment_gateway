@@ -40,7 +40,7 @@ class BankAccount(models.Model):
     def as_dict(self):
         return {
             "user": self.user.id,
-            "bank_name": self.bank_name.id,
+            "bank_name": self.bank_name.name,
             "account_number": self.account_number,
             "account_name": self.account_name,
             "username": self.username,
