@@ -10,7 +10,7 @@ urlpatterns = i18n_patterns(
     path('', include('cms.urls')),
     path('bank/', include('bank.urls')),
     path('payout/', include('payout.urls')),
-    path('settle_payout/', include('settle_payout.urls')),
+    path('settle/', include('settle_payout.urls')),
     path('acb/', include('acb.urls')),
     path('partner/', include('partner.urls')),
     path('notifications/', include('notification.urls')),

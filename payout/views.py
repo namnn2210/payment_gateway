@@ -188,3 +188,8 @@ def update_payout(request, update_type):
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+    
+@csrf_exempt 
+def webhook(request):
+    pass
+    

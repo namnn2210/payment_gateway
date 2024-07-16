@@ -41,7 +41,7 @@ def list_settle_payout(request):
     items = [model_to_dict(item) for item in list_payout]
     banks = Bank.objects.filter(status=True)
 
-    return render(request, 'payout.html', {
+    return render(request, 'settle_payout.html', {
         'list_payout': list_payout, 'items_json':items, 'bank_data':bank_data, 'banks':banks})
 
 def search_payout(request):
@@ -50,6 +50,7 @@ def search_payout(request):
 @method_decorator(csrf_exempt, name='dispatch')
 class AddSettlePayoutView(View):
     def post(self, request, *args, **kwargs):
+        print('======================')
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
         scode = data.get('scode')

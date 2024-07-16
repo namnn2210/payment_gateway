@@ -500,7 +500,19 @@
 
     // Set the default values for status filter and datetime pickers
     $('#statusFilter').val('Pending');
-    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    // Get the current date and time
+    const currentDate = new Date();
+
+    // Calculate the time difference between current timezone and UTC+7
+    const utcOffset = 7 * 60; // UTC+7 in minutes
+    const currentOffset = currentDate.getTimezoneOffset(); // Current offset from UTC in minutes
+    const totalOffset = utcOffset - currentOffset;
+
+    // Adjust the date and time to UTC+7
+    const adjustedDate = new Date(currentDate.getTime() + totalOffset * 60 * 1000);
+
+    // Format the adjusted date to YYYY-MM-DD
+    const today = adjustedDate.toISOString().split('T')[0];
     $('#start_datetime').val(today + 'T00:00'); // Set start of the day
     $('#end_datetime').val(today + 'T23:59'); // Set end of the day
 

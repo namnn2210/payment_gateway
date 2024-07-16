@@ -96,9 +96,6 @@ def get_transaction(bank):
     else:
         transactions = None
         
-    print("+++++++++++++++++")    
-        
-        
     new_bank_history = transactions
     new_bank_history_df = pd.DataFrame(new_bank_history)
     if new_bank_history_df.empty:
