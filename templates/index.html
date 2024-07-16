@@ -33,7 +33,7 @@
 
                     <div class="d-flex align-items-center">
                         <div class="ps-3">
-                            <table class="table table-borderless table-sm" style="font-size: 14px">
+                            <div class="table-responsive"><table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
@@ -45,7 +45,8 @@
                                 </thead>
                                 <tbody class="tbody-in">
                                 </tbody>
-                            </table>
+                            </table></div>
+                            
 
                         </div>
                     </div>
@@ -58,20 +59,21 @@
                     <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-danger"> {% trans "OUT" %} </span> - <b class="total-out"></b>
                     <div class="d-flex align-items-center">
                         <div class="ps-3">
-                            <table class="table table-borderless table-sm" style="font-size: 14px">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">{% trans "BANK" %}</th>
-                                        <th scope="col">{% trans "Account Number" %}</th>
-                                        <th scope="col">{% trans "Account Name" %}</th>
-                                        <th scope="col">{% trans "Balance" %}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="tbody-out">
-                                </tbody>
-                            </table>
-
+                            <div class="table-responsive">
+                                <table class="table table-borderless table-sm" style="font-size: 14px">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col">{% trans "BANK" %}</th>
+                                            <th scope="col">{% trans "Account Number" %}</th>
+                                            <th scope="col">{% trans "Account Name" %}</th>
+                                            <th scope="col">{% trans "Balance" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="tbody-out">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
