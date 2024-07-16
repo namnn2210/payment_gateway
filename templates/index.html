@@ -36,6 +36,7 @@
                             <table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
+                                        <th scope="col">#</th>
                                         <th scope="col">{% trans "BANK" %}</th>
                                         <th scope="col">{% trans "Account Number" %}</th>
                                         <th scope="col">{% trans "Account Name" %}</th>
@@ -60,6 +61,7 @@
                             <table class="table table-borderless table-sm" style="font-size: 14px">
                                 <thead>
                                     <tr>
+                                        <th scope="col">#</th>
                                         <th scope="col">{% trans "BANK" %}</th>
                                         <th scope="col">{% trans "Account Number" %}</th>
                                         <th scope="col">{% trans "Account Name" %}</th>
@@ -261,6 +263,7 @@
                             accountClass = 'account-balance-in';
                             indexIn += 1;
                             row.innerHTML = `
+                                <td>${indexIn}</td>
                                 <td>${bank.bank_name}</td>
                                 <td>
                                     ${bank.account_number}
@@ -275,6 +278,7 @@
                             accountClass = 'account-balance-out';
                             indexOut += 1;
                             row.innerHTML = `
+                                <td>${indexOut}</td>
                                 <td>${bank.bank_name}</td>
                                 <td>
                                     ${bank.account_number}

@@ -162,7 +162,7 @@ def update_balance(request):
     bank_accounts = BankAccount.objects.filter(status=True)
     list_dict_accounts = []
     for bank_account in bank_accounts:
-        list_dict_accounts.append(model_to_dict(bank_account))
+        list_dict_accounts.append(bank_account.as_dict())
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'balance':list_dict_accounts}})
 
 def update_amount_by_date(transaction_type, amount):
