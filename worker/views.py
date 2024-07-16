@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from celery import Celery
 from dotenv import load_dotenv
-from mb.views import mb_balance, mb_transactions, mb_login
+from mb.views import mb_balance, mb_transactions, mb_login, mb2_transactions
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from bank.utils import send_telegram_message, find_substring
@@ -24,7 +24,7 @@ def get_balance(bank):
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username, bank.password)
     # Get balance
     if bank.bank_name.name == 'MB':
-        bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+        bank_balance, _ = mb2_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
@@ -45,16 +45,16 @@ def get_balance(bank):
             return
             
         if bank.bank_name.name == 'MB':
-            mb_logged_in = mb_login(bank.username, bank.password, bank.account_number)
+            mb_logged_in = True
         elif bank.bank_name.name == 'ACB':
             mb_logged_in = acb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'Vietinbank':
             mb_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
             
         if mb_logged_in:
-            if bank.bank_name.name == 'MB':
-                bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
-            elif bank.bank_name.name == 'ACB':
+            # if bank.bank_name.name == 'MB':
+            #     bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+            if bank.bank_name.name == 'ACB':
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'Vietinbank':
                 bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
@@ -88,7 +88,7 @@ def get_transaction(bank):
     redis_client = redis_connect(1)
     bank_exists = redis_client.get(bank.account_number)
     if bank.bank_name.name == 'MB':
-        transactions = mb_transactions(bank.username, bank.password, bank.account_number)
+        _, transactions = mb2_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         transactions = acb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':

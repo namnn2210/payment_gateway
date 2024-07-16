@@ -9,6 +9,8 @@ import json
 import os
 import re
 from dotenv import load_dotenv
+from datetime import datetime
+import pytz
 
 
 load_dotenv()
@@ -90,8 +92,51 @@ def mb_balance(username, password, account_number):
                             return account['currentBalance']
     return None
 
-def mb_transfer(request):
-    pass
+def mb2_transactions(username, password, account_number):
+    response = requests.get(os.environ.get("MB2_URL"))
+    if response.status_code == 200:
+        transactions = response.json()
+        formatted_transactions = []
+        total_amount = 0
+        if transactions:
+            for transaction in transactions:
+                if transaction['account_receiver'] == account_number:
+                    total_amount += transaction['amount']
+                    if int(transaction['amount']) != 0:
+                            transaction_type = 'IN'
+                    else:
+                        transaction_type = 'OUT'
+                    new_formatted_transaction = Transaction(
+                        transaction_number=transaction['transaction_id'],
+                        transaction_date=convert_to_bangkok_time(transaction['date']),
+                        transaction_type= transaction_type,
+                        account_number=transaction['account_receiver'],
+                        description=transaction['content'],
+                        transfer_code=find_substring(transaction['content']),
+                        amount=transaction['amount']
+                    )
+                    formatted_transactions.append(new_formatted_transaction.__dict__())
+            return total_amount, formatted_transactions
+    return None, None
 
-
-
+def convert_to_bangkok_time(utc_time_str):
+    # Define the format of the input UTC time string
+    utc_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    
+    # Parse the input string to a datetime object
+    utc_time = datetime.strptime(utc_time_str, utc_format)
+    
+    # Set the timezone to UTC
+    utc_time = utc_time.replace(tzinfo=pytz.UTC)
+    
+    # Define the Bangkok timezone
+    bangkok_tz = pytz.timezone('Asia/Bangkok')
+    
+    # Convert UTC time to Bangkok time
+    bangkok_time = utc_time.astimezone(bangkok_tz)
+    
+    # Define the format for the output string
+    bangkok_format = "%d/%m/%Y %H:%M:%S"
+    
+    # Return the formatted Bangkok time string
+    return bangkok_time.strftime(bangkok_format)
