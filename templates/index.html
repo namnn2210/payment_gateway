@@ -29,41 +29,12 @@
         <div class="col-xxl-4 col-md-6 col-sm-12">
             <div class="card info-card revenue-card">
                 <div class="card-body">
-                    <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-success"> {% trans
-                        "IN" %} </span> - <b class="total-in"></b>
+                    <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-success"> {% trans "IN" %} </span> - <b class="total-in"></b>
 
                     <div class="d-flex align-items-center">
                         <div class="ps-3">
                             <div class="table-responsive">
                                 <table class="table table-sm" style="font-size: 12px">
-                                    <thead>
-                                        <tr style="font-size: 12px">
-                                            <th>#</th>
-                                            <th>{% trans "BANK" %}</th>
-                                            <th>{% trans "Account Number" %}</th>
-                                            <th>{% trans "Account Name" %}</th>
-                                            <th>{% trans "Balance" %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="tbody-in">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xxl-4 col-md-6 col-sm-12">
-        <div class="card info-card revenue-card">
-            <div class="card-body">
-                <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-danger"> {% trans "OUT"
-                    %} </span> - <b class="total-out"></b>
-                <div class="d-flex align-items-center">
-                    <div class="ps-3">
-                        <div class="table-responsive">
-                            <table class="table  table-sm" style="font-size: 12px">
                                 <thead>
                                     <tr style="font-size: 12px">
                                         <th>#</th>
@@ -73,9 +44,37 @@
                                         <th>{% trans "Balance" %}</th>
                                     </tr>
                                 </thead>
-                                <tbody class="tbody-out">
+                                <tbody class="tbody-in">
                                 </tbody>
                             </table>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-4 col-md-6 col-sm-12">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                    <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-danger"> {% trans "OUT" %} </span> - <b class="total-out"></b>
+                    <div class="d-flex align-items-center">
+                        <div class="ps-3">
+                            <div class="table-responsive">
+                                <table class="table  table-sm" style="font-size: 12px">
+                                    <thead>
+                                        <tr style="font-size: 12px">
+                                            <th>#</th>
+                                            <th>{% trans "BANK" %}</th>
+                                            <th>{% trans "Account Number" %}</th>
+                                            <th>{% trans "Account Name" %}</th>
+                                            <th>{% trans "Balance" %}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="tbody-out">
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -83,15 +82,13 @@
         </div>
     </div>
 </div>
-</div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="card recent-sales overflow-auto">
 
                 <div class="card-body">
-                    <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-success">{% trans "IN"
-                            %}</span> {% trans "history" %}</h5>
+                    <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-success">{% trans "IN" %}</span> {% trans "history" %}</h5>
                     <!-- Small tables -->
                     <div class="table-responsive">
                         <table class="table table-sm table-in">
@@ -124,8 +121,7 @@
             <div class="card recent-sales overflow-auto">
 
                 <div class="card-body">
-                    <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-danger">{% trans "OUT"
-                            %}</span> {% trans "history" %}</h5>
+                    <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-danger">{% trans "OUT" %}</span> {% trans "history" %}</h5>
                     <!-- Small tables -->
                     <div class="table-responsive">
                         <table class="table table-sm table-out">
@@ -264,7 +260,7 @@
                     tableBodyIn.innerHTML = '';
                     tableBodyOut.innerHTML = '';
 
-                    data.data.balance.forEach((bank, index) => {
+                    data.data.balance.forEach((bank,index) => {
                         const row = document.createElement('tr');
                         if (bank.bank_type === 'IN') {
                             accountClass = 'account-balance-in';
@@ -326,7 +322,7 @@
                 .then(data => {
                     const totalInElem = document.querySelector('.total-in');
                     const totalOutElem = document.querySelector('.total-out');
-
+                    
                     if (totalInElem) {
                         totalInElem.innerHTML = `+${data.data.in.toLocaleString()} <span class="text-success">đ</span>`;
                     } else {
