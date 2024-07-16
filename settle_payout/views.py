@@ -23,7 +23,7 @@ import json
 load_dotenv()
 # Create your views here.
 @login_required(login_url='user_login')
-def list_payout(request):
+def list_settle_payout(request):
     
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     
@@ -103,7 +103,7 @@ class AddSettlePayoutView(View):
 
 @csrf_exempt
 @require_POST
-def update_payout(request, update_type):
+def update_settle_payout(request, update_type):
     # if request.method == 'POST':
     try:
         data = json.loads(request.body)
