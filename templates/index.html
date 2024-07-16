@@ -61,7 +61,7 @@
                     <div class="d-flex align-items-center">
                         <div class="ps-3">
                             <div class="table-responsive">
-                                <table class="table table-sm" style="font-size: 12px">
+                                <table class="table  table-sm" style="font-size: 12px">
                                     <thead>
                                         <tr style="font-size: 12px">
                                             <th scope="col">#</th>
@@ -245,13 +245,13 @@
                     const spanTotalIn = document.querySelector('b.total-in');
                     const spanTotalOut = document.querySelector('b.total-out');
 
-                    const tableBodyIn = document.querySelector('table.table-borderless tbody.tbody-in');
+                    const tableBodyIn = document.querySelector('table.table-sm tbody.tbody-in');
                     if (!tableBodyIn) {
                         console.error('Table body element not found');
                         return;
                     }
 
-                    const tableBodyOut = document.querySelector('table.table-borderless tbody.tbody-out');
+                    const tableBodyOut = document.querySelector('table.table-sm tbody.tbody-out');
                     if (!tableBodyOut) {
                         console.error('Table body element not found');
                         return;
