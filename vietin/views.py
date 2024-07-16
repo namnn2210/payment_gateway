@@ -69,11 +69,8 @@ def vietin_transactions(username,password,account_number):
                 page += 1 
             else:
                 break
-        
-        print('===========================')
             
         for item in fetch_transactions:
-            print(item)
             if item['sendingBankId'] == '':
                 transaction_type='IN'
             else:
@@ -92,6 +89,5 @@ def vietin_transactions(username,password,account_number):
             formatted_transactions.append(new_formatted_transaction.__dict__())
         return formatted_transactions
     except Exception as ex:
-        print(str(ex))
         return None
     
