@@ -207,17 +207,17 @@ msgstr "Quản lí giao dịch"
 msgid "Payout"
 msgstr "Rút tiền"
 
-#: templates/layout/layout.html:188
+#: templates/layout/layout.html:1881
 msgid "Processing Payout"
 msgstr "Xử lí rút tiền"
 
 #: templates/layout/layout.html:196
 msgid "Settle Payout"
-msgstr "Danh sách lệnh rút tiền nhanh"
+msgstr "Danh sách lệnh rút tiền có bill"
 
 #: templates/layout/layout.html:201
 msgid "Processing Settle Payout"
-msgstr "Xử lí rút tiền nhanh"
+msgstr "Xử lí rút tiền có bill"
 
 #: templates/login.html:13 templates/login.html:85
 msgid "Login"
@@ -418,11 +418,11 @@ msgstr "Số tài khoản"
 
 #: templates/settle_payout.html:5 templates/settle_payout.html:49
 msgid "List Settle Payout"
-msgstr "Danh sách lệnh rút tiền nhanh"
+msgstr "Danh sách lệnh rút tiền có bill"
 
 #: templates/settle_payout.html:20
 msgid "Add Settle Payout"
-msgstr "Thêm lệnh rút tiền nhanh"
+msgstr "Thêm lệnh rút tiền có bill"
 
 #~ msgid "Total this page"
 #~ msgstr "Tổng trên trang"

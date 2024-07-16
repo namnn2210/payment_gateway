@@ -50,7 +50,6 @@ def search_payout(request):
 @method_decorator(csrf_exempt, name='dispatch')
 class AddSettlePayoutView(View):
     def post(self, request, *args, **kwargs):
-        print('======================')
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
         scode = data.get('scode')
@@ -63,16 +62,16 @@ class AddSettlePayoutView(View):
         try:
             float(money)
         except Exception as ex:
-            return JsonResponse({'status': 504, 'message': 'Invalid amount value'})
+            return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
         
         if '.00' not in money:
-            return JsonResponse({'status': 503, 'message': 'Amount must be end with .00'})
+            return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
         
         # Check if any bank_account with the same type is ON
         existed_bank_account = SettlePayout.objects.filter(
             orderid=orderid).first()
         if existed_bank_account:
-            return JsonResponse({'status': 505, 'message': 'Existed payout. Please try again'})
+            return JsonResponse({'status': 505, 'message': 'Lệnh rút đã tồn tại. Vui lòng kiểm tra mã đơn hàng'})
 
         #Process the data and save to the database
     
