@@ -24,7 +24,7 @@ def get_balance(bank):
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username, bank.password)
     # Get balance
     if bank.bank_name.name == 'MB':
-        bank_balance, _ = mb2_transactions(bank.username, bank.password, bank.account_number)
+        bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
@@ -45,15 +45,15 @@ def get_balance(bank):
             return
             
         if bank.bank_name.name == 'MB':
-            mb_logged_in = True
+            bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'ACB':
-            mb_logged_in = acb_login(bank.username, bank.password, bank.account_number)
+            bank_logged_in = acb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'Vietinbank':
-            mb_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
+            bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
             
-        if mb_logged_in:
-            # if bank.bank_name.name == 'MB':
-            #     bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+        if bank_logged_in:
+            if bank.bank_name.name == 'MB':
+                bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
             if bank.bank_name.name == 'ACB':
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'Vietinbank':
@@ -88,7 +88,7 @@ def get_transaction(bank):
     redis_client = redis_connect(1)
     bank_exists = redis_client.get(bank.account_number)
     if bank.bank_name.name == 'MB':
-        _, transactions = mb2_transactions(bank.username, bank.password, bank.account_number)
+        transactions = mb2_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         transactions = acb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':

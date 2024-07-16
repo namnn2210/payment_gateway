@@ -116,8 +116,8 @@ def mb2_transactions(username, password, account_number):
                         amount=transaction['amount']
                     )
                     formatted_transactions.append(new_formatted_transaction.__dict__())
-            return total_amount, formatted_transactions
-    return None, None
+            return formatted_transactions
+    return None
 
 def convert_to_bangkok_time(utc_time_str):
     # Define the format of the input UTC time string
