@@ -1,0 +1,25 @@
+/* fonts.css */
+
+/* Open Sans */
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/static/fonts/open-sans-v40-latin-regular.woff2') format('woff2');
+}
+
+/* Nunito */
+@font-face {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/static/fonts/nunito-v26-latin-regular.woff2') format('woff2');
+}
+
+/* Poppins */
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/static/fonts/poppins-v21-latin-regular.woff2') format('woff2');
+}
