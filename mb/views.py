@@ -23,12 +23,14 @@ def mb_login(username, password, account_number):
         "password": password,
         "accountNumber": account_number
     }
-    response = requests.post(os.environ.get("MB_URL"), json=body)
-    match = re.search(r'{"refNo".*', response.text)
-    if match:
-        extracted_text = match.group(0)
-        json_response = json.loads(extracted_text)
-        if json_response['result']['ok']:
+    response = requests.post(os.environ.get("MB_URL"), json=body, timeout=120)
+    if '"ok":true' in response.text:
+    # print(response.text)
+    # match = re.search(r'{"refNo".*', response.text)
+    # if match:
+    #     extracted_text = match.group(0)
+    #     json_response = json.loads(extracted_text)
+    #     if json_response['result']['ok']:
             return True
     return False
     
@@ -42,12 +44,12 @@ def mb_transactions(username, password, account_number, start=''):
         "password": password,
         "accountNumber": account_number
     }
-    response = requests.post(os.environ.get("MB_URL"), json=body)
+    response = requests.post(os.environ.get("MB_URL"), json=body, timeout=120)
     if response.status_code == 200:
-        match = re.search(r'{"refNo".*', response.text)
-        if match:
-            extracted_text = match.group(0)
-            json_response = json.loads(extracted_text)
+        print(response.text)
+        if '"ok":true' in response.text:
+            json_response = json.loads(response.text)
+            print(json_response)
             if json_response['result']['ok']:
                 formatted_transactions = []
                 transactions = json_response['transactionHistoryList']
@@ -80,16 +82,13 @@ def mb_balance(username, password, account_number):
         "accountNumber": account_number,
         "password": password
     }
-    response = requests.post(os.environ.get("MB_URL"), json=body)
-    if response.status_code == 200:
+    response = requests.post(os.environ.get("MB_URL"), json=body, timeout=120)
+    if '"ok":true' in response.text:
         data = response.json()
-        if data:
-            if data['result']:
-                if data['result']['ok']:
-                    acc_list = data['acct_list']
-                    for account in acc_list:
-                        if account['acctNo'] == account_number:
-                            return account['currentBalance']
+        acc_list = data['acct_list']
+        for account in acc_list:
+            if account['acctNo'] == account_number:
+                return int(account['currentBalance'])
     return None
 
 def mb2_transactions(username, password, account_number):

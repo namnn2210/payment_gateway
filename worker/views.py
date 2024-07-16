@@ -39,7 +39,7 @@ def get_balance(bank):
             alert = (
                 f'🔴 - LỖI HỆ THỐNG\n'
                 f'Dữ liệu tài khoản: {bank.account_number} trống\n'
-                f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+                f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
             )
             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             return
@@ -54,7 +54,7 @@ def get_balance(bank):
         if bank_logged_in:
             if bank.bank_name.name == 'MB':
                 bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
-            if bank.bank_name.name == 'ACB':
+            elif bank.bank_name.name == 'ACB':
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'Vietinbank':
                 bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
@@ -79,7 +79,7 @@ def get_balance(bank):
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
             f'Lấy số dư tài khoản {bank.account_number} - {bank.bank_name.name} không thành công\n'
-            f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+            f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
 
@@ -88,7 +88,7 @@ def get_transaction(bank):
     redis_client = redis_connect(1)
     bank_exists = redis_client.get(bank.account_number)
     if bank.bank_name.name == 'MB':
-        transactions = mb2_transactions(bank.username, bank.password, bank.account_number)
+        transactions = mb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
         transactions = acb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
