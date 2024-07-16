@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from celery import Celery
 from dotenv import load_dotenv
-from mb.views import mb_balance, mb_transactions, mb_login, mb2_transactions
+from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from bank.utils import send_telegram_message, find_substring
@@ -95,6 +95,10 @@ def get_transaction(bank):
         transactions = vietin_transactions(bank.username, bank.password, bank.account_number)
     else:
         transactions = None
+        
+    print("+++++++++++++++++")    
+        
+        
     new_bank_history = transactions
     new_bank_history_df = pd.DataFrame(new_bank_history)
     if new_bank_history_df.empty:

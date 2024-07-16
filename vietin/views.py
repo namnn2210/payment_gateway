@@ -21,12 +21,9 @@ def vietin_login(username, password, account_number):
         "accountNo": account_number,
         "action":"login"
     }
-    response = requests.post(os.environ.get("VIETIN_URL"), json=body)
-    if response.status_code == 200:
-        data = response.json()
-        if 'success' in data.keys():
-            if data['success']:
-                return True
+    response = requests.post(os.environ.get("VIETIN_URL"), json=body, timeout=120)
+    if '"message":"success"' in response.text:
+        return True
     return False
     
     
@@ -38,7 +35,7 @@ def vietin_balance(username, password, account_number):
         "accountNo": account_number,
         "action":"balance"
     }
-    response = requests.post(os.environ.get("VIETIN_URL"), json=body).json()
+    response = requests.post(os.environ.get("VIETIN_URL"), json=body , timeout=120).json()
     if response:
         if 'error' in response.keys(): 
             if not response['error']:
@@ -65,42 +62,36 @@ def vietin_transactions(username,password,account_number):
                 "page": page,
                 "action": "transactions"
             })
-            response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body).json()
-            print(response)
-            if response:
-                if 'error' in response.keys():
-                    if not response['error']:
-                        transactions = response['transactions']
-                        if not transactions:  # If the transactions list is empty, break the loop
-                            break
-                        fetch_transactions += transactions
-                        page += 1  # Increment the page number
-                    else:
-                        break  # If there's an error, stop fetching
-                else:
-                    break  # If 'error' key is missing, stop fetching
+            response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body, timeout=120).json()
+            transactions = response['transactions']
+            if transactions:
+                fetch_transactions += transactions
+                page += 1 
             else:
-                break  # If response is empty, stop fetching
+                break
+        
+        print('===========================')
             
-        for transaction in fetch_transactions:
-            if transaction['sendingBankId'] == '':
+        for item in fetch_transactions:
+            print(item)
+            if item['sendingBankId'] == '':
                 transaction_type='IN'
             else:
                 transaction_type='OUT'
-            transaction_date = datetime.strptime(transaction['processDate'], '%d-%m-%Y %H:%M:%S')
+            transaction_date = datetime.strptime(item['processDate'], '%d-%m-%Y %H:%M:%S')
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')  # Ensure timezone aware datetime
             new_formatted_transaction = Transaction(
-                transaction_number=transaction['trxId'],
+                transaction_number=item['trxId'],
                 transaction_date=transaction_date,
                 transaction_type=transaction_type,
                 account_number=account_number,
-                description=transaction['remark'],
-                transfer_code=find_substring(transaction['description']),
-                amount=int(transaction['amount'])
+                description=item['remark'],
+                transfer_code=find_substring(item['remark']),
+                amount=int(item['amount'])
             )
-            print(new_formatted_transaction)
             formatted_transactions.append(new_formatted_transaction.__dict__())
         return formatted_transactions
     except Exception as ex:
+        print(str(ex))
         return None
     
