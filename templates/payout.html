@@ -514,38 +514,6 @@
             var cancelColumn = data[13];
             var reportColumn = data[12];
 
-            // Filter by status
-            if (status) {
-                if (status === 'Canceled' && cancelColumn === 'Đã hủy') {
-                    return true;
-                }
-                if (status === 'Reported' && reportColumn === 'Đã báo cáo') {
-                    return true;
-                }
-                if (status === 'Pending' && statusColumn === 'Chờ xử lí') {
-                    return true;
-                }
-                if (status === 'Done' && statusColumn === 'Hoàn thành') {
-                    return true;
-                }
-                if (status === 'Canceled' && cancelColumn === 'Canceled') {
-                    return true;
-                }
-                if (status === 'Reported' && reportColumn === 'Reported') {
-                    return true;
-                }
-                if (status === 'Pending' && statusColumn === 'Pending') {
-                    return true;
-                }
-                if (status === 'Done' && statusColumn === 'Done') {
-                    return true;
-                }
-                if (status === '') {
-                    return true;
-                }
-                return false;
-            }
-
             // Filter by start and end datetime
             var min = $('#start_datetime').val();
             var max = $('#end_datetime').val();
@@ -558,11 +526,31 @@
                 max = new Date(max);
             }
 
-            if ((createdAt >= min && createdAt <= max)) {
-                return true;
+            if (createdAt < min || createdAt > max) {
+                return false;
             }
 
-            return false;
+            // Filter by status
+            if (status) {
+                if (status === 'Canceled' && (cancelColumn === 'Đã hủy' || cancelColumn === 'Canceled')) {
+                    return true;
+                }
+                if (status === 'Reported' && (reportColumn === 'Đã báo cáo' || reportColumn === 'Reported')) {
+                    return true;
+                }
+                if (status === 'Pending' && (statusColumn === 'Chờ xử lí' || statusColumn === 'Pending')) {
+                    return true;
+                }
+                if (status === 'Done' && (statusColumn === 'Hoàn thành' || statusColumn === 'Done')) {
+                    return true;
+                }
+                if (status === '') {
+                    return true;
+                }
+                return false;
+            }
+
+            return true;
         }
     );
 
