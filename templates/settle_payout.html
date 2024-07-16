@@ -498,18 +498,21 @@
         }
     });
 
+    // Set the default values for status filter and datetime pickers
+    $('#statusFilter').val('Pending');
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    $('#start_datetime').val(today + 'T00:00'); // Set start of the day
+    $('#end_datetime').val(today + 'T23:59'); // Set end of the day
+
     const userLang = "{{ request.LANGUAGE_CODE }}";
 
     // Custom filtering function which will filter data in the DataTable
     $.fn.dataTable.ext.search.push(
-        
         function (settings, data, dataIndex) {
             var status = $('#statusFilter').val();
             var statusColumn = data[10]; // Index of the status column
             var cancelColumn = data[13];
             var reportColumn = data[12];
-
-            
 
             // Filter by status
             if (status) {
@@ -562,9 +565,9 @@
             return false;
         }
     );
-    
 
-    $('#statusFilter').val(userLang === 'vi' ? 'Pending' : 'Pending').trigger('change');
+    // Trigger the draw event to apply the initial filter
+    table.draw();
 
     // Event listener to the status filter dropdown to redraw on change
     $('#statusFilter').on('change', function () {
@@ -575,8 +578,6 @@
     $('#start_datetime, #end_datetime').on('change', function () {
         table.draw();
     });
-
-
 });
 
 function convertStringToDate(dateTimeString) {
@@ -594,6 +595,8 @@ function convertStringToDate(dateTimeString) {
 
     return date;
 }
+</script>
+
 
 </script>
 {% endblock %}
