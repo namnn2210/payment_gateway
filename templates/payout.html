@@ -502,12 +502,14 @@
     $('#statusFilter').val('Pending');
     // Get the current date and time
     const currentDate = new Date();
+    console.log(currentDate)
 
     // Calculate the current time in UTC+7
-    const utc7Date = new Date(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate(), currentDate.getUTCHours() + 7, currentDate.getUTCMinutes(), currentDate.getUTCSeconds());
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+    const day = String(currentDate.getDate()).padStart(2, '0');
 
-    // Format the adjusted date to YYYY-MM-DD
-    const today = utc7Date.toISOString().split('T')[0];
+    const today = '${year}-${month}-${day}'
     $('#start_datetime').val(today + 'T00:00'); // Set start of the day
     $('#end_datetime').val(today + 'T23:59'); // Set end of the day
 
