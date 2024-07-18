@@ -20,6 +20,18 @@
         text-align: center;
         margin-bottom: 10px;
     }
+
+    .totals-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+        font-weight: bold;
+    }
+
+    .totals-container div {
+        margin-bottom: 10px;
+    }
 </style>
 <div class="container-fluid">
     <div class="row">
@@ -77,6 +89,13 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                        <div class="totals-container">
+                            <div>{% trans "OUT Transactions Page Total" %}: <span id="page-total-out"></span></div>
+                            <div>{% trans "OUT Transactions Total Results" %}: <span id="total-results-out"></span></div>
+                            <div>{% trans "OUT Transactions Grand Total" %}: <span id="grand-total-out"></span></div>
+                        </div>
+                        <div class="table-container row">
                             <div class="table-responsive col-md-6 col-sm-12">
                                 <table id="outTransactionTable" class="table table-sm display">
                                     <thead>
