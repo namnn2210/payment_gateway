@@ -40,10 +40,8 @@ def mb_transactions(username, password, account_number, start=''):
     }
     response = requests.post(os.environ.get("MB_URL"), json=body, timeout=120)
     if response.status_code == 200:
-        print(response.text)
         if '"ok":true' in response.text:
             json_response = json.loads(response.text)
-            print(json_response)
             if json_response['result']['ok']:
                 formatted_transactions = []
                 transactions = json_response['transactionHistoryList']

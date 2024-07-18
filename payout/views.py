@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from partner.views import update_payout_status_request
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField
+from .tasks import print_payout
 import pytz
 import os
 import json
@@ -117,7 +118,9 @@ def update_payout(request, update_type):
         formatted_amount = '{:,.2f}'.format(payout.money)
         payout.updated_by = request.user
         payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
+        
         if update_type == 'done':
+            print_payout.delay(payout)
             payout.status = True
             bank = Bank.objects.filter(id=bank_id).first()
             payout.process_bank = bank
@@ -144,8 +147,8 @@ def update_payout(request, update_type):
                 f'\n'
                 f'Date: {payout.updated_at}'
             )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-            update_amount_by_date('OUT',payout.money)
+            # send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+            # update_amount_by_date('OUT',payout.money)
         elif update_type == 'report':
             payout.is_report = True
             alert = (
