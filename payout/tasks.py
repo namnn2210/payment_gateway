@@ -28,9 +28,9 @@ def update_payout_background(payout, bank, user):
         f'\n'
         # f'Created by: {payout['user_id']}\n'
         f'\n'
-        f'Done by: {user['username']}\n'
+        # f'Done by: {user['username']}\n'
         f'\n'
-        f'Date: {payout['updated_at']}'
+        # f'Date: {payout['updated_at']}'
     )
     send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
     update_amount_by_date('OUT',payout['money'])
