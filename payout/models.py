@@ -26,6 +26,32 @@ class Payout(models.Model):
     class Meta:
         db_table = 'payout'
         
+class Timeline(models.Model):
+    name = models.CharField(max_length=100)
+    start_at = models.TimeField()
+    end_at = models.TimeField()
+    status = models.BooleanField(default=False,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self) -> str:
+        return self.name
+    
+    class Meta:
+        db_table = 'timeline'
+        
+class UserTimeline(models.Model):
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False)
+    timeline = models.ForeignKey(Timeline, on_delete=models.CASCADE, null=False)
+    status = models.BooleanField(default=False,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'user_timeline'
+    
+
+        
 
         
     

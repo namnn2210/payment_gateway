@@ -156,29 +156,35 @@
             "lengthMenu": [5, 10, 20, 50],
             "ordering": false,
             "dom": 'lrtip',
-            "footerCallback": function (row, data, start, end, display) {
+            "drawCallback": function (settings) {
                 var api = this.api();
                 var pageTotal = 0;
                 var grandTotal = 0;
                 var successCount = 0;
                 var nonSuccessCount = 0;
 
-                // Calculate page total and success/non-success counts
-                api.column(2, { page: 'current' }).data().each(function (value, index) {
-                    var status = api.cell(index, 5).data();
+                // Calculate page total and success/non-success counts for visible rows
+                api.rows({ page: 'current' }).every(function (rowIdx, tableLoop, rowLoop) {
+                    var data = this.data();
+                    var amount = intVal(data[2]);
+                    var status = data[5];
+
                     if (status === 'Success') {
-                        pageTotal += intVal(value);
+                        pageTotal += amount;
                         successCount++;
                     } else {
                         nonSuccessCount++;
                     }
                 });
 
-                // Calculate grand total
-                api.column(2, { search: 'applied' }).data().each(function (value, index) {
-                    var status = api.cell(index, 5).data();
+                // Calculate grand total for all filtered rows
+                api.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
+                    var data = this.data();
+                    var amount = intVal(data[2]);
+                    var status = data[5];
+
                     if (status === 'Success') {
-                        grandTotal += intVal(value);
+                        grandTotal += amount;
                     }
                 });
 
@@ -195,21 +201,24 @@
             "lengthMenu": [5, 10, 20, 50],
             "ordering": false,
             "dom": 'lrtip',
-            "footerCallback": function (row, data, start, end, display) {
+            "drawCallback": function (settings) {
                 var api = this.api();
-                var total = api
-                    .column(2, { search: 'applied' })
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-                var pageTotal = api
-                    .column(2, { page: 'current' })
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-                $('#total-results-out').html(display.length.toLocaleString());
+                var total = 0;
+                var pageTotal = 0;
+
+                // Calculate page total
+                api.rows({ page: 'current' }).every(function (rowIdx, tableLoop, rowLoop) {
+                    var data = this.data();
+                    pageTotal += intVal(data[2]);
+                });
+
+                // Calculate grand total
+                api.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
+                    var data = this.data();
+                    total += intVal(data[2]);
+                });
+
+                // Update the footer
                 $('#page-total-out').html(pageTotal.toLocaleString() + ' đ');
                 $('#grand-total-out').html(total.toLocaleString() + ' đ');
             }
@@ -274,4 +283,6 @@
     });
 </script>
 {% endblock %}
+
+
 

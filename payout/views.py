@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.views import View
+from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -191,5 +192,69 @@ def update_payout(request, update_type):
     
 @csrf_exempt 
 def webhook(request):
+    # {
+    #     "scode": "CID16301",
+    #     "orderno": "2024071612295974620",
+    #     "data": {
+    #         "payeebankname": "ACB",
+    #         "payeebankbranch": "",
+    #         "payeebankbranchcode": "",
+    #         "payeeaccountno": "111122223333",
+    #         "payeeaccountname": "SHINO GE",
+    #         "amount": "1000.00"
+    #     },
+    #     "sign": "d38737b767c04f0ca72138515ee7bfee"
+    # }
+    decoded_str = request.body.decode('utf-8')
+    data = json.loads(decoded_str)
+    scode = data.get('scode')
+    orderid = data.get('orderid')
+    money = data.get('amount')
+    accountno = data.get('payeeaccountno')
+    accountname = data.get('payeeaccountname')
+    bankcode = data.get('payeebankname')
+    
+    try:
+        float(money)
+    except Exception as ex:
+        return JsonResponse({'status': 504, 'message': 'Invalid amount'})
+    
+    if '.00' not in money:
+        return JsonResponse({'status': 503, 'message': 'Amount must ends with .00'})
+    
+    existed_bank_account = Payout.objects.filter(
+    orderid=orderid).first()
+    if existed_bank_account:
+        return JsonResponse({'status': 505, 'message': 'Payout existed'})
+    
+    admin = User.objects.filter(username='admin').first()
+    
+    payout = Payout.objects.create(
+            user=admin,
+            scode=scode,
+            orderno=orderid,
+            orderid=orderid,
+            money=int(float(money)),
+            accountno=accountno,
+            accountname=accountname,
+            bankname='',
+            bankcode=bankcode,
+            updated_by=None,
+            is_auto=True,
+            is_cancel=False,
+            is_report=False,
+            created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+        )
+    payout.save()
+    send_notification('New payout added. Please check and process')
+    alert = (
+        f'🔴 - THÔNG BÁO PAYOUT\n'
+        f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
+    )
+    send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+    return JsonResponse({'status': 200, 'message': 'Payout added successfully'})
+
+def find_bankcode(bank_name):
     pass
+    
     
