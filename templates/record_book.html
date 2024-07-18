@@ -20,6 +20,18 @@
         text-align: center;
         margin-bottom: 10px;
     }
+
+    .totals-container {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 20px;
+    }
+
+    .totals-container div {
+        flex: 1;
+        text-align: center;
+        font-weight: bold;
+    }
 </style>
 <div class="container-fluid">
     <div class="row">
@@ -42,6 +54,11 @@
                                 <label for="end_datetime">{% trans "End Date" %}</label>
                                 <input type="datetime-local" id="end_datetime" class="form-control" />
                             </div>
+                        </div>
+                        <div class="totals-container">
+                            <div>{% trans "IN Transactions Page Total" %}: <span id="page-total-in"></span></div>
+                            <div>{% trans "IN Transactions Total Results" %}: <span id="total-results-in"></span></div>
+                            <div>{% trans "IN Transactions Grand Total" %}: <span id="grand-total-in"></span></div>
                         </div>
                         <div class="table-container row">
                             <div class="table-responsive col-md-6 col-sm-12">
@@ -72,6 +89,13 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                        <div class="totals-container">
+                            <div>{% trans "OUT Transactions Page Total" %}: <span id="page-total-out"></span></div>
+                            <div>{% trans "OUT Transactions Total Results" %}: <span id="total-results-out"></span></div>
+                            <div>{% trans "OUT Transactions Grand Total" %}: <span id="grand-total-out"></span></div>
+                        </div>
+                        <div class="table-container row">
                             <div class="table-responsive col-md-6 col-sm-12">
                                 <table id="outTransactionTable" class="table table-sm display">
                                     <thead>
@@ -108,6 +132,7 @@
     </div>
 </div>
 {% endblock %}
+
 {% block script %}
 <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -116,29 +141,110 @@
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {
-        // Initialize DataTables for both IN and OUT transactions
+        function intVal(i) {
+            if (typeof i === 'string') {
+                let cleanedString = i.replace(/[^\d]/g, '');
+                if (cleanedString.endsWith('00')) {
+                    cleanedString = cleanedString.slice(0, -2);
+                }
+                return parseInt(cleanedString, 10);
+            } else if (typeof i === 'number') {
+                return i;
+            } else {
+                return 0;
+            }
+        }
+
         var inTable = $('#inTransactionTable').DataTable({
-            "pageLength": 10,  // Set default page length
-            "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
+            "pageLength": 10,
+            "lengthMenu": [5, 10, 20, 50],
             "ordering": false,
-            "dom": 'lrtip' // Hide the default search bar
+            "dom": 'lrtip',
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api();
+                var total = api
+                    .column(2, { search: 'applied' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                var pageTotal = api
+                    .column(2, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                $('#total-results-in').html(
+                    display.length.toLocaleString()
+                );
+                $('#page-total-in').html(
+                    pageTotal.toLocaleString() + ' đ'
+                );
+                $('#grand-total-in').html(
+                    total.toLocaleString() + ' đ'
+                );
+            }
         });
 
         var outTable = $('#outTransactionTable').DataTable({
-            "pageLength": 10,  // Set default page length
-            "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
+            "pageLength": 10,
+            "lengthMenu": [5, 10, 20, 50],
             "ordering": false,
-            "dom": 'lrtip' // Hide the default search bar
+            "dom": 'lrtip',
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api();
+                var total = api
+                    .column(2, { search: 'applied' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                var pageTotal = api
+                    .column(2, { page: 'current' })
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                $('#total-results-out').html(
+                    display.length.toLocaleString()
+                );
+                $('#page-total-out').html(
+                    pageTotal.toLocaleString() + ' đ'
+                );
+                $('#grand-total-out').html(
+                    total.toLocaleString() + ' đ'
+                );
+            }
         });
 
-        // Custom filtering function to filter data by datetime range
+        function convertStringToDate(dateTimeString) {
+            const [datePart, timePart] = dateTimeString.split(' ');
+            const [day, month, year] = datePart.split('/').map(Number);
+            const [hours, minutes, seconds] = timePart.split(':').map(Number);
+            return new Date(year, month - 1, day, hours, minutes, seconds);
+        }
+
+        function formatDateToYYYYMMDD(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        const currentDate = new Date();
+        const today = formatDateToYYYYMMDD(currentDate);
+        const startDateTime = `${today}T00:00`;
+        const endDateTime = `${today}T23:59`;
+
+        $('#start_datetime').val(startDateTime);
+        $('#end_datetime').val(endDateTime);
+
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
                 var min = $('#start_datetime').val();
                 var max = $('#end_datetime').val();
-                var date = new Date(data[3]); // Use the index of your date column
+                var date = new Date(data[3]);
 
-                // Convert min and max to Date objects
                 if (min) {
                     min = new Date(min);
                 }
@@ -158,14 +264,12 @@
             }
         );
 
-        // Event listener to the datetime range filtering inputs to redraw on input
         $('#start_datetime, #end_datetime').on('change', function () {
             inTable.draw();
             outTable.draw();
         });
 
-        // Single search box for both tables
-        $('#search_box').on('keyup', function () {
+        $('#search_box').on('change', function () {
             inTable.search(this.value).draw();
             outTable.search(this.value).draw();
         });
