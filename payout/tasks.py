@@ -10,6 +10,7 @@ import os
 def update_payout_background(payout, bank, user):
     print('aaaaaa')
     formatted_amount = '{:,.2f}'.format(payout['money'])
+    print
     alert = (
         f'🟢🟢🟢Success🟢🟢🟢\n'
         f'\n'
@@ -25,7 +26,7 @@ def update_payout_background(payout, bank, user):
         f'\n'
         f'Process bank: {bank['name']}\n'
         f'\n'
-        f'Created by: {payout['user_id']}\n'
+        # f'Created by: {payout['user_id']}\n'
         f'\n'
         f'Done by: {user['username']}\n'
         f'\n'
