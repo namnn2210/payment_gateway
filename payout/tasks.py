@@ -22,7 +22,7 @@ def update_payout_background(update_body):
     payout.status = True
     bank = Bank.objects.filter(id=bank_id).first()
     payout.process_bank = bank
-    formatted_amount = '{:,.2f}'.format(payout['money'])
+    formatted_amount = '{:,.2f}'.format(payout.money)
     if  update_type == 'done':
         alert = (
             f'🟢🟢🟢Success🟢🟢🟢\n'
@@ -46,7 +46,7 @@ def update_payout_background(update_body):
             f'Date: {payout.updated_at}'
         )
         send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-        update_amount_by_date('OUT',payout['money'])
+        update_amount_by_date('OUT',payout.money)
         payout.save()
     elif update_type == 'report':
         payout.is_report = True
