@@ -1,4 +1,4 @@
-# myproject/celery.py
+# payment_gateway/celery.py
 
 from __future__ import absolute_import, unicode_literals
 import os
@@ -9,8 +9,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'payment_gateway.settings')
 
 app = Celery('payment_gateway_celery')
 
-# Using a string here means the worker will not have to
-# pickle the object when using Windows.
+# Using a string here means the worker will not have to pickle the object when using Windows.
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
 # Load task modules from all registered Django app configs.

@@ -1,12 +1,14 @@
-from celery import shared_task
+# worker/tasks.py
+
+from payment_gateway.celery import app
 from datetime import datetime
 import pytz
 
-@shared_task
+@app.task
 def print_payout(payout):
     print(payout)
 
-@shared_task
+@app.task
 def print_current_time():
     tz = pytz.timezone('Asia/Bangkok')
     current_time = datetime.now(tz)
