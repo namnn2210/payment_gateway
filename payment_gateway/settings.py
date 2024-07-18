@@ -37,7 +37,7 @@ ALLOWED_HOSTS = ['gateway.226pay.com', 'www.gateway.226pay.com', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'daphne',
+    # 'daphne',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -89,7 +89,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'payment_gateway.wsgi.application'
+# WSGI_APPLICATION = 'payment_gateway.wsgi.application'
 ASGI_APPLICATION = "payment_gateway.asgi.application"
 
 CHANNEL_LAYERS = {

@@ -18,13 +18,13 @@ import payment_gateway.routing
 from django.core.asgi import get_asgi_application
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'payment_gateway.settings')
-django_application = get_asgi_application()
+application = get_asgi_application()
 
-application = ProtocolTypeRouter({
-    "http": get_asgi_application(),
-    "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(URLRouter(
-            payment_gateway.routing.websocket_urlpatterns
-        ))
-    ),
-})
+# application = ProtocolTypeRouter({
+#     "http": get_asgi_application(),
+#     "websocket": AllowedHostsOriginValidator(
+#         AuthMiddlewareStack(URLRouter(
+#             payment_gateway.routing.websocket_urlpatterns
+#         ))
+#     ),
+# })
