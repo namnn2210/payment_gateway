@@ -55,13 +55,15 @@
                                 <input type="datetime-local" id="end_datetime" class="form-control" />
                             </div>
                         </div>
+                        <div class="totals-container">
+                            <div>{% trans "IN Transactions Page Total" %}: <span id="page-total-in"></span></div>
+                            <div>{% trans "IN Transactions Grand Total" %}: <span id="grand-total-in"></span></div>
+                            <div>{% trans "IN Transactions Total Results" %}: <span id="total-results-in"></span></div>
+                            <div>{% trans "IN Transactions Success Count" %}: <span id="success-count-in"></span></div>
+                            <div>{% trans "IN Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
+                        </div>
                         <div class="table-container row">
-                            <div class="table-responsive col-md-12 col-sm-12">
-                                <div class="totals-container">
-                                    <div>{% trans "IN Transactions Page Total" %}: <span id="page-total-in"></span></div>
-                                    <div>{% trans "IN Transactions Total Results" %}: <span id="total-results-in"></span></div>
-                                    <div>{% trans "IN Transactions Grand Total" %}: <span id="grand-total-in"></span></div>
-                                </div>
+                            <div class="table-responsive col-md-6 col-sm-12">
                                 <table id="inTransactionTable" class="table table-sm display">
                                     <thead>
                                         <tr class="text-center" style="font-size: 13px">
@@ -90,13 +92,13 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="totals-container">
+                            <div>{% trans "OUT Transactions Page Total" %}: <span id="page-total-out"></span></div>
+                            <div>{% trans "OUT Transactions Grand Total" %}: <span id="grand-total-out"></span></div>
+                            <div>{% trans "OUT Transactions Total Results" %}: <span id="total-results-out"></span></div>
+                        </div>
                         <div class="table-container row">
-                            <div class="table-responsive col-md-12 col-sm-12">
-                                <div class="totals-container">
-                                    <div>{% trans "OUT Transactions Page Total" %}: <span id="page-total-out"></span></div>
-                                    <div>{% trans "OUT Transactions Total Results" %}: <span id="total-results-out"></span></div>
-                                    <div>{% trans "OUT Transactions Grand Total" %}: <span id="grand-total-out"></span></div>
-                                </div>
+                            <div class="table-responsive col-md-6 col-sm-12">
                                 <table id="outTransactionTable" class="table table-sm display">
                                     <thead>
                                         <tr class="text-center" style="font-size: 13px">
@@ -161,27 +163,34 @@
             "dom": 'lrtip',
             "footerCallback": function (row, data, start, end, display) {
                 var api = this.api();
-                var total = api
-                    .column(2, { search: 'applied' })
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-                var pageTotal = api
-                    .column(2, { page: 'current' })
-                    .data()
-                    .reduce(function (a, b) {
-                        return intVal(a) + intVal(b);
-                    }, 0);
-                $('#total-results-in').html(
-                    display.length.toLocaleString()
-                );
-                $('#page-total-in').html(
-                    pageTotal.toLocaleString() + ' đ'
-                );
-                $('#grand-total-in').html(
-                    total.toLocaleString() + ' đ'
-                );
+
+                var total = 0;
+                var pageTotal = 0;
+                var successCount = 0;
+                var nonSuccessCount = 0;
+
+                api.column(2, { search: 'applied' }).data().each(function (value, index) {
+                    var status = api.cell({ row: index, column: 5 }).data();
+                    if (status === 'success') {
+                        total += intVal(value);
+                        successCount++;
+                    } else {
+                        nonSuccessCount++;
+                    }
+                });
+
+                api.column(2, { page: 'current' }).data().each(function (value, index) {
+                    var status = api.cell({ row: index, column: 5 }).data();
+                    if (status === 'success') {
+                        pageTotal += intVal(value);
+                    }
+                });
+
+                $('#page-total-in').html(pageTotal.toLocaleString() + ' đ');
+                $('#grand-total-in').html(total.toLocaleString() + ' đ');
+                $('#total-results-in').html(display.length.toLocaleString());
+                $('#success-count-in').html(successCount.toLocaleString());
+                $('#non-success-count-in').html(nonSuccessCount.toLocaleString());
             }
         });
 
@@ -204,15 +213,9 @@
                     .reduce(function (a, b) {
                         return intVal(a) + intVal(b);
                     }, 0);
-                $('#total-results-out').html(
-                    display.length.toLocaleString()
-                );
-                $('#page-total-out').html(
-                    pageTotal.toLocaleString() + ' đ'
-                );
-                $('#grand-total-out').html(
-                    total.toLocaleString() + ' đ'
-                );
+                $('#total-results-out').html(display.length.toLocaleString());
+                $('#page-total-out').html(pageTotal.toLocaleString() + ' đ');
+                $('#grand-total-out').html(total.toLocaleString() + ' đ');
             }
         });
 
@@ -275,3 +278,4 @@
     });
 </script>
 {% endblock %}
+
