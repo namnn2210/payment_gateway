@@ -4,7 +4,9 @@ import pytz
 
 @shared_task
 def print_payout(payout):
+    print('===========')
     print(payout)
+    print('===========')
 
 @shared_task
 def print_current_time():
