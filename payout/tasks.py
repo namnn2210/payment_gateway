@@ -8,6 +8,7 @@ import os
 
 @shared_task
 def update_payout_background(payout, bank, user):
+    print('aaaaaa')
     formatted_amount = '{:,.2f}'.format(payout['money'])
     alert = (
         f'🟢🟢🟢Success🟢🟢🟢\n'
