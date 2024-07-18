@@ -42,10 +42,8 @@ def create_deposit_order(transaction,partner_mapping):
             'sign': sign,
         }
         
-        print(payload)
+        response = requests.post(os.environ.get('DEPOSIT_URL'), data=payload, headers=headers)
         
-        response = requests.post(os.environ.get('PARTNER'), data=payload, headers=headers)
-        print(response.json())
         if response.status_code == 200:
             response_data = response.json()
             return response_data
@@ -54,6 +52,12 @@ def create_deposit_order(transaction,partner_mapping):
         
     except Exception as e:
             return None
+        
+def update_payout_status_request(payout, status):
+    try:
+        pass
+    except Exception as e:
+        return False
     
 
     

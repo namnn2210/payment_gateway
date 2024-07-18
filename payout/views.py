@@ -21,6 +21,7 @@ import pytz
 import os
 import json
 import random
+import requests
 
 load_dotenv()
 # Create your views here.
@@ -119,6 +120,7 @@ def update_payout(request, update_type):
             payout.status = True
             bank = Bank.objects.filter(id=bank_id).first()
             payout.process_bank = bank
+            update_success_response = update_payout_status_request(payout, 'S')
             alert = (
                 f'🟢🟢🟢Success🟢🟢🟢\n'
                 f'\n'
@@ -195,7 +197,8 @@ def update_payout(request, update_type):
 def webhook(request):
     # {
     #     "scode": "CID16301",
-    #     "orderno": "2024071612295974620",
+    #     "orderno": "20240717144614RvKcA",
+    #     "orderid": "2024071612295974620",
     #     "data": {
     #         "payeebankname": "ACB",
     #         "payeebankbranch": "",
@@ -209,11 +212,12 @@ def webhook(request):
     decoded_str = request.body.decode('utf-8')
     data = json.loads(decoded_str)
     scode = data.get('scode')
+    orderno = data.get('orderno')
     orderid = data.get('orderid')
-    money = data.get('amount')
-    accountno = data.get('payeeaccountno')
-    accountname = data.get('payeeaccountname')
-    bankcode = data.get('payeebankname')
+    money = data.get('data').get('amount')
+    accountno = data.get('data').get('payeeaccountno')
+    accountname = data.get('data').get('payeeaccountname')
+    bankcode = data.get('data').get('payeebankname')
     
     try:
         float(money)
@@ -228,6 +232,7 @@ def webhook(request):
     if existed_bank_account:
         return JsonResponse({'status': 505, 'message': 'Payout existed'})
     
+    # Gán payout ngẫu nhiên cho user theo ca làm
     current_time = datetime.now().time()
     user_timelines = []
     timelines = Timeline.objects.filter(status=True)
@@ -240,7 +245,7 @@ def webhook(request):
     payout = Payout.objects.create(
             user=random.choice(user_timelines),
             scode=scode,
-            orderno=orderid,
+            orderno=orderno,
             orderid=orderid,
             money=int(float(money)),
             accountno=accountno,
@@ -261,6 +266,7 @@ def webhook(request):
     )
     send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
     return JsonResponse({'status': 200, 'message': 'Payout added successfully'})
+
 
 def find_bankcode(bank_name):
     pass
