@@ -16,6 +16,7 @@ from bank.models import Bank
 from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
+from partner.views import update_payout_status_request
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField
 import pytz
 import os
@@ -121,29 +122,30 @@ def update_payout(request, update_type):
             bank = Bank.objects.filter(id=bank_id).first()
             payout.process_bank = bank
             update_success_response = update_payout_status_request(payout, 'S')
-            alert = (
-                f'🟢🟢🟢Success🟢🟢🟢\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
-                f'\n'
-                f'Amount: {formatted_amount} VND\n'
-                f'\n'
-                f'Bank name: {payout.bankcode}\n'
-                f'\n'
-                f'Account name: {payout.accountname}\n'
-                f'\n'
-                f'Account number: {payout.accountno}\n'
-                f'\n'
-                f'Process bank: {payout.process_bank.name}\n'
-                f'\n'
-                f'Created by: {payout.user}\n'
-                f'\n'
-                f'Done by: {request.user}\n'
-                f'\n'
-                f'Date: {payout.updated_at}'
-            )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-            update_amount_by_date('OUT',payout.money)
+            if update_success_response:
+                alert = (
+                    f'🟢🟢🟢Success🟢🟢🟢\n'
+                    f'\n'
+                    f'Order ID: {payout.orderid}\n'
+                    f'\n'
+                    f'Amount: {formatted_amount} VND\n'
+                    f'\n'
+                    f'Bank name: {payout.bankcode}\n'
+                    f'\n'
+                    f'Account name: {payout.accountname}\n'
+                    f'\n'
+                    f'Account number: {payout.accountno}\n'
+                    f'\n'
+                    f'Process bank: {payout.process_bank.name}\n'
+                    f'\n'
+                    f'Created by: {payout.user}\n'
+                    f'\n'
+                    f'Done by: {request.user}\n'
+                    f'\n'
+                    f'Date: {payout.updated_at}'
+                )
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                update_amount_by_date('OUT',payout.money)
         elif update_type == 'report':
             payout.is_report = True
             alert = (
@@ -166,26 +168,28 @@ def update_payout(request, update_type):
         elif update_type == 'cancel':
             payout.is_cancel = True
             payout.status = None
-            alert = (
-                f'🔴🔴🔴Failed🔴🔴🔴\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
-                f'\n'
-                f'Amount: {formatted_amount} VND\n'
-                f'\n'
-                f'Bank name: {payout.bankcode}\n'
-                f'\n'
-                f'Account name: {payout.accountname}\n'
-                f'\n'
-                f'Account number: {payout.accountno}\n'
-                f'\n'
-                f'Created by: {payout.user}\n'
-                f'\n'
-                f'Done by: {request.user}\n'
-                f'\n'
-                f'Date: {payout.updated_at}'
-            )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+            update_fail_response = update_payout_status_request(payout, 'F')
+            if update_fail_response:
+                alert = (
+                    f'🔴🔴🔴Failed🔴🔴🔴\n'
+                    f'\n'
+                    f'Order ID: {payout.orderid}\n'
+                    f'\n'
+                    f'Amount: {formatted_amount} VND\n'
+                    f'\n'
+                    f'Bank name: {payout.bankcode}\n'
+                    f'\n'
+                    f'Account name: {payout.accountname}\n'
+                    f'\n'
+                    f'Account number: {payout.accountno}\n'
+                    f'\n'
+                    f'Created by: {payout.user}\n'
+                    f'\n'
+                    f'Done by: {request.user}\n'
+                    f'\n'
+                    f'Date: {payout.updated_at}'
+                )
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done','success': False})
         payout.save()
@@ -217,7 +221,7 @@ def webhook(request):
     money = data.get('data').get('amount')
     accountno = data.get('data').get('payeeaccountno')
     accountname = data.get('data').get('payeeaccountname')
-    bankcode = data.get('data').get('payeebankname')
+    bankcode = data.get('data').get('payeebankbranchcode')
     
     try:
         float(money)
@@ -227,9 +231,9 @@ def webhook(request):
     if '.00' not in money:
         return JsonResponse({'status': 503, 'message': 'Amount must ends with .00'})
     
-    existed_bank_account = Payout.objects.filter(
+    existed_payout = Payout.objects.filter(
     orderid=orderid).first()
-    if existed_bank_account:
+    if existed_payout:
         return JsonResponse({'status': 505, 'message': 'Payout existed'})
     
     # Gán payout ngẫu nhiên cho user theo ca làm
@@ -240,7 +244,8 @@ def webhook(request):
         start_at = datetime.strptime(timeline.start_at, '%H:%M').time()
         end_at = datetime.strptime(timeline.end_at, '%H:%M').time()
         if start_at <= current_time and current_time <= end_at:
-            user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True)) 
+            user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True))
+             
     
     payout = Payout.objects.create(
             user=random.choice(user_timelines),
