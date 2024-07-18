@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Payout
+from .models import Payout, Timeline, UserTimeline
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
@@ -20,6 +20,7 @@ from django.db.models import Q, BooleanField, Case, Value, When, IntegerField
 import pytz
 import os
 import json
+import random
 
 load_dotenv()
 # Create your views here.
@@ -227,10 +228,17 @@ def webhook(request):
     if existed_bank_account:
         return JsonResponse({'status': 505, 'message': 'Payout existed'})
     
-    admin = User.objects.filter(username='admin').first()
+    current_time = datetime.now().time()
+    user_timelines = []
+    timelines = Timeline.objects.filter(status=True)
+    for timeline in timelines:
+        start_at = datetime.strptime(timeline.start_at, '%H:%M').time()
+        end_at = datetime.strptime(timeline.end_at, '%H:%M').time()
+        if start_at <= current_time and current_time <= end_at:
+            user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True)) 
     
     payout = Payout.objects.create(
-            user=admin,
+            user=random.choice(user_timelines),
             scode=scode,
             orderno=orderid,
             orderid=orderid,
