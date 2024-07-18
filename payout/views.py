@@ -120,7 +120,7 @@ def update_payout(request, update_type):
         payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
         
         if update_type == 'done':
-            print_payout.delay(payout)
+            print_payout.delay({'a':3})
             payout.status = True
             bank = Bank.objects.filter(id=bank_id).first()
             payout.process_bank = bank
