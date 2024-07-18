@@ -2,6 +2,7 @@ from celery import shared_task
 from datetime import datetime
 from bank.utils import send_telegram_message
 from bank.views import update_amount_by_date
+from payout.models import Payout
 import pytz
 import os
 
@@ -31,6 +32,8 @@ def update_payout_background(payout, bank, user):
     )
     send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
     update_amount_by_date('OUT',payout['money'])
+    payout_model = Payout(**payout)
+    payout_model.save()
 
 @shared_task
 def print_current_time():
