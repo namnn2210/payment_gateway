@@ -18,7 +18,7 @@ from dotenv import load_dotenv
 from datetime import datetime
 from partner.views import update_payout_status_request
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField
-from .tasks import print_payout
+from .tasks import update_payout_background
 import pytz
 import os
 import json
@@ -115,41 +115,19 @@ def update_payout(request, update_type):
         payout_id = data.get('id')
         bank_id = data.get('bank_id')
         payout = get_object_or_404(Payout, id=payout_id)
-        formatted_amount = '{:,.2f}'.format(payout.money)
+        
         payout.updated_by = request.user
         payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
         
         if update_type == 'done':
-            
-            print_payout.delay({'a':3})
             payout.status = True
             bank = Bank.objects.filter(id=bank_id).first()
             payout.process_bank = bank
             # update_success_response = update_payout_status_request(payout, 'S')
             # if update_success_response:
-            alert = (
-                f'🟢🟢🟢Success🟢🟢🟢\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
-                f'\n'
-                f'Amount: {formatted_amount} VND\n'
-                f'\n'
-                f'Bank name: {payout.bankcode}\n'
-                f'\n'
-                f'Account name: {payout.accountname}\n'
-                f'\n'
-                f'Account number: {payout.accountno}\n'
-                f'\n'
-                f'Process bank: {payout.process_bank.name}\n'
-                f'\n'
-                f'Created by: {payout.user}\n'
-                f'\n'
-                f'Done by: {request.user}\n'
-                f'\n'
-                f'Date: {payout.updated_at}'
-            )
-            # send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-            # update_amount_by_date('OUT',payout.money)
+            payout_dict = model_to_dict(payout)
+            update_payout_background.delay(model_to_dict(payout), model_to_dict(bank),model_to_dict(request.user))
+            
         elif update_type == 'report':
             payout.is_report = True
             alert = (
@@ -196,7 +174,7 @@ def update_payout(request, update_type):
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done','success': False})
-        payout.save()
+        # payout.save()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
