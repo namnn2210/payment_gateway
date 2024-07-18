@@ -268,7 +268,7 @@
             outTable.draw();
         });
 
-        $('#search_box').on('change', function () {
+        $('#search_box').on('keyup input change', function () {
             inTable.search(this.value).draw();
             outTable.search(this.value).draw();
         });
