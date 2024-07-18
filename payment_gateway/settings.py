@@ -89,8 +89,8 @@ TEMPLATES = [
     },
 ]
 
-# WSGI_APPLICATION = 'payment_gateway.wsgi.application'
-ASGI_APPLICATION = "payment_gateway.asgi.application"
+WSGI_APPLICATION = 'payment_gateway.wsgi.application'
+# ASGI_APPLICATION = "payment_gateway.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
