@@ -23,9 +23,11 @@ def mb_login(username, password, account_number):
         "password": password,
         "accountNumber": account_number
     }
+    print('start login: ', datetime.now())
     response = requests.post(os.environ.get("MB_URL"), json=body, timeout=120)
     if '"ok":true' in response.text:
-            return True
+        print('end login: ', datetime.now())
+        return True
     return False
     
 def mb_transactions(username, password, account_number, start=''):
