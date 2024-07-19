@@ -35,26 +35,26 @@
 </style>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-6 col-sm-6">
+        <div class="col-md-12 col-sm-12">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="search_box">{% trans "Search" %}</label>
+                    <input type="text" id="search_box" class="form-control"
+                        placeholder="{% trans 'Search everything here...' %}" />
+                </div>
+                <div class="col-md-4">
+                    <label for="start_datetime">{% trans "Start Date" %}</label>
+                    <input type="datetime-local" id="start_datetime" class="form-control" />
+                </div>
+                <div class="col-md-4">
+                    <label for="end_datetime">{% trans "End Date" %}</label>
+                    <input type="datetime-local" id="end_datetime" class="form-control" />
+                </div>
+            </div>
             <div class="card">
                 <div class="card-body" style="font-size: 12px">
                     <h5 class="card-title">{% trans "Record Book" %}</h5>
                     <div class="card-body" style="font-size: 12px">
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                                <label for="search_box">{% trans "Search" %}</label>
-                                <input type="text" id="search_box" class="form-control"
-                                    placeholder="{% trans 'Search everything here...' %}" />
-                            </div>
-                            <div class="col-md-4">
-                                <label for="start_datetime">{% trans "Start Date" %}</label>
-                                <input type="datetime-local" id="start_datetime" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label for="end_datetime">{% trans "End Date" %}</label>
-                                <input type="datetime-local" id="end_datetime" class="form-control" />
-                            </div>
-                        </div>
                         <div class="table-container row">
                             <div class="table-responsive col-md-6 col-sm-6">
                                 <div class="totals-container">
