@@ -37,9 +37,9 @@
     <div class="row">
         <div class="col-md-12 col-sm-12">
             <div class="card">
-                <div class="card-body" style="font-size: 13px">
+                <div class="card-body" style="font-size: 12px">
                     <h5 class="card-title">{% trans "Record Book" %}</h5>
-                    <div class="card-body" style="font-size: 13px">
+                    <div class="card-body" style="font-size: 12px">
                         <div class="row mb-3">
                             <div class="col-md-4">
                                 <label for="search_box">{% trans "Search" %}</label>
@@ -65,7 +65,7 @@
                                 </div>
                                 <table id="inTransactionTable" class="table table-sm display">
                                     <thead>
-                                        <tr class="text-center" style="font-size: 13px">
+                                        <tr class="text-center" style="font-size: 12px">
                                             <th>{% trans "Account Number" %}</th>
                                             <th>{% trans "Transaction Number" %}</th>
                                             <th>{% trans "Amount" %}</th>
@@ -77,7 +77,7 @@
                                     <tbody id="inTransactionTableBody" class="text-center">
                                         {% for item in page_obj %}
                                         {% if item.transaction_type == 'IN' %}
-                                        <tr>
+                                        <tr style="font-size: 11px;">
                                             <td>{{ item.account_number }}</td>
                                             <td>{{ item.transaction_number }}</td>
                                             <td class="text-success">{{ item.amount|floatformat:2|intcomma }}</td>
@@ -96,7 +96,7 @@
                             <div class="table-responsive col-md-12 col-sm-12">
                                 <table id="outTransactionTable" class="table table-sm display">
                                     <thead>
-                                        <tr class="text-center" style="font-size: 13px">
+                                        <tr class="text-center" style="font-size: 12px">
                                             <th>{% trans "Account Number" %}</th>
                                             <th>{% trans "Transaction Number" %}</th>
                                             <th>{% trans "Amount" %}</th>
@@ -108,7 +108,7 @@
                                     <tbody id="outTransactionTableBody" class="text-center">
                                         {% for item in page_obj %}
                                         {% if item.transaction_type == 'OUT' %}
-                                        <tr>
+                                        <tr style="font-size: 11px;">
                                             <td>{{ item.account_number }}</td>
                                             <td>{{ item.transaction_number }}</td>
                                             <td class="text-danger">{{ item.amount|floatformat:2|intcomma }}</td>
