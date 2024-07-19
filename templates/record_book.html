@@ -54,15 +54,15 @@
             <div class="card">
                 <div class="card-body" style="font-size: 12px">
                     <h5 class="card-title">{% trans "Record Book" %}</h5>
+                    <div class="totals-container">
+                        <div>{% trans "Transactions Success Count" %}: <span id="success-count-in"></span></div>
+                        <div>{% trans "Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
+                        <div>{% trans "Transactions Page Total Success Amount" %}: <span id="page-total-in"></span></div>
+                        <div>{% trans "Transactions Grand Total Success Amount" %}: <span id="grand-total-in"></span></div>
+                    </div>
                     <div class="card-body" style="font-size: 12px">
                         <div class="table-container row">
                             <div class="table-responsive col-md-6 col-sm-6">
-                                <div class="totals-container">
-                                    <div>{% trans "Transactions Success Count" %}: <span id="success-count-in"></span></div>
-                                    <div>{% trans "Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
-                                    <div>{% trans "Transactions Page Total Success Amount" %}: <span id="page-total-in"></span></div>
-                                    <div>{% trans "Transactions Grand Total Success Amount" %}: <span id="grand-total-in"></span></div>
-                                </div>
                                 <table id="inTransactionTable" class="table table-sm display">
                                     <thead>
                                         <tr class="text-center" style="font-size: 12px">
