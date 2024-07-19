@@ -221,7 +221,7 @@ def get_transaction(bank):
                         transaction_type = '-'
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-                        if 'Z' in row["description"]:
+                        if datetime.strptime(row["transaction_date"], '%m/%d/%Y %H:%M:%S').date() >= datetime.now().date():
                             alert = (
                                 f'PAYOUT DONE - Đã trừ tiền\n'
                                 f'\n'
