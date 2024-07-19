@@ -30,30 +30,30 @@
 </style>
 <div class="container-fluid">
     <div class="row">
-        <div class="row mb-3">
-            <div class="col-md-4" style="font-size: 12px;">
-                <label for="search_box" class="text-center">{% trans "Search" %}</label>
-                <input type="text" id="search_box" class="form-control"
+        <div class="row">
+            <div class="col-md-4">
+                <label for="search_box">{% trans "Search" %}</label>
+                <input type="text" id="search_box" class="form-control input-sm"
                     placeholder="{% trans 'Search everything here...' %}" />
             </div>
-            <div class="col-md-4" style="font-size: 12px;">
-                <label for="start_datetime" class="text-center">{% trans "Start Date" %}</label>
-                <input type="datetime-local" id="start_datetime" class="form-control" />
+            <div class="col-md-4">
+                <label for="start_datetime">{% trans "Start Date" %}</label>
+                <input type="datetime-local" id="start_datetime" class="form-control input-sm" />
             </div>
-            <div class="col-md-4" style="font-size: 12px;">
-                <label for="end_datetime" class="text-center">{% trans "End Date" %}</label>
-                <input type="datetime-local" id="end_datetime" class="form-control" />
+            <div class="col-md-4">
+                <label for="end_datetime">{% trans "End Date" %}</label>
+                <input type="datetime-local" id="end_datetime" class="form-control input-sm" />
             </div>
         </div>
-        <h5 class="card-title text-center" style="font-size: 14px;">{% trans "Record Book" %}</h5>
-        <div class="totals-container" style="font-size: 12px;">
+        <h5 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h5>
+        <div class="totals-container" style="font-size: 11px;">
             <div>{% trans "Transactions Success Count" %}: <span id="success-count-in"></span></div>
             <div>{% trans "Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
             <div>{% trans "Transactions Page Total Success Amount" %}: <span id="page-total-in"></span></div>
             <div>{% trans "Transactions Grand Total Success Amount" %}: <span id="grand-total-in"></span></div>
         </div>
     </div>
-    <div class="row">
+    <div class="row d-flex justify-content-between">
         <div class="col-md-6">
             <div class="card-body table-wrapper" style="font-size: 12px">
                 <div class="table-responsive">
