@@ -8,7 +8,14 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 col-sm-12 text-right mt-4">
-            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Settle Payout" %}</button>
+        </div>
+        <div class="col-md-6 col-sm-12 text-right mt-4">
+            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Payout" %}</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-12 mt-4">
+            <input type="text" id="customSearchBox" class="form-control" placeholder="{% trans "Search" %}">
         </div>
         <div class="col-md-6 col-sm-12 mt-4">
             <select id="statusFilter" class="form-select">
@@ -18,9 +25,6 @@
                 <option value="Canceled">{% trans "Canceled" %}</option>
                 <option value="Reported">{% trans "Reported" %}</option>
             </select>
-        </div>
-        <div class="col-md-6 col-sm-12 mt-4">
-            <input type="text" id="customSearchBox" class="form-control" placeholder="{% trans "Search" %}">
         </div>
     </div>
     <div class="row mt-4">
