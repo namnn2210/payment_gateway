@@ -48,7 +48,7 @@
                     <!-- Default Table -->
                     <div class="table-responsive">
                         <table class="table table-borderless table-sm">
-                            <thead style="font-size: 14px">
+                            <thead style="font-size: 12px">
                                 <tr>
                                     <th>{% trans "Account Number" %}</th>
                                     <th>{% trans "Bank Name" %}</th>
@@ -56,7 +56,7 @@
                                     <th>{% trans "Last Update" %}</th>
                                     <th>{% trans "Actions" %}</th>
                             </thead>
-                            <tbody id="bankList" style="font-size: 13px">
+                            <tbody id="bankList" style="font-size: 11px">
                                 {% for bank_account in list_user_bank %}
                                 {% if bank_account.bank_type == 'IN'%}
                                 <tr>
