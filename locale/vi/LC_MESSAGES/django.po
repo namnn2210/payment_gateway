@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-19 19:18+0700\n"
+"POT-Creation-Date: 2024-07-19 22:26+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgstr "Tiếng Anh"
 msgid "Vietnamese"
 msgstr "Tiếng Việt"
 
-#: templates/bank.html:4 templates/layout/layout.html:170
+#: templates/bank.html:4 templates/layout/layout.html:171
 msgid "Bank Account"
 msgstr "Tài khoản ngân hàng"
 
@@ -51,7 +51,7 @@ msgstr "VÀO"
 #: templates/bank.html:53 templates/bank.html:101 templates/index.html:42
 #: templates/index.html:66 templates/index.html:94 templates/index.html:127
 #: templates/payout.html:64 templates/payout.html:177
-#: templates/record_book.html:69 templates/record_book.html:100
+#: templates/record_book.html:63 templates/record_book.html:96
 #: templates/settle_payout.html:64 templates/settle_payout.html:177
 msgid "Account Number"
 msgstr "Số tài khoản"
@@ -111,7 +111,7 @@ msgstr "Mật khẩu ngân hàng"
 msgid "Bank TYPE"
 msgstr "Loại ngân hàng"
 
-#: templates/index.html:4 templates/layout/layout.html:163
+#: templates/index.html:4 templates/layout/layout.html:164
 msgid "Dashboard"
 msgstr "Bảng điều khiển"
 
@@ -143,24 +143,24 @@ msgid "Reference Number"
 msgstr "Mã giao dịch"
 
 #: templates/index.html:96 templates/index.html:129 templates/payout.html:63
-#: templates/payout.html:173 templates/record_book.html:71
-#: templates/record_book.html:102 templates/settle_payout.html:63
+#: templates/payout.html:173 templates/record_book.html:65
+#: templates/record_book.html:98 templates/settle_payout.html:63
 #: templates/settle_payout.html:173
 msgid "Amount"
 msgstr "Số tiền"
 
 #: templates/index.html:97 templates/index.html:130
-#: templates/record_book.html:72 templates/record_book.html:103
+#: templates/record_book.html:66 templates/record_book.html:99
 msgid "Date"
 msgstr "Thời gian"
 
 #: templates/index.html:98 templates/index.html:131
-#: templates/record_book.html:73 templates/record_book.html:104
+#: templates/record_book.html:67 templates/record_book.html:100
 msgid "Memo"
 msgstr "Nội dung"
 
 #: templates/index.html:99 templates/index.html:132 templates/payout.html:71
-#: templates/record_book.html:74 templates/record_book.html:105
+#: templates/record_book.html:68 templates/record_book.html:101
 #: templates/settle_payout.html:71
 msgid "Status"
 msgstr "Trạng thái"
@@ -169,55 +169,51 @@ msgstr "Trạng thái"
 msgid "Title"
 msgstr ""
 
-#: templates/layout/layout.html:55
+#: templates/layout/layout.html:56
 msgid "226Pay"
 msgstr ""
 
-#: templates/layout/layout.html:67 templates/login.html:94
+#: templates/layout/layout.html:68 templates/login.html:94
 msgid "Language"
 msgstr "Ngôn ngữ"
 
-#: templates/layout/layout.html:71
+#: templates/layout/layout.html:72
 msgid "Select Language"
 msgstr "Lựa chọn ngôn ngữ"
 
-#: templates/layout/layout.html:110
+#: templates/layout/layout.html:111
 msgid "Dev"
 msgstr ""
 
-#: templates/layout/layout.html:119 templates/profile.html:5
+#: templates/layout/layout.html:120 templates/profile.html:5
 #: templates/profile.html:8
 msgid "Profile"
 msgstr "Tài khoản"
 
-#: templates/layout/layout.html:131
+#: templates/layout/layout.html:132
 msgid "Go to Admin"
 msgstr "Truy cập Admin"
 
-#: templates/layout/layout.html:143
+#: templates/layout/layout.html:144
 msgid "Sign Out"
 msgstr "Đăng xuất"
 
-#: templates/layout/layout.html:177 templates/record_book.html:4
-#: templates/record_book.html:41
+#: templates/layout/layout.html:178 templates/record_book.html:4
+#: templates/record_book.html:32
 msgid "Record Book"
 msgstr "Quản lí giao dịch"
 
-#: templates/layout/layout.html:183
+#: templates/layout/layout.html:184
 msgid "Payout"
 msgstr "Rút tiền"
 
-#: templates/layout/layout.html:188
-msgid "Processing Payout"
-msgstr "Xử lí rút tiền"
+#: templates/layout/layout.html:189
+msgid "Withdrawal"
+msgstr "Rút tiền thường"
 
-#: templates/layout/layout.html:196
-msgid "Settle Payout"
-msgstr "Danh sách lệnh rút tiền có bill"
-
-#: templates/layout/layout.html:201
-msgid "Processing Settle Payout"
-msgstr "Xử lí rút tiền có bill"
+#: templates/layout/layout.html:194
+msgid "Settle"
+msgstr "Rút tiền có bill"
 
 #: templates/login.html:13 templates/login.html:85
 msgid "Login"
@@ -256,7 +252,7 @@ msgstr "Danh sách lệnh rút tiền"
 msgid "Add Payout"
 msgstr "Thêm lệnh rút tiền"
 
-#: templates/payout.html:18 templates/record_book.html:45
+#: templates/payout.html:18 templates/record_book.html:36
 #: templates/settle_payout.html:18
 msgid "Search"
 msgstr "Tìm kiếm"
@@ -287,12 +283,12 @@ msgstr "Đã hủy"
 msgid "Reported"
 msgstr "Đã báo cáo"
 
-#: templates/payout.html:32 templates/record_book.html:50
+#: templates/payout.html:32 templates/record_book.html:41
 #: templates/settle_payout.html:32
 msgid "Start Date"
 msgstr "Ngày bắt đầu"
 
-#: templates/payout.html:36 templates/record_book.html:54
+#: templates/payout.html:36 templates/record_book.html:45
 #: templates/settle_payout.html:36
 msgid "End Date"
 msgstr "Ngày kết thúc"
@@ -381,7 +377,7 @@ msgstr "Thêm"
 msgid "Payout Details"
 msgstr "Chi tiết rút tiền"
 
-
+#: templates/payout.html:220 templates/settle_payout.html:220
 msgid "Select Payout Bank"
 msgstr "Lựa ngân hàng rút tiền"
 
@@ -405,26 +401,27 @@ msgstr "Nhập lại mật khẩu"
 msgid "Change Password"
 msgstr "Đổi mật khẩu"
 
-#: templates/record_book.html:47
+#: templates/record_book.html:38
 msgid "Search everything here..."
 msgstr "Tìm kiếm mọi thứ ở đây..."
 
-
+#: templates/record_book.html:50
 msgid "Transactions Success Count"
 msgstr "Số lệnh thành công"
 
+#: templates/record_book.html:51
 msgid "Transactions Non-Success Count"
 msgstr "Số lệnh không thành công"
 
-#: templates/record_book.html:63
+#: templates/record_book.html:52
 msgid "Transactions Page Total Success Amount"
 msgstr "Tổng tiền thành công trên trang"
 
-#: templates/record_book.html:64
+#: templates/record_book.html:53
 msgid "Transactions Grand Total Success Amount"
 msgstr "Tổng tiền thành công"
 
-#: templates/record_book.html:70 templates/record_book.html:101
+#: templates/record_book.html:64 templates/record_book.html:97
 #, fuzzy
 #| msgid "Account Number"
 msgid "Transaction Number"
@@ -433,6 +430,12 @@ msgstr "Số tài khoản"
 #: templates/settle_payout.html:5 templates/settle_payout.html:56
 msgid "List Settle Payout"
 msgstr "Danh sách lệnh rút tiền có bill"
+
+#~ msgid "Processing Payout"
+#~ msgstr "Xử lí rút tiền"
+
+#~ msgid "Processing Settle Payout"
+#~ msgstr "Xử lí rút tiền có bill"
 
 #~ msgid "Add Settle Payout"
 #~ msgstr "Thêm lệnh rút tiền có bill"
