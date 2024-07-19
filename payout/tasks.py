@@ -96,7 +96,6 @@ def update_payout_background(update_body):
         payout.save()
 
 @shared_task
-def print_current_time():
-    tz = pytz.timezone('Asia/Bangkok')
-    current_time = datetime.now(tz)
-    print(f'Current time in UTC+7: {current_time}')
+def process_payout_webhook(data):
+    
+    pass

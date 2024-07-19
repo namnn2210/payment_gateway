@@ -24,6 +24,7 @@ import os
 import json
 import random
 import requests
+import hashlib
 
 load_dotenv()
 # Create your views here.
@@ -152,6 +153,16 @@ def webhook(request):
     accountno = data.get('data').get('payeeaccountno')
     accountname = data.get('data').get('payeeaccountname')
     bankcode = data.get('data').get('payeebankbranchcode')
+    payeebankname = data.get('data').get('payeebankname')
+    payeebankbranch = data.get('data').get('payeebankbranch')
+    body_sign = data.get('sign')
+    
+    
+    sign_string = f"{scode}|{orderno}|{orderid}|{payeebankname}|{payeebankbranch}|{bankcode}|{accountno}|{accountname}|{money}:{key}"
+    sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
+    
+    if sign != body_sign:
+        return JsonResponse({'status': 403, 'message': 'Forbidden'})
     
     try:
         float(money)
