@@ -7,6 +7,9 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
+        <div class="col-md-6 col-sm-12 text-right mt-4">
+            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Settle Payout" %}</button>
+        </div>
         <div class="col-md-6 col-sm-12 mt-4">
             <select id="statusFilter" class="form-select">
                 <option value="">{% trans "All" %}</option>
@@ -16,8 +19,8 @@
                 <option value="Reported">{% trans "Reported" %}</option>
             </select>
         </div>
-        <div class="col-md-6 col-sm-12 text-right mt-4">
-            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Settle Payout" %}</button>
+        <div class="col-md-6 col-sm-12 mt-4">
+            <input type="text" id="customSearchBox" class="form-control" placeholder="{% trans "Search" %}">
         </div>
     </div>
     <div class="row mt-4">
@@ -444,6 +447,7 @@
         "pageLength": 10,  // Set default page length
         "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
         "ordering": false,
+        "dom": 'rtip',
         "footerCallback": function (row, data, start, end, display) {
             var api = this.api();
 
@@ -569,6 +573,10 @@
     $('#statusFilter').on('change', function () {
         table.draw();
     });
+
+    $('#customSearchBox').on('keyup', function () {
+            table.search(this.value).draw();
+        });
 
     // Event listeners for the datetime range inputs to redraw on change
     $('#start_datetime, #end_datetime').on('change', function () {
