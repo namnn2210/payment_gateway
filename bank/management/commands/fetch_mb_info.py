@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 bank_accounts = BankAccount.objects.filter(bank_name=2,status=True)
                 for bank in bank_accounts:
                     get_balance(bank=bank)
-                time.sleep(15)
+                time.sleep(45)
             except Exception as ex:
                 alert = (
                     f'🔴 - SYSTEM ALERT\n'
