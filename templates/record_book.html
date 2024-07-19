@@ -35,92 +35,88 @@
 </style>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 col-sm-12">
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="search_box">{% trans "Search" %}</label>
-                    <input type="text" id="search_box" class="form-control"
-                        placeholder="{% trans 'Search everything here...' %}" />
-                </div>
-                <div class="col-md-4">
-                    <label for="start_datetime">{% trans "Start Date" %}</label>
-                    <input type="datetime-local" id="start_datetime" class="form-control" />
-                </div>
-                <div class="col-md-4">
-                    <label for="end_datetime">{% trans "End Date" %}</label>
-                    <input type="datetime-local" id="end_datetime" class="form-control" />
+        
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label for="search_box">{% trans "Search" %}</label>
+                <input type="text" id="search_box" class="form-control"
+                    placeholder="{% trans 'Search everything here...' %}" />
+            </div>
+            <div class="col-md-4">
+                <label for="start_datetime">{% trans "Start Date" %}</label>
+                <input type="datetime-local" id="start_datetime" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label for="end_datetime">{% trans "End Date" %}</label>
+                <input type="datetime-local" id="end_datetime" class="form-control" />
+            </div>
+        </div>
+        <h5 class="card-title">{% trans "Record Book" %}</h5>
+        <div class="totals-container">
+            <div>{% trans "Transactions Success Count" %}: <span id="success-count-in"></span></div>
+            <div>{% trans "Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
+            <div>{% trans "Transactions Page Total Success Amount" %}: <span id="page-total-in"></span></div>
+            <div>{% trans "Transactions Grand Total Success Amount" %}: <span id="grand-total-in"></span></div>
+        </div>
+        <div class="card row">
+            <div class="card-body col-md-6 col-sm-6" style="font-size: 12px">
+                <div class="table-responsive">
+                    <table id="inTransactionTable" class="table table-sm display">
+                        <thead>
+                            <tr class="text-center" style="font-size: 12px">
+                                <th>{% trans "Account Number" %}</th>
+                                <th>{% trans "Transaction Number" %}</th>
+                                <th>{% trans "Amount" %}</th>
+                                <th>{% trans "Date" %}</th>
+                                <th>{% trans "Memo" %}</th>
+                                <th>{% trans "Status" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inTransactionTableBody" class="text-center">
+                            {% for item in page_obj %}
+                            {% if item.transaction_type == 'IN' %}
+                            <tr style="font-size: 11px;">
+                                <td>{{ item.account_number }}</td>
+                                <td>{{ item.transaction_number }}</td>
+                                <td class="text-success">{{ item.amount|floatformat:2|intcomma }}</td>
+                                <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.status}}</td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-body" style="font-size: 12px">
-                    <h5 class="card-title">{% trans "Record Book" %}</h5>
-                    <div class="totals-container">
-                        <div>{% trans "Transactions Success Count" %}: <span id="success-count-in"></span></div>
-                        <div>{% trans "Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
-                        <div>{% trans "Transactions Page Total Success Amount" %}: <span id="page-total-in"></span></div>
-                        <div>{% trans "Transactions Grand Total Success Amount" %}: <span id="grand-total-in"></span></div>
-                    </div>
-                    <div class="card-body" style="font-size: 12px">
-                        <div class="table-container row">
-                            <div class="table-responsive col-md-6 col-sm-6">
-                                <table id="inTransactionTable" class="table table-sm display">
-                                    <thead>
-                                        <tr class="text-center" style="font-size: 12px">
-                                            <th>{% trans "Account Number" %}</th>
-                                            <th>{% trans "Transaction Number" %}</th>
-                                            <th>{% trans "Amount" %}</th>
-                                            <th>{% trans "Date" %}</th>
-                                            <th>{% trans "Memo" %}</th>
-                                            <th>{% trans "Status" %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="inTransactionTableBody" class="text-center">
-                                        {% for item in page_obj %}
-                                        {% if item.transaction_type == 'IN' %}
-                                        <tr style="font-size: 11px;">
-                                            <td>{{ item.account_number }}</td>
-                                            <td>{{ item.transaction_number }}</td>
-                                            <td class="text-success">{{ item.amount|floatformat:2|intcomma }}</td>
-                                            <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
-                                            <td>{{ item.description }}</td>
-                                            <td>{{ item.status}}</td>
-                                        </tr>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="table-responsive col-md-6 col-sm-6">
-                                <table id="outTransactionTable" class="table table-sm display">
-                                    <thead>
-                                        <tr class="text-center" style="font-size: 12px">
-                                            <th>{% trans "Account Number" %}</th>
-                                            <th>{% trans "Transaction Number" %}</th>
-                                            <th>{% trans "Amount" %}</th>
-                                            <th>{% trans "Date" %}</th>
-                                            <th>{% trans "Memo" %}</th>
-                                            <th>{% trans "Status" %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="outTransactionTableBody" class="text-center">
-                                        {% for item in page_obj %}
-                                        {% if item.transaction_type == 'OUT' %}
-                                        <tr style="font-size: 11px;">
-                                            <td>{{ item.account_number }}</td>
-                                            <td>{{ item.transaction_number }}</td>
-                                            <td class="text-danger">{{ item.amount|floatformat:2|intcomma }}</td>
-                                            <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
-                                            <td>{{ item.description }}</td>
-                                            <td>{{ item.status}}</td>
-                                        </tr>
-                                        {% endif %}
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
+            <div class="table-responsive col-md-6 col-sm-6">
+                <table id="outTransactionTable" class="table table-sm display">
+                    <thead>
+                        <tr class="text-center" style="font-size: 12px">
+                            <th>{% trans "Account Number" %}</th>
+                            <th>{% trans "Transaction Number" %}</th>
+                            <th>{% trans "Amount" %}</th>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Memo" %}</th>
+                            <th>{% trans "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outTransactionTableBody" class="text-center">
+                        {% for item in page_obj %}
+                        {% if item.transaction_type == 'OUT' %}
+                        <tr style="font-size: 11px;">
+                            <td>{{ item.account_number }}</td>
+                            <td>{{ item.transaction_number }}</td>
+                            <td class="text-danger">{{ item.amount|floatformat:2|intcomma }}</td>
+                            <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
+                            <td>{{ item.description }}</td>
+                            <td>{{ item.status}}</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
