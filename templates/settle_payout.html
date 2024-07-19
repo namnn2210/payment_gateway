@@ -52,12 +52,12 @@
                     </div>
                 </div>
             </div>
-            <div class="card-body" style="font-size: 13px">
+            <div class="card-body" style="font-size: 12px">
                 <h5 class="card-title">{% trans "List Settle Payout" %}</h5>
                 <div class="table-responsive">
                     <table class="table table-sm display" id="payoutTable">
                         <thead>
-                            <tr class="text-center" style="font-size: 13px">
+                            <tr class="text-center" style="font-size: 12px">
                                 <th scope="col">{% trans "CID" %}</th>
                                 <th scope="col">{% trans "Order ID" %}</th>
                                 <th scope="col">{% trans "Amount" %}</th>
@@ -77,7 +77,7 @@
                         </thead>
                         <tbody>
                             {% for item in list_payout %}
-                            <tr class="text-center">
+                            <tr class="text-center" style="font-size: 11px;">
                                 <th>{{ item.scode }}</th>
                                 <td>{{ item.orderid }}</td>
                                 <td>{{ item.money|floatformat:2|intcomma }} đ</td>
