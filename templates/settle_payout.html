@@ -574,7 +574,7 @@
         table.draw();
     });
 
-    $('#customSearchBox').on('keyup', function () {
+    $('#customSearchBox').on('keyup input change', function () {
             table.search(this.value).draw();
         });
 

@@ -572,7 +572,7 @@
     // Trigger the draw event to apply the initial filter
     table.draw();
 
-    $('#customSearchBox').on('keyup', function () {
+    $('#customSearchBox').on('keyup input change', function () {
             table.search(this.value).draw();
         });
 
