@@ -71,10 +71,12 @@ def vietin_transactions(username,password,account_number):
                 break
             
         for item in fetch_transactions:
-            if 'CT DEN' in item['remark']:
-                transaction_type='IN'
-            else:
+            if item['channel'] == '78 - Retail Internet Banking':
                 transaction_type='OUT'
+            elif item['channel'] ==  '44 - Gateway (VTB)':
+                transaction_type='OUT'
+            else:
+                continue
             transaction_date = datetime.strptime(item['processDate'], '%d-%m-%Y %H:%M:%S')
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')  # Ensure timezone aware datetime
             new_formatted_transaction = Transaction(
