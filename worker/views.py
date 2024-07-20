@@ -87,7 +87,6 @@ def get_balance(bank):
 def get_transaction(bank):
     redis_client = redis_connect(1)
     bank_exists = redis_client.get(bank.account_number)
-    print('start transactions ', datetime.now())
     if bank.bank_name.name == 'MB':
         transactions = mb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
@@ -99,7 +98,6 @@ def get_transaction(bank):
         
     new_bank_history = transactions
     new_bank_history_df = pd.DataFrame(new_bank_history)
-    print('end transactions ', datetime.now())
     if new_bank_history_df.empty:
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
@@ -112,39 +110,35 @@ def get_transaction(bank):
         redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
     else:
         # Transform current transactions history and new transaction history
-        print('start old ', datetime.now())
         old_bank_history = json.loads(redis_client.get(bank.account_number))
         old_bank_history_df = pd.DataFrame(old_bank_history)
         old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
-        print('end old ', datetime.now())
         final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
         # Detect new transactions
-        print('start detect', datetime.now())
         new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(subset='transaction_number', keep=False)
-        print('end detect', datetime.now())
         # Add new transactions to current history
-        print('start add', datetime.now())
         updated_df = pd.concat([old_bank_history_df, new_transaction_df])
         # Update Redis
         redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
-        print('end add', datetime.now())
         if not new_transaction_df.empty:
-            print('start check', datetime.now())
+            print('new transactions: ', new_transaction_df.shape[0])
             for _, row in new_transaction_df.iterrows():
                 if row['transaction_type'] == 'IN':
                     if bank.bank_type == 'IN':
                         transaction_type = '+'
                         transaction_color = '🟢'  # Green circle emoji for IN transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-                        
                         # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                         success = False
                         if bank_account:
                             partner_mapping = PartnerMapping.objects.filter(bank=bank_account)
+                            print('partner mapping found: ', len(partner_mapping))
                             if partner_mapping: 
                                 for item in partner_mapping:
+                                    print('test partner: ', item.cid)
                                     result = create_deposit_order(row,item)
+                                    print('result partner', result)
                                     if result:
                                         if result['msg'] == 'transfercode is null':
                                             update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')                                     
@@ -236,7 +230,6 @@ def get_transaction(bank):
                             # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
-            print('end check', datetime.now())
         else:
             pass
             # print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))

@@ -71,7 +71,7 @@ def vietin_transactions(username,password,account_number):
                 break
             
         for item in fetch_transactions:
-            if '-' in item['trxId']:
+            if item['dorC'] == 'C':
                 transaction_type='IN'
             else:
                 transaction_type = 'OUT'
