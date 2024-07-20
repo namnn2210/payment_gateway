@@ -72,9 +72,9 @@ def vietin_transactions(username,password,account_number):
             
         for item in fetch_transactions:
             if '-' in item['trxId']:
-                transaction_type='OUT'
+                transaction_type='IN'
             else:
-                transaction_type = 'IN'
+                transaction_type = 'OUT'
             transaction_date = datetime.strptime(item['processDate'], '%d-%m-%Y %H:%M:%S')
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')  # Ensure timezone aware datetime
             new_formatted_transaction = Transaction(
