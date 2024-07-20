@@ -131,6 +131,7 @@ def get_transaction(bank):
                         # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                         success = False
+                        reported = False
                         if bank_account:
                             partner_mapping = PartnerMapping.objects.filter(bank=bank_account)
                             print('partner mapping found: ', len(partner_mapping))
@@ -160,6 +161,7 @@ def get_transaction(bank):
                                                 f'Reason of not be credited: No transfer code!!!'
                                             )
                                             send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'), os.environ.get('226PAY_BOT'))
+                                            reported = True
                                             break
                                         
                                         if result['prc'] == '1' and result['errcode'] == '00':
@@ -190,7 +192,7 @@ def get_transaction(bank):
                                             continue
                                     else:
                                         continue
-                                if not success:
+                                if not success and not reported:
                                     update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')                                            
                                     alert = (
                                         f'Hi, failed\n'
