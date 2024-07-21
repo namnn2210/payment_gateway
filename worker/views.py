@@ -15,6 +15,7 @@ import json
 import os
 import pytz
 from bank.database import redis_connect
+import time
 
 load_dotenv()
 
@@ -69,6 +70,8 @@ def get_balance(bank):
             print('Update for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
 
             # Get transactions
+            if bank.bank_name.name == 'MB':
+                time.sleep(60)
             
             get_transaction(bank)
             
@@ -116,6 +119,7 @@ def get_transaction(bank):
         final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
         # Detect new transactions
         new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(subset='transaction_number', keep=False)
+        print(new_transaction_df)
         # Add new transactions to current history
         updated_df = pd.concat([old_bank_history_df, new_transaction_df])
         # Update Redis
