@@ -120,9 +120,10 @@ def get_transaction(bank):
         updated_df = pd.concat([old_bank_history_df, new_transaction_df])
         # Update Redis
         redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
-        if not new_transaction_df.empty:
-            print('new transactions: ', new_transaction_df.shape[0])
+        if not new_transaction_df.empty:    
             for _, row in new_transaction_df.iterrows():
+                if not datetime.strptime(row["transaction_date"], '%d/%m/%Y %H:%M:%S').date() >= datetime.now().date():
+                    continue
                 if row['transaction_type'] == 'IN':
                     if bank.bank_type == 'IN':
                         transaction_type = '+'
@@ -217,20 +218,20 @@ def get_transaction(bank):
                         transaction_type = '-'
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-                        if datetime.strptime(row["transaction_date"], '%d/%m/%Y %H:%M:%S').date() >= datetime.now().date():
-                            alert = (
-                                f'PAYOUT DONE - Đã trừ tiền\n'
-                                f'\n'
-                                f'🏦 {bank.account_number} - {bank.account_name}\n'
-                                f'\n'
-                                f'Nội dung: {row["description"]}\n'
-                                f'\n'
-                                f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
-                                f'\n'
-                                f'🕒 {row["transaction_date"]}'
-                            )
-                            # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
-                            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        
+                        alert = (
+                            f'PAYOUT DONE - Đã trừ tiền\n'
+                            f'\n'
+                            f'🏦 {bank.account_number} - {bank.account_name}\n'
+                            f'\n'
+                            f'Nội dung: {row["description"]}\n'
+                            f'\n'
+                            f'💰 {transaction_color} {transaction_type}{formatted_amount} VND\n'
+                            f'\n'
+                            f'🕒 {row["transaction_date"]}'
+                        )
+                        # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
             pass
