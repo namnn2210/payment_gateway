@@ -157,6 +157,7 @@ def webhook(request):
         payeebankname = data.get('data').get('payeebankname')
         payeebankbranch = data.get('data').get('payeebankbranch')
         body_sign = data.get('sign')
+        key = '!QAZ2wsx'
         
         
         sign_string = f"{scode}|{orderno}|{orderid}|{payeebankname}|{payeebankbranch}|{bankcode}|{accountno}|{accountname}|{money}:{key}"
