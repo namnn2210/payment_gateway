@@ -184,9 +184,10 @@ def webhook(request):
         user_timelines = []
         timelines = Timeline.objects.filter(status=True)
         for timeline in timelines:
-            start_at = datetime.strptime(timeline.start_at, '%H:%M').time()
-            end_at = datetime.strptime(timeline.end_at, '%H:%M').time()
-            if start_at <= current_time and current_time <= end_at:
+            start_at = timeline.start_at  # Assuming these are already datetime.time objects
+            end_at = timeline.end_at  # Assuming these are already datetime.time objects
+            
+            if start_at <= current_time <= end_at:
                 user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True))
                 
         
