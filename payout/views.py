@@ -192,7 +192,7 @@ def webhook(request):
                 
         
         payout = Payout.objects.create(
-                user=random.choice(user_timelines),
+                user=random.choice(user_timelines).user,
                 scode=scode,
                 orderno=orderno,
                 orderid=orderid,
