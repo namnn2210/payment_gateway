@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from bank.utils import send_telegram_message
 from bank.views import update_amount_by_date
 from bank.models import Bank
@@ -214,7 +214,7 @@ def webhook(request):
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
         send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-        return 'success'
+        return HttpResponse('success')
 
 def find_bankcode(bank_name):
     pass
