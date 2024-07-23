@@ -215,7 +215,7 @@ def webhook(request):
         )
         send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Payout added successfully'})
-    return JsonResponse({'status': 405, 'message': 'Method is not allowed'})
+    return 'success'
 
 def find_bankcode(bank_name):
     pass
