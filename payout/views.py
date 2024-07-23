@@ -16,7 +16,6 @@ from bank.models import Bank
 from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
-from partner.views import update_payout_status_request
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField
 from .tasks import update_payout_background
 import pytz
