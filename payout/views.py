@@ -144,75 +144,76 @@ def webhook(request):
     #     },
     #     "sign": "d38737b767c04f0ca72138515ee7bfee"
     # }
-    decoded_str = request.body.decode('utf-8')
-    data = json.loads(decoded_str)
-    scode = data.get('scode')
-    orderno = data.get('orderno')
-    orderid = data.get('orderid')
-    money = data.get('data').get('amount')
-    accountno = data.get('data').get('payeeaccountno')
-    accountname = data.get('data').get('payeeaccountname')
-    bankcode = data.get('data').get('payeebankbranchcode')
-    payeebankname = data.get('data').get('payeebankname')
-    payeebankbranch = data.get('data').get('payeebankbranch')
-    body_sign = data.get('sign')
-    
-    
-    sign_string = f"{scode}|{orderno}|{orderid}|{payeebankname}|{payeebankbranch}|{bankcode}|{accountno}|{accountname}|{money}:{key}"
-    sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
-    
-    if sign != body_sign:
-        return JsonResponse({'status': 403, 'message': 'Forbidden'})
-    
-    try:
-        float(money)
-    except Exception as ex:
-        return JsonResponse({'status': 504, 'message': 'Invalid amount'})
-    
-    if '.00' not in money:
-        return JsonResponse({'status': 503, 'message': 'Amount must ends with .00'})
-    
-    existed_payout = Payout.objects.filter(
-    orderid=orderid).first()
-    if existed_payout:
-        return JsonResponse({'status': 505, 'message': 'Payout existed'})
-    
-    # Gán payout ngẫu nhiên cho user theo ca làm
-    current_time = datetime.now().time()
-    user_timelines = []
-    timelines = Timeline.objects.filter(status=True)
-    for timeline in timelines:
-        start_at = datetime.strptime(timeline.start_at, '%H:%M').time()
-        end_at = datetime.strptime(timeline.end_at, '%H:%M').time()
-        if start_at <= current_time and current_time <= end_at:
-            user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True))
-             
-    
-    payout = Payout.objects.create(
-            user=random.choice(user_timelines),
-            scode=scode,
-            orderno=orderno,
-            orderid=orderid,
-            money=int(float(money)),
-            accountno=accountno,
-            accountname=accountname,
-            bankname='',
-            bankcode=bankcode,
-            updated_by=None,
-            is_auto=True,
-            is_cancel=False,
-            is_report=False,
-            created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+    if request.method == 'POST':
+        decoded_str = request.body.decode('utf-8')
+        data = json.loads(decoded_str)
+        scode = data.get('scode')
+        orderno = data.get('orderno')
+        orderid = data.get('orderid')
+        money = data.get('data').get('amount')
+        accountno = data.get('data').get('payeeaccountno')
+        accountname = data.get('data').get('payeeaccountname')
+        bankcode = data.get('data').get('payeebankbranchcode')
+        payeebankname = data.get('data').get('payeebankname')
+        payeebankbranch = data.get('data').get('payeebankbranch')
+        body_sign = data.get('sign')
+        
+        
+        sign_string = f"{scode}|{orderno}|{orderid}|{payeebankname}|{payeebankbranch}|{bankcode}|{accountno}|{accountname}|{money}:{key}"
+        sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
+        
+        if sign != body_sign:
+            return JsonResponse({'status': 403, 'message': 'Forbidden'})
+        
+        try:
+            float(money)
+        except Exception as ex:
+            return JsonResponse({'status': 504, 'message': 'Invalid amount'})
+        
+        if '.00' not in money:
+            return JsonResponse({'status': 503, 'message': 'Amount must ends with .00'})
+        
+        existed_payout = Payout.objects.filter(
+        orderid=orderid).first()
+        if existed_payout:
+            return JsonResponse({'status': 505, 'message': 'Payout existed'})
+        
+        # Gán payout ngẫu nhiên cho user theo ca làm
+        current_time = datetime.now().time()
+        user_timelines = []
+        timelines = Timeline.objects.filter(status=True)
+        for timeline in timelines:
+            start_at = datetime.strptime(timeline.start_at, '%H:%M').time()
+            end_at = datetime.strptime(timeline.end_at, '%H:%M').time()
+            if start_at <= current_time and current_time <= end_at:
+                user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True))
+                
+        
+        payout = Payout.objects.create(
+                user=random.choice(user_timelines),
+                scode=scode,
+                orderno=orderno,
+                orderid=orderid,
+                money=int(float(money)),
+                accountno=accountno,
+                accountname=accountname,
+                bankname='',
+                bankcode=bankcode,
+                updated_by=None,
+                is_auto=True,
+                is_cancel=False,
+                is_report=False,
+                created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+            )
+        payout.save()
+        send_notification('New payout added. Please check and process')
+        alert = (
+            f'🔴 - THÔNG BÁO PAYOUT\n'
+            f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
-    payout.save()
-    send_notification('New payout added. Please check and process')
-    alert = (
-        f'🔴 - THÔNG BÁO PAYOUT\n'
-        f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
-    )
-    send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-    return JsonResponse({'status': 200, 'message': 'Payout added successfully'})
-
+        send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+        return JsonResponse({'status': 200, 'message': 'Payout added successfully'})
+    return JsonResponse({'status': 405, 'message': 'Method is not allowed'})
 
 def find_bankcode(bank_name):
     pass
