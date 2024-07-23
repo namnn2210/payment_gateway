@@ -52,12 +52,36 @@ def create_deposit_order(transaction,partner_mapping):
         
     except Exception as e:
             return None
-        
-def update_payout_status_request(payout, status):
-    try:
-        pass
-    except Exception as e:
-        return False
     
 
+
+def update_status_request(payout, status='S'):
+    key = '!QAZ2wsx'
+    sign_string = f"{payout.scode}|{payout.orderno}:{key}"
+    # Generate MD5 signature
+    sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
     
+    request_body = {
+        "scode": payout.scode,
+        "data": [
+            {
+                "orderno": payout.orderno,
+                "amount": f'{payout.amount}.00',
+                "payerbankname": payout.bankcode,
+                "payeraccountno": "226662",
+                "payeraccountname": "226 pay",
+                "status": status
+            }
+        ],
+        "sign": sign
+    }
+    
+    response = requests.post(os.environ.get('DEPOSIT_URL'), body=request_body)
+    if response.status_code == 200:
+        response_data = response.json()
+        if response_data['msg'] == 'SUCCESS':
+            update_success_list = response_data.get('updatescuuesslist')
+            for item in update_success_list:
+                if item == payout.orderno:
+                    return True
+    return False

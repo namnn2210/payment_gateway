@@ -4,6 +4,7 @@ from bank.utils import send_telegram_message
 from django.shortcuts import get_object_or_404
 from bank.views import update_amount_by_date
 from bank.models import Bank
+from partner.views import update_status_request
 from django.contrib.auth.models import User
 from payout.models import Payout
 import pytz
@@ -24,6 +25,7 @@ def update_payout_background(update_body):
     payout.process_bank = bank
     formatted_amount = '{:,.2f}'.format(payout.money)
     if  update_type == 'done':
+        # update_status_request(payout=payout, status='S')
         alert = (
             f'🟢🟢🟢Success🟢🟢🟢\n'
             f'\n'
@@ -71,7 +73,7 @@ def update_payout_background(update_body):
     elif update_type == 'cancel':
         payout.is_cancel = True
         payout.status = None
-        # update_fail_response = update_payout_status_request(payout, 'F')
+        # update_status_request(payout=payout, status='F')
         # if update_fail_response:
         alert = (
             f'🔴🔴🔴Failed🔴🔴🔴\n'
@@ -95,7 +97,4 @@ def update_payout_background(update_body):
         send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
         payout.save()
 
-@shared_task
-def process_payout_webhook(data):
-    
-    pass
+
