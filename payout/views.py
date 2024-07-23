@@ -104,7 +104,7 @@ class AddPayoutView(View):
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
         send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-        return 'success'
+        return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
 @csrf_exempt
