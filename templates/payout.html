@@ -14,30 +14,40 @@
             <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Payout" %}</button>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-6 col-sm-12 mt-4">
-            <input type="text" id="customSearchBox" class="form-control" placeholder="{% trans "Search" %}">
+    <form method="get" action="{% url 'list_payout' %}">
+        <div class="row">
+            <div class="col-md-6 col-sm-12 mt-4">
+                <input type="text" id="customSearchBox" name="search" class="form-control" placeholder="{% trans "Search" %}" value="{{ request.GET.search|default_if_none:'' }}">
+            </div>
+            <div class="col-md-6 col-sm-12 mt-4">
+                <select id="statusFilter" name="status" class="form-select">
+                    <option value="All" {% if request.GET.status == "All" %}selected{% endif %}>{% trans "All" %}</option>
+                    <option value="Pending" {% if request.GET.status == "Pending" or request.GET.status is None %}selected{% endif %}>{% trans "Pending" %}</option>
+                    <option value="Done" {% if request.GET.status == "Done" %}selected{% endif %}>{% trans "Done" %}</option>
+                    <option value="Canceled" {% if request.GET.status == "Canceled" %}selected{% endif %}>{% trans "Canceled" %}</option>
+                    <option value="Reported" {% if request.GET.status == "Reported" %}selected{% endif %}>{% trans "Reported" %}</option>
+                </select>
+            </div>
         </div>
-        <div class="col-md-6 col-sm-12 mt-4">
-            <select id="statusFilter" class="form-select">
-                <option value="">{% trans "All" %}</option>
-                <option value="Pending">{% trans "Pending" %}</option>
-                <option value="Done">{% trans "Done" %}</option>
-                <option value="Canceled">{% trans "Canceled" %}</option>
-                <option value="Reported">{% trans "Reported" %}</option>
-            </select>
+        <div class="row mt-4">
+            <div class="col-md-6 col-sm-12">
+                <label for="start_datetime">{% trans "Start Date" %}</label>
+                <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control" value="{{ request.GET.start_datetime|default_if_none:''|date:'Y-m-d\\TH:i' }}">
+            </div>
+            <div class="col-md-6 col-sm-12">
+                <label for="end_datetime">{% trans "End Date" %}</label>
+                <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime|default_if_none:''|date:'Y-m-d\\TH:i' }}">
+            </div>
         </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-6 col-sm-12">
-            <label for="start_datetime">{% trans "Start Date" %}</label>
-            <input type="datetime-local" id="start_datetime" class="form-control">
+        <div class="row mt-4">
+            <div class="col-md-12 col-sm-12 text-right">
+                <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+            </div>
         </div>
-        <div class="col-md-6 col-sm-12">
-            <label for="end_datetime">{% trans "End Date" %}</label>
-            <input type="datetime-local" id="end_datetime" class="form-control">
-        </div>
-    </div>
+    </form>
+    
+    
+    
     <div class="row mt-4">
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body text-center">
@@ -61,82 +71,106 @@
                             <tr class="text-center" style="font-size: 12px">
                                 <th scope="col">{% trans "CID" %}</th>
                                 <th scope="col">{% trans "Order ID" %}</th>
-                                <th scope="col">{% trans "Amount" %}</th>
-                                <th scope="col">{% trans "Account Number" %}</th>
-                                <th scope="col">{% trans "Account Name" %}</th>
-                                <th scope="col">{% trans "Bank Code" %}</th>
-                                <th scope="col">{% trans "Created At" %}</th>
-                                <th scope="col">{% trans "Created By" %}</th>
-                                <th scope="col">{% trans "Updated At" %}</th>
-                                <th scope="col">{% trans "Updated By" %}</th>
-                                <th scope="col">{% trans "Status" %}</th>
-                                <th scope="col">{% trans "Action" %}</th>
-                                <th scope="col">{% trans "Report" %}</th>
-                                <th scope="col">{% trans "Cancel" %}</th>
-                                <th scope="col">{% trans "Auto/Manual" %}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in list_payout %}
-                            <tr class="text-center" style="font-size: 11px;">
+                            <tr class="text-center" style="font-size: 12px;" data-toggle="collapse" data-target="#collapse{{ item.id }}">
                                 <th>{{ item.scode }}</th>
                                 <td>{{ item.orderid }}</td>
-                                <td>{{ item.money|floatformat:2|intcomma }} đ</td>
-                                <td>{{ item.accountno }}</td>
-                                <td>{{ item.accountname }}</td>
-                                <td>{{ item.bankcode }}</td>
-                                <td>{{ item.created_at|date:"d/m/Y H:i:s" }}</td>
-                                <td class="fw-bold">{{ item.user }}</td>
-                                {% if item.updated_by %}
-                                <td>{{ item.updated_at|date:"d/m/Y H:i:s" }}</td>
-                                {% else %}
-                                <td></td>
-                                {% endif %}
-                                {% if item.updated_by %}
-                                <td class="fw-bold">{{ item.updated_by }}</td>
-                                {% else %}
-                                <td></td>
-                                {% endif %}
-                                <td>
-                                    {% if item.status %}
-                                    <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
-                                    {% elif item.status == False %}
-                                    <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
-                                    {% elif item.status is None %}
-                                    <span></span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if not item.status and not item.is_cancel %}
-                                    <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
-                                        data-bs-target="#payModal" data-item-id="{{ item.id }}"
-                                        data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
-                                        data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
-                                        data-is-report="{{item.is_report}}"
-                                        data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if item.is_report %}
-                                    <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if item.is_cancel %}
-                                    <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if item.is_auto %}
-                                    <span class="btn btn-sm bg-success">{% trans "Auto" %}</span>
-                                    {% else %}
-                                    <span class="btn btn-sm bg-warning">{% trans "Manual" %}</span>
-                                    {% endif %}
+                            </tr>
+                            <tr class="collapse" id="collapse{{ item.id }}">
+                                <td colspan="2">
+                                    <div class="card card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p><strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma }} đ</p>
+                                                <p><strong>{% trans "Account Number" %}:</strong> {{ item.accountno }}</p>
+                                                <p><strong>{% trans "Account Name" %}:</strong> {{ item.accountname }}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p><strong>{% trans "Bank Code" %}:</strong> {{ item.bankcode }}</p>
+                                                <p><strong>{% trans "Created At" %}:</strong> {{ item.created_at|date:"d/m/Y H:i:s" }}</p>
+                                                <p><strong>{% trans "Created By" %}:</strong> {{ item.user }}</p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p><strong>{% trans "Updated At" %}:</strong> {{ item.updated_at }}</p>
+                                                <p><strong>{% trans "Updated By" %}:</strong> {{ item.updated_by }}</p>
+                                                <p><strong>{% trans "Status" %}:</strong>
+                                                    {% if item.status %}
+                                                    <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
+                                                    {% elif item.status == False %}
+                                                    <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
+                                                    {% elif item.status is None %}
+                                                    <span></span>
+                                                    {% endif %}
+                                                </p>
+                                                <p><strong>{% trans "Report" %}:</strong>
+                                                    {% if item.is_report %}
+                                                    <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
+                                                    {% endif %}
+                                                </p>
+                                                <p><strong>{% trans "Cancel" %}:</strong>
+                                                    {% if item.is_cancel %}
+                                                    <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        {% if not item.status and not item.is_cancel %}
+                                        <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
+                                            data-bs-target="#payModal" data-item-id="{{ item.id }}"
+                                            data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
+                                            data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
+                                            data-is-report="{{item.is_report}}"
+                                            data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
+                                        {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
-                        </tbody>                      
+                        </tbody>    
                     </table>
+                    <div class="row mt-4">
+                        <div class="col-md-12 col-sm-12">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination justify-content-center">
+                                    {% if list_payout.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="First">
+                                                <span aria-hidden="true">&laquo;&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ list_payout.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    {% for num in list_payout.paginator.page_range %}
+                                        {% if list_payout.number == num %}
+                                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                        {% elif num > list_payout.number|add:-3 and num < list_payout.number|add:3 %}
+                                            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}">{{ num }}</a></li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    {% if list_payout.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ list_payout.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ list_payout.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Last">
+                                                <span aria-hidden="true">&raquo;&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                                      
                 </div>
             </div>
         </div><!-- End Card with an image on left -->
@@ -235,21 +269,38 @@
         </div>
     </div>
 </div>
-<script type="application/json" id="items-data">
-    {{ items_json|safe }}
-</script>
 {% endblock %}
 {% block script %}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/jquery.dataTables.css">
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
 <!-- Toastr CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <!-- Toastr JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
+    function formatDateToYYYYMMDD(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // $('#statusFilter').val('Pending');
+    // Get the current date and time
+    const currentDate = new Date();
+
+    
+    const today = formatDateToYYYYMMDD(currentDate);
+    const startDateTime = `${today}T00:00`;
+    const endDateTime = `${today}T23:59`;
+
+    console.log(startDateTime);
+    console.log(endDateTime);
+
+    $('#start_datetime').val(startDateTime); // Set start of the day
+    $('#end_datetime').val(endDateTime); // Set end of the day
+
     $('#addPayoutForm').on('submit', function (e) {
         e.preventDefault();
         var formData = {
@@ -446,183 +497,5 @@
             });
         });
     });
-</script>
-<script>
-    $(document).ready(function () {
-    var table = $('#payoutTable').DataTable({
-        "pageLength": 10,  // Set default page length
-        "lengthMenu": [5, 10, 20, 50],  // Set options for page length menu
-        "ordering": false,
-        "dom": 'rtip',
-        "footerCallback": function (row, data, start, end, display) {
-            var api = this.api();
-
-            // Function to remove the currency symbol and thousand separators
-            var intVal = function (i) {
-                if (typeof i === 'string') {
-                    // Remove non-numeric characters.
-                    let cleanedString = i.replace(/[^\d]/g, '');
-                    // Remove any trailing zeroes from the cleaned string.
-                    if (cleanedString.endsWith('00')) {
-                        cleanedString = cleanedString.slice(0, -2); // Remove the last extra zero
-                    }
-                    // Parse the cleaned string to an integer.
-                    return parseInt(cleanedString, 10);
-                } else if (typeof i === 'number') {
-                    return i;
-                } else {
-                    return 0;
-                }
-            };
-
-            // Total over all pages with current filter
-            var total = api
-                .column(2, { search: 'applied' })
-                .data()
-                .reduce(function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0);
-
-            // Total over this page
-            var pageTotal = api
-                .column(2, { page: 'current' })
-                .data()
-                .reduce(function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0);
-
-            // Update the total number of results
-            $('#total-results').html(
-                display.length.toLocaleString()
-            );
-
-            // Update footer
-            $('#page-total').html(
-                pageTotal.toLocaleString() + ' đ'
-            );
-
-            // Update the grand total in the footer
-            $('#grand-total').html(
-                total.toLocaleString() + ' đ'
-            );
-        }
-    });
-
-    // Set the default values for status filter and datetime pickers
-    $('#statusFilter').val('Pending');
-    // Get the current date and time
-    const currentDate = new Date();
-
-    
-    const today = formatDateToYYYYMMDD(currentDate);
-    const startDateTime = `${today}T00:00`;
-    const endDateTime = `${today}T23:59`;
-
-    console.log(startDateTime);
-    console.log(endDateTime);
-
-    $('#start_datetime').val(startDateTime); // Set start of the day
-    $('#end_datetime').val(endDateTime); // Set end of the day
-
-    const userLang = "{{ request.LANGUAGE_CODE }}";
-
-    // Custom filtering function which will filter data in the DataTable
-    $.fn.dataTable.ext.search.push(
-        function (settings, data, dataIndex) {
-            var status = $('#statusFilter').val();
-            var statusColumn = data[10]; // Index of the status column
-            var cancelColumn = data[13];
-            var reportColumn = data[12];
-
-            // Filter by start and end datetime
-            var min = $('#start_datetime').val();
-            var max = $('#end_datetime').val();
-            var createdAt = convertStringToDate(data[6]); // Index of the created_at column
-
-            if (min) {
-                min = new Date(min);
-            }
-            if (max) {
-                max = new Date(max);
-            }
-
-            if (createdAt < min || createdAt > max) {
-                return false;
-            }
-
-            // Filter by status
-            if (status) {
-                if (status === 'Canceled' && (cancelColumn === 'Đã hủy' || cancelColumn === 'Canceled')) {
-                    return true;
-                }
-                if (status === 'Reported' && (reportColumn === 'Đã báo cáo' || reportColumn === 'Reported')) {
-                    return true;
-                }
-                if (status === 'Pending' && (statusColumn === 'Chờ xử lí' || statusColumn === 'Pending')) {
-                    return true;
-                }
-                if (status === 'Done' && (statusColumn === 'Hoàn thành' || statusColumn === 'Done')) {
-                    return true;
-                }
-                if (status === '') {
-                    return true;
-                }
-                return false;
-            }
-
-            return true;
-        }
-    );
-
-    // Trigger the draw event to apply the initial filter
-    table.draw();
-
-    $('#customSearchBox').on('keyup input change', function () {
-            table.search(this.value).draw();
-        });
-
-    // Event listener to the status filter dropdown to redraw on change
-    $('#statusFilter').on('change', function () {
-        table.draw();
-    });
-
-    // Event listeners for the datetime range inputs to redraw on change
-    $('#start_datetime, #end_datetime').on('change', function () {
-        table.draw();
-    });
-});
-
-function convertStringToDate(dateTimeString) {
-    // Split the input string by space to separate date and time
-    const [datePart, timePart] = dateTimeString.split(' ');
-
-    // Split the date part by '/' to get day, month, and year
-    const [day, month, year] = datePart.split('/').map(Number);
-
-    // Split the time part by ':' to get hours, minutes, and seconds
-    const [hours, minutes, seconds] = timePart.split(':').map(Number);
-
-    // Create a Date object (months are zero-indexed in JavaScript Date object)
-    const date = new Date(year, month - 1, day, hours, minutes, seconds);
-
-    return date;
-}
-function formatDateToYYYYMMDD(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-}
-function formatDateToYYYYMMDDTHHMM(date) {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-</script>
-
-
 </script>
 {% endblock %}

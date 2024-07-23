@@ -26,23 +26,72 @@ load_dotenv()
 def list_settle_payout(request):
     
     bank_data = json.load(open('bank.json', encoding='utf-8'))
-    
-    list_payout = SettlePayout.objects.annotate(
-            status_priority=Case(
-                When(status=False, then=Value(0)),
-                default=Value(1),
-                output_field=IntegerField()
-            )
-        ).order_by('status_priority', '-created_at')
-    # paginator = Paginator(list_payout, 10)  # Show 10 items per page
-
-    # page_number = request.GET.get('page')
-    # page_obj = paginator.get_page(page_number)
-    items = [model_to_dict(item) for item in list_payout]
     banks = Bank.objects.filter(status=True)
+    list_payout = SettlePayout.objects.all()
+    status = None
+    
+    # Get search parameters
+    search_query = request.GET.get('search', '')
+    status_filter = request.GET.get('status', 'Pending')
+
+    if search_query:
+        list_payout = list_payout.filter(
+            Q(scode__contains=search_query) |
+            Q(orderno__contains=search_query) |
+            Q(orderid__contains=search_query) |
+            Q(money__contains=search_query) |
+            Q(accountno__contains=search_query) |
+            Q(accountname__contains=search_query) |
+            Q(bankcode__contains=search_query) |
+            Q(process_bank__name__contains=search_query)
+        )
+
+    if status_filter == 'Pending':
+        status = False
+    elif status_filter == 'Done':
+        status = True
+    
+    if status is not None:
+        list_payout = list_payout.filter(status=status)
+    elif status_filter == 'Canceled':
+        list_payout = list_payout.filter(is_cancel=True)
+    elif status_filter == 'Reported':
+        list_payout = list_payout.filter(is_report=True)
+
+    today = datetime.now().date().strftime('%d/%m/%Y')
+
+    start_datetime_str = request.GET.get('start_datetime', '')
+    end_datetime_str = request.GET.get('end_datetime', '')
+
+    if start_datetime_str:
+        start_datetime = datetime.strptime(start_datetime_str, '%Y-%m-%dT%H:%M')
+    else:
+        start_datetime = datetime.strptime(f'{today} 00:00', '%d/%m/%Y %H:%M')
+
+    if end_datetime_str:
+        end_datetime = datetime.strptime(end_datetime_str, '%Y-%m-%dT%H:%M')
+    else:
+        end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
+
+    list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
+
+    list_payout = list_payout.annotate(
+        status_priority=Case(
+            When(status=False, then=Value(0)),
+            default=Value(1),
+            output_field=IntegerField()
+        )
+    ).order_by('status_priority', '-created_at')
+
+    paginator = Paginator(list_payout, 10)  # Show 10 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     return render(request, 'settle_payout.html', {
-        'list_payout': list_payout, 'items_json':items, 'bank_data':bank_data, 'banks':banks})
+        'list_payout': page_obj,
+        'bank_data': bank_data,
+        'banks': banks
+    })
 
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
