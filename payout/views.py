@@ -17,6 +17,7 @@ from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField, Sum
+from partner.models import PartnerMapping
 from .tasks import update_payout_background
 import pytz
 import os
@@ -212,7 +213,10 @@ def webhook(request):
         payeebankname = data.get('data').get('payeebankname')
         payeebankbranch = data.get('data').get('payeebankbranch')
         body_sign = data.get('sign')
-        key = '!QAZ2wsx'
+        
+        partner_mapping = PartnerMapping.objects.filter(scode=scode).first()
+        
+        key = partner_mapping.key
         
         
         sign_string = f"{scode}|{orderno}|{orderid}|{payeebankname}|{payeebankbranch}|{bankcode}|{accountno}|{accountname}|{money}:{key}"
