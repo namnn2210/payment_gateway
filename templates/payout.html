@@ -56,7 +56,7 @@
                         <strong>{% trans "Total Results" %}:</strong> <strong id="total-results">{{total_results}}</strong>
                     </div>
                     <div class="col-md-6 col-sm-12">
-                        <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|intcomma}} VND</strong>
+                        <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|floatformat:2|intcomma}} VND</strong>
                     </div>
                 </div>
             </div>
