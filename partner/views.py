@@ -62,9 +62,6 @@ def update_status_request(payout, status='S'):
     partner_mapping = PartnerMapping.objects.filter(cid=cid).first()
     
     key = partner_mapping.key
-    print("======================")
-    print(payout.scode)
-    print(key)
     sign_string = f"{payout.scode}|{payout.orderno}:{key}"
     # Generate MD5 signature
     sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
@@ -76,7 +73,7 @@ def update_status_request(payout, status='S'):
             {
                 "orderno": payout.orderno,
                 "amount": f'{payout.money}.00',
-                "payerbankname": payout.bankcode,
+                "payerbankname": payout.partner_bankcode,
                 "payeraccountno": "226662",
                 "payeraccountname": "226 pay",
                 "status": status

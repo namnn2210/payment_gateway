@@ -256,9 +256,9 @@ def webhook(request):
             if start_at <= current_time <= end_at:
                 user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True))
                 
-        # formatted_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
-        # if formatted_bankcode:
-        #     bankcode=formatted_bankcode
+        formatted_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
+        if not formatted_bankcode:
+            formatted_bankcode = bankcode
         
         
         payout = Payout.objects.create(
@@ -270,7 +270,8 @@ def webhook(request):
                 accountno=accountno,
                 accountname=accountname,
                 bankname='',
-                bankcode=bankcode,
+                bankcode=formatted_bankcode,
+                partner_bankcode=bankcode,
                 updated_by=None,
                 is_auto=True,
                 is_cancel=False,
