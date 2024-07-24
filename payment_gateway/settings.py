@@ -37,7 +37,6 @@ ALLOWED_HOSTS = ['gateway.226pay.com', 'www.gateway.226pay.com', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    # 'daphne',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -90,7 +89,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'payment_gateway.wsgi.application'
-# ASGI_APPLICATION = "payment_gateway.asgi.application"
 
 CHANNEL_LAYERS = {
     "default": {
@@ -161,8 +159,8 @@ TIME_ZONE = 'Asia/Bangkok'
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -187,8 +185,6 @@ SESSION_COOKIE_AGE = 21600  # 6 hours
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
-# Uncomment if using WhiteNoise for static file management
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CELERY_BROKER_URL = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/0"
 CELERY_RESULT_BACKEND = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/0"
