@@ -68,10 +68,8 @@ def update_status_request(payout, status='S'):
     sign_string = f"{payout.scode}|{payout.orderno}:{key}"
     # Generate MD5 signature
     sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
-    print("======================")
-    
-    print(payout.scode, payout.orderno, payout.money, status)
-    print('aaaaa')
+
+
     request_body = {
         "scode": payout.scode,
         "data": [
@@ -86,13 +84,7 @@ def update_status_request(payout, status='S'):
         ],
         "sign": sign
     }
-    print("++++++++++++++")
-    
-    print(request_body)
-    print(sign)
-    print(os.environ.get('PAYOUT_URL'))
-    print(os.environ.get('PAYOUT_URL_PROD'))
-    response = requests.post(os.environ.get('PAYOUT_URL_PROD'), json=request_body)
+    response = requests.post('https://gdly.jzc899.com/service/withdraw_confirm.aspx', json=request_body)
     
     print(response.text)
     if response.status_code == 200:
