@@ -20,12 +20,13 @@ def update_payout_background(update_body):
     request_user = User.objects.filter(username=update_body['request_user_username']).first()
     payout.updated_by = request_user
     payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
-    payout.status = True
+    # payout.status = True
     bank = Bank.objects.filter(id=bank_id).first()
     payout.process_bank = bank
     formatted_amount = '{:,.2f}'.format(payout.money)
     if  update_type == 'done':
         if update_status_request(payout=payout, status='S'):
+            payout.status = True
             alert = (
                 f'🟢🟢🟢Success🟢🟢🟢\n'
                 f'\n'

@@ -91,6 +91,8 @@ def update_status_request(payout, status='S'):
         response_data = response.json()
         if response_data['msg'] == 'SUCCESS':
             update_success_list = response_data.get('updatescuuesslist')
+            print(update_success_list)
+            print(payout.orderno)
             for item in update_success_list:
                 if item == payout.orderno:
                     return True
