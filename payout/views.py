@@ -17,7 +17,7 @@ from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField, Sum
-from partner.models import PartnerMapping
+from partner.models import PartnerMapping, CID
 from .tasks import update_payout_background
 import pytz
 import os
@@ -214,7 +214,8 @@ def webhook(request):
         payeebankbranch = data.get('data').get('payeebankbranch')
         body_sign = data.get('sign')
         
-        partner_mapping = PartnerMapping.objects.filter(cid=scode).first()
+        cid = CID.objects.filter(name=scode).first()
+        partner_mapping = PartnerMapping.objects.filter(cid=cid).first()
         
         key = partner_mapping.key
         
