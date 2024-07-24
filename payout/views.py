@@ -214,7 +214,7 @@ def webhook(request):
         payeebankbranch = data.get('data').get('payeebankbranch')
         body_sign = data.get('sign')
         
-        partner_mapping = PartnerMapping.objects.filter(scode=scode).first()
+        partner_mapping = PartnerMapping.objects.filter(cid=scode).first()
         
         key = partner_mapping.key
         
