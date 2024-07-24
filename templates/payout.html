@@ -84,15 +84,16 @@
                                                 <p><strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma }} đ</p>
                                                 <p><strong>{% trans "Account Number" %}:</strong> {{ item.accountno }}</p>
                                                 <p><strong>{% trans "Account Name" %}:</strong> {{ item.accountname }}</p>
+                                                <p><strong>{% trans "Bank Code" %}:</strong> {{ item.bankcode }}</p>
                                             </div>
                                             <div class="col-md-4">
-                                                <p><strong>{% trans "Bank Code" %}:</strong> {{ item.bankcode }}</p>
                                                 <p><strong>{% trans "Created At" %}:</strong> {{ item.created_at|date:"d/m/Y H:i:s" }}</p>
                                                 <p><strong>{% trans "Created By" %}:</strong> {{ item.user }}</p>
-                                            </div>
-                                            <div class="col-md-4">
                                                 <p><strong>{% trans "Updated At" %}:</strong> {{ item.updated_at }}</p>
                                                 <p><strong>{% trans "Updated By" %}:</strong> {{ item.updated_by }}</p>
+                                                <p><strong>{% trans "Process Bank" %}:</strong> {{ item.process_bank }}</p>
+                                            </div>
+                                            <div class="col-md-4">
                                                 <p><strong>{% trans "Status" %}:</strong>
                                                     {% if item.status %}
                                                     <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
@@ -112,16 +113,19 @@
                                                     <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
                                                     {% endif %}
                                                 </p>
+                                                <p><strong>{% trans "Action" %}:</strong>
+                                                    {% if not item.status and not item.is_cancel %}
+                                                        <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
+                                                            data-bs-target="#payModal" data-item-id="{{ item.id }}"
+                                                            data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
+                                                            data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
+                                                            data-is-report="{{item.is_report}}"
+                                                            data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
+                                                    {% endif %}
+                                                </p>
                                             </div>
                                         </div>
-                                        {% if not item.status and not item.is_cancel %}
-                                        <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
-                                            data-bs-target="#payModal" data-item-id="{{ item.id }}"
-                                            data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
-                                            data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
-                                            data-is-report="{{item.is_report}}"
-                                            data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
-                                        {% endif %}
+                                        
                                     </div>
                                 </td>
                             </tr>
