@@ -88,7 +88,7 @@ def list_payout(request):
     ).order_by('status_priority', '-created_at')
     
     total_results = len(list_payout)
-    total_amount = list_payout.aaggregate(Sum('money'))
+    total_amount = list_payout.aaggregate(Sum('money'))['money']
 
     paginator = Paginator(list_payout, 10)  # Show 10 items per page
     page_number = request.GET.get('page')
