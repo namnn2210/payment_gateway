@@ -63,7 +63,6 @@ def list_payout(request):
         status = False
     elif status_filter == 'Done':
         status = True
-    print(status_filter)
     
     if status is not None:
         list_payout = list_payout.filter(status=status)
@@ -87,7 +86,6 @@ def list_payout(request):
     else:
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
         
-    print(start_datetime, end_datetime)
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
 
