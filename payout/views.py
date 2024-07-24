@@ -16,7 +16,7 @@ from bank.models import Bank
 from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
-from django.db.models import Q, BooleanField, Case, Value, When, IntegerField
+from django.db.models import Q, BooleanField, Case, Value, When, IntegerField, Sum
 from .tasks import update_payout_background
 import pytz
 import os
@@ -86,6 +86,9 @@ def list_payout(request):
             output_field=IntegerField()
         )
     ).order_by('status_priority', '-created_at')
+    
+    total_results = len(list_payout)
+    total_amount = list_payout.aaggregate(Sum('money'))
 
     paginator = Paginator(list_payout, 10)  # Show 10 items per page
     page_number = request.GET.get('page')
@@ -94,7 +97,9 @@ def list_payout(request):
     return render(request, 'payout.html', {
         'list_payout': page_obj,
         'bank_data': bank_data,
-        'banks': banks
+        'banks': banks,
+        'total_results':total_results,
+        'total_amount':total_amount
     })
 
 def search_payout(request):
