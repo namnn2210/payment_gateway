@@ -27,6 +27,12 @@ import requests
 import hashlib
 
 load_dotenv()
+
+BANK_CODE_MAPPING = {
+    'VTB':'ICB',
+    'SCM':'SCB'
+}
+
 # Create your views here.
 @login_required(login_url='user_login')
 def list_payout(request):
@@ -250,6 +256,10 @@ def webhook(request):
             if start_at <= current_time <= end_at:
                 user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True))
                 
+        formatted_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
+        if formatted_bankcode:
+            bankcode=formatted_bankcode
+        
         
         payout = Payout.objects.create(
                 user=random.choice(user_timelines).user,
