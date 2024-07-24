@@ -32,11 +32,11 @@
         <div class="row mt-4">
             <div class="col-md-6 col-sm-12">
                 <label for="start_datetime">{% trans "Start Date" %}</label>
-                <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control" value="{{ request.GET.start_datetime|default_if_none:''|date:'Y-m-d\\TH:i' }}">
+                <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control" value="{{ request.GET.start_datetime|default_if_none:'' }}">
             </div>
             <div class="col-md-6 col-sm-12">
                 <label for="end_datetime">{% trans "End Date" %}</label>
-                <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime|default_if_none:''|date:'Y-m-d\\TH:i' }}">
+                <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime|default_if_none:'' }}">
             </div>
         </div>
         <div class="row mt-4">
@@ -66,15 +66,15 @@
                     <table class="table table-sm display" id="payoutTable">
                         <thead>
                             <tr class="text-center" style="font-size: 12px">
-                                <th scope="col">{% trans "CID" %}</th>
                                 <th scope="col">{% trans "Order ID" %}</th>
+                                <th scope="col">{% trans "CID" %}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in list_payout %}
                             <tr class="text-center" style="font-size: 12px;" data-toggle="collapse" data-target="#collapse{{ item.id }}">
-                                <th>{{ item.scode }}</th>
                                 <td>{{ item.orderid }}</td>
+                                <th>CID1630{{ item.scode }}</th>
                             </tr>
                             <tr class="collapse" id="collapse{{ item.id }}">
                                 <td colspan="2">
@@ -283,20 +283,33 @@
         return `${year}-${month}-${day}`;
     }
 
-    // $('#statusFilter').val('Pending');
-    // Get the current date and time
-    const currentDate = new Date();
+    function setDateTimeInputs() {
+        const startInput = document.getElementById('start_datetime');
+        const endInput = document.getElementById('end_datetime');
 
-    
-    const today = formatDateToYYYYMMDD(currentDate);
-    const startDateTime = `${today}T00:00`;
-    const endDateTime = `${today}T23:59`;
+        // Get the current date and time
+        const currentDate = new Date();
+        const today = formatDateToYYYYMMDD(currentDate);
+        const startDateTime = `${today}T00:00`;
+        const endDateTime = `${today}T23:59`;
 
-    console.log(startDateTime);
-    console.log(endDateTime);
+        if (!startInput.value) {
+            startInput.value = startDateTime;
+        }
+        if (!endInput.value) {
+            endInput.value = endDateTime;
+        }
+    }
 
-    $('#start_datetime').val(startDateTime); // Set start of the day
-    $('#end_datetime').val(endDateTime); // Set end of the day
+    document.addEventListener('DOMContentLoaded', setDateTimeInputs);
+</script>
+<script>
+    function formatDateToYYYYMMDD(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
     $('#addPayoutForm').on('submit', function (e) {
         e.preventDefault();

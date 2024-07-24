@@ -54,6 +54,7 @@ def list_payout(request):
         status = False
     elif status_filter == 'Done':
         status = True
+    print(status_filter)
     
     if status is not None:
         list_payout = list_payout.filter(status=status)
@@ -76,6 +77,8 @@ def list_payout(request):
         end_datetime = datetime.strptime(end_datetime_str, '%Y-%m-%dT%H:%M')
     else:
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
+        
+    print(start_datetime, end_datetime)
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
 
@@ -88,7 +91,7 @@ def list_payout(request):
     ).order_by('status_priority', '-created_at')
     
     total_results = len(list_payout)
-    total_amount = list_payout.aaggregate(Sum('money'))
+    total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
 
     paginator = Paginator(list_payout, 10)  # Show 10 items per page
     page_number = request.GET.get('page')
