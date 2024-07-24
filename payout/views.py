@@ -31,7 +31,8 @@ load_dotenv()
 BANK_CODE_MAPPING = {
     'VTB':'ICB',
     'SCM':'STB',
-    'VBARD':'VBA'
+    'VBARD':'VBA',
+    'DAB':'DOB'
 }
 
 # Create your views here.
