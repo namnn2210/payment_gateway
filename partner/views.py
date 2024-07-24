@@ -62,16 +62,22 @@ def update_status_request(payout, status='S'):
     partner_mapping = PartnerMapping.objects.filter(cid=cid).first()
     
     key = partner_mapping.key
+    print("======================")
+    print(payout.scode)
+    print(key)
     sign_string = f"{payout.scode}|{payout.orderno}:{key}"
     # Generate MD5 signature
     sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
+    print("======================")
     
+    print(payout.scode, payout.orderno, payout.money, status)
+    print('aaaaa')
     request_body = {
         "scode": payout.scode,
         "data": [
             {
                 "orderno": payout.orderno,
-                "amount": f'{payout.amount}.00',
+                "amount": f'{payout.money}.00',
                 "payerbankname": payout.bankcode,
                 "payeraccountno": "226662",
                 "payeraccountname": "226 pay",
@@ -80,8 +86,15 @@ def update_status_request(payout, status='S'):
         ],
         "sign": sign
     }
+    print("++++++++++++++")
     
-    response = requests.post(os.environ.get('DEPOSIT_URL'), body=request_body)
+    print(request_body)
+    print(sign)
+    print(os.environ.get('PAYOUT_URL'))
+    print(os.environ.get('PAYOUT_URL_PROD'))
+    response = requests.post(os.environ.get('PAYOUT_URL_PROD'), json=request_body)
+    
+    print(response.text)
     if response.status_code == 200:
         response_data = response.json()
         if response_data['msg'] == 'SUCCESS':
