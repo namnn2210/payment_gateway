@@ -29,13 +29,12 @@
     }
 </style>
 <div class="container-fluid">
-    <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h5>
+    <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
     <div class="row">
         <div class="row">
             <div class="col-md-4">
                 <label for="search_box">{% trans "Search" %}</label>
-                <input type="text" id="search_box" class="form-control input-sm"
-                    placeholder="{% trans 'Search everything here...' %}" />
+                <input type="text" id="search_box" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" />
             </div>
             <div class="col-md-4">
                 <label for="start_datetime">{% trans "Start Date" %}</label>
@@ -49,7 +48,6 @@
         <div class="totals-container" style="font-size: 12px;">
             <div>{% trans "Transactions Success Count" %}: <span id="success-count-in"></span></div>
             <div>{% trans "Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
-            <div>{% trans "Transactions Page Total Success Amount" %}: <span id="page-total-in"></span></div>
             <div>{% trans "Transactions Grand Total Success Amount" %}: <span id="grand-total-in"></span></div>
         </div>
     </div>
@@ -144,6 +142,29 @@
             }
         }
 
+        function formatDateToYYYYMMDD(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function formatDateToYYYYMMDDHHMM(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+
+        const currentDate = new Date();
+        const todayStart = new Date(currentDate.setHours(0, 0, 0, 0));
+        const todayEnd = new Date(currentDate.setHours(23, 59, 59, 999));
+
+        $('#start_datetime').val(formatDateToYYYYMMDDHHMM(todayStart));
+        $('#end_datetime').val(formatDateToYYYYMMDDHHMM(todayEnd));
+
         var inTable = $('#inTransactionTable').DataTable({
             "pageLength": 10,
             "lengthMenu": [5, 10, 20, 50],
@@ -151,26 +172,11 @@
             "dom": 'lrtip',
             "drawCallback": function (settings) {
                 var api = this.api();
-                var pageTotal = 0;
                 var grandTotal = 0;
                 var successCount = 0;
                 var nonSuccessCount = 0;
 
-                // Calculate page total and success/non-success counts for visible rows
-                api.rows({ page: 'current' }).every(function (rowIdx, tableLoop, rowLoop) {
-                    var data = this.data();
-                    var amount = intVal(data[2]);
-                    var status = data[5];
-
-                    if (status === 'Success') {
-                        pageTotal += amount;
-                        successCount++;
-                    } else {
-                        nonSuccessCount++;
-                    }
-                });
-
-                // Calculate grand total for all filtered rows
+                // Calculate grand total and success/non-success counts for all filtered rows
                 api.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
                     var data = this.data();
                     var amount = intVal(data[2]);
@@ -178,11 +184,13 @@
 
                     if (status === 'Success') {
                         grandTotal += amount;
+                        successCount++;
+                    } else {
+                        nonSuccessCount++;
                     }
                 });
 
                 // Update the footer
-                $('#page-total-in').html(pageTotal.toLocaleString() + ' đ');
                 $('#grand-total-in').html(grandTotal.toLocaleString() + ' đ');
                 $('#success-count-in').html(successCount.toLocaleString());
                 $('#non-success-count-in').html(nonSuccessCount.toLocaleString());
@@ -197,65 +205,25 @@
             "drawCallback": function (settings) {
                 var api = this.api();
                 var total = 0;
-                var pageTotal = 0;
 
-                // Calculate page total
-                api.rows({ page: 'current' }).every(function (rowIdx, tableLoop, rowLoop) {
-                    var data = this.data();
-                    pageTotal += intVal(data[2]);
-                });
-
-                // Calculate grand total
+                // Calculate grand total for all filtered rows
                 api.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
                     var data = this.data();
                     total += intVal(data[2]);
                 });
 
                 // Update the footer
-                $('#page-total-out').html(pageTotal.toLocaleString() + ' đ');
                 $('#grand-total-out').html(total.toLocaleString() + ' đ');
             }
         });
 
-        function convertStringToDate(dateTimeString) {
-            const [datePart, timePart] = dateTimeString.split(' ');
-            const [day, month, year] = datePart.split('/').map(Number);
-            const [hours, minutes, seconds] = timePart.split(':').map(Number);
-            return new Date(year, month - 1, day, hours, minutes, seconds);
-        }
-
-        function formatDateToYYYYMMDD(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
-
-        const currentDate = new Date();
-        const today = formatDateToYYYYMMDD(currentDate);
-        const startDateTime = `${today}T00:00`;
-        const endDateTime = `${today}T23:59`;
-
-        $('#start_datetime').val(startDateTime);
-        $('#end_datetime').val(endDateTime);
-
         $.fn.dataTable.ext.search.push(
             function (settings, data, dataIndex) {
-                var min = $('#start_datetime').val();
-                var max = $('#end_datetime').val();
+                var min = $('#start_datetime').val() ? new Date($('#start_datetime').val()) : todayStart;
+                var max = $('#end_datetime').val() ? new Date($('#end_datetime').val()) : todayEnd;
                 var date = new Date(data[3]);
 
-                if (min) {
-                    min = new Date(min);
-                }
-                if (max) {
-                    max = new Date(max);
-                }
-
                 if (
-                    (min === '' && max === '') ||
-                    (min === '' && date <= max) ||
-                    (min <= date && max === '') ||
                     (min <= date && date <= max)
                 ) {
                     return true;
@@ -273,6 +241,12 @@
             inTable.search(this.value).draw();
             outTable.search(this.value).draw();
         });
+
+        // Initial draw to apply the default date filter
+        inTable.draw();
+        outTable.draw();
     });
 </script>
+
+
 {% endblock %}
