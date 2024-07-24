@@ -15,7 +15,7 @@ from bank.views import update_amount_by_date
 from bank.models import Bank
 from notification.views import send_notification
 from dotenv import load_dotenv
-from datetime import datetime
+from datetime import datetime, time
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField, Sum
 from partner.models import PartnerMapping, CID
 from .tasks import update_payout_background
@@ -250,12 +250,35 @@ def webhook(request):
         current_time = datetime.now().time()
         user_timelines = []
         timelines = Timeline.objects.filter(status=True)
+        timelines = [
+            {'name': 'Sáng', 'start_at': time(6, 0), 'end_at': time(14, 0)},
+            {'name': 'Chiều', 'start_at': time(14, 0), 'end_at': time(22, 0)},
+            {'name': 'Tối', 'start_at': time(22, 0), 'end_at': time(23, 59, 59)},
+            {'name': 'Đêm', 'start_at': time(0, 0), 'end_at': time(6, 0)}
+        ]
+        
+        current_timeline_name = None
+
         for timeline in timelines:
-            start_at = timeline.start_at  # Assuming these are already datetime.time objects
-            end_at = timeline.end_at  # Assuming these are already datetime.time objects
+            start_at = timeline['start_at']
+            end_at = timeline['end_at']
+
+            if start_at <= end_at:
+                if start_at <= current_time <= end_at:
+                    current_timeline_name = timeline['name']
+                    break
+            else:  
+                if current_time >= start_at or current_time <= end_at:
+                    current_timeline_name = timeline['name']
+                    break
+        
+        if current_timeline_name:
+            # Get the active timelines from the database
+            if current_timeline_name == 'Tối' or current_timeline_name == 'Đêm':
+                timeline_name = 'Đêm'
+            active_timeline = Timeline.objects.filter(status=True, name=timeline_name).first()
             
-            if start_at <= current_time <= end_at:
-                user_timelines = list(UserTimeline.objects.filter(timeline=timeline, status=True))
+            user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
                 
         formatted_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
         if not formatted_bankcode:
