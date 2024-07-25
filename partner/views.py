@@ -86,7 +86,7 @@ def update_status_request(payout, status='S'):
     
     if response.status_code == 200:
         response_data = response.json()
-        print('update resquest response:'response_data)
+        print('update resquest response:', response_data)
         if response_data['errcode'] == '00':
             update_success_list = response_data.get('updatescuuesslist')
             update_failed_list = response_data.get('updateafaillist')
