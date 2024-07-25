@@ -83,14 +83,18 @@ def update_status_request(payout, status='S'):
     }
     response = requests.post('https://gdly.jzc899.com/service/withdraw_confirm.aspx', json=request_body)
     
-    print(response.text)
     if response.status_code == 200:
         response_data = response.json()
-        if response_data['msg'] == 'SUCCESS':
+        print(response_data)
+        if response_data['errcode'] == '00':
             update_success_list = response_data.get('updatescuuesslist')
-            print(update_success_list)
-            print(payout.orderno)
-            for item in update_success_list:
-                if item == payout.orderno:
-                    return True
+            update_failed_list = response_data.get('updateafaillist')
+            if len(update_success_list) > 0:
+                for item in update_success_list:
+                    if item == payout.orderno:
+                        return True
+            else:
+                for item in update_failed_list:
+                    if item['errormsg'] == 'Orderno status completed.' and item['orderno'] == payout.orderno:
+                        return True
     return False
