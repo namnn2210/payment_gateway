@@ -315,8 +315,13 @@ def webhook(request):
         else:
             system_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
             if not system_bankcode:
-                partner_bankcode = bankcode
-                system_bankcode = bankcode
+                for bank in partner_bank_data:
+                    if bank['bankname'] == payeebankname:
+                        system_bankcode = bank['code']
+                        partner_bankcode = bank['code']
+                if not system_bankcode and not partner_bankcode:
+                    partner_bankcode = bankcode
+                    system_bankcode = bankcode
             else:
                 partner_bankcode = bankcode
         
