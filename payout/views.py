@@ -201,7 +201,7 @@ def webhook(request):
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
         
-        print('request data: ', data)
+        print('webhook request data: ', data)
         
         scode = data.get('scode')
         orderno = data.get('orderno')

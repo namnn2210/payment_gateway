@@ -81,11 +81,12 @@ def update_status_request(payout, status='S'):
         ],
         "sign": sign
     }
+    print('update resquest body:', request_body)
     response = requests.post('https://gdly.jzc899.com/service/withdraw_confirm.aspx', json=request_body)
     
     if response.status_code == 200:
         response_data = response.json()
-        print(response_data)
+        print('update resquest response:'response_data)
         if response_data['errcode'] == '00':
             update_success_list = response_data.get('updatescuuesslist')
             update_failed_list = response_data.get('updateafaillist')
