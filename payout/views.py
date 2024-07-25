@@ -195,7 +195,7 @@ def update_payout(request, update_type):
 def webhook(request):
     if request.method == 'POST':
         
-        bank_data = json.load(open('partner_bank.json', encoding='utf-8'))
+        bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
