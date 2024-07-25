@@ -317,6 +317,8 @@ def webhook(request):
             if not system_bankcode:
                 partner_bankcode = bankcode
                 system_bankcode = bankcode
+            else:
+                partner_bankcode = bankcode
         
             payout = Payout.objects.create(
                     user=random.choice(user_timelines).user,
