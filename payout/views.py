@@ -195,7 +195,8 @@ def update_payout(request, update_type):
 def webhook(request):
     if request.method == 'POST':
         
-        bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
+        partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
+        system_bank_data = json.load(open('bank.json', encoding='utf-8'))
         
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
@@ -278,7 +279,7 @@ def webhook(request):
         # Format through bank code dict mapping
         if bankcode == '':
             # Settle
-            for bank in bank_data:
+            for bank in partner_bank_data:
                 if bank['bankname'] == payeebankname:
                     system_bankcode = bank['code']
                     partner_bankcode = bank['code']
@@ -315,7 +316,7 @@ def webhook(request):
             system_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
             if not system_bankcode:
                 partner_bankcode = bankcode
-            
+                system_bankcode = bankcode
         
             payout = Payout.objects.create(
                     user=random.choice(user_timelines).user,
