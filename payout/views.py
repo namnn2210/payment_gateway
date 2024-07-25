@@ -199,6 +199,9 @@ def webhook(request):
         
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
+        
+        print('request data: ', data)
+        
         scode = data.get('scode')
         orderno = data.get('orderno')
         orderid = data.get('orderid')
@@ -273,13 +276,13 @@ def webhook(request):
         partner_bankcode = None
         # Get bank code
         # Format through bank code dict mapping
-        if bankcode != '':
+        if bankcode == '':
             # Settle
             for bank in bank_data:
                 if bank['bankname'] == payeebankname:
                     system_bankcode = bank['code']
                     partner_bankcode = bank['code']
-            admin = User.objects.filter(username="admin")
+            admin = User.objects.filter(username="admin").first()
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
@@ -312,6 +315,7 @@ def webhook(request):
             system_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
             if not system_bankcode:
                 partner_bankcode = bankcode
+            
         
             payout = Payout.objects.create(
                     user=random.choice(user_timelines).user,
