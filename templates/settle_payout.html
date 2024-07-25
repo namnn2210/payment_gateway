@@ -52,14 +52,11 @@
         <div class="card mb-3 col-md-12 col-sm-12">
             <div class="card-body text-center">
                 <div class="row">
-                    <div class="col-md-4 col-sm-12">
-                        <strong>{% trans "Page Total" %}:</strong> <strong id="page-total"></strong>
+                    <div class="col-md-6 col-sm-12">
+                        <strong>{% trans "Total Results" %}:</strong> <strong id="total-results">{{total_results}}</strong>
                     </div>
-                    <div class="col-md-4 col-sm-12">
-                        <strong>{% trans "Total Results" %}:</strong> <strong id="total-results"></strong>
-                    </div>
-                    <div class="col-md-4 col-sm-12">
-                        <strong>{% trans "Grand Total" %}:</strong> <strong id="grand-total"></strong>
+                    <div class="col-md-6 col-sm-12">
+                        <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|floatformat:2|intcomma}} VND</strong>
                     </div>
                 </div>
             </div>
