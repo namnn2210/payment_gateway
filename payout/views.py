@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .models import Payout, Timeline, UserTimeline
+from settle_payout.models import SettlePayout
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
@@ -192,21 +193,10 @@ def update_payout(request, update_type):
     
 @csrf_exempt 
 def webhook(request):
-    # {
-    #     "scode": "CID16301",
-    #     "orderno": "20240717144614RvKcA",
-    #     "orderid": "2024071612295974620",
-    #     "data": {
-    #         "payeebankname": "ACB",
-    #         "payeebankbranch": "",
-    #         "payeebankbranchcode": "",
-    #         "payeeaccountno": "111122223333",
-    #         "payeeaccountname": "SHINO GE",
-    #         "amount": "1000.00"
-    #     },
-    #     "sign": "d38737b767c04f0ca72138515ee7bfee"
-    # }
     if request.method == 'POST':
+        
+        bank_data = json.load(open('partner_bank.json', encoding='utf-8'))
+        
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
         scode = data.get('scode')
@@ -215,9 +205,9 @@ def webhook(request):
         money = data.get('data').get('amount')
         accountno = data.get('data').get('payeeaccountno')
         accountname = data.get('data').get('payeeaccountname')
-        bankcode = data.get('data').get('payeebankbranchcode')
-        payeebankname = data.get('data').get('payeebankname')
-        payeebankbranch = data.get('data').get('payeebankbranch')
+        bankcode = data.get('data').get('payeebankbranchcode','')
+        payeebankname = data.get('data').get('payeebankname','')
+        payeebankbranch = data.get('data').get('payeebankbranch','')
         body_sign = data.get('sign')
         
         cid = CID.objects.filter(name=scode).first()
@@ -279,35 +269,74 @@ def webhook(request):
             
             user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
                 
-        formatted_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
-        if not formatted_bankcode:
-            formatted_bankcode = bankcode
-        
-        
-        payout = Payout.objects.create(
-                user=random.choice(user_timelines).user,
-                scode=scode,
-                orderno=orderno,
-                orderid=orderid,
-                money=int(float(money)),
-                accountno=accountno,
-                accountname=accountname,
-                bankname='',
-                bankcode=formatted_bankcode,
-                partner_bankcode=bankcode,
-                updated_by=None,
-                is_auto=True,
-                is_cancel=False,
-                is_report=False,
-                created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+        system_bankcode = None
+        partner_bankcode = None
+        # Get bank code
+        # Format through bank code dict mapping
+        if bankcode != '':
+            # Settle
+            for bank in bank_data:
+                if bank['bankname'] == payeebankname:
+                    system_bankcode = bank['code']
+                    partner_bankcode = bank['code']
+            admin = User.objects.filter(username="admin")
+            existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
+            if existed_settle_payout:
+                return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
+            settle_payout = SettlePayout.objects.create(
+                    user=admin,
+                    scode=scode,
+                    orderno=orderno,
+                    orderid=orderid,
+                    money=int(float(money)),
+                    accountno=accountno,
+                    accountname=accountname,
+                    bankname=payeebankname,
+                    bankcode=system_bankcode,
+                    partner_bankcode=partner_bankcode,
+                    updated_by=None,
+                    is_auto=True,
+                    is_cancel=False,
+                    is_report=False,
+                    created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+                )
+            settle_payout.save()
+            send_notification('New settle payout added. Please check and process')
+            alert = (
+                f'🔴 - THÔNG BÁO SETTLE PAYOUT\n'
+                f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
-        payout.save()
-        send_notification('New payout added. Please check and process')
-        alert = (
-            f'🔴 - THÔNG BÁO PAYOUT\n'
-            f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
-        )
-        send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+
+        else:
+            system_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
+            if not system_bankcode:
+                partner_bankcode = bankcode
+        
+            payout = Payout.objects.create(
+                    user=random.choice(user_timelines).user,
+                    scode=scode,
+                    orderno=orderno,
+                    orderid=orderid,
+                    money=int(float(money)),
+                    accountno=accountno,
+                    accountname=accountname,
+                    bankname=payeebankname,
+                    bankcode=system_bankcode,
+                    partner_bankcode=partner_bankcode,
+                    updated_by=None,
+                    is_auto=True,
+                    is_cancel=False,
+                    is_report=False,
+                    created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+                )
+            payout.save()
+            send_notification('New payout added. Please check and process')
+            alert = (
+                f'🔴 - THÔNG BÁO PAYOUT\n'
+                f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
+            )
+            send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         return HttpResponse('success')
 
 def find_bankcode(bank_name):
