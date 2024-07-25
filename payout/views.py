@@ -274,8 +274,8 @@ def webhook(request):
         if current_timeline_name:
             # Get the active timelines from the database
             if current_timeline_name == 'Tối' or current_timeline_name == 'Đêm':
-                timeline_name = 'Đêm'
-            active_timeline = Timeline.objects.filter(status=True, name=timeline_name).first()
+                current_timeline_name = 'Đêm'
+            active_timeline = Timeline.objects.filter(status=True, name=current_timeline_name).first()
             
             user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
                 
