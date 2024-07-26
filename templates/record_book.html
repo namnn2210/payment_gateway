@@ -53,29 +53,27 @@
 </style>
 <div class="container-fluid">
     <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
-    <div class="row">
-        <form method="get" class="d-flex w-100 justify-content-between">
-            <div class="col-md-4 col-sm-12">
-                <label for="search_box">{% trans "Search" %}</label>
-                <input type="text" id="search_box" name="search" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" value="{{ search_query }}" />
-            </div>
-            <div class="col-md-4 col-sm-12">
-                <label for="start_datetime">{% trans "Start Date" %}</label>
-                <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ start_date }}" />
-            </div>
-            <div class="col-md-4 col-sm-12">
-                <label for="end_datetime">{% trans "End Date" %}</label>
-                <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ end_date }}" />
-            </div>
+        <form method="get">
             <div class="row">
-                <div class="col-md-8 col-sm-12"></div>
-                <div class="col-md-4 col-sm-12 text-right">
+                <div class="col-md-4 col-sm-12">
+                    <label for="search_box">{% trans "Search" %}</label>
+                    <input type="text" id="search_box" name="search" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" value="{{ search_query }}" />
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <label for="start_datetime">{% trans "Start Date" %}</label>
+                    <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ start_date }}" />
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <label for="end_datetime">{% trans "End Date" %}</label>
+                    <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ end_date }}" />
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12 col-sm-12 text-right">
                     <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
                 </div>
             </div>
-            
         </form>
-    </div>
     <div class="row d-flex justify-content-between mt-4 same-height">
         <div class="col-md-6">
             <div class="card-body table-wrapper" style="font-size: 12px">
@@ -97,7 +95,7 @@
                                 <td>{{ item.account_number }}</td>
                                 <td>{{ item.transaction_number }}</td>
                                 <td class="text-success">{{ item.amount|floatformat:2|intcomma }}</td>
-                                <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ item.transaction_date|date:"d/m/Y H:i:s" }}</td>
                                 <td>{{ item.description }}</td>
                                 <td>{{ item.status }}</td>
                             </tr>
@@ -123,11 +121,13 @@
                             </li>
                             {% endif %}
                             {% for num in in_page_obj.paginator.page_range %}
-                            {% if in_page_obj.number == num %}
-                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                            {% else %}
-                            <li class="page-item"><a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if start_date %}start_datetime={{ start_date }}&{% endif %}{% if end_date %}end_datetime={{ end_date }}&{% endif %}in_page={{ num }}">{{ num }}</a></li>
-                            {% endif %}
+                                {% if num > in_page_obj.number|add:'-3' and num < in_page_obj.number|add:'3' %}
+                                    {% if in_page_obj.number == num %}
+                                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if start_date %}start_datetime={{ start_date }}&{% endif %}{% if end_date %}end_datetime={{ end_date }}&{% endif %}in_page={{ num }}">{{ num }}</a></li>
+                                    {% endif %}
+                                {% endif %}
                             {% endfor %}
                             {% if in_page_obj.has_next %}
                             <li class="page-item">
@@ -168,7 +168,7 @@
                                 <td>{{ item.account_number }}</td>
                                 <td>{{ item.transaction_number }}</td>
                                 <td class="text-danger">{{ item.amount|floatformat:2|intcomma }}</td>
-                                <td>{{ item.transaction_date|date:"Y-m-d H:i:s" }}</td>
+                                <td>{{ item.transaction_date|date:"d/m/Y H:i:s" }}</td>
                                 <td>{{ item.description }}</td>
                                 <td>{{ item.status }}</td>
                             </tr>
@@ -194,11 +194,13 @@
                             </li>
                             {% endif %}
                             {% for num in out_page_obj.paginator.page_range %}
-                            {% if out_page_obj.number == num %}
-                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                            {% else %}
-                            <li class="page-item"><a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if start_date %}start_datetime={{ start_date }}&{% endif %}{% if end_date %}end_datetime={{ end_date }}&{% endif %}out_page={{ num }}">{{ num }}</a></li>
-                            {% endif %}
+                                {% if num > out_page_obj.number|add:'-3' and num < out_page_obj.number|add:'3' %}
+                                    {% if out_page_obj.number == num %}
+                                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if start_date %}start_datetime={{ start_date }}&{% endif %}{% if end_date %}end_datetime={{ end_date }}&{% endif %}out_page={{ num }}">{{ num }}</a></li>
+                                    {% endif %}
+                                {% endif %}
                             {% endfor %}
                             {% if out_page_obj.has_next %}
                             <li class="page-item">
