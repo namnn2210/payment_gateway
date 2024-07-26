@@ -5,7 +5,7 @@ from bank.models import Bank
 # Create your models here.
 class Payout(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
-    did = models.CharField(max_length=255)
+    did = models.CharField(max_length=255, blank=True)
     scode = models.CharField(max_length=255)
     orderno = models.CharField(max_length=255, null=True, default='')
     orderid = models.CharField(max_length=255)
@@ -18,9 +18,9 @@ class Payout(models.Model):
     is_auto = models.BooleanField(default=False)
     is_cancel = models.BooleanField(default=False)
     is_report = models.BooleanField(default=False)
-    process_bank = models.ForeignKey(Bank, on_delete=models.CASCADE, null=True)
+    process_bank = models.ForeignKey(Bank, on_delete=models.CASCADE, null=True, blank=False)
     status = models.BooleanField(default=False,null=True)
-    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payout_created_by', null=True)
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payout_created_by', null=True, blank=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
