@@ -33,7 +33,8 @@ BANK_CODE_MAPPING = {
     'VTB':'ICB',
     'SCM':'STB',
     'VBARD':'VBA',
-    'DAB':'DOB'
+    'DAB':'DOB',
+    'EXIM':'EIB'
 }
 
 # Create your views here.
