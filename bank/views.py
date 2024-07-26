@@ -59,9 +59,9 @@ def record_book(request):
     
     # Sort the dataframe by 'transaction_date' in descending order if the column exists
     if 'transaction_date' in all_transactions_df.columns:
-        sorted_transactions_new = all_transactions_df.sort_values(by='transaction_date', ascending=False)
+        sorted_transactions_new = all_transactions_df.sort_values(by='transaction_date', ascending=False).head(20)
     else:
-        sorted_transactions_new = all_transactions_df  # If no 'transaction_date', do not sort
+        sorted_transactions_new = all_transactions_df.head(20)  # If no 'transaction_date', do not sort
 
     final_data = sorted_transactions_new.to_dict(orient='records')
     
