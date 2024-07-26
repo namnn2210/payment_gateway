@@ -37,39 +37,62 @@ def record_book(request):
         if transactions_str:
             all_transactions += json.loads(transactions_str)
     all_transactions_df = pd.DataFrame(all_transactions)
+    
     # Convert the 'transaction_date' column to datetime format if it exists
     if 'transaction_date' in all_transactions_df.columns:
         all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
 
-    # Filter transactions based on form input
+    # Default start and end date to today if not provided
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    # Get form inputs
     search_query = request.GET.get('search', '')
-    start_date = request.GET.get('start_datetime')
-    end_date = request.GET.get('end_datetime')
+    start_date = request.GET.get('start_datetime', '')
+    end_date = request.GET.get('end_datetime', '')
 
     if start_date:
         start_date = parse_datetime(start_date)
-        all_transactions_df = all_transactions_df[all_transactions_df['transaction_date'] >= start_date]
+    else:
+        start_date = today_start
 
     if end_date:
         end_date = parse_datetime(end_date)
-        all_transactions_df = all_transactions_df[all_transactions_df['transaction_date'] <= end_date]
+    else:
+        end_date = today_end
+
+    # Filter transactions based on form input
+    filtered_transactions_df = all_transactions_df[
+        (all_transactions_df['transaction_date'] >= start_date) &
+        (all_transactions_df['transaction_date'] <= end_date)
+    ]
 
     if search_query:
-        all_transactions_df = all_transactions_df[all_transactions_df.apply(lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1)]
+        filtered_transactions_df = filtered_transactions_df[
+            filtered_transactions_df.apply(lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1)
+        ]
     
-    # Sort the dataframe by 'transaction_date' in descending order if the column exists
-    if 'transaction_date' in all_transactions_df.columns:
-        sorted_transactions_new = all_transactions_df.sort_values(by='transaction_date', ascending=False).head(20)
-    else:
-        sorted_transactions_new = all_transactions_df.head(20)  # If no 'transaction_date', do not sort
+    # Separate and sort transactions by type
+    in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
+    out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
 
-    final_data = sorted_transactions_new.to_dict(orient='records')
-    
-    paginator = Paginator(final_data, 20)  # Show 10 items per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # Pagination for "IN" transactions
+    in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 20)
+    in_page_number = request.GET.get('in_page')
+    in_page_obj = in_paginator.get_page(in_page_number)
 
-    return render(request, 'record_book.html', {'page_obj': page_obj})
+    # Pagination for "OUT" transactions
+    out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 20)
+    out_page_number = request.GET.get('out_page')
+    out_page_obj = out_paginator.get_page(out_page_number)
+
+    return render(request, 'record_book.html', {
+        'in_page_obj': in_page_obj, 
+        'out_page_obj': out_page_obj, 
+        'search_query': search_query, 
+        'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
+        'end_date': end_date.strftime('%Y-%m-%dT%H:%M')
+    })
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddBankView(View):
