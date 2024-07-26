@@ -66,15 +66,15 @@
                     <table class="table table-sm display" id="payoutTable">
                         <thead>
                             <tr class="text-center" style="font-size: 12px">
-                                <th scope="col">{% trans "CID" %}</th>
                                 <th scope="col">{% trans "Order ID" %}</th>
+                                <th scope="col">{% trans "CID" %}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in list_payout %}
                             <tr class="text-center" style="font-size: 12px;" data-toggle="collapse" data-target="#collapse{{ item.id }}">
-                                <th>{{ item.scode }}</th>
                                 <td>{{ item.orderid }}</td>
+                                <th>{{ item.scode }}</th>
                             </tr>
                             <tr class="collapse" id="collapse{{ item.id }}">
                                 <td colspan="2">
@@ -115,7 +115,7 @@
                                                     {% endif %}
                                                 </p>
                                                 <p><strong>{% trans "Action" %}:</strong>
-                                                    {% if not item.status and not item.is_cancel %}
+                                                    {% if not item.status and not item.is_cancel and item.user == user%}
                                                     <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
                                                         data-bs-target="#payModal" data-item-id="{{ item.id }}"
                                                         data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"

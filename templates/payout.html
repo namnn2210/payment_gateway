@@ -121,7 +121,7 @@
                                                     {% endif %}
                                                 </p>
                                                 <p><strong>{% trans "Action" %}:</strong>
-                                                    {% if not item.status and not item.is_cancel %}
+                                                    {% if not item.status and not item.is_cancel and item.user == user%}
                                                         <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
                                                             data-bs-target="#payModal" data-item-id="{{ item.id }}"
                                                             data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
@@ -177,8 +177,7 @@
                                 </ul>
                             </nav>
                         </div>
-                    </div>
-                                      
+                    </div>             
                 </div>
             </div>
         </div><!-- End Card with an image on left -->
