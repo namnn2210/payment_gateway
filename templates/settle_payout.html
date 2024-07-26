@@ -71,6 +71,7 @@
                                 <th></th>
                                 <th scope="col">{% trans "Order ID" %}</th>
                                 <th scope="col">{% trans "CID" %}</th>
+                                <th scope="col">{% trans "Status" %}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,6 +82,15 @@
                                     {{ item.orderid }}
                                 </td>
                                 <th>{{ item.scode }}</th>
+                                <th>
+                                    {% if item.status %}
+                                    <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
+                                    {% elif item.status == False %}
+                                    <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
+                                    {% elif item.status is None %}
+                                    <span></span>
+                                    {% endif %}
+                                </th>
                             </tr>
                             <tr class="collapse" id="collapse{{ item.id }}">
                                 <td colspan="2">
