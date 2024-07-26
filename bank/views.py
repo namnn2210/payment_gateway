@@ -77,12 +77,12 @@ def record_book(request):
     out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
 
     # Pagination for "IN" transactions
-    in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 20)
+    in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 10)
     in_page_number = request.GET.get('in_page')
     in_page_obj = in_paginator.get_page(in_page_number)
 
     # Pagination for "OUT" transactions
-    out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 20)
+    out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 10)
     out_page_number = request.GET.get('out_page')
     out_page_obj = out_paginator.get_page(out_page_number)
 
