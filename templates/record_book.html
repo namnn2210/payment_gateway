@@ -31,31 +31,34 @@
 <div class="container-fluid">
     <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
     <div class="row">
-        <div class="row">
-            <div class="col-md-4">
-                <label for="search_box">{% trans "Search" %}</label>
-                <input type="text" id="search_box" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" />
+        <form method="get">
+            <div class="row">
+                <div class="col-md-4">
+                    <label for="search_box">{% trans "Search" %}</label>
+                    <input type="text" id="search_box" name="search" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" />
+                </div>
+                <div class="col-md-4">
+                    <label for="start_datetime">{% trans "Start Date" %}</label>
+                    <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" />
+                </div>
+                <div class="col-md-4">
+                    <label for="end_datetime">{% trans "End Date" %}</label>
+                    <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" />
+                </div>
             </div>
-            <div class="col-md-4">
-                <label for="start_datetime">{% trans "Start Date" %}</label>
-                <input type="datetime-local" id="start_datetime" class="form-control input-sm" />
+            <div class="row mt-3">
+                <div class="col-md-8"></div>
+                <div class="col-md-4 text-right">
+                    <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+                </div>
             </div>
-            <div class="col-md-4">
-                <label for="end_datetime">{% trans "End Date" %}</label>
-                <input type="datetime-local" id="end_datetime" class="form-control input-sm" />
-            </div>
-        </div>
-        <div class="totals-container" style="font-size: 12px;">
-            <div>{% trans "Transactions Success Count" %}: <span id="success-count-in"></span></div>
-            <div>{% trans "Transactions Non-Success Count" %}: <span id="non-success-count-in"></span></div>
-            <div>{% trans "Transactions Grand Total Success Amount" %}: <span id="grand-total-in"></span></div>
-        </div>
+        </form>
     </div>
-    <div class="row d-flex justify-content-between">
+    <div class="row d-flex justify-content-between mt-4">
         <div class="col-md-6">
             <div class="card-body table-wrapper" style="font-size: 12px">
                 <div class="table-responsive">
-                    <table id="inTransactionTable" class="table table-sm display">
+                    <table class="table table-sm display">
                         <thead>
                             <tr class="text-center" style="font-size: 12px">
                                 <th>{% trans "Account Number" %}</th>
@@ -88,7 +91,7 @@
         <div class="col-md-6">
             <div class="card-body table-wrapper" style="font-size: 12px">
                 <div class="table-responsive">
-                    <table id="outTransactionTable" class="table table-sm display">
+                    <table class="table table-sm display">
                         <thead>
                             <tr class="text-center" style="font-size: 12px">
                                 <th>{% trans "Account Number" %}</th>
@@ -118,135 +121,77 @@
             </div>
         </div>
     </div>
+
+    <!-- Pagination controls -->
+    <div class="row justify-content-center mt-4">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if start_date %}start_datetime={{ start_date }}&{% endif %}{% if end_date %}end_datetime={{ end_date }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </span>
+                </li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if start_date %}start_datetime={{ start_date }}&{% endif %}{% if end_date %}end_datetime={{ end_date }}&{% endif %}page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if start_date %}start_datetime={{ start_date }}&{% endif %}{% if end_date %}end_datetime={{ end_date }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </span>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 </div>
 {% endblock %}
 {% block script %}
-<!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Include DataTables CSS and JS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script>
-    $(document).ready(function () {
-        function intVal(i) {
-            if (typeof i === 'string') {
-                let cleanedString = i.replace(/[^\d]/g, '');
-                if (cleanedString.endsWith('00')) {
-                    cleanedString = cleanedString.slice(0, -2);
-                }
-                return parseInt(cleanedString, 10);
-            } else if (typeof i === 'number') {
-                return i;
-            } else {
-                return 0;
-            }
-        }
+    function formatDateToYYYYMMDD(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
-        function formatDateToYYYYMMDD(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
-        }
+    function setDateTimeInputs() {
+        const startInput = document.getElementById('start_datetime');
+        const endInput = document.getElementById('end_datetime');
 
-        function formatDateToYYYYMMDDHHMM(date) {
-            const year = date.getFullYear();
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const day = String(date.getDate()).padStart(2, '0');
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            return `${year}-${month}-${day}T${hours}:${minutes}`;
-        }
-
+        // Get the current date and time
         const currentDate = new Date();
-        const todayStart = new Date(currentDate.setHours(0, 0, 0, 0));
-        const todayEnd = new Date(currentDate.setHours(23, 59, 59, 999));
+        const today = formatDateToYYYYMMDD(currentDate);
+        const startDateTime = `${today}T00:00`;
+        const endDateTime = `${today}T23:59`;
 
-        $('#start_datetime').val(formatDateToYYYYMMDDHHMM(todayStart));
-        $('#end_datetime').val(formatDateToYYYYMMDDHHMM(todayEnd));
+        if (!startInput.value) {
+            startInput.value = startDateTime;
+        }
+        if (!endInput.value) {
+            endInput.value = endDateTime;
+        }
+    }
 
-        var inTable = $('#inTransactionTable').DataTable({
-            "pageLength": 10,
-            "lengthMenu": [5, 10, 20, 50],
-            "ordering": false,
-            "dom": 'lrtip',
-            "drawCallback": function (settings) {
-                var api = this.api();
-                var grandTotal = 0;
-                var successCount = 0;
-                var nonSuccessCount = 0;
-
-                // Calculate grand total and success/non-success counts for all filtered rows
-                api.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
-                    var data = this.data();
-                    var amount = intVal(data[2]);
-                    var status = data[5];
-
-                    if (status === 'Success') {
-                        grandTotal += amount;
-                        successCount++;
-                    } else {
-                        nonSuccessCount++;
-                    }
-                });
-
-                // Update the footer
-                $('#grand-total-in').html(grandTotal.toLocaleString() + ' đ');
-                $('#success-count-in').html(successCount.toLocaleString());
-                $('#non-success-count-in').html(nonSuccessCount.toLocaleString());
-            }
-        });
-
-        var outTable = $('#outTransactionTable').DataTable({
-            "pageLength": 10,
-            "lengthMenu": [5, 10, 20, 50],
-            "ordering": false,
-            "dom": 'lrtip',
-            "drawCallback": function (settings) {
-                var api = this.api();
-                var total = 0;
-
-                // Calculate grand total for all filtered rows
-                api.rows({ search: 'applied' }).every(function (rowIdx, tableLoop, rowLoop) {
-                    var data = this.data();
-                    total += intVal(data[2]);
-                });
-
-                // Update the footer
-                $('#grand-total-out').html(total.toLocaleString() + ' đ');
-            }
-        });
-
-        $.fn.dataTable.ext.search.push(
-            function (settings, data, dataIndex) {
-                var min = $('#start_datetime').val() ? new Date($('#start_datetime').val()) : todayStart;
-                var max = $('#end_datetime').val() ? new Date($('#end_datetime').val()) : todayEnd;
-                var date = new Date(data[3]);
-
-                if (
-                    (min <= date && date <= max)
-                ) {
-                    return true;
-                }
-                return false;
-            }
-        );
-
-        $('#start_datetime, #end_datetime').on('change', function () {
-            inTable.draw();
-            outTable.draw();
-        });
-
-        $('#search_box').on('keyup input change', function () {
-            inTable.search(this.value).draw();
-            outTable.search(this.value).draw();
-        });
-
-        // Initial draw to apply the default date filter
-        inTable.draw();
-        outTable.draw();
-    });
+    document.addEventListener('DOMContentLoaded', setDateTimeInputs);
 </script>
-
-
 {% endblock %}

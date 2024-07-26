@@ -3,7 +3,9 @@
 {% load static %}
 {% load i18n %}
 {% block title %}{% trans "List Settle Payout" %}{% endblock %}
-{% block head %}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
 {% block content %}
 <div class="container-fluid">
     <h3>{% trans 'Settle Payout' %}</h3>
@@ -66,14 +68,18 @@
                     <table class="table table-sm display" id="payoutTable">
                         <thead>
                             <tr class="text-center" style="font-size: 12px">
+                                <th></th>
                                 <th scope="col">{% trans "Order ID" %}</th>
                                 <th scope="col">{% trans "CID" %}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for item in list_payout %}
-                            <tr class="text-center" style="font-size: 12px;" data-toggle="collapse" data-target="#collapse{{ item.id }}">
-                                <td>{{ item.orderid }}</td>
+                            <tr class="text-center" style="font-size: 12px;" data-toggle="collapse" data-target="#collapse{{ item.id }}" aria-expanded="false" aria-controls="collapse{{ item.id }}">
+                                <td><span class="toggle-icon" id="icon-{{ item.id }}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>
+                                <td>
+                                    {{ item.orderid }}
+                                </td>
                                 <th>{{ item.scode }}</th>
                             </tr>
                             <tr class="collapse" id="collapse{{ item.id }}">
@@ -281,6 +287,26 @@
 <!-- Toastr JS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
+
+    $(document).ready(function() {
+        $('tr[data-toggle="collapse"]').on('click', function() {
+            var targetId = $(this).data('target');
+            $(targetId).collapse('toggle');
+        });
+
+        $('.collapse').on('shown.bs.collapse', function () {
+            var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
+            icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
+            $(this).addClass('show');
+        });
+
+        $('.collapse').on('hidden.bs.collapse', function () {
+            var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
+            icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
+            $(this).removeClass('show');
+        });
+    });
+
     function formatDateToYYYYMMDD(date) {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1

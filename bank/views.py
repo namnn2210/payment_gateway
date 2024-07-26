@@ -8,6 +8,7 @@ from django.views import View
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from .utils import unix_to_datetime, send_telegram_message
+from django.utils.dateparse import parse_datetime
 from .database import redis_connect
 from datetime import datetime, timedelta
 import json
@@ -40,15 +41,35 @@ def record_book(request):
     if 'transaction_date' in all_transactions_df.columns:
         all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
 
+    # Filter transactions based on form input
+    search_query = request.GET.get('search', '')
+    start_date = request.GET.get('start_datetime')
+    end_date = request.GET.get('end_datetime')
+
+    if start_date:
+        start_date = parse_datetime(start_date)
+        all_transactions_df = all_transactions_df[all_transactions_df['transaction_date'] >= start_date]
+
+    if end_date:
+        end_date = parse_datetime(end_date)
+        all_transactions_df = all_transactions_df[all_transactions_df['transaction_date'] <= end_date]
+
+    if search_query:
+        all_transactions_df = all_transactions_df[all_transactions_df.apply(lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1)]
+    
     # Sort the dataframe by 'transaction_date' in descending order if the column exists
     if 'transaction_date' in all_transactions_df.columns:
         sorted_transactions_new = all_transactions_df.sort_values(by='transaction_date', ascending=False)
     else:
         sorted_transactions_new = all_transactions_df  # If no 'transaction_date', do not sort
+
+    final_data = sorted_transactions_new.to_dict(orient='records')
     
-    page_obj = sorted_transactions_new.to_dict(orient='records')
-    
-    return render(request=request, template_name='record_book.html', context={'page_obj': page_obj})
+    paginator = Paginator(final_data, 20)  # Show 10 items per page
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'record_book.html', {'page_obj': page_obj})
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddBankView(View):
