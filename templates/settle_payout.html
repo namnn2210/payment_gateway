@@ -85,7 +85,7 @@
                                 <th>
                                     {% if item.status %}
                                     <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
-                                    {% elif not item.status %}
+                                    {% elif not item.status and not item.is_cancel %}
                                     <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
                                     {% elif item.is_report %}
                                     <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
