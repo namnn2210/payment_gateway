@@ -9,6 +9,9 @@
         border-radius: 8px;
         padding: 15px;
         margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
     }
 
     .table-wrapper h6 {
@@ -27,6 +30,26 @@
     .totals-container div {
         margin-bottom: 10px;
     }
+
+    .same-height {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .same-height > .col-md-6 {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .same-height .card-body {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .same-height .table-responsive {
+        flex-grow: 1;
+    }
 </style>
 <div class="container-fluid">
     <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
@@ -35,26 +58,26 @@
             <div class="row">
                 <div class="col-md-4">
                     <label for="search_box">{% trans "Search" %}</label>
-                    <input type="text" id="search_box" name="search" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" />
+                    <input type="text" id="search_box" name="search" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" value="{{ search_query }}" />
                 </div>
                 <div class="col-md-4">
                     <label for="start_datetime">{% trans "Start Date" %}</label>
-                    <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" />
+                    <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ start_date }}" />
                 </div>
                 <div class="col-md-4">
                     <label for="end_datetime">{% trans "End Date" %}</label>
-                    <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" />
-                </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-8"></div>
-                <div class="col-md-4 text-right">
-                    <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+                    <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ end_date }}" />
                 </div>
             </div>
         </form>
     </div>
-    <div class="row d-flex justify-content-between mt-4">
+    <div class="row mt-3">
+        <div class="col-md-8"></div>
+        <div class="col-md-4 text-right">
+            <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-between mt-4 same-height">
         <div class="col-md-6">
             <div class="card-body table-wrapper" style="font-size: 12px">
                 <div class="table-responsive">
@@ -123,7 +146,7 @@
     </div>
 
     <!-- Pagination controls -->
-    <div class="row justify-content-center mt-4 text-center">
+    <div class="row justify-content-center mt-4">
         <nav aria-label="Page navigation">
             <ul class="pagination">
                 {% if page_obj.has_previous %}
@@ -163,35 +186,4 @@
         </nav>
     </div>
 </div>
-{% endblock %}
-{% block script %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    function formatDateToYYYYMMDD(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function setDateTimeInputs() {
-        const startInput = document.getElementById('start_datetime');
-        const endInput = document.getElementById('end_datetime');
-
-        // Get the current date and time
-        const currentDate = new Date();
-        const today = formatDateToYYYYMMDD(currentDate);
-        const startDateTime = `${today}T00:00`;
-        const endDateTime = `${today}T23:59`;
-
-        if (!startInput.value) {
-            startInput.value = startDateTime;
-        }
-        if (!endInput.value) {
-            endInput.value = endDateTime;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', setDateTimeInputs);
-</script>
 {% endblock %}
