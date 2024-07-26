@@ -55,21 +55,21 @@
     <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
     <div class="row">
         <form method="get" class="d-flex w-100 justify-content-between">
-            <div class="col-md-4">
+            <div class="col-md-4 col-sm-12">
                 <label for="search_box">{% trans "Search" %}</label>
                 <input type="text" id="search_box" name="search" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" value="{{ search_query }}" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 col-sm-12">
                 <label for="start_datetime">{% trans "Start Date" %}</label>
                 <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ start_date }}" />
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 col-sm-12">
                 <label for="end_datetime">{% trans "End Date" %}</label>
                 <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ end_date }}" />
             </div>
             <div class="row">
-                <div class="col-md-8"></div>
-                <div class="col-md-4 text-right">
+                <div class="col-md-8 col-sm-12"></div>
+                <div class="col-md-4 col-sm-12 text-right">
                     <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
                 </div>
             </div>
