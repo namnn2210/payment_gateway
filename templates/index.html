@@ -10,10 +10,10 @@
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                            <i class="bi bi-currency-dollar"></i>
+                            <i class="bi bi-bullseye"></i>
                         </div>
                         <div class="ps-3">
-                            <h6 class="balance-total"><span class="text-success">đ</span></h6>
+                            <h6 class="balance-total"><span class="text-success"></span></h6>
                             <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span
                                 class="text-danger small pt-1 fw-bold total-out">-0</span> <span
                                 class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
@@ -269,7 +269,7 @@
                                     ${bank.account_number}
                                 </td>
                                 <td>${bank.account_name}</td>
-                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-success">đ</span></span></td>
+                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-success"></span></span></td>
                             `;
                             totalIn += bank.balance
                             tableBodyIn.appendChild(row);
@@ -284,7 +284,7 @@
                                     ${bank.account_number}
                                 </td>
                                 <td>${bank.account_name}</td>
-                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-danger">đ</span></span></td>
+                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-danger"></span></span></td>
                             `;
                             totalOut += bank.balance
                             tableBodyOut.appendChild(row);
@@ -292,15 +292,15 @@
 
                     });
 
-                    spanTotalIn.innerHTML = totalIn.toLocaleString() + ' <span class="text-success">đ</span> ';
-                    spanTotalOut.innerHTML = totalOut.toLocaleString() + ' <span class="text-danger">đ</span> ';
+                    spanTotalIn.innerHTML = totalIn.toLocaleString() + ' <span class="text-success"></span> ';
+                    spanTotalOut.innerHTML = totalOut.toLocaleString() + ' <span class="text-danger"></span> ';
 
                     const balanceTotal = document.querySelector('.balance-total');
                     if (!balanceTotal) {
                         console.error('Element not found');
                         return;
                     }
-                    balanceTotal.innerHTML = (totalIn + totalOut).toLocaleString() + ' <span class="text-success">đ</span> ';
+                    balanceTotal.innerHTML = (totalIn + totalOut).toLocaleString() + ' <span class="text-success"></span> ';
                 })
 
                 .catch(error => {
@@ -321,13 +321,13 @@
                     const totalOutElem = document.querySelector('.total-out');
                     
                     if (totalInElem) {
-                        totalInElem.innerHTML = `+${data.data.in.toLocaleString()} <span class="text-success">đ</span>`;
+                        totalInElem.innerHTML = `+${data.data.in.toLocaleString()} <span class="text-success"></span>`;
                     } else {
                         console.error('Total In element not found');
                     }
 
                     if (totalOutElem) {
-                        totalOutElem.innerHTML = `-${data.data.out.toLocaleString()} <span class="text-danger">đ</span>`;
+                        totalOutElem.innerHTML = `-${data.data.out.toLocaleString()} <span class="text-danger"></span>`;
                     } else {
                         console.error('Total Out element not found');
                     }

@@ -58,7 +58,7 @@
                         <strong>{% trans "Total Results" %}:</strong> <strong id="total-results">{{total_results}}</strong>
                     </div>
                     <div class="col-md-6 col-sm-12">
-                        <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|floatformat:2|intcomma}} VND</strong>
+                        <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|floatformat:2|intcomma}}</strong>
                     </div>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                                     <div class="card card-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <p><strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma }} đ</p>
+                                                <p><strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma }} </p>
                                                 <p><strong>{% trans "Account Number" %}:</strong> {{ item.accountno }}</p>
                                                 <p><strong>{% trans "Account Name" %}:</strong> {{ item.accountname }}</p>
                                                 <p><strong>{% trans "Bank Name" %}:</strong> {{ item.bankname }}</p>

@@ -86,6 +86,20 @@ def record_book(request):
     out_page_number = request.GET.get('out_page')
     out_page_obj = out_paginator.get_page(out_page_number)
 
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        # Return JSON response for AJAX requests
+        
+        data = {
+            'in_transactions': list(in_page_obj),
+            'out_transactions': list(out_page_obj),
+            'in_page': in_page_obj.number,
+            'in_num_pages': in_page_obj.paginator.num_pages,
+            'out_page': out_page_obj.number,
+            'out_num_pages': out_page_obj.paginator.num_pages,
+        }
+
+        return JsonResponse(data)
+
     return render(request, 'record_book.html', {
         'in_page_obj': in_page_obj, 
         'out_page_obj': out_page_obj, 
