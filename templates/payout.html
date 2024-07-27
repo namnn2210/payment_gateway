@@ -118,7 +118,7 @@
                                             </div>
                                             <div class="col-md-4">
                                                 <p><strong>{% trans "Action" %}:</strong>
-                                                    {% if not item.status and not item.is_cancel and item.user == user%}
+                                                    {% if not item.status and not item.is_cancel and item.user == user or user.is_superuser%}
                                                         <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
                                                             data-bs-target="#payModal" data-item-id="{{ item.id }}"
                                                             data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
