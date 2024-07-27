@@ -29,7 +29,7 @@ def list_settle_payout(request):
     banks = Bank.objects.filter(status=True)
     list_payout = SettlePayout.objects.all()
     status = None
-    
+
     # Get search parameters
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'Pending')
@@ -50,7 +50,7 @@ def list_settle_payout(request):
         status = False
     elif status_filter == 'Done':
         status = True
-    
+
     if status is not None:
         list_payout = list_payout.filter(status=status)
     elif status_filter == 'Canceled':
@@ -82,7 +82,7 @@ def list_settle_payout(request):
             output_field=IntegerField()
         )
     ).order_by('status_priority', '-created_at')
-    
+
     total_results = len(list_payout)
     total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
 
@@ -90,12 +90,21 @@ def list_settle_payout(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'settle_payout_list.html', {
+            'list_payout': page_obj,
+            'total_results': total_results,
+            'total_amount': total_amount,
+            'banks': banks,
+            'bank_data': bank_data,
+        })
+
     return render(request, 'settle_payout.html', {
         'list_payout': page_obj,
         'bank_data': bank_data,
         'banks': banks,
-        'total_results':total_results,
-        'total_amount':total_amount
+        'total_results': total_results,
+        'total_amount': total_amount
     })
 
 def search_payout(request):
