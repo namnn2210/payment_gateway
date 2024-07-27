@@ -247,18 +247,18 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('tr[data-toggle="collapse"]').on('click', function() {
+    $('tr[data-toggle="collapse"]').off('click').on('click', function() {
         var targetId = $(this).data('target');
         $(targetId).collapse('toggle');
     });
 
-    $('.collapse').on('shown.bs.collapse', function () {
+    $('.collapse').off('shown.bs.collapse').on('shown.bs.collapse', function () {
         var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
         icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
         $(this).addClass('show');
     });
 
-    $('.collapse').on('hidden.bs.collapse', function () {
+    $('.collapse').off('hidden.bs.collapse').on('hidden.bs.collapse', function () {
         var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
         icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
         $(this).removeClass('show');
@@ -304,7 +304,8 @@ $(document).ready(function() {
             
             detailsRow.append(`<td colspan="6"><div><strong>{% trans "Transaction Number" %}:</strong> ${item.transaction_number}<br><strong>{% trans "Memo" %}:</strong> ${item.description}</div></td>`);
             tableBody.append(detailsRow);
-    });
+        });
+    }
 
     function handlePaginationClick(event) {
         event.preventDefault();
