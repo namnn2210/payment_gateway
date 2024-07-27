@@ -44,7 +44,7 @@ def list_payout(request):
     banks = Bank.objects.filter(status=True)
     list_payout = Payout.objects.all()
     status = None
-    
+
     # Get search parameters
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'Pending')
@@ -65,7 +65,7 @@ def list_payout(request):
         status = False
     elif status_filter == 'Done':
         status = True
-    
+
     if status is not None:
         list_payout = list_payout.filter(status=status)
     elif status_filter == 'Canceled':
@@ -87,7 +87,6 @@ def list_payout(request):
         end_datetime = datetime.strptime(end_datetime_str, '%Y-%m-%dT%H:%M')
     else:
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
-        
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
 
@@ -98,7 +97,7 @@ def list_payout(request):
             output_field=IntegerField()
         )
     ).order_by('status_priority', '-created_at')
-    
+
     total_results = len(list_payout)
     total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
 
@@ -106,12 +105,21 @@ def list_payout(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'payout_list.html', {
+            'list_payout': page_obj,
+            'total_results': total_results,
+            'total_amount': total_amount,
+            'banks': banks,
+            'bank_data': bank_data,
+        })
+
     return render(request, 'payout.html', {
         'list_payout': page_obj,
         'bank_data': bank_data,
         'banks': banks,
-        'total_results':total_results,
-        'total_amount':total_amount
+        'total_results': total_results,
+        'total_amount': total_amount
     })
 
 def search_payout(request):

@@ -224,7 +224,7 @@ def get_transaction(bank):
                         formatted_amount = '{:,.2f}'.format(row['amount'])
                         
                         alert = (
-                            f'PAYOUT DONE - Đã trừ tiền\n'
+                            f'PAYOUT DONE\n'
                             f'\n'
                             f'🏦 {bank.account_number} - {bank.account_name}\n'
                             f'\n'

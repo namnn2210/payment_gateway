@@ -16,7 +16,7 @@
             <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Payout" %}</button>
         </div>
     </div>
-    <form method="get" action="{% url 'list_payout' %}">
+    <form id="searchForm" method="get" action="{% url 'list_payout' %}">
         <div class="row">
             <div class="col-md-6 col-sm-12 mt-4">
                 <input type="text" id="customSearchBox" name="search" class="form-control" placeholder="{% trans "Search" %}" value="{{ request.GET.search|default_if_none:'' }}">
@@ -48,138 +48,8 @@
         </div>
     </form>
     
-    
-    
-    <div class="row mt-4">
-        <div class="card mb-3 col-md-12 col-sm-12">
-            <div class="card-body text-center">
-                <div class="row">
-                    <div class="col-md-6 col-sm-12">
-                        <strong>{% trans "Total Results" %}:</strong> <strong id="total-results">{{total_results}}</strong>
-                    </div>
-                    <div class="col-md-6 col-sm-12">
-                        <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|floatformat:2|intcomma}}</strong>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body" style="font-size: 12px">
-                <h5 class="card-title">{% trans "List Payout" %}</h5>
-                <div class="table-responsive">
-                    <table class="table table-sm display" id="payoutTable">
-                        <thead>
-                            <tr class="text-center" style="font-size: 12px">
-                                <th></th>
-                                <th scope="col">{% trans "Order ID" %}</th>
-                                <th scope="col">{% trans "CID" %}</th>
-                                <th scope="col">{% trans "Status" %}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in list_payout %}
-                            <tr class="text-center" style="font-size: 12px;" data-toggle="collapse" data-target="#collapse{{ item.id }}" aria-expanded="false" aria-controls="collapse{{ item.id }}">
-                                <td><span class="toggle-icon" id="icon-{{ item.id }}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>
-                                <td>
-                                    {{ item.orderid }}
-                                </td>
-                                <th>{{ item.scode }}</th>
-                                <th>
-                                    {% if item.status %}
-                                    <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
-                                    {% elif not item.status and not item.is_cancel %}
-                                    <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
-                                    {% elif item.is_report and not item.is_cancel %}
-                                    <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
-                                    {% elif item.is_cancel and item.is_report %}
-                                    <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
-                                    {% elif item.is_cancel and not item.is_report %}
-                                    <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
-                                    {% else %}
-                                    <span></span>
-                                    {% endif %}
-                                </th>
-                            </tr>
-                            <tr class="collapse" id="collapse{{ item.id }}">
-                                <td colspan="4">
-                                    <div class="card card-body">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <p><strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma }} </p>
-                                                <p><strong>{% trans "Account Number" %}:</strong> {{ item.accountno }}</p>
-                                                <p><strong>{% trans "Account Name" %}:</strong> {{ item.accountname }}</p>
-                                                <p><strong>{% trans "Bank Name" %}:</strong> {{ item.bankname }}</p>
-                                                <p><strong>{% trans "Bank Code" %}:</strong> {{ item.bankcode }}</p>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <p><strong>{% trans "Created At" %}:</strong> {{ item.created_at|date:"d/m/Y H:i:s" }}</p>
-                                                <p><strong>{% trans "Created By" %}:</strong> {{ item.user }}</p>
-                                                <p><strong>{% trans "Updated At" %}:</strong> {{ item.updated_at }}</p>
-                                                <p><strong>{% trans "Updated By" %}:</strong> {{ item.updated_by }}</p>
-                                                <p><strong>{% trans "Process Bank" %}:</strong> {{ item.process_bank }}</p>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <p><strong>{% trans "Action" %}:</strong>
-                                                    {% if not item.status and not item.is_cancel%}
-                                                    {% if item.user == user or user.is_superuser %}
-                                                        <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
-                                                            data-bs-target="#payModal" data-item-id="{{ item.id }}"
-                                                            data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
-                                                            data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
-                                                            data-is-report="{{item.is_report}}"
-                                                            data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
-                                                    {% endif %}
-                                                    {% endif %}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>    
-                    </table>
-                    <div class="row mt-4">
-                        <div class="col-md-12 col-sm-12">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-center">
-                                    {% if list_payout.has_previous %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="First">
-                                                <span aria-hidden="true">&laquo;&laquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page={{ list_payout.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                    {% for num in list_payout.paginator.page_range %}
-                                        {% if list_payout.number == num %}
-                                            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                                        {% elif num > list_payout.number|add:-3 and num < list_payout.number|add:3 %}
-                                            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}">{{ num }}</a></li>
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if list_payout.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page={{ list_payout.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page={{ list_payout.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Last">
-                                                <span aria-hidden="true">&raquo;&raquo;</span>
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>             
-                </div>
-            </div>
-        </div><!-- End Card with an image on left -->
+    <div id="payoutList">
+        {% include 'payout_list.html' %}
     </div>
 </div>
 <div class="modal fade" id="addPayoutModal"  aria-labelledby="addPayoutModalLabel" aria-hidden="true">
@@ -302,8 +172,33 @@
             icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
             $(this).removeClass('show');
         });
-    });
 
+        $('#searchForm').on('submit', function(event) {
+            event.preventDefault();
+            fetchPayouts();
+        });
+
+        $(document).on('click', '.pagination a', function(event) {
+            event.preventDefault();
+            fetchPayouts($(this).attr('href'));
+        });
+
+        function fetchPayouts(url) {
+            url = url || $('#searchForm').attr('action');
+            var formData = $('#searchForm').serialize();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: formData,
+                success: function(response) {
+                    $('#payoutList').html(response);
+                },
+                error: function() {
+                    toastr.error('An error occurred while fetching the payouts.');
+                }
+            });
+        }
+    });
 
     function formatDateToYYYYMMDD(date) {
         const year = date.getFullYear();
