@@ -127,14 +127,24 @@
             info: false
         });
 
+        // Handle the input and change events on the username input field
+        usernameInput.on('input change', function(event) {
+            const selectedUsername = usernameInput.val();
+            if (event.type === 'change' || (event.type === 'input' && selectedUsername && selectedUsername.trim() !== '')) {
+                usernameInput.data('selected', true);
+            } else {
+                usernameInput.data('selected', false);
+            }
+        });
+
         // Add username on Enter key press
         usernameInput.on('keydown', function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 const selectedUsername = usernameInput.val();
-                if (selectedUsername && !$(`input[value="${selectedUsername}"]`).length) {
+                if (selectedUsername && usernameInput.data('selected') && !$(`input[value="${selectedUsername}"]`).length) {
                     addUsername(selectedUsername);
-                    usernameInput.val('');
+                    usernameInput.val('').data('selected', false);
                 }
             }
         });
@@ -219,4 +229,5 @@
     });
 </script>
 {% endblock %}
+
 
