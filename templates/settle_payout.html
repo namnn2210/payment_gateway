@@ -106,7 +106,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade" id="payModal"  aria-labelledby="payModalLabel" aria-hidden="true">
+<div class="modal fade" id="payModal" aria-labelledby="payModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -119,16 +119,18 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger report-btn" data-item-id="">{% trans "Report" %}</button>
                 <button type="button" class="btn btn-warning cancel-btn" data-item-id="">{% trans "Cancel" %}</button>
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#selectPayoutBankModal">{% trans "Done" %}</button>
+                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selectPayoutBankModal">{% trans "Done" %}</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="selectPayoutBankModal"  aria-labelledby="selectPayoutBankModalLabel" aria-hidden="true">
+
+<!-- Select Payout Bank Modal -->
+<div class="modal fade" id="selectPayoutBankModal" aria-labelledby="selectPayoutBankModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="selectPayoutBankModalLabel">{% trans "Select Settle Payout Bank" %}</h5>
+                <h5 class="modal-title" id="selectPayoutBankModalLabel">{% trans "Select Payout Bank" %}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -137,6 +139,8 @@
                     {% for bank in banks %}
                     <option value="{{ bank.id }}">{{ bank.name }}</option>
                     {% endfor %}
+                    <!-- <option value="1">ACB</option>
+                    <option value="2">VCB</option> -->
                 </select>
             </div>
             <div class="modal-footer">
