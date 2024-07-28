@@ -194,11 +194,13 @@
                             <i class="bi bi-circle"></i><span>{% trans "Settle" %}</span>
                         </a>
                     </li>
+                    {% if user.is_superuser %}
                     <li>
                         <a href="{% url 'user_payout_statistics' %}">
                             <i class="bi bi-circle"></i><span>{% trans "User Payout Statistic" %}</span>
                         </a>
                     </li>
+                    {% endif %}
                 </ul>
             </li><!-- End Components Nav -->
 
