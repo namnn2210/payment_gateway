@@ -26,31 +26,32 @@
                     </thead>
                     <tbody>
                         {% for item in list_payout %}
-                        <tr class="text-center" style="font-size: 12px;" data-toggle="collapse" data-target="#collapse{{ item.id }}" aria-expanded="false" aria-controls="collapse{{ item.id }}">
-                            <td><span class="toggle-icon" id="icon-{{ item.id }}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>
-                            <td>
-                                {{ item.orderid }}
-                            </td>
-                            <th>{{ item.scode }}</th>
-                            <th>
-                                {% if item.status %}
-                                <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
-                                {% elif not item.status and not item.is_cancel %}
-                                <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
-                                {% elif item.is_report and not item.is_cancel %}
-                                <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
-                                {% elif item.is_cancel and item.is_report %}
-                                <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
-                                {% elif item.is_cancel and not item.is_report %}
-                                <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
-                                {% else %}
-                                <span></span>
-                                {% endif %}
-                            </th>
-                        </tr>
-                        <tr class="collapse" id="collapse{{ item.id }}">
-                            <td colspan="4">
-                                <div class="card card-body">
+                            <tr class="main-row text-center" style="font-size: 12px;" data-id="{{ item.id }}">
+                                <td>
+                                    <span class="toggle-icon" id="icon-{{ item.id }}">
+                                        <i class="fa fa-plus-circle" style="color: green;"></i>
+                                    </span>
+                                </td>
+                                <td>{{ item.orderid }}</td>
+                                <td>{{ item.scode }}</td>
+                                <td>
+                                    {% if item.status %}
+                                        <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
+                                    {% elif not item.status and not item.is_cancel %}
+                                        <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
+                                    {% elif item.is_report and not item.is_cancel %}
+                                        <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
+                                    {% elif item.is_cancel and item.is_report %}
+                                        <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
+                                    {% elif item.is_cancel and not item.is_report %}
+                                        <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
+                                    {% else %}
+                                        <span></span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr class="hidden-row" id="details-{{ item.id }}" style="display: none;">
+                                <td colspan="4">
                                     <div class="row">
                                         <div class="col-md-4">
                                             <p><strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma }} </p>
@@ -69,24 +70,22 @@
                                         <div class="col-md-4">
                                             <p><strong>{% trans "Action" %}:</strong>
                                                 {% if not item.status and not item.is_cancel%}
-                                                {% if item.user == user or user.is_superuser %}
-                                                    <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#payModal" data-item-id="{{ item.id }}"
-                                                        data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
-                                                        data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
-                                                        data-is-report="{{item.is_report}}"
-                                                        data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
-                                                {% endif %}
+                                                    {% if item.user == user or user.is_superuser %}
+                                                        <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
+                                                            data-bs-target="#payModal" data-item-id="{{ item.id }}"
+                                                            data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
+                                                            data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
+                                                            data-is-report="{{item.is_report}}"
+                                                            data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
+                                                    {% endif %}
                                                 {% endif %}
                                             </p>
                                         </div>
                                     </div>
-                                    
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
                         {% endfor %}
-                    </tbody>    
+                    </tbody>
                 </table>
                 <div class="row mt-4">
                     <div class="col-md-12 col-sm-12">

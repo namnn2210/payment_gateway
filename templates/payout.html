@@ -162,21 +162,19 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
     $(document).ready(function() {
-        $('tr[data-toggle="collapse"]').on('click', function() {
-            var targetId = $(this).data('target');
-            $(targetId).collapse('toggle');
-        });
+        // Handle row click to toggle hidden row and change icon
+        $('.main-row').on('click', function() {
+            var id = $(this).data('id');
+            var hiddenRow = $('#details-' + id);
+            var icon = $('#icon-' + id + ' i');
+            
+            hiddenRow.toggle();
 
-        $('.collapse').on('shown.bs.collapse', function () {
-            var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
-            icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
-            $(this).addClass('show');
-        });
-
-        $('.collapse').on('hidden.bs.collapse', function () {
-            var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
-            icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
-            $(this).removeClass('show');
+            if (hiddenRow.is(':visible')) {
+                icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
+            } else {
+                icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
+            }
         });
 
         $('#searchForm').on('submit', function(event) {
@@ -198,6 +196,20 @@
                 data: formData,
                 success: function(response) {
                     $('#payoutList').html(response);
+                    // Rebind the click event after updating the list
+                    $('.main-row').on('click', function() {
+                        var id = $(this).data('id');
+                        var hiddenRow = $('#details-' + id);
+                        var icon = $('#icon-' + id + ' i');
+
+                        hiddenRow.toggle();
+
+                        if (hiddenRow.is(':visible')) {
+                            icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
+                        } else {
+                            icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
+                        }
+                    });
                 },
                 error: function() {
                     toastr.error('An error occurred while fetching the payouts.');
@@ -205,6 +217,7 @@
             });
         }
     });
+
 
     function formatDateToYYYYMMDD(date) {
         const year = date.getFullYear();
