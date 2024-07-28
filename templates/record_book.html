@@ -53,7 +53,7 @@
     .same-height .table-responsive {
         flex-grow: 1;
     }
-    .collapse-row td {
+    .hidden-row td {
         text-align: left;
     }
 </style>
@@ -97,15 +97,19 @@
                         </thead>
                         <tbody id="inTransactionTableBody" class="text-center">
                             {% for item in in_page_obj %}
-                            <tr data-toggle="collapse" data-target="#details-in-{{ forloop.counter0 }}" aria-expanded="false" aria-controls="details-in-{{ forloop.counter0 }}">
-                                <td><span class="toggle-icon" id="icon-{{ item.id }}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>
+                            <tr class="main-row text-center" style="font-size: 12px;" data-transaction-number="{{ item.transaction_number }}">
+                                <td>
+                                    <span class="toggle-icon" id="icon-{{ item.transaction_number }}">
+                                        <i class="fa fa-plus-circle" style="color: green;"></i>
+                                    </span>
+                                </td>
                                 <td>{{ item.account_number }}</td>
                                 <td class="text-success">{{ item.amount|floatformat:2|intcomma }}</td>
                                 <td>{{ item.transaction_date|date:"d/m/Y H:i:s" }}</td>
                                 <td>{{item.transfer_code}}</td>
                                 <td>{{ item.status }}</td>
                             </tr>
-                            <tr class="collapse collapse-row" id="details-in-{{ forloop.counter0 }}">
+                            <tr class="hidden-row" id="details-{{ item.transaction_number }}" style="display: none;">
                                 <td colspan="6">
                                     <div>
                                         <strong>{% trans "Transaction Number" %}:</strong> {{ item.transaction_number }}<br>
@@ -177,14 +181,18 @@
                         </thead>
                         <tbody id="outTransactionTableBody" class="text-center">
                             {% for item in out_page_obj %}
-                            <tr data-toggle="collapse" data-target="#details-out-{{ forloop.counter0 }}" aria-expanded="false" aria-controls="details-out-{{ forloop.counter0 }}">
-                                <td><span class="toggle-icon" id="icon-{{ item.id }}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>
+                            <tr class="main-row text-center" style="font-size: 12px;" data-transaction-number="{{ item.transaction_number }}">
+                                <td>
+                                    <span class="toggle-icon" id="icon-{{ item.transaction_number }}">
+                                        <i class="fa fa-plus-circle" style="color: green;"></i>
+                                    </span>
+                                </td>
                                 <td>{{ item.account_number }}</td>
                                 <td class="text-danger">{{ item.amount|floatformat:2|intcomma }}</td>
                                 <td>{{ item.transaction_date|date:"d/m/Y H:i:s" }}</td>
                                 <td>{{ item.status }}</td>
                             </tr>
-                            <tr class="collapse collapse-row" id="details-out-{{ forloop.counter0 }}">
+                            <tr class="hidden-row" id="details-{{ item.transaction_number }}" style="display: none;">
                                 <td colspan="6">
                                     <div>
                                         <strong>{% trans "Transaction Number" %}:</strong> {{ item.transaction_number }}<br>
@@ -247,22 +255,23 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
 $(document).ready(function() {
-    function bindCollapseEvents() {
-        $('tr[data-toggle="collapse"]').off('click').on('click', function() {
-            var targetId = $(this).data('target');
-            $(targetId).collapse('toggle');
-        });
+    function toggleDetailsRow(rowId) {
+        const detailsRow = $('#details-' + rowId);
+        const icon = $('#icon-' + rowId).find('i');
 
-        $('.collapse').off('shown.bs.collapse').on('shown.bs.collapse', function () {
-            var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
-            icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
-            $(this).addClass('show');
-        });
-
-        $('.collapse').off('hidden.bs.collapse').on('hidden.bs.collapse', function () {
-            var icon = $('tr[data-target="#' + this.id + '"]').find('.toggle-icon i');
+        if (detailsRow.is(':visible')) {
+            detailsRow.hide();
             icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
-            $(this).removeClass('show');
+        } else {
+            detailsRow.show();
+            icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
+        }
+    }
+
+    function bindRowClickEvents() {
+        $('.main-row').off('click').on('click', function() {
+            const rowId = $(this).data('transactionNumber');
+            toggleDetailsRow(rowId);
         });
     }
 
@@ -283,16 +292,15 @@ $(document).ready(function() {
     function updateTableData(tableId, data) {
         const tableBody = $('#' + tableId);
         tableBody.empty();
-        data.forEach((item, index) => {
+        data.forEach((item) => {
             const row = $('<tr>')
-                .attr('data-toggle', 'collapse')
-                .attr('data-target', `#details-${tableId}-${index}`)
-                .attr('aria-expanded', 'false')
-                .attr('aria-controls', `details-${tableId}-${index}`);
-            
-            row.append(`<td><span class="toggle-icon" id="icon-${item.id}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>`);
+                .addClass('main-row text-center')
+                .attr('data-transaction-number', item.transaction_number)
+                .attr('style', 'font-size: 12px;');
+
+            row.append(`<td><span class="toggle-icon" id="icon-${item.transaction_number}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>`);
             row.append(`<td>${item.account_number}</td>`);
-            row.append(`<td class="${item.transaction_type === 'IN' ? 'text-success' : 'text-danger'}">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`);
+            row.append(`<td class="${tableId === 'inTransactionTableBody' ? 'text-success' : 'text-danger'}">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`);
             row.append(`<td>${new Date(item.transaction_date).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'medium' })}</td>`);
             if (tableId === 'inTransactionTableBody') {
                 row.append(`<td>${item.transfer_code}</td>`);
@@ -301,14 +309,15 @@ $(document).ready(function() {
             tableBody.append(row);
 
             const detailsRow = $('<tr>')
-                .addClass('collapse collapse-row')
-                .attr('id', `details-${tableId}-${index}`);
-            
+                .addClass('hidden-row')
+                .attr('id', `details-${item.transaction_number}`)
+                .attr('style', 'display: none;');
+
             detailsRow.append(`<td colspan="6"><div><strong>{% trans "Transaction Number" %}:</strong> ${item.transaction_number}<br><strong>{% trans "Memo" %}:</strong> ${item.description}</div></td>`);
             tableBody.append(detailsRow);
         });
 
-        bindCollapseEvents(); // Rebind the collapse events after updating the table data
+        bindRowClickEvents();
     }
 
     function handlePaginationClick(event) {
@@ -317,7 +326,11 @@ $(document).ready(function() {
         if (page) {
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
-            params.set($(this).closest('.pagination').attr('id') === 'in-pagination' ? 'in_page' : 'out_page', page);
+            if ($(this).closest('.pagination').attr('id') === 'in-pagination') {
+                params.set('in_page', page);
+            } else {
+                params.set('out_page', page);
+            }
             url.search = params.toString();
             fetchData(url.toString(), function(data) {
                 updateTableData('inTransactionTableBody', data.in_transactions);
@@ -388,9 +401,9 @@ $(document).ready(function() {
     });
 
     $('a.page-link').on('click', handlePaginationClick);
-    
-    // Bind the collapse events initially
-    bindCollapseEvents();
+
+    // Bind the initial row click events
+    bindRowClickEvents();
 });
 </script>
 {% endblock %}
