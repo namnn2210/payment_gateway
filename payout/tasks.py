@@ -25,7 +25,34 @@ def update_payout_background(update_body):
     payout.process_bank = bank
     formatted_amount = '{:,.2f}'.format(payout.money)
     if  update_type == 'done':
-        if update_status_request(payout=payout, status='S'):
+        if payout.is_auto:
+            if update_status_request(payout=payout, status='S'):
+                payout.status = True
+                alert = (
+                    f'🟢🟢🟢Success🟢🟢🟢\n'
+                    f'\n'
+                    f'Order ID: {payout.orderid}\n'
+                    f'\n'
+                    f'Amount: {formatted_amount} \n'
+                    f'\n'
+                    f'Bank name: {payout.bankcode}\n'
+                    f'\n'
+                    f'Account name: {payout.accountname}\n'
+                    f'\n'
+                    f'Account number: {payout.accountno}\n'
+                    f'\n'
+                    f'Process bank: {payout.process_bank.name}\n'
+                    f'\n'
+                    f'Created by: {payout.user}\n'
+                    f'\n'
+                    f'Done by: {request_user}\n'
+                    f'\n'
+                    f'Date: {payout.updated_at}'
+                )
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                update_amount_by_date('OUT',payout.money)
+                payout.save()
+        else:
             payout.status = True
             alert = (
                 f'🟢🟢🟢Success🟢🟢🟢\n'
@@ -74,8 +101,30 @@ def update_payout_background(update_body):
     elif update_type == 'cancel':
         payout.is_cancel = True
         payout.status = None
-        # update_status_request(payout=payout, status='F')
-        if update_status_request(payout=payout, status='F'):
+        if payout.is_auto:
+            if update_status_request(payout=payout, status='F'):
+                alert = (
+                    f'🔴🔴🔴Failed🔴🔴🔴\n'
+                    f'\n'
+                    f'Order ID: {payout.orderid}\n'
+                    f'\n'
+                    f'Amount: {formatted_amount} \n'
+                    f'\n'
+                    f'Bank name: {payout.bankcode}\n'
+                    f'\n'
+                    f'Account name: {payout.accountname}\n'
+                    f'\n'
+                    f'Account number: {payout.accountno}\n'
+                    f'\n'
+                    f'Created by: {payout.user}\n'
+                    f'\n'
+                    f'Done by: {request_user}\n'
+                    f'\n'
+                    f'Date: {payout.updated_at}'
+                )
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                payout.save()
+        else:
             alert = (
                 f'🔴🔴🔴Failed🔴🔴🔴\n'
                 f'\n'
@@ -97,5 +146,4 @@ def update_payout_background(update_body):
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
             payout.save()
-
 
