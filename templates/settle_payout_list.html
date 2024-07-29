@@ -70,12 +70,14 @@
                                         <div class="col-md-4">
                                             <p><strong>{% trans "Action" %}:</strong>
                                                 {% if user.is_superuser %}
-                                                    <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
-                                                        data-bs-target="#payModal" data-item-id="{{ item.id }}"
-                                                        data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
-                                                        data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
-                                                        data-is-report="{{item.is_report}}"
-                                                        data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
+                                                    {% if not item.status and not item.is_cancel%}
+                                                        <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal"
+                                                            data-bs-target="#payModal" data-item-id="{{ item.id }}"
+                                                            data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
+                                                            data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
+                                                            data-is-report="{{item.is_report}}"
+                                                            data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
+                                                    {% endif %}
                                                 {% else %}
                                                     {% if item.user == user or item.user.username == 'admin' %}
                                                         {% if not item.status and not item.is_cancel%}
