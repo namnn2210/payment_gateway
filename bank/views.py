@@ -75,6 +75,12 @@ def record_book(request):
     # Separate and sort transactions by type
     in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
     out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
+    
+    # Calculate total amounts
+    total_in_amount = in_transactions_df['amount'].sum()
+    total_out_amount = out_transactions_df['amount'].sum()
+    
+    print(total_in_amount, total_out_amount)
 
     # Pagination for "IN" transactions
     in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
@@ -89,6 +95,10 @@ def record_book(request):
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # Return JSON response for AJAX requests
         
+        total_in_amount = int(float(in_transactions_df['amount'].sum()))
+        total_out_amount = int(float(out_transactions_df['amount'].sum()))
+        
+        
         data = {
             'in_transactions': list(in_page_obj),
             'out_transactions': list(out_page_obj),
@@ -96,6 +106,8 @@ def record_book(request):
             'in_num_pages': in_page_obj.paginator.num_pages,
             'out_page': out_page_obj.number,
             'out_num_pages': out_page_obj.paginator.num_pages,
+            'total_in_amount': total_in_amount,
+            'total_out_amount': total_out_amount,
         }
 
         return JsonResponse(data)
@@ -105,7 +117,9 @@ def record_book(request):
         'out_page_obj': out_page_obj, 
         'search_query': search_query, 
         'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
-        'end_date': end_date.strftime('%Y-%m-%dT%H:%M')
+        'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
+        'total_in_amount': total_in_amount,
+        'total_out_amount': total_out_amount,
     })
 
 @method_decorator(csrf_exempt, name='dispatch')
