@@ -88,37 +88,39 @@
             </div>
         </div>
     </form>
-    <table id="payout-table" class="table table-sm mb-4 text-center">
-        <thead>
-            <tr style="font-size: 13px">
-                <th>{% trans "User" %}</th>
-                <th>{% trans "Total Payout" %}</th>
-                <th>{% trans "Total Settled Payout" %}</th>
-                <th>{% trans "Total" %}</th>
-            </tr>
-        </thead>
-        <tbody id="table-body">
-            {% for username, totals in combined_data.items %}
+    <div class="table-responsive">
+        <table id="payout-table" class="table table-sm mb-4 text-center">
+            <thead>
                 <tr style="font-size: 13px">
-                    <td>{{ username }}</td>
-                    <td>{{ totals.total_payout|floatformat:2|intcomma }}</td>
-                    <td>{{ totals.total_settled_payout|floatformat:2|intcomma }}</td>
-                    <td>{{ totals.total|floatformat:2|intcomma }}</td>
+                    <th>{% trans "User" %}</th>
+                    <th>{% trans "Total Payout" %}</th>
+                    <th>{% trans "Total Settled Payout" %}</th>
+                    <th>{% trans "Total" %}</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr style="font-size: 13px">
-                <th>{% trans "Total" %}</th>
-                <th id="total-payout"></th>
-                <th id="total-settled-payout"></th>
-                <th id="total-all"></th>
-            </tr>
-        </tfoot>
-    </table>
-    {% if not combined_data %}
-        <div class="alert alert-warning">{% trans "No info found for the selected criteria." %}</div>
-    {% endif %}
+            </thead>
+            <tbody id="table-body">
+                {% for username, totals in combined_data.items %}
+                    <tr style="font-size: 13px">
+                        <td>{{ username }}</td>
+                        <td>{{ totals.total_payout|floatformat:2|intcomma }}</td>
+                        <td>{{ totals.total_settled_payout|floatformat:2|intcomma }}</td>
+                        <td>{{ totals.total|floatformat:2|intcomma }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="font-size: 13px">
+                    <th>{% trans "Total" %}</th>
+                    <th id="total-payout"></th>
+                    <th id="total-settled-payout"></th>
+                    <th id="total-all"></th>
+                </tr>
+            </tfoot>
+        </table>
+        {% if not combined_data %}
+            <div class="alert alert-warning">{% trans "No info found for the selected criteria." %}</div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
 
