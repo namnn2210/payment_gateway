@@ -83,9 +83,13 @@
     <div class="row d-flex justify-content-between mt-4 same-height">
         <div class="col-md-6">
             <div class="card-body table-wrapper" style="font-size: 12px">
+                <div class="totals-container">
+                    <div>{% trans "Total IN Amount:" %} <span id="total-in-amount">{{ total_in_amount|floatformat:2|intcomma }}</span></div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-sm display">
                         <thead>
+                            <div>{% trans "Total IN Amount:" %} <span id="total-in-amount">{{ total_in_amount|floatformat:2|intcomma }}</span></div>
                             <tr class="text-center" style="font-size: 12px">
                                 <th></th>
                                 <th>{% trans "Account Number" %}</th>
@@ -168,6 +172,9 @@
 
         <div class="col-md-6">
             <div class="card-body table-wrapper" style="font-size: 12px">
+                <div class="totals-container">
+                    <div>{% trans "Total OUT Amount:" %} <span id="total-out-amount">{{ total_out_amount|floatformat:2|intcomma }}</span></div>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-sm display">
                         <thead>
@@ -275,6 +282,12 @@ $(document).ready(function() {
         });
     }
 
+    function updateTotals(totalIn, totalOut) {
+        $('#total-in-amount').text(totalIn.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        $('#total-out-amount').text(totalOut.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+
+
     function fetchData(url, callback) {
         $.ajax({
             url: url,
@@ -282,6 +295,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(data) {
                 callback(data);
+                updateTotals(data.total_in_amount, data.total_out_amount);
             },
             error: function(xhr, status, error) {
                 console.error('Error fetching data:', error);
