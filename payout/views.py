@@ -365,8 +365,6 @@ def user_payout_statistics(request):
     usernames = request.GET.getlist('usernames')
     start_datetime_str = request.GET.get('start_datetime', '')
     end_datetime_str = request.GET.get('end_datetime', '')
-    
-    print(usernames)
 
     today = datetime.now().date().strftime('%d/%m/%Y')
 
@@ -420,6 +418,9 @@ def user_payout_statistics(request):
                 'total_payout': 0,
                 'total_settled_payout': settle_payout['total_settled_payout']
             }
+            
+    for username, totals in combined_data.items():
+        totals['total'] = totals['total_payout'] + totals['total_settled_payout']
     
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({'combined_data': combined_data})

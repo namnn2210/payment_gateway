@@ -94,6 +94,7 @@
                 <th>{% trans "User" %}</th>
                 <th>{% trans "Total Payout" %}</th>
                 <th>{% trans "Total Settled Payout" %}</th>
+                <th>{% trans "Total" %}</th>
             </tr>
         </thead>
         <tbody id="table-body">
@@ -102,9 +103,18 @@
                     <td>{{ username }}</td>
                     <td>{{ totals.total_payout|floatformat:2|intcomma }}</td>
                     <td>{{ totals.total_settled_payout|floatformat:2|intcomma }}</td>
+                    <td>{{ totals.total|floatformat:2|intcomma }}</td>
                 </tr>
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr style="font-size: 13px">
+                <th>{% trans "Total" %}</th>
+                <th id="total-payout"></th>
+                <th id="total-settled-payout"></th>
+                <th id="total-all"></th>
+            </tr>
+        </tfoot>
     </table>
     {% if not combined_data %}
         <div class="alert alert-warning">{% trans "No info found for the selected criteria." %}</div>
@@ -124,7 +134,29 @@
         const dataTable = $('#payout-table').DataTable({
             paging: true,
             searching: false,
-            info: false
+            info: false,
+            footerCallback: function (row, data, start, end, display) {
+                let api = this.api();
+                let totalPayout = 0;
+                let totalSettledPayout = 0;
+                let totalAll = 0;
+
+                // Calculate the total for each column
+                api.column(1, { page: 'current' }).data().each(function(value) {
+                    totalPayout += parseFloat(value.replace(/,/g, ''));
+                });
+                api.column(2, { page: 'current' }).data().each(function(value) {
+                    totalSettledPayout += parseFloat(value.replace(/,/g, ''));
+                });
+                api.column(3, { page: 'current' }).data().each(function(value) {
+                    totalAll += parseFloat(value.replace(/,/g, ''));
+                });
+
+                // Update the footer with the totals
+                $(api.column(1).footer()).html(totalPayout.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+                $(api.column(2).footer()).html(totalSettledPayout.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+                $(api.column(3).footer()).html(totalAll.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
+            }
         });
 
         // Handle the input and change events on the username input field
@@ -178,10 +210,12 @@
                     dataTable.clear().draw();
                     if (response.combined_data && Object.keys(response.combined_data).length) {
                         $.each(response.combined_data, function(username, totals) {
+                            const total = totals.total_payout + totals.total_settled_payout;
                             const newRow = dataTable.row.add([
                                 username,
                                 totals.total_payout.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
-                                totals.total_settled_payout.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+                                totals.total_settled_payout.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'),
+                                total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
                             ]).node();
 
                             $(newRow).addClass('table-sm');
@@ -190,6 +224,7 @@
                     } else {
                         const noDataRow = dataTable.row.add([
                             '{% trans "No info found for the selected criteria." %}',
+                            '',
                             '',
                             ''
                         ]).node();

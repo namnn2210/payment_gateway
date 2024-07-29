@@ -328,8 +328,10 @@ $(document).ready(function() {
             const params = new URLSearchParams(url.search);
             if ($(this).closest('.pagination').attr('id') === 'in-pagination') {
                 params.set('in_page', page);
+                params.set('out_page', $('#out-pagination .active .page-link').data('page') || 1);
             } else {
                 params.set('out_page', page);
+                params.set('in_page', $('#in-pagination .active .page-link').data('page') || 1);
             }
             url.search = params.toString();
             fetchData(url.toString(), function(data) {
@@ -392,6 +394,8 @@ $(document).ready(function() {
         event.preventDefault();
         const url = new URL(window.location.href);
         const params = new URLSearchParams($(this).serialize());
+        params.set('in_page', $('#in-pagination .active .page-link').data('page') || 1);
+        params.set('out_page', $('#out-pagination .active .page-link').data('page') || 1);
         fetchData(`${url.pathname}?${params.toString()}`, function(data) {
             updateTableData('inTransactionTableBody', data.in_transactions);
             updateTableData('outTransactionTableBody', data.out_transactions);
@@ -405,5 +409,6 @@ $(document).ready(function() {
     // Bind the initial row click events
     bindRowClickEvents();
 });
+
 </script>
 {% endblock %}
