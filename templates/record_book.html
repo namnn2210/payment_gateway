@@ -333,19 +333,26 @@ $(document).ready(function() {
         bindRowClickEvents();
     }
 
-    function handlePaginationClick(event) {
+    function handlePaginationClick(event, paginationId) {
         event.preventDefault();
         const page = $(this).data('page');
         if (page) {
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
-            if ($(this).closest('.pagination').attr('id') === 'in-pagination') {
-                params.set('in_page', page);
-                params.set('out_page', $('#out-pagination .active .page-link').data('page') || 1);
-            } else {
-                params.set('out_page', page);
-                params.set('in_page', $('#in-pagination .active .page-link').data('page') || 1);
-            }
+
+            // Preserve the current search parameters
+            params.set('in_page', paginationId === 'in-pagination' ? page : $('#in-pagination .active .page-link').data('page') || 1);
+            params.set('out_page', paginationId === 'out-pagination' ? page : $('#out-pagination .active .page-link').data('page') || 1);
+
+            // Add search parameters to the URL
+            const searchParams = new URLSearchParams($('#search-form').serializeArray().reduce((obj, item) => {
+                obj[item.name] = item.value;
+                return obj;
+            }, {}));
+            searchParams.forEach((value, key) => {
+                params.set(key, value);
+            });
+
             url.search = params.toString();
             fetchData(url.toString(), function(data) {
                 updateTableData('inTransactionTableBody', data.in_transactions);
@@ -355,6 +362,7 @@ $(document).ready(function() {
             });
         }
     }
+
 
     function updatePagination(paginationId, currentPage, numPages) {
         const pagination = $('#' + paginationId);
@@ -400,15 +408,20 @@ $(document).ready(function() {
                 </li>
             `);
         }
-        pagination.find('a.page-link').on('click', handlePaginationClick);
+        pagination.find('a.page-link').on('click', function(event) {
+            handlePaginationClick.call(this, event, paginationId);
+        });
     }
 
     $('#search-form').on('submit', function(event) {
         event.preventDefault();
         const url = new URL(window.location.href);
         const params = new URLSearchParams($(this).serialize());
+
+        // Set pagination parameters
         params.set('in_page', $('#in-pagination .active .page-link').data('page') || 1);
         params.set('out_page', $('#out-pagination .active .page-link').data('page') || 1);
+
         fetchData(`${url.pathname}?${params.toString()}`, function(data) {
             updateTableData('inTransactionTableBody', data.in_transactions);
             updateTableData('outTransactionTableBody', data.out_transactions);
@@ -416,8 +429,6 @@ $(document).ready(function() {
             updatePagination('out-pagination', data.out_page, data.out_num_pages);
         });
     });
-
-    $('a.page-link').on('click', handlePaginationClick);
 
     // Bind the initial row click events
     bindRowClickEvents();
