@@ -449,14 +449,14 @@ msgstr "Không có kết quar"
 #~ msgid "Grand Total"
 #~ msgstr "Tổng"
 
-#~ msgid "Auto/Manual"
-#~ msgstr "Tự động/Thủ công"
+msgid "Auto/Manual"
+msgstr "Tự động/Thủ công"
 
-#~ msgid "Auto"
-#~ msgstr "Tự động"
+msgid "Auto"
+msgstr "Tự động"
 
-#~ msgid "Manual"
-#~ msgstr "Thủ công"
+msgid "Manual"
+msgstr "Thủ công"
 
 #~ msgid "Transactions Success Count"
 #~ msgstr "Số lệnh thành công"

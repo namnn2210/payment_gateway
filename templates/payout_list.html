@@ -68,6 +68,11 @@
                                             <p><strong>{% trans "Process Bank" %}:</strong> {{ item.process_bank }}</p>
                                         </div>
                                         <div class="col-md-4">
+                                            {% if item.is_auto %}
+                                                <p><strong>{% trans "Auto/Manual" %}:</strong> {% trans "Auto" %}</p>
+                                            {% else %}
+                                                <p><strong>{% trans "Auto/Manual" %}:</strong> {% trans "Manual" %}</p>
+                                            {% endif %}
                                             <p><strong>{% trans "Action" %}:</strong>
                                                 {% if user.is_superuser %}
                                                     {% if not item.status and not item.is_cancel%}
