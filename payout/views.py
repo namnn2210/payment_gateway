@@ -154,7 +154,7 @@ class AddPayoutView(View):
     
         payout = Payout.objects.create(
             user=request.user,
-            scode=scode,
+            scode='CID1630'+scode,
             orderno=orderid,
             orderid=orderid,
             money=int(float(money)),
