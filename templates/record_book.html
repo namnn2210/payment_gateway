@@ -76,6 +76,8 @@
         </div>
         <div class="row mt-4">
             <div class="col-md-12 col-sm-12 text-right">
+                <input type="hidden" name="in_page" value="{{ in_page_obj.number }}">
+                <input type="hidden" name="out_page" value="{{ out_page_obj.number }}">
                 <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
             </div>
         </div>
@@ -286,7 +288,6 @@ $(document).ready(function() {
         $('#total-out-amount').text(totalOut.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
 
-
     function fetchData(url, callback) {
         $.ajax({
             url: url,
@@ -341,17 +342,8 @@ $(document).ready(function() {
             const params = new URLSearchParams(url.search);
 
             // Preserve the current search parameters
-            params.set('in_page', paginationId === 'in-pagination' ? page : $('#in-pagination .active .page-link').data('page') || 1);
-            params.set('out_page', paginationId === 'out-pagination' ? page : $('#out-pagination .active .page-link').data('page') || 1);
-
-            // Add search parameters to the URL
-            const searchParams = new URLSearchParams($('#search-form').serializeArray().reduce((obj, item) => {
-                obj[item.name] = item.value;
-                return obj;
-            }, {}));
-            searchParams.forEach((value, key) => {
-                params.set(key, value);
-            });
+            params.set('in_page', paginationId === 'in-pagination' ? page : params.get('in_page') || 1);
+            params.set('out_page', paginationId === 'out-pagination' ? page : params.get('out_page') || 1);
 
             url.search = params.toString();
             fetchData(url.toString(), function(data) {
@@ -360,9 +352,10 @@ $(document).ready(function() {
                 updatePagination('in-pagination', data.in_page, data.in_num_pages);
                 updatePagination('out-pagination', data.out_page, data.out_num_pages);
             });
+
+            history.pushState({}, '', url.toString());
         }
     }
-
 
     function updatePagination(paginationId, currentPage, numPages) {
         const pagination = $('#' + paginationId);
@@ -418,9 +411,11 @@ $(document).ready(function() {
         const url = new URL(window.location.href);
         const params = new URLSearchParams($(this).serialize());
 
-        // Set pagination parameters
-        params.set('in_page', $('#in-pagination .active .page-link').data('page') || 1);
-        params.set('out_page', $('#out-pagination .active .page-link').data('page') || 1);
+        // Preserve pagination parameters
+        const inPage = params.get('in_page') || 1;
+        const outPage = params.get('out_page') || 1;
+        params.set('in_page', inPage);
+        params.set('out_page', outPage);
 
         fetchData(`${url.pathname}?${params.toString()}`, function(data) {
             updateTableData('inTransactionTableBody', data.in_transactions);
@@ -428,11 +423,23 @@ $(document).ready(function() {
             updatePagination('in-pagination', data.in_page, data.in_num_pages);
             updatePagination('out-pagination', data.out_page, data.out_num_pages);
         });
+
+        history.pushState({}, '', `${url.pathname}?${params.toString()}`);
     });
 
     // Bind the initial row click events
     bindRowClickEvents();
+
+    // Initial pagination binding
+    $('#in-pagination').find('a.page-link').on('click', function(event) {
+        handlePaginationClick.call(this, event, 'in-pagination');
+    });
+    $('#out-pagination').find('a.page-link').on('click', function(event) {
+        handlePaginationClick.call(this, event, 'out-pagination');
+    });
 });
+
+
 
 </script>
 {% endblock %}
