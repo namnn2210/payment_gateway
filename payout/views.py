@@ -281,22 +281,24 @@ def webhook(request):
             
             user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
                 
-        system_bankcode = None
-        partner_bankcode = None
+        system_bankcode = ''
+        partner_bankcode = ''
         # Get bank code
         # Format through bank code dict mapping
-        if bankcode == '':
+        if bankcode == '' and payeebankbranch == '':
             # Settle
             for bank in partner_bank_data:
                 if bank['bankname'] == payeebankname:
                     system_bankcode = bank['code']
-                    partner_bankcode = bank['code']
+                    # partner_bankcode = bank['code']
+                else:
+                    return JsonResponse({'status': 506, 'message': 'Bank not found'})
             admin = User.objects.filter(username="admin").first()
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
             settle_payout = SettlePayout.objects.create(
-                    user=admin,
+                    user=random.choice(user_timelines).user,
                     scode=scode,
                     orderno=orderno,
                     orderid=orderid,
