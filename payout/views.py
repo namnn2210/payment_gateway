@@ -50,14 +50,14 @@ def list_payout(request):
 
     if search_query:
         list_payout = list_payout.filter(
-            Q(scode__contains=search_query) |
-            Q(orderno__contains=search_query) |
-            Q(orderid__contains=search_query) |
-            Q(money__contains=search_query) |
-            Q(accountno__contains=search_query) |
-            Q(accountname__contains=search_query) |
-            Q(bankcode__contains=search_query) |
-            Q(process_bank__name__contains=search_query)
+            Q(scode__icontains=search_query) |
+            Q(orderno__icontains=search_query) |
+            Q(orderid__icontains=search_query) |
+            Q(money__icontains=search_query) |
+            Q(accountno__icontains=search_query) |
+            Q(accountname__icontains=search_query) |
+            Q(bankcode__icontains=search_query) |
+            Q(process_bank__name__icontains=search_query)
         )
 
     if status_filter == 'Pending':
