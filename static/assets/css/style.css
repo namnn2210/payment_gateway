@@ -597,7 +597,7 @@ h6 {
 /*--------------------------------------------------------------
 # Sidebar
 --------------------------------------------------------------*/
-.sidebar {
+/* .sidebar {
   position: fixed;
   top: 60px;
   left: 0;
@@ -627,17 +627,17 @@ h6 {
 
 .sidebar::-webkit-scrollbar-thumb {
   background-color: #aab7cf;
-}
+} */
 
-@media (min-width: 1200px) {
+/* @media (min-width: 1200px) {
 
   #main,
   #footer {
     margin-left: 300px;
   }
-}
+} */
 
-@media (max-width: 1199px) {
+/* @media (max-width: 1199px) {
   .toggle-sidebar .sidebar {
     left: 0;
   }
@@ -755,7 +755,7 @@ h6 {
 
 .sidebar-nav .nav-content a.active i {
   background-color: #4154f1;
-}
+} */
 
 /*--------------------------------------------------------------
 # Dashboard
