@@ -101,6 +101,7 @@
                             </tr>
                         </thead>
                         <tbody id="inTransactionTableBody" class="text-center">
+                            {% if in_page_obj%}
                             {% for item in in_page_obj %}
                             <tr class="main-row text-center" style="font-size: 12px;" data-transaction-number="{{ item.transaction_number }}">
                                 <td>
@@ -123,10 +124,12 @@
                                 </td>
                             </tr>
                             {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
                 <!-- Pagination for IN transactions -->
+                {% if in_page_obj%}
                 <div class="d-flex justify-content-center">
                     <nav aria-label="In transactions page navigation">
                         <ul class="pagination" id="in-pagination">
@@ -168,6 +171,7 @@
                         </ul>
                     </nav>
                 </div>
+                {% endif %}
             </div>
         </div>
 
@@ -188,6 +192,7 @@
                             </tr>
                         </thead>
                         <tbody id="outTransactionTableBody" class="text-center">
+                            {% if in_page_obj%}
                             {% for item in out_page_obj %}
                             <tr class="main-row text-center" style="font-size: 12px;" data-transaction-number="{{ item.transaction_number }}">
                                 <td>
@@ -209,10 +214,12 @@
                                 </td>
                             </tr>
                             {% endfor %}
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
                 <!-- Pagination for OUT transactions -->
+                {% if in_page_obj%}
                 <div class="d-flex justify-content-center">
                     <nav aria-label="Out transactions page navigation">
                         <ul class="pagination" id="out-pagination">
@@ -254,6 +261,7 @@
                         </ul>
                     </nav>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

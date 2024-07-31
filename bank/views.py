@@ -23,14 +23,19 @@ load_dotenv()
 @login_required(login_url='user_login')
 def list_bank(request):
     list_bank_option = Bank.objects.filter(status=True)
-    list_user_bank = BankAccount.objects.all()
+    if request.user.is_superuser:
+        list_user_bank = BankAccount.objects.all()
+    else:
+        list_user_bank = BankAccount.objects.filter(user=request.user)
     return render(request=request, template_name='bank.html',context={'list_bank_option':list_bank_option, 'list_user_bank':list_user_bank})
 
 @login_required(login_url='user_login')
 def record_book(request):
     redis_client = redis_connect(1)
-    
-    list_banks = BankAccount.objects.all()
+    if request.user.is_superuser:
+        list_banks = BankAccount.objects.all()
+    else:
+        list_banks = BankAccount.objects.filter(user=request.user)
     all_transactions = []
     for bank in list_banks:
         transactions_str = redis_client.get(bank.account_number)
@@ -38,19 +43,14 @@ def record_book(request):
             all_transactions += json.loads(transactions_str)
     all_transactions_df = pd.DataFrame(all_transactions)
     
-    # Convert the 'transaction_date' column to datetime format if it exists
-    if 'transaction_date' in all_transactions_df.columns:
-        all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
-
-    # Default start and end date to today if not provided
-    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-
-    # Get form inputs
     search_query = request.GET.get('search', '')
     start_date = request.GET.get('start_datetime', '')
     end_date = request.GET.get('end_datetime', '')
-
+    
+    # Default start and end date to today if not provided
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+    
     if start_date:
         start_date = parse_datetime(start_date)
     else:
@@ -60,67 +60,85 @@ def record_book(request):
         end_date = parse_datetime(end_date)
     else:
         end_date = today_end
+        
 
-    # Filter transactions based on form input
-    filtered_transactions_df = all_transactions_df[
-        (all_transactions_df['transaction_date'] >= start_date) &
-        (all_transactions_df['transaction_date'] <= end_date)
-    ]
 
-    if search_query:
-        filtered_transactions_df = filtered_transactions_df[
-            filtered_transactions_df.apply(lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1)
+    if not all_transactions_df.empty:
+    
+        # Convert the 'transaction_date' column to datetime format if it exists
+        if 'transaction_date' in all_transactions_df.columns:
+            all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
+
+        # Get form inputs
+        
+        # Filter transactions based on form input
+        filtered_transactions_df = all_transactions_df[
+            (all_transactions_df['transaction_date'] >= start_date) &
+            (all_transactions_df['transaction_date'] <= end_date)
         ]
-    
-    # Separate and sort transactions by type
-    in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
-    out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
-    
-    # Calculate total amounts
-    total_in_amount = in_transactions_df['amount'].sum()
-    total_out_amount = out_transactions_df['amount'].sum()
-    
-    print(total_in_amount, total_out_amount)
 
-    # Pagination for "IN" transactions
-    in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
-    in_page_number = request.GET.get('in_page')
-    in_page_obj = in_paginator.get_page(in_page_number)
+        if search_query:
+            filtered_transactions_df = filtered_transactions_df[
+                filtered_transactions_df.apply(lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1)
+            ]
+        
+        # Separate and sort transactions by type
+        in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
+        out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
+        
+        # Calculate total amounts
+        total_in_amount = in_transactions_df['amount'].sum()
+        total_out_amount = out_transactions_df['amount'].sum()
+        
 
-    # Pagination for "OUT" transactions
-    out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
-    out_page_number = request.GET.get('out_page')
-    out_page_obj = out_paginator.get_page(out_page_number)
+        # Pagination for "IN" transactions
+        in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
+        in_page_number = request.GET.get('in_page')
+        in_page_obj = in_paginator.get_page(in_page_number)
 
-    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        # Return JSON response for AJAX requests
-        
-        total_in_amount = int(float(in_transactions_df['amount'].sum()))
-        total_out_amount = int(float(out_transactions_df['amount'].sum()))
-        
-        
-        data = {
-            'in_transactions': list(in_page_obj),
-            'out_transactions': list(out_page_obj),
-            'in_page': in_page_obj.number,
-            'in_num_pages': in_page_obj.paginator.num_pages,
-            'out_page': out_page_obj.number,
-            'out_num_pages': out_page_obj.paginator.num_pages,
+        # Pagination for "OUT" transactions
+        out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
+        out_page_number = request.GET.get('out_page')
+        out_page_obj = out_paginator.get_page(out_page_number)
+
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            # Return JSON response for AJAX requests
+            
+            total_in_amount = int(float(in_transactions_df['amount'].sum()))
+            total_out_amount = int(float(out_transactions_df['amount'].sum()))
+            
+            
+            data = {
+                'in_transactions': list(in_page_obj),
+                'out_transactions': list(out_page_obj),
+                'in_page': in_page_obj.number,
+                'in_num_pages': in_page_obj.paginator.num_pages,
+                'out_page': out_page_obj.number,
+                'out_num_pages': out_page_obj.paginator.num_pages,
+                'total_in_amount': total_in_amount,
+                'total_out_amount': total_out_amount,
+            }
+
+            return JsonResponse(data)
+
+        return render(request, 'record_book.html', {
+            'in_page_obj': in_page_obj, 
+            'out_page_obj': out_page_obj, 
+            'search_query': search_query, 
+            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
+            'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
             'total_in_amount': total_in_amount,
             'total_out_amount': total_out_amount,
-        }
-
-        return JsonResponse(data)
-
+        })
     return render(request, 'record_book.html', {
-        'in_page_obj': in_page_obj, 
-        'out_page_obj': out_page_obj, 
-        'search_query': search_query, 
-        'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
-        'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
-        'total_in_amount': total_in_amount,
-        'total_out_amount': total_out_amount,
-    })
+            'in_page_obj': None, 
+            'out_page_obj': None, 
+            'search_query': search_query, 
+            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
+            'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
+            'total_in_amount': 0,
+            'total_out_amount': 0,
+        })
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddBankView(View):
@@ -183,7 +201,10 @@ def toggle_bank_status(request):
 def update_transaction_history(request):
     # all_transactions = get_all_transactions(request)
     redis_client = redis_connect(1)
-    bank_accounts = BankAccount.objects.filter(status=True)
+    if request.user.is_superuser:
+        bank_accounts = BankAccount.objects.filter(status=True)
+    else:
+        bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
     
     list_df_in = []
     list_df_out = []
@@ -231,7 +252,11 @@ def update_transaction_history(request):
 
 
 def update_balance(request):
-    bank_accounts = BankAccount.objects.filter(status=True)
+    if request.user.is_superuser:
+        bank_accounts = BankAccount.objects.filter(status=True)
+    else:
+        bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
+    
     list_dict_accounts = []
     for bank_account in bank_accounts:
         list_dict_accounts.append(bank_account.as_dict())
