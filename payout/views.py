@@ -232,6 +232,7 @@ def webhook(request):
         sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
         
         if sign != body_sign:
+            print('not match sign')
             return JsonResponse({'status': 403, 'message': 'Forbidden'})
         
         try:
@@ -285,10 +286,13 @@ def webhook(request):
         partner_bankcode = ''
         # Get bank code
         # Format through bank code dict mapping
-        if bankcode == '' and payeebankbranch == '':
+        if (bankcode == '' and payeebankbranch == '') or bankcode == 'NA':
+            print('settle')
+            print(partner_bank_data)
             # Settle
             for bank in partner_bank_data:
-                if bank['bankname'] == payeebankname:
+                if payeebankname == bank['name']:
+                    print('get bank code')
                     system_bankcode = bank['code']
                     # partner_bankcode = bank['code']
                 else:
