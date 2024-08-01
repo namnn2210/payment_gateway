@@ -211,6 +211,42 @@ def delete_payout(request):
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
     
+@csrf_exempt
+@require_POST
+def move_payout(request):
+    try:
+        data = json.loads(request.body)
+        payout_id = data.get('id')
+        payout = get_object_or_404(Payout, id=payout_id)
+        
+        # Create settle payout from payout
+        SettlePayout.objects.create(
+            user=payout.user,
+            did=payout.did,
+            scode=payout.scode,
+            orderno=payout.orderno,
+            orderid=payout.orderid,
+            money=payout.money,
+            bankname=payout.bankname,
+            accountno=payout.accountno,
+            accountname=payout.accountname,
+            bankcode=payout.bankcode,
+            is_auto=payout.is_auto,
+            is_cancel=payout.is_cancel,
+            is_report=payout.is_report,
+            process_bank=payout.process_bank,
+            status=payout.status,
+            updated_by=payout.updated_by,
+            created_at=payout.created_at,
+            updated_at=payout.updated_at,
+        )
+        
+        # Delete payout
+        payout.delete()
+        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    except Exception as ex:
+        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+    
 @csrf_exempt 
 def webhook(request):
     if request.method == 'POST':

@@ -82,7 +82,10 @@
                                                             data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
                                                             data-is-report="{{item.is_report}}"
                                                             data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
-                                                        <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ item.id }}"">{% trans "Delete" %}</button>
+                                                    {% endif %}
+                                                    <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ item.id }}"">{% trans "Delete" %}</button>
+                                                    {% if not item.status and not item.is_cancel and not item.is_report%}
+                                                    <button class="btn btn-sm btn-warning move-btn" data-item-id="{{ item.id }}"">{% trans "Move" %}</button>
                                                     {% endif %}
                                                 {% else %}
                                                     {% if item.user == user or item.user.username == 'admin' %}
