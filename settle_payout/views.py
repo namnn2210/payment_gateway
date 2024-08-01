@@ -163,6 +163,17 @@ class AddSettlePayoutView(View):
         send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
+@csrf_exempt
+@require_POST
+def delete_settle_payout(request):
+    try:
+        data = json.loads(request.body)
+        settle_payout_id = data.get('id')
+        settle_payout = get_object_or_404(SettlePayout, id=settle_payout_id)
+        settle_payout.delete()
+        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    except Exception as ex:
+        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
 
 @csrf_exempt
 @require_POST

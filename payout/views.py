@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Payout, Timeline, UserTimeline
 from settle_payout.models import SettlePayout
 from django.core.paginator import Paginator
@@ -195,6 +195,18 @@ def update_payout(request, update_type):
         }
         update_payout_background.delay(update_body)
         
+        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    except Exception as ex:
+        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+    
+@csrf_exempt
+@require_POST
+def delete_payout(request):
+    try:
+        data = json.loads(request.body)
+        payout_id = data.get('id')
+        payout = get_object_or_404(Payout, id=payout_id)
+        payout.delete()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
