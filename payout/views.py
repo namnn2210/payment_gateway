@@ -284,9 +284,14 @@ def webhook(request):
                 
         system_bankcode = ''
         partner_bankcode = ''
+        settle = False
+        if bankcode == 'NA':
+            settle = True
+        elif bankcode == '' and payeebankbranch == '':
+            settle = True
         # Get bank code
         # Format through bank code dict mapping
-        if (bankcode == '' and payeebankbranch == '') or bankcode == 'NA':
+        if settle:
             print('settle')
             print(partner_bank_data)
             # Settle
