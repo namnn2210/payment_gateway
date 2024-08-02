@@ -37,3 +37,18 @@ def update_deposit(request):
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+    
+    
+@csrf_exempt
+@require_POST
+def delete_deposit(request):
+    try:
+        data = json.loads(request.body)
+        deposit_id = data.get('id')
+        deposit = EmployeeDeposit.objects.filter(id=deposit_id).first()
+        
+        deposit.delete()
+        
+        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    except Exception as ex:
+        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
