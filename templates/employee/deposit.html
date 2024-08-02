@@ -45,7 +45,7 @@
                                             {% if not deposit.status%}
                                             <button class="btn btn-sm btn-success done-btn" data-item-id="{{ deposit.id }}">{% trans "Done" %}</button>
                                             {% endif %}
-                                            <button class="btn btn-sm btn-success delete-btn" data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
+                                            <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
                                         </td>
                                     </tr>
                                 {% endfor %}
