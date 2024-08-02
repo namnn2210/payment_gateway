@@ -13,7 +13,7 @@
                     <div class="table-responsive">
                         <table class="table table-borderless table-sm">
                             <thead>
-                                <tr class="text-center">
+                                <tr class="text-center" style="font-size: 12px;">
                                     <th>{% trans "Request User" %}</th>
                                     <th>{% trans "Amount" %}</th>
                                     <th>{% trans "Note" %}</th>
@@ -27,7 +27,7 @@
                             </thead>
                             <tbody id="depositList">
                                 {% for deposit in list_deposit_requests %}
-                                    <tr class="text-center">
+                                    <tr class="text-center" style="font-size: 12px;">
                                         <td>{{deposit.user}}</td>
                                         <td>{{deposit.amount|floatformat:2|intcomma}}</td>
                                         <td>{{deposit.note}}</td>
