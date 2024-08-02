@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12 col-sm-12">
+        <div class="col-md-6 col-sm-6">
             <div class="card info-card revenue-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -22,6 +22,26 @@
                 </div>
             </div>
         </div>
+        {% if not user.is_superuser%}
+        <div class="col-md-6 col-sm-6">
+            <div class="card info-card revenue-card">
+                <div class="card-body">
+                        <h5>{% trans "Input Deposit Amount" %}</h3>
+                        <form id="depositForm" method="post" action="{% url 'employee_deposit' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-10 col-sm-10">
+                                    <input type="number" id="deposit" name="deposit" class="form-control" required>
+                                </div>
+                                <div class="col-md-2 col-sm-2">
+                                    <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+                                </div>
+                            </div>
+                        </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
 </div>
 <div class="container-fluid">

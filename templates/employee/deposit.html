@@ -1,0 +1,114 @@
+{% extends "layout/layout.html" %}
+{% load humanize %}
+{% load i18n %}
+{% block title %}{% trans "Employee Deposit" %}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{% trans 'Deposit List' %}</span></h5>
+                    <!-- Default Table -->
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-sm">
+                            <thead>
+                                <tr class="text-center">
+                                    <th>{% trans "Request User" %}</th>
+                                    <th>{% trans "Amount" %}</th>
+                                    <th>{% trans "Note" %}</th>
+                                    <th>{% trans "Status" %}</th>
+                                    <th>{% trans "Created At" %}</th>
+                                    <th>{% trans "Updated By" %}</th>
+                                    <th>{% trans "Updated At" %}</th>
+                                    {% if user.is_superuser %}
+                                    <th>{% trans "Action" %}</th>
+                                    {% endif %}
+                            </thead>
+                            <tbody id="depositList">
+                                {% for deposit in list_deposit_requests %}
+                                    <tr class="text-center">
+                                        <td>{{deposit.user}}</td>
+                                        <td>{{deposit.amount|floatformat:2|intcomma}}</td>
+                                        <td>{{deposit.note}}</td>
+                                        <td>
+                                            {% if deposit.status %}
+                                            <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
+                                            {% else %}
+                                            <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{deposit.created_at|date:"d/m/Y H:i:s"}}</td>
+                                        <td>{{deposit.updated_by}}</td>
+                                        <td>{{deposit.updated_at|date:"d/m/Y H:i:s"}}</td>
+                                        <td>
+                                            {% if not deposit.status%}
+                                            <button class="btn btn-sm btn-success done-btn" data-item-id="{{ deposit.id }}">{% trans "Done" %}</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- End Default Table Example -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    $('.done-btn').click(function () {
+        var itemId = $(this).data('item-id');
+        const csrftoken = getCookie('csrftoken');
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to done this request?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: "{% url 'update_deposit' %}",
+                    type: 'POST',
+                    data: JSON.stringify({ id: itemId }),
+                    contentType: 'application/json',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            Swal.fire(
+                                'Done!',
+                                'The request has been marked as done.',
+                                'success'
+                            ).then(() => {
+                                location.reload();  // Reload the page to reflect the changes
+                            });
+                        } else {
+                            console.log(data.message)
+                            Swal.fire(
+                                'Error!',
+                                'An error occurred.',
+                                'error'
+                            );
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

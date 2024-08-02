@@ -1,0 +1,39 @@
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import EmployeeDeposit
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+import json
+
+# Create your views here.
+def employee_deposit(request):
+    if request.method == 'POST':
+        deposit_amount = int(request.POST.get('deposit', 0))
+        EmployeeDeposit.objects.create(
+            user = request.user,
+            amount = deposit_amount
+        )
+        return redirect('index')
+    if request.user.is_superuser:
+        list_deposit_requests = EmployeeDeposit.objects.all()
+    else:
+        list_deposit_requests = EmployeeDeposit.objects.filter(user=request.user)
+        
+    return render(request=request, template_name='employee/deposit.html', context={'list_deposit_requests':list_deposit_requests})
+
+
+@csrf_exempt
+@require_POST
+def update_deposit(request):
+    try:
+        data = json.loads(request.body)
+        deposit_id = data.get('id')
+        deposit = EmployeeDeposit.objects.filter(id=deposit_id).first()
+        
+        deposit.status = True
+        deposit.save()
+        
+        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    except Exception as ex:
+        return JsonResponse({'status': 500, 'message': str(ex),'success': False})

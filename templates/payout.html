@@ -42,7 +42,15 @@
             </div>
         </div>
         <div class="row mt-4">
-            <div class="col-md-12 col-sm-12 text-right">
+            <div class="col-md-6 col-sm-12">
+                <select id="employeeFilter" name="employee" class="form-select">
+                    <option value="All" {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
+                    {% for user in users%}
+                    <option value={{user}} {% if request.GET.employee == "Pending" or request.GET.employee is None %}selected{% endif %}>{{user.username}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-6 col-sm-12 text-right">
                 <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
             </div>
         </div>

@@ -14,6 +14,7 @@ urlpatterns = i18n_patterns(
     path('acb/', include('acb.urls')),
     path('partner/', include('partner.urls')),
     path('notifications/', include('notification.urls')),
+    path('employee/', include('employee.urls')),
     path('i18n/', include('django.conf.urls.i18n')),  # Added this line for handling language setting
 )
 

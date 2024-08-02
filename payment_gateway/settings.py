@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'settle_payout',
     'worker',
     'partner',
+    'employee'
 ]
 
 MIDDLEWARE = [

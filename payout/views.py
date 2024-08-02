@@ -41,12 +41,17 @@ BANK_CODE_MAPPING = {
 def list_payout(request):
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     banks = Bank.objects.filter(status=True)
+    users = User.objects.all()
     list_payout = Payout.objects.all()
     status = None
 
     # Get search parameters
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'Pending')
+    
+    employee_filter = request.GET.get('employee')
+    
+        
 
     if search_query:
         list_payout = list_payout.filter(
@@ -71,6 +76,8 @@ def list_payout(request):
         list_payout = list_payout.filter(is_cancel=True)
     elif status_filter == 'Reported':
         list_payout = list_payout.filter(is_report=True)
+        
+    
 
     today = datetime.now().date().strftime('%d/%m/%Y')
 
@@ -88,6 +95,10 @@ def list_payout(request):
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
+    
+    if employee_filter != 'All':
+        user = User.objects.filter(username=employee_filter).first()
+        list_payout = list_payout.filter(user=user)
 
     list_payout = list_payout.annotate(
         status_priority=Case(
@@ -118,7 +129,8 @@ def list_payout(request):
         'bank_data': bank_data,
         'banks': banks,
         'total_results': total_results,
-        'total_amount': total_amount
+        'total_amount': total_amount,
+        'users':users
     })
 
 def search_payout(request):
