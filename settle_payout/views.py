@@ -115,10 +115,10 @@ class AddSettlePayoutView(View):
     def post(self, request, *args, **kwargs):
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
-        scode = data.get('scode')
-        orderid = data.get('orderid')
+        scode = data.get('scode').strip()
+        orderid = data.get('orderid').strip()
         money = data.get('money')
-        accountno = data.get('accountno')
+        accountno = data.get('accountno').strip()
         accountname = data.get('accountname')
         bankcode = data.get('bankcode')
         

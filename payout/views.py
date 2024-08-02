@@ -129,10 +129,10 @@ class AddPayoutView(View):
     def post(self, request, *args, **kwargs):
         decoded_str = request.body.decode('utf-8')
         data = json.loads(decoded_str)
-        scode = data.get('scode')
-        orderid = data.get('orderid')
+        scode = data.get('scode').strip()
+        orderid = data.get('orderid').strip()
         money = data.get('money')
-        accountno = data.get('accountno')
+        accountno = data.get('accountno').strip()
         accountname = data.get('accountname')
         bankcode = data.get('bankcode')
         
@@ -344,7 +344,7 @@ def webhook(request):
             print(partner_bank_data)
             # Settle
             for bank in partner_bank_data:
-                if payeebankname == bank['name']:
+                if payeebankname == bank['bankname']:
                     print('get bank code')
                     system_bankcode = bank['code']
                     # partner_bankcode = bank['code']
