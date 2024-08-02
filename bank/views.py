@@ -32,10 +32,9 @@ def list_bank(request):
 @login_required(login_url='user_login')
 def record_book(request):
     redis_client = redis_connect(1)
-    if request.user.is_superuser:
-        list_banks = BankAccount.objects.all()
-    else:
-        list_banks = BankAccount.objects.filter(user=request.user)
+
+    list_banks = BankAccount.objects.all()
+
     all_transactions = []
     for bank in list_banks:
         transactions_str = redis_client.get(bank.account_number)
