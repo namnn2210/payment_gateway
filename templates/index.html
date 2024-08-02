@@ -14,30 +14,28 @@
                         </div>
                         <div class="ps-3">
                             <h6 class="balance-total"><span class="text-success"></span></h6>
-                            <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span
-                                class="text-danger small pt-1 fw-bold total-out">-0</span> <span
-                                class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
+                            <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span class="text-danger small pt-1 fw-bold total-out">-0</span> <span class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {% if not user.is_superuser%}
+        {% if not user.is_superuser %}
         <div class="col-md-6 col-sm-6">
             <div class="card info-card revenue-card">
                 <div class="card-body">
-                        <h5>{% trans "Input Deposit Amount" %}</h3>
-                        <form id="depositForm" method="post" action="{% url 'employee_deposit' %}">
-                            {% csrf_token %}
-                            <div class="row">
-                                <div class="col-md-10 col-sm-10">
-                                    <input type="number" id="deposit" name="deposit" class="form-control" required>
-                                </div>
-                                <div class="col-md-2 col-sm-2">
-                                    <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
-                                </div>
+                    <h5>{% trans "Input Deposit Amount" %}</h5>
+                    <form id="depositForm" method="post" action="{% url 'employee_deposit' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-10 col-sm-10">
+                                <input type="number" id="deposit" name="deposit" class="form-control" required>
                             </div>
-                        </form>
+                            <div class="col-md-2 col-sm-2">
+                                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -50,9 +48,7 @@
             <div class="card info-card revenue-card">
                 <div class="card-body">
                     <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-success"> {% trans "IN" %} </span> - <b class="total-in"></b>
-
                     <div class="d-flex align-items-center">
-
                         <div class="table-responsive">
                             <table class="table table-sm" style="font-size: 12px">
                                 <thead>
@@ -76,9 +72,8 @@
                 <div class="card-body">
                     <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-danger"> {% trans "OUT" %} </span> - <b class="total-out"></b>
                     <div class="d-flex align-items-center">
-
                         <div class="table-responsive">
-                            <table class="table  table-sm" style="font-size: 12px">
+                            <table class="table table-sm" style="font-size: 12px">
                                 <thead>
                                     <tr style="font-size: 12px">
                                         <th>#</th>
@@ -88,11 +83,9 @@
                                         <th>{% trans "Balance" %}</th>
                                     </tr>
                                 </thead>
-                                <tbody class="tbody-out">
-                                </tbody>
+                                <tbody class="tbody-out"></tbody>
                             </table>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -103,10 +96,8 @@
     <div class="row">
         <div class="col-md-6 col-sm-12">
             <div class="card recent-sales overflow-auto">
-
                 <div class="card-body">
                     <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-success">{% trans "IN" %}</span> {% trans "history" %}</h5>
-                    <!-- Small tables -->
                     <div class="table-responsive">
                         <table class="table table-sm table-in">
                             <thead>
@@ -119,27 +110,24 @@
                                     <th>{% trans "Status" %}</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-center" id="transaction-table-body" style="font-size: 12px">
+                            <tbody class="text-center" style="font-size: 12px">
                                 <tr>
                                     <td colspan="5">
                                         <div class="spinner-border" role="status">
                                             <span class="visually-hidden">Loading...</span>
-                                        </div><!-- End Border spinner -->
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
-        </div><!-- End Recent Sales -->
+        </div>
         <div class="col-md-6 col-sm-12">
             <div class="card recent-sales overflow-auto">
-
                 <div class="card-body">
                     <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-danger">{% trans "OUT" %}</span> {% trans "history" %}</h5>
-                    <!-- Small tables -->
                     <div class="table-responsive">
                         <table class="table table-sm table-out">
                             <thead>
@@ -152,222 +140,129 @@
                                     <th>{% trans "Status" %}</th>
                                 </tr>
                             </thead>
-                            <tbody class="text-center" id="transaction-table-body" style="font-size: 12px">
+                            <tbody class="text-center" style="font-size: 12px">
                                 <tr>
                                     <td colspan="5">
                                         <div class="spinner-border" role="status">
                                             <span class="visually-hidden">Loading...</span>
-                                        </div><!-- End Border spinner -->
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-
             </div>
-        </div><!-- End Recent Sales -->
+        </div>
     </div>
-</div>
 </div>
 {% endblock %}
 {% block script %}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        function fetchLatestTransactions() {
-            fetch('{% url "update_transaction_history" %}')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const tableBodyIn = document.querySelector('table.table-in tbody');
-                    if (!tableBodyIn) {
-                        console.error('Table body element not found');
-                        return;
-                    }
-                    tableBodyIn.innerHTML = ''; // Clear existing table rows
-                    data.data.in.forEach(transaction => {
-                        const row = document.createElement('tr');
-                        var transactionStatus = ''
-                        if (transaction.status === 'Failed') {
-                            transactionStatus = 'Failed'
-                        }
-                        else if (transaction.status === 'Success') {
-                            transactionStatus = 'Success'
-                        }
-                        else {
-                            transactionStatus = ''
-                        }
-                        row.innerHTML = `
-                            <td>${transaction.account_number}</td>
-                            <td>${transaction.transaction_number}</td>
-                            <td class="text-success">${transaction.amount.toLocaleString()}</td>
-                            <td>${transaction.transaction_date}</td>
-                            <td>${transaction.description}</td>
-                            <td>${transactionStatus}</td>
-                        `;
-                        tableBodyIn.appendChild(row);
-                    });
-
-                    const tableBodyOut = document.querySelector('table.table-out tbody');
-                    if (!tableBodyOut) {
-                        console.error('Table body element not found');
-                        return;
-                    }
-                    tableBodyOut.innerHTML = ''; // Clear existing table rows
-                    data.data.out.forEach(transaction => {
-                        const row = document.createElement('tr');
-                        if (transaction.status === 'Failed') {
-                            transactionStatus = 'Failed'
-                        }
-                        else if (transaction.status === 'Success') {
-                            transactionStatus = 'Success'
-                        }
-                        else {
-                            transactionStatus = ''
-                        }
-                        row.innerHTML = `
-                            <td>${transaction.account_number}</td>
-                            <td>${transaction.transaction_number}</td>
-                            <td class="text-danger">${transaction.amount.toLocaleString()}</td>
-                            <td>${transaction.transaction_date}</td>
-                            <td>${transaction.description}</td>
-                            <td>${transactionStatus}</td>
-                        `;
-                        tableBodyOut.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching transactions:', error);
-                });
+    document.addEventListener('DOMContentLoaded', () => {
+        const fetchData = async (url, options = {}) => {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error(`Network response was not ok ${response.statusText}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         };
 
-        function fetchBalance() {
-            fetch('{% url "update_balance" %}')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-
-                    let totalIn = 0;
-                    let totalOut = 0;
-                    let indexIn = 0;
-                    let indexOut = 0;
-                    const spanTotalIn = document.querySelector('b.total-in');
-                    const spanTotalOut = document.querySelector('b.total-out');
-
-                    const tableBodyIn = document.querySelector('table.table-sm tbody.tbody-in');
-                    if (!tableBodyIn) {
-                        console.error('Table body element not found');
-                        return;
-                    }
-
-                    const tableBodyOut = document.querySelector('table.table-sm tbody.tbody-out');
-                    if (!tableBodyOut) {
-                        console.error('Table body element not found');
-                        return;
-                    }
-
-                    tableBodyIn.innerHTML = '';
-                    tableBodyOut.innerHTML = '';
-
-                    data.data.balance.forEach((bank,index) => {
-                        const row = document.createElement('tr');
-                        if (bank.bank_type === 'IN') {
-                            accountClass = 'account-balance-in';
-                            indexIn += 1;
-                            row.innerHTML = `
-                                <td>${indexIn}</td>
-                                <td>${bank.bank_name}</td>
-                                <td>
-                                    ${bank.account_number}
-                                </td>
-                                <td>${bank.account_name}</td>
-                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-success"></span></span></td>
-                            `;
-                            totalIn += bank.balance
-                            tableBodyIn.appendChild(row);
-                        }
-                        else {
-                            accountClass = 'account-balance-out';
-                            indexOut += 1;
-                            row.innerHTML = `
-                                <td>${indexOut}</td>
-                                <td>${bank.bank_name}</td>
-                                <td>
-                                    ${bank.account_number}
-                                </td>
-                                <td>${bank.account_name}</td>
-                                <td><span class=${accountClass}>${bank.balance.toLocaleString()} <span class="text-danger"></span></span></td>
-                            `;
-                            totalOut += bank.balance
-                            tableBodyOut.appendChild(row);
-                        }
-
-                    });
-
-                    spanTotalIn.innerHTML = totalIn.toLocaleString() + ' <span class="text-success"></span> ';
-                    spanTotalOut.innerHTML = totalOut.toLocaleString() + ' <span class="text-danger"></span> ';
-
-                    const balanceTotal = document.querySelector('.balance-total');
-                    if (!balanceTotal) {
-                        console.error('Element not found');
-                        return;
-                    }
-                    balanceTotal.innerHTML = (totalIn + totalOut).toLocaleString() + ' <span class="text-success"></span> ';
-                })
-
-                .catch(error => {
-                    console.error('Error fetching balance:', error);
-                });
+        const updateTransactionTable = (transactions, tableSelector) => {
+            const tableBody = document.querySelector(tableSelector);
+            if (!tableBody) {
+                console.error('Table body element not found');
+                return;
+            }
+            tableBody.innerHTML = transactions.map(transaction => `
+                <tr>
+                    <td>${transaction.account_number}</td>
+                    <td>${transaction.transaction_number}</td>
+                    <td class="${transaction.amount > 0 ? 'text-success' : 'text-danger'}">${transaction.amount.toLocaleString()}</td>
+                    <td>${transaction.transaction_date}</td>
+                    <td>${transaction.description}</td>
+                    <td>${transaction.status || ''}</td>
+                </tr>
+            `).join('');
         };
 
-        function fetchAmountToday() {
-            fetch('{% url "get_amount_today" %}')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    const totalInElem = document.querySelector('.total-in');
-                    const totalOutElem = document.querySelector('.total-out');
-                    
-                    if (totalInElem) {
-                        totalInElem.innerHTML = `+${data.data.in.toLocaleString()} <span class="text-success"></span>`;
-                    } else {
-                        console.error('Total In element not found');
-                    }
+        const updateBalanceTable = (balances, tableSelector, totalSelector, totalType) => {
+            const tableBody = document.querySelector(tableSelector);
+            const totalElement = document.querySelector(totalSelector);
+            if (!tableBody || !totalElement) {
+                console.error('Table or total element not found');
+                return;
+            }
 
-                    if (totalOutElem) {
-                        totalOutElem.innerHTML = `-${data.data.out.toLocaleString()} <span class="text-danger"></span>`;
-                    } else {
-                        console.error('Total Out element not found');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching amount:', error);
-                });
+            let total = 0;
+            tableBody.innerHTML = balances.map((balance, index) => {
+                total += balance.balance;
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${balance.bank_name}</td>
+                        <td>${balance.account_number}</td>
+                        <td>${balance.account_name}</td>
+                        <td class="${totalType}">${balance.balance.toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+            totalElement.innerHTML = `${total.toLocaleString()} <span class="${totalType}"></span>`;
         };
 
+        const updateAmountToday = (data) => {
+            const totalInElem = document.querySelector('.total-in');
+            const totalOutElem = document.querySelector('.total-out');
 
+            if (totalInElem) totalInElem.innerHTML = `+${data.in.toLocaleString()} <span class="text-success"></span>`;
+            else console.error('Total In element not found');
 
-        // Fetch transactions when the page loads
+            if (totalOutElem) totalOutElem.innerHTML = `-${data.out.toLocaleString()} <span class="text-danger"></span>`;
+            else console.error('Total Out element not found');
+        };
+
+        const fetchLatestTransactions = async () => {
+            const data = await fetchData('{% url "update_transaction_history" %}');
+            if (data) {
+                updateTransactionTable(data.data.in, 'table.table-in tbody');
+                updateTransactionTable(data.data.out, 'table.table-out tbody');
+            }
+        };
+
+        const fetchBalance = async () => {
+            const data = await fetchData('{% url "update_balance" %}');
+            if (data) {
+                const balancesIn = data.data.balance.filter(bank => bank.bank_type === 'IN');
+                const balancesOut = data.data.balance.filter(bank => bank.bank_type === 'OUT');
+                updateBalanceTable(balancesIn, 'table.table-sm tbody.tbody-in', 'b.total-in', 'text-success');
+                updateBalanceTable(balancesOut, 'table.table-sm tbody.tbody-out', 'b.total-out', 'text-danger');
+
+                const balanceTotalElem = document.querySelector('.balance-total');
+                if (balanceTotalElem) {
+                    const totalBalance = balancesIn.reduce((sum, bank) => sum + bank.balance, 0) +
+                                        balancesOut.reduce((sum, bank) => sum + bank.balance, 0);
+                    balanceTotalElem.innerHTML = `${totalBalance.toLocaleString()} <span class="text-success"></span>`;
+                } else {
+                    console.error('Balance total element not found');
+                }
+            }
+        };
+
+        const fetchAmountToday = async () => {
+            const data = await fetchData('{% url "get_amount_today" %}');
+            if (data) updateAmountToday(data.data);
+        };
+
         fetchLatestTransactions();
         fetchBalance();
         fetchAmountToday();
 
-        // Optionally, set an interval to fetch the data periodically
-        setInterval(fetchLatestTransactions, 15000); // Fetch every 30 seconds
+        setInterval(fetchLatestTransactions, 15000);
         setInterval(fetchBalance, 15000);
         setInterval(fetchAmountToday, 15000);
     });
+
 </script>
 {% endblock %}

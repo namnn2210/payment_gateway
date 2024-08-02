@@ -4,8 +4,6 @@
 {% block title %}{% trans "Record Book" %}{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-{% endblock %}
-{% block content %}
 <style>
     .table-wrapper {
         border: 2px solid #dee2e6;
@@ -53,10 +51,14 @@
     .same-height .table-responsive {
         flex-grow: 1;
     }
+
     .hidden-row td {
         text-align: left;
     }
+
 </style>
+{% endblock %}
+{% block content %}
 <div class="container-fluid">
     <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
     <form method="get" id="search-form">
@@ -101,7 +103,7 @@
                             </tr>
                         </thead>
                         <tbody id="inTransactionTableBody" class="text-center">
-                            {% if in_page_obj%}
+                            {% if in_page_obj %}
                             {% for item in in_page_obj %}
                             <tr class="main-row text-center" style="font-size: 12px;" data-transaction-number="{{ item.transaction_number }}">
                                 <td>
@@ -129,7 +131,7 @@
                     </table>
                 </div>
                 <!-- Pagination for IN transactions -->
-                {% if in_page_obj%}
+                {% if in_page_obj %}
                 <div class="d-flex justify-content-center">
                     <nav aria-label="In transactions page navigation">
                         <ul class="pagination" id="in-pagination">
@@ -192,7 +194,7 @@
                             </tr>
                         </thead>
                         <tbody id="outTransactionTableBody" class="text-center">
-                            {% if in_page_obj%}
+                            {% if out_page_obj %}
                             {% for item in out_page_obj %}
                             <tr class="main-row text-center" style="font-size: 12px;" data-transaction-number="{{ item.transaction_number }}">
                                 <td>
@@ -219,7 +221,7 @@
                     </table>
                 </div>
                 <!-- Pagination for OUT transactions -->
-                {% if in_page_obj%}
+                {% if out_page_obj %}
                 <div class="d-flex justify-content-center">
                     <nav aria-label="Out transactions page navigation">
                         <ul class="pagination" id="out-pagination">
@@ -266,203 +268,192 @@
         </div>
     </div>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block script%}
 <script>
-$(document).ready(function() {
-    function formatDateTime(input) {
+document.addEventListener('DOMContentLoaded', function() {
+    const formatDateTime = (input) => {
         const date = new Date(input);
-
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
         const year = date.getFullYear();
-
         const hours = String(date.getHours()).padStart(2, '0');
         const minutes = String(date.getMinutes()).padStart(2, '0');
         const seconds = String(date.getSeconds()).padStart(2, '0');
-
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-    }
+    };
 
-
-    function toggleDetailsRow(rowId) {
-        const detailsRow = $('#details-' + rowId);
-        const icon = $('#icon-' + rowId).find('i');
-
-        if (detailsRow.is(':visible')) {
-            detailsRow.hide();
-            icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
+    const toggleDetailsRow = (rowId) => {
+        const detailsRow = document.getElementById('details-' + rowId);
+        const icon = document.getElementById('icon-' + rowId).querySelector('i');
+        if (detailsRow.style.display === 'none') {
+            detailsRow.style.display = '';
+            icon.classList.replace('fa-plus-circle', 'fa-minus-circle');
+            icon.style.color = 'red';
         } else {
-            detailsRow.show();
-            icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
+            detailsRow.style.display = 'none';
+            icon.classList.replace('fa-minus-circle', 'fa-plus-circle');
+            icon.style.color = 'green';
         }
-    }
+    };
 
-    function bindRowClickEvents() {
-        $('.main-row').off('click').on('click', function() {
-            const rowId = $(this).data('transactionNumber');
-            toggleDetailsRow(rowId);
+    const bindRowClickEvents = () => {
+        document.querySelectorAll('.main-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const rowId = row.dataset.transactionNumber;
+                toggleDetailsRow(rowId);
+            });
         });
-    }
+    };
 
-    function updateTotals(totalIn, totalOut) {
-        $('#total-in-amount').text(totalIn.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        $('#total-out-amount').text(totalOut.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-    }
+    const updateTotals = (totalIn, totalOut) => {
+        document.getElementById('total-in-amount').textContent = totalIn.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('total-out-amount').textContent = totalOut.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    };
 
-    function fetchData(url, callback) {
-        $.ajax({
-            url: url,
-            method: 'GET',
-            dataType: 'json',
-            success: function(data) {
+    const fetchData = async (url, callback) => {
+        try {
+            const response = await fetch(url, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data)
                 callback(data);
                 updateTotals(data.total_in_amount, data.total_out_amount);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching data:', error);
+            } else {
+                throw new Error('Incorrect contents fetched, please reload.');
             }
-        });
-    }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            alert('Error fetching data: ' + error.message);
+        }
+    };
 
-    function updateTableData(tableId, data) {
-        const tableBody = $('#' + tableId);
-        tableBody.empty();
+    const updateTableData = (tableId, data) => {
+        const tableBody = document.getElementById(tableId);
+        tableBody.innerHTML = '';
         data.forEach((item) => {
-            const row = $('<tr>')
-                .addClass('main-row text-center')
-                .attr('data-transaction-number', item.transaction_number)
-                .attr('style', 'font-size: 12px;');
+            const row = document.createElement('tr');
+            row.className = 'main-row text-center';
+            row.style.fontSize = '12px';
+            row.dataset.transactionNumber = item.transaction_number;
+            row.innerHTML = `
+                <td><span class="toggle-icon" id="icon-${item.transaction_number}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>
+                <td>${item.account_number}</td>
+                <td class="${tableId === 'inTransactionTableBody' ? 'text-success' : 'text-danger'}">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td>${formatDateTime(item.transaction_date)}</td>
+                ${tableId === 'inTransactionTableBody' ? `<td>${item.transfer_code}</td>` : ''}
+                <td>${item.status}</td>
+            `;
+            tableBody.appendChild(row);
 
-            row.append(`<td><span class="toggle-icon" id="icon-${item.transaction_number}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>`);
-            row.append(`<td>${item.account_number}</td>`);
-            row.append(`<td class="${tableId === 'inTransactionTableBody' ? 'text-success' : 'text-danger'}">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`);
-            row.append(`<td>${formatDateTime(item.transaction_date)}</td>`);
-            if (tableId === 'inTransactionTableBody') {
-                row.append(`<td>${item.transfer_code}</td>`);
-            }
-            row.append(`<td>${item.status}</td>`);
-            tableBody.append(row);
-
-            const detailsRow = $('<tr>')
-                .addClass('hidden-row')
-                .attr('id', `details-${item.transaction_number}`)
-                .attr('style', 'display: none;');
-
-            detailsRow.append(`<td colspan="6"><div><strong>{% trans "Transaction Number" %}:</strong> ${item.transaction_number}<br><strong>{% trans "Memo" %}:</strong> ${item.description}</div></td>`);
-            tableBody.append(detailsRow);
+            const detailsRow = document.createElement('tr');
+            detailsRow.className = 'hidden-row';
+            detailsRow.id = `details-${item.transaction_number}`;
+            detailsRow.style.display = 'none';
+            detailsRow.innerHTML = `
+                <td colspan="6"><div><strong>Transaction Number:</strong> ${item.transaction_number}<br><strong>Memo:</strong> ${item.description}</div></td>
+            `;
+            tableBody.appendChild(detailsRow);
         });
-
         bindRowClickEvents();
-    }
+    };
 
-    function handlePaginationClick(event, paginationId) {
+    const handlePaginationClick = (event, paginationId) => {
         event.preventDefault();
-        const page = $(this).data('page');
+        const page = event.target.dataset.page;
         if (page) {
             const url = new URL(window.location.href);
             const params = new URLSearchParams(url.search);
-
-            // Preserve the current search parameters
-            params.set('in_page', paginationId === 'in-pagination' ? page : params.get('in_page') || 1);
-            params.set('out_page', paginationId === 'out-pagination' ? page : params.get('out_page') || 1);
-
+            params.set(paginationId === 'in-pagination' ? 'in_page' : 'out_page', page);
             url.search = params.toString();
-            fetchData(url.toString(), function(data) {
+            fetchData(url.toString(), (data) => {
                 updateTableData('inTransactionTableBody', data.in_transactions);
                 updateTableData('outTransactionTableBody', data.out_transactions);
                 updatePagination('in-pagination', data.in_page, data.in_num_pages);
                 updatePagination('out-pagination', data.out_page, data.out_num_pages);
             });
-
             history.pushState({}, '', url.toString());
         }
-    }
+    };
 
-    function updatePagination(paginationId, currentPage, numPages) {
-        const pagination = $('#' + paginationId);
-        pagination.empty();
+    const updatePagination = (paginationId, currentPage, numPages) => {
+        const pagination = document.getElementById(paginationId);
+        pagination.innerHTML = '';
         if (currentPage > 1) {
-            pagination.append(`
+            pagination.innerHTML += `
                 <li class="page-item">
                     <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-            `);
+            `;
         } else {
-            pagination.append(`
+            pagination.innerHTML += `
                 <li class="page-item disabled">
                     <span class="page-link" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </span>
                 </li>
-            `);
+            `;
         }
         for (let i = Math.max(1, currentPage - 2); i <= Math.min(numPages, currentPage + 2); i++) {
-            pagination.append(`
+            pagination.innerHTML += `
                 <li class="page-item ${i === currentPage ? 'active' : ''}">
                     <a class="page-link" href="#" data-page="${i}">${i}</a>
                 </li>
-            `);
+            `;
         }
         if (currentPage < numPages) {
-            pagination.append(`
+            pagination.innerHTML += `
                 <li class="page-item">
                     <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
-            `);
+            `;
         } else {
-            pagination.append(`
+            pagination.innerHTML += `
                 <li class="page-item disabled">
                     <span class="page-link" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </span>
                 </li>
-            `);
+            `;
         }
-        pagination.find('a.page-link').on('click', function(event) {
-            handlePaginationClick.call(this, event, paginationId);
+        pagination.querySelectorAll('a.page-link').forEach(link => {
+            link.addEventListener('click', (event) => handlePaginationClick(event, paginationId));
         });
-    }
+    };
 
-    $('#search-form').on('submit', function(event) {
+    document.getElementById('search-form').addEventListener('submit', (event) => {
         event.preventDefault();
         const url = new URL(window.location.href);
-        const params = new URLSearchParams($(this).serialize());
-
-        // Preserve pagination parameters
-        const inPage = params.get('in_page') || 1;
-        const outPage = params.get('out_page') || 1;
-        params.set('in_page', inPage);
-        params.set('out_page', outPage);
-
-        fetchData(`${url.pathname}?${params.toString()}`, function(data) {
+        const params = new URLSearchParams(new FormData(event.target));
+        params.set('in_page', params.get('in_page') || 1);
+        params.set('out_page', params.get('out_page') || 1);
+        fetchData(`${url.pathname}?${params.toString()}`, (data) => {
             updateTableData('inTransactionTableBody', data.in_transactions);
             updateTableData('outTransactionTableBody', data.out_transactions);
             updatePagination('in-pagination', data.in_page, data.in_num_pages);
             updatePagination('out-pagination', data.out_page, data.out_num_pages);
         });
-
         history.pushState({}, '', `${url.pathname}?${params.toString()}`);
     });
 
-    // Bind the initial row click events
     bindRowClickEvents();
 
-    // Initial pagination binding
-    $('#in-pagination').find('a.page-link').on('click', function(event) {
-        handlePaginationClick.call(this, event, 'in-pagination');
+    document.querySelectorAll('#in-pagination a.page-link').forEach(link => {
+        link.addEventListener('click', (event) => handlePaginationClick(event, 'in-pagination'));
     });
-    $('#out-pagination').find('a.page-link').on('click', function(event) {
-        handlePaginationClick.call(this, event, 'out-pagination');
+
+    document.querySelectorAll('#out-pagination a.page-link').forEach(link => {
+        link.addEventListener('click', (event) => handlePaginationClick(event, 'out-pagination'));
     });
 });
-
-
 
 </script>
 {% endblock %}
