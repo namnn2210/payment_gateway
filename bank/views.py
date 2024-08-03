@@ -107,6 +107,7 @@ def record_book(request):
             total_out_amount = int(float(out_transactions_df['amount'].sum()))
             
             
+            
             data = {
                 'in_transactions': list(in_page_obj),
                 'out_transactions': list(out_page_obj),
@@ -119,6 +120,7 @@ def record_book(request):
             }
 
             return JsonResponse(data)
+        
 
         return render(request, 'record_book.html', {
             'in_page_obj': in_page_obj, 

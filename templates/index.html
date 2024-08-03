@@ -20,26 +20,13 @@
                 </div>
             </div>
         </div>
-        {% if not user.is_superuser %}
         <div class="col-md-6 col-sm-6">
             <div class="card info-card revenue-card">
-                <div class="card-body">
-                    <h5>{% trans "Input Deposit Amount" %}</h5>
-                    <form id="depositForm" method="post" action="{% url 'employee_deposit' %}">
-                        {% csrf_token %}
-                        <div class="row">
-                            <div class="col-md-10 col-sm-10">
-                                <input type="number" id="deposit" name="deposit" class="form-control" required>
-                            </div>
-                            <div class="col-md-2 col-sm-2">
-                                <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
-                            </div>
-                        </div>
-                    </form>
+                <div class="card-body text-center mt-4 align-items-center">
+                    <button type="button" class="btn btn-primary create-deposit-btn" data-bs-toggle="modal" data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
                 </div>
             </div>
         </div>
-        {% endif %}
     </div>
 </div>
 <div class="container-fluid">
@@ -156,6 +143,37 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="createDepositModal" aria-labelledby="createDepositModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createDepositModalcreateDepositModalLabel">{% trans "Deposit Details" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body row">
+                <form id="depositForm" method="post" action="{% url 'employee_deposit' %}">
+                    {% csrf_token %}
+                    <div class="col-md-12 col-sm-12">
+                        <label for="deposit">{% trans 'Amount' %}</label>
+                        <input type="number" id="deposit" name="deposit" class="form-control" required>
+                    </div>
+                    <div class="col-md-12 col-sm-12 mt-2">
+                        <label for="bank">{% trans 'Bank Account' %}</label>
+                        <select class="form-select" id="bank" name="bank" required>
+                            {% for bank_account in list_user_bank%}
+                                <option value="{{bank_account.id}}">{{bank_account.account_number}} - {{bank_account.bank_name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success done-btn-modal" data-item-id="">{% trans "Done" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 {% block script %}
 <script>
@@ -254,6 +272,11 @@
             const data = await fetchData('{% url "get_amount_today" %}');
             if (data) updateAmountToday(data.data);
         };
+
+        $(document).on('click', '.done-btn-modal', function () {
+            const form = document.getElementById('depositForm');
+            form.submit();
+        });
 
         fetchLatestTransactions();
         fetchBalance();

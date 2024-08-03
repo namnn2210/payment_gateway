@@ -96,8 +96,6 @@ def list_payout(request):
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
     
-    print('============', employee_filter)
-    
     if employee_filter:
         user = User.objects.filter(username=employee_filter).first()
         list_payout = list_payout.filter(user=user)
