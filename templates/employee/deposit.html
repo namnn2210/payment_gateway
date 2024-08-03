@@ -62,7 +62,9 @@
                                                         <strong>{% trans "Action" %}:</strong> 
                                                         {% if not deposit.status and user.is_superuser %}
                                                         <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal" data-bs-target="#payModal" data-item-id="{{ deposit.id }}" data-bankcode="{{ deposit.bankcode }}" data-accountno="{{ deposit.accountno }}" data-accountname="{{ deposit.accountname }}" data-amount="{{ deposit.amount }}">{% trans "Pay" %}</button>
-                                                        <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
+                                                        {% endif %}
+                                                        {% if user.is_superuser %}
+                                                            <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
                                                         {% endif %}
                                                     </p>
                                                 </div>
