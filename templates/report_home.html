@@ -1,0 +1,90 @@
+{% load i18n %}
+{% load humanize %}
+<div class="row">
+<div class="col-md-6">
+    <canvas id="myChart" width="400" height="200"></canvas>
+</div>
+<div class="col-md-6">
+    <form id="searchForm" method="get" action="{% url 'report' %}">
+        <div class="row mt-4">
+            <div class="col-md-5 col-sm-12">
+                <label for="start_datetime">{% trans "Start Date" %}</label>
+                <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control" value="{{ request.GET.start_datetime|default_if_none:'' }}">
+            </div>
+            <div class="col-md-5 col-sm-12">
+                <label for="end_datetime">{% trans "End Date" %}</label>
+                <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime|default_if_none:'' }}">
+            </div>
+            <div class="col-md-2 col-sm-12">
+                <button type="submit" class="btn btn-primary mt-4">{% trans "Search" %}</button>
+            </div>
+        </div>
+    </form>
+    <div class="mt-4">
+        <p><strong>{% trans "Total Payouts" %}:</strong> {{ report_data.payout.total_results }} </p>
+        <p><strong>{% trans "Total Payout Amount" %}:</strong> {{ report_data.payout.total_amount|floatformat:2|intcomma }}</p>
+        <p><strong>{% trans "Total Success Transations" %}:</strong> {{ report_data.transactions.total_results }}</p>
+        <p><strong>{% trans "Total Success Transations Amount" %}:</strong> {{ report_data.transactions.total_amount|floatformat:2|intcomma }}</p>
+    </div>
+</div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+
+           
+        const startInput = document.getElementById('start_datetime');
+        const endInput = document.getElementById('end_datetime');
+
+        const currentDate = new Date();
+        const today = formatDateToYYYYMMDD(currentDate);
+        const startDateTime = `${today}T00:00`;
+        const endDateTime = `${today}T23:59`;
+
+        if (!startInput.value) startInput.value = startDateTime;
+        if (!endInput.value) endInput.value = endDateTime;
+
+
+        const last5DaysData = JSON.parse('{{ last_5_days_data|escapejs }}');
+
+        const dates = Object.keys(last5DaysData);
+        const inValues = dates.map(date => last5DaysData[date].in);
+        const outValues = dates.map(date => last5DaysData[date].out);
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dates,
+                datasets: [
+                    {
+                        label: 'In',
+                        data: inValues,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Out',
+                        data: outValues,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '{% trans "Total Amount In and Out for the last 5 days"%}'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>

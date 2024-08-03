@@ -240,3 +240,47 @@ def get_transaction(bank):
         else:
             pass
             # print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+
+def get_balance_by_time(bank):
+    bank_balance = None
+    print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username, bank.password)
+    # Get balance
+    if bank.bank_name.name == 'MB':
+        bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.name == 'ACB':
+        bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.name == 'Vietinbank':
+        bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
+    else:
+        bank_balance = None
+    while bank_balance is None:
+        print('Error fetching bank balance, try to login')
+        error_count += 1
+        print('Retry logging in: ', error_count)
+        if error_count > 3:
+            alert = (
+                f'🔴 - LỖI HỆ THỐNG\n'
+                f'Dữ liệu tài khoản: {bank.account_number} trống\n'
+                f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
+            )
+            send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            return
+            
+        if bank.bank_name.name == 'MB':
+            bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
+        elif bank.bank_name.name == 'ACB':
+            bank_logged_in = acb_login(bank.username, bank.password, bank.account_number)
+        elif bank.bank_name.name == 'Vietinbank':
+            bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
+            
+        if bank_logged_in:
+            if bank.bank_name.name == 'MB':
+                bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+            elif bank.bank_name.name == 'ACB':
+                bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+            elif bank.bank_name.name == 'Vietinbank':
+                bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
+            else:
+                bank_balance = None
+                
+    return bank_balance

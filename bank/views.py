@@ -31,35 +31,27 @@ def list_bank(request):
 
 @login_required(login_url='user_login')
 def record_book(request):
-    redis_client = redis_connect(1)
-
-    list_banks = BankAccount.objects.all()
-
-    all_transactions = []
-    for bank in list_banks:
-        transactions_str = redis_client.get(bank.account_number)
-        if transactions_str:
-            all_transactions += json.loads(transactions_str)
-    all_transactions_df = pd.DataFrame(all_transactions)
     
+    all_transactions_df = get_all_transactions()
     search_query = request.GET.get('search', '')
     start_date = request.GET.get('start_datetime', '')
     end_date = request.GET.get('end_datetime', '')
     
     # Default start and end date to today if not provided
-    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+    # today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    # today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
     
-    if start_date:
-        start_date = parse_datetime(start_date)
-    else:
-        start_date = today_start
+    # if start_date:
+    #     start_date = parse_datetime(start_date)
+    # else:
+    #     start_date = today_start
 
-    if end_date:
-        end_date = parse_datetime(end_date)
-    else:
-        end_date = today_end
-        
+    # if end_date:
+    #     end_date = parse_datetime(end_date)
+    # else:
+    #     end_date = today_end
+    
+    start_date, end_date = get_start_end_datetime(start_date, end_date)
 
 
     if not all_transactions_df.empty:
@@ -306,6 +298,51 @@ def update_transaction_history_status(account_number, transfer_code, status):
     # transactions_df.loc[transactions_df['transfer_code'] == transfer_code, 'status'] = status
     # print(transactions_df)
     redis_client.set(account_number, json.dumps(transactions))
+    
+def get_all_transactions():
+    redis_client = redis_connect(1)
+
+    list_banks = BankAccount.objects.all()
+
+    all_transactions = []
+    for bank in list_banks:
+        transactions_str = redis_client.get(bank.account_number)
+        if transactions_str:
+            all_transactions += json.loads(transactions_str)
+    all_transactions_df = pd.DataFrame(all_transactions)
+    
+    return all_transactions_df
+
+def get_start_end_datetime(start_datetime, end_datetime):
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+    
+    if start_datetime:
+        start_datetime = parse_datetime(start_datetime)
+    else:
+        start_datetime = today_start
+
+    if end_datetime:
+        end_datetime = parse_datetime(end_datetime)
+    else:
+        end_datetime = today_end
+    
+    return start_datetime, end_datetime
+
+def get_start_end_datetime_string(start_datetime, end_datetime):
+    today = datetime.now().date().strftime('%d/%m/%Y')
+
+    if start_datetime:
+        start_datetime = datetime.strptime(start_datetime, '%Y-%m-%dT%H:%M')
+    else:
+        start_datetime = datetime.strptime(f'{today} 00:00', '%d/%m/%Y %H:%M')
+
+    if end_datetime:
+        end_datetime = datetime.strptime(end_datetime, '%Y-%m-%dT%H:%M')
+    else:
+        end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
+        
+    return start_datetime, end_datetime
     
     
     

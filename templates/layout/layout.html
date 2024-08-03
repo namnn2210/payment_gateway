@@ -63,9 +63,16 @@
                 <li class="nav-item mr-2">
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'index' %}">
                         <i class="bi bi-grid"></i>
-                        <span class="d-none d-md-block ps-2">{% trans "Dashboard" %}</span>
+                        <span class="d-none d-md-block ps-2">{% trans "Home" %}</span>
                     </a>
                 </li><!-- End Dashboard Nav -->
+
+                <li class="nav-item mr-2">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'report' %}">
+                        <i class="bi bi-grid"></i>
+                        <span class="d-none d-md-block ps-2">{% trans "Report" %}</span>
+                    </a>
+                </li>
 
                 <li class="nav-item mr-2">
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'list_bank' %}">
@@ -247,6 +254,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
+        function formatDateToYYYYMMDD(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
