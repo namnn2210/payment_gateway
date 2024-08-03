@@ -45,7 +45,7 @@
         <div class="row mt-4">
             <div class="col-md-6 col-sm-12">
                 <select id="employeeFilter" name="employee" class="form-select">
-                    <option value="All" {% if request.GET.employee == "All" or request.GET.employee is None%}selected{% endif %}>{% trans "All" %}</option>
+                    <option value="All" {% if request.GET.employee == "All"%}selected{% endif %}>{% trans "All" %}</option>
                     {% for user in users %}
                     <option value="{{ user.username  }}" {% if request.GET.employee == user.username %}selected{% endif %}>{{ user.username }}</option>
                     {% endfor %}
@@ -416,7 +416,7 @@
             });
         });
 
-        const handleAction = (url, itemId, successMessage) => {
+        const handleAction = (url, itemId, bankId, successMessage) => {
             const csrftoken = getCookie('csrftoken');
             fetch(url, {
                 method: 'POST',
@@ -424,7 +424,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken
                 },
-                body: JSON.stringify({ id: itemId })
+                body: JSON.stringify({ id: itemId, bank_id:bankId })
             })
             .then(response => response.json())
             .then(data => {
@@ -449,7 +449,7 @@
                     confirmButtonText: 'Yes'
                 }).then(result => {
                     if (result.isConfirmed) {
-                        handleAction("{% url 'delete_payout' %}", itemId, 'The payout has been deleted.');
+                        handleAction("{% url 'delete_payout' %}", itemId, 1, 'The payout has been deleted.');
                     }
                 });
             } else if (event.target.matches('.move-btn')) {
@@ -464,7 +464,7 @@
                     confirmButtonText: 'Yes'
                 }).then(result => {
                     if (result.isConfirmed) {
-                        handleAction("{% url 'move_payout' %}", itemId, 'The payout has been moved.');
+                        handleAction("{% url 'move_payout' %}", itemId, 1, 'The payout has been moved.');
                     }
                 });
             } else if (event.target.matches('.pay-btn')) {
@@ -498,7 +498,7 @@
                         confirmButtonText: 'Yes'
                     }).then(result => {
                         if (result.isConfirmed) {
-                            handleAction("{% url 'update_payout' 'done' %}", itemId, 'The payout has been marked as done.', { bank_id: bankId });
+                            handleAction("{% url 'update_payout' 'done' %}", itemId, bankId, 'The payout has been marked as done.');
                         }
                     });
                 });
@@ -514,7 +514,7 @@
                         confirmButtonText: 'Yes'
                     }).then(result => {
                         if (result.isConfirmed) {
-                            handleAction("{% url 'update_payout' 'report' %}", itemId, 'The payout has been reported.');
+                            handleAction("{% url 'update_payout' 'report' %}", itemId,1, 'The payout has been reported.');
                         }
                     });
                 });
@@ -530,7 +530,7 @@
                         confirmButtonText: 'Yes'
                     }).then(result => {
                         if (result.isConfirmed) {
-                            handleAction("{% url 'update_payout' 'cancel' %}", itemId, 'The payout has been cancelled.');
+                            handleAction("{% url 'update_payout' 'cancel' %}", itemId,1, 'The payout has been cancelled.');
                         }
                     });
                 });
