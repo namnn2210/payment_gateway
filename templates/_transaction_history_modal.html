@@ -11,7 +11,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="get" id="search-form">
+                <form method="post" id="search-form" action="{% url 'record_book_report'%}">
                     <div class="row">
                         <div class="col-md-5 col-sm-12">
                             <label for="start_datetime">{% trans "Start Date" %}</label>
@@ -181,7 +181,6 @@
             return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
         }
 
-
         function toggleDetailsRow(rowId) {
             const detailsRow = $('#details-' + rowId);
             const icon = $('#icon-' + rowId).find('i');
@@ -210,7 +209,7 @@
         function fetchData(url, callback) {
             $.ajax({
                 url: url,
-                method: 'GET',
+                method: 'POST',
                 dataType: 'json',
                 success: function(data) {
                     callback(data);
@@ -367,14 +366,12 @@
             // Make an AJAX call to fetch the transaction history
             $.ajax({
                 url: '{% url "record_book_report" %}', // Replace with your actual URL
-                method: 'post',
+                method: 'POST',
                 data: { account_no: accountNo },
                 success: function(data) {
-                    var transactionHistoryContent = '';
-                    data.transactions.forEach(function(transaction) {
-                        transactionHistoryContent += '<p>' + transaction.date + ' - ' + transaction.description + ' - ' + transaction.amount + '</p>';
-                    });
-                    modal.find('#transactionHistoryContent').html(transactionHistoryContent);
+                    console.log(data);
+                    updateTableData('inTransactionTableBody', data.in_transactions);
+                    updateTableData('outTransactionTableBody', data.out_transactions);
                 },
                 error: function() {
                     modal.find('#transactionHistoryContent').html('<p>An error occurred while fetching the transaction history.</p>');

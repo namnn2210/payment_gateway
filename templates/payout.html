@@ -41,7 +41,6 @@
                 <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime|default_if_none:'' }}">
             </div>
         </div>
-        {{request.GET.employee}}
         <div class="row mt-4">
             <div class="col-md-6 col-sm-12">
                 <select id="employeeFilter" name="employee" class="form-select">

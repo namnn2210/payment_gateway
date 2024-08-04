@@ -363,11 +363,12 @@ def record_book_report(request):
         account_number = request.POST.get('account_no')
         transaction_df = get_transactions_by_key(account_number)
         
-        start_date = request.GET.get('start_datetime', '')
-        end_date = request.GET.get('end_datetime', '')
+        start_date = request.POST.get('start_datetime', '')
+        end_date = request.POST.get('end_datetime', '')
         
         start_date, end_date = get_start_end_datetime(start_date, end_date)
 
+        print(start_date, end_date)
 
         if not transaction_df.empty:
         
@@ -388,14 +389,17 @@ def record_book_report(request):
             out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
                
 
+            print(in_transactions_df)
+            print(out_transactions_df)
+            
             # Pagination for "IN" transactions
             in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
-            in_page_number = request.GET.get('in_page')
+            in_page_number = request.POST.get('in_page',1)
             in_page_obj = in_paginator.get_page(in_page_number)
 
             # Pagination for "OUT" transactions
             out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
-            out_page_number = request.GET.get('out_page')
+            out_page_number = request.POST.get('out_page',1)
             out_page_obj = out_paginator.get_page(out_page_number)
   
             data = {
