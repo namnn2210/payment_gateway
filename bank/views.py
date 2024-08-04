@@ -387,10 +387,7 @@ def record_book_report(request):
             # Separate and sort transactions by type
             in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
             out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
-               
 
-            print(in_transactions_df)
-            print(out_transactions_df)
             
             # Pagination for "IN" transactions
             in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
