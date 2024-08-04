@@ -5,6 +5,7 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
+        {% if user.is_superuser%}
         <div class="col-md-6 col-sm-6">
             <div class="card info-card revenue-card">
                 <div class="card-body">
@@ -20,6 +21,8 @@
                 </div>
             </div>
         </div>
+        {% endif %}
+        {% if not user.is_superuser%}
         <div class="col-md-6 col-sm-6">
             <div class="card info-card revenue-card">
                 <div class="card-body text-center mt-4 align-items-center">
@@ -27,6 +30,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 <div class="container-fluid">

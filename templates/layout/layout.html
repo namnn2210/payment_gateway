@@ -67,12 +67,14 @@
                     </a>
                 </li><!-- End Dashboard Nav -->
 
+                {% if user.is_superuser%}
                 <li class="nav-item mr-2">
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'report' %}">
                         <i class="bi bi-grid"></i>
                         <span class="d-none d-md-block ps-2">{% trans "Report" %}</span>
                     </a>
                 </li>
+                {% endif %}
 
                 <li class="nav-item mr-2">
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'list_bank' %}">

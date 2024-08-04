@@ -2,8 +2,10 @@ from django.shortcuts import render
 from bank.database import redis_connect
 from payout.models import Payout
 from bank.views import get_all_transactions, get_start_end_datetime, get_start_end_datetime_string
-from datetime import datetime
+from bank.models import BankAccount
 from django.db.models import Sum
+from django.contrib.auth.models import User
+from django.forms.models import model_to_dict
 import pandas as pd
 import json
 # Create your views here.
@@ -59,8 +61,29 @@ def report(request):
     if not filtered_transactions_df.empty:
         total_transaction_amount = int(float(filtered_transactions_df['amount'].sum()))
         total_transaction_results = filtered_transactions_df.shape[0]
+        
+        
+    # Get all user        
+    list_users = User.objects.filter(is_superuser=False)
+    
+    user_info_dict = {}
+    
+    
+    for user in list_users:
+        bank_accounts = []
+        user_bank_accounts = BankAccount.objects.filter(user=user, status=True)
+        for bank_account in user_bank_accounts:   
+            bank_accounts.append({
+                "account_no":bank_account.account_number,
+                "bank_name":bank_account.bank_name.name,
+                "balance":bank_account.balance
+            })
+        user_info_dict[user.username] = {
+            "bank_accounts":bank_accounts
+        }        
     
     report_data = {
+        "chart":json.dumps(last_5_days_data),
         "payout": {
             "total_amount":total_payout_amount,
             "total_results":total_payout_results
@@ -68,7 +91,8 @@ def report(request):
         "transactions":{
             "total_amount":total_transaction_amount,
             "total_results":total_transaction_results
-        }
+        },
+        "users":user_info_dict
     }
     
-    return render(request=request, template_name='report.html', context={'last_5_days_data': json.dumps(last_5_days_data), 'report_data':report_data})
+    return render(request=request, template_name='report.html', context={'report_data':report_data})

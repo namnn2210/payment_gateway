@@ -1,0 +1,76 @@
+{% load i18n %}
+{% load humanize %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #f2f2f2;
+    }
+    th, td {
+        padding: 8px;
+    }
+    th {
+        background-color: #f2f2f2;
+        text-align: center;
+    }
+    tr {
+        font-size: 13px;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <form id="searchForm" method="get" action="">
+            <div class="row mt-2">
+                <div class="col-md-10 col-sm-12">
+                    <label for="username">{% trans "Username" %}</label>
+                    <input type="text" id="username" name="username" class="form-control" value="{{ request.GET.username|default_if_none:'' }}" required>
+                </div>
+                <div class="col-md-2 col-sm-12">
+                    <button type="submit" class="btn btn-primary mt-4">{% trans "Search" %}</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-12 mt-4">
+        <div class="table-responsive mt4">
+            <table class="table table-bordered table-sm">
+                <thead>
+                    <tr class="text-center">
+                        <th>#</th>
+                        <th>{% trans 'User' %}</th>
+                        <th>{% trans 'Bank Accounts' %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for username, data in report_data.users.items %}
+                    <tr>
+                        <td></td>
+                        <td>{{username}}</td>
+                        <td>
+                            <ul>
+                                {% for account in data.bank_accounts %}
+                                <li><a href="#" data-toggle="modal" data-target="#transactionHistoryModal" data-account="{{ account.account_no }}">{{ account.account_no }} - {{ account.bank_name }} - {{ account.balance|floatformat:2|intcomma }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% include "_transaction_history_modal.html" %}
+
+

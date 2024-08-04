@@ -8,6 +8,7 @@ from django.views import View
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from .utils import unix_to_datetime, send_telegram_message
+from django.views.decorators.http import require_POST
 from django.utils.dateparse import parse_datetime
 from .database import redis_connect
 from datetime import datetime, timedelta
@@ -313,6 +314,16 @@ def get_all_transactions():
     
     return all_transactions_df
 
+def get_transactions_by_key(account_number):
+    redis_client = redis_connect(1)
+    transactions_str = redis_client.get(account_number)
+    all_transactions = []
+    if transactions_str:
+        all_transactions += json.loads(transactions_str)
+    transactions_df = pd.DataFrame(all_transactions)
+    return transactions_df
+
+
 def get_start_end_datetime(start_datetime, end_datetime):
     today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
@@ -343,7 +354,62 @@ def get_start_end_datetime_string(start_datetime, end_datetime):
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
         
     return start_datetime, end_datetime
-    
-    
+
+
+@csrf_exempt
+@require_POST    
+def record_book_report(request):
+    if request.method == 'POST':
+        account_number = request.POST.get('account_no')
+        transaction_df = get_transactions_by_key(account_number)
+        
+        start_date = request.GET.get('start_datetime', '')
+        end_date = request.GET.get('end_datetime', '')
+        
+        start_date, end_date = get_start_end_datetime(start_date, end_date)
+
+
+        if not transaction_df.empty:
+        
+            # Convert the 'transaction_date' column to datetime format if it exists
+            if 'transaction_date' in transaction_df.columns:
+                transaction_df['transaction_date'] = pd.to_datetime(transaction_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
+
+            # Get form inputs
+            
+            # Filter transactions based on form input
+            filtered_transactions_df = transaction_df[
+                (transaction_df['transaction_date'] >= start_date) &
+                (transaction_df['transaction_date'] <= end_date)
+            ]
+            
+            # Separate and sort transactions by type
+            in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
+            out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
+               
+
+            # Pagination for "IN" transactions
+            in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
+            in_page_number = request.GET.get('in_page')
+            in_page_obj = in_paginator.get_page(in_page_number)
+
+            # Pagination for "OUT" transactions
+            out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
+            out_page_number = request.GET.get('out_page')
+            out_page_obj = out_paginator.get_page(out_page_number)
+  
+            data = {
+                'in_transactions': list(in_page_obj),
+                'out_transactions': list(out_page_obj),
+                'in_page': in_page_obj.number,
+                'in_num_pages': in_page_obj.paginator.num_pages,
+                'out_page': out_page_obj.number,
+                'out_num_pages': out_page_obj.paginator.num_pages,
+            }
+
+            return JsonResponse(data)
+            
+
+
     
     

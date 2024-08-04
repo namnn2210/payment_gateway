@@ -35,7 +35,7 @@
         const startInput = document.getElementById('start_datetime');
         const endInput = document.getElementById('end_datetime');
 
-        const currentDate = new Date();
+        const currentDate = new Date(); 
         const today = formatDateToYYYYMMDD(currentDate);
         const startDateTime = `${today}T00:00`;
         const endDateTime = `${today}T23:59`;
@@ -44,7 +44,7 @@
         if (!endInput.value) endInput.value = endDateTime;
 
 
-        const last5DaysData = JSON.parse('{{ last_5_days_data|escapejs }}');
+        const last5DaysData = JSON.parse('{{ report_data.chart|escapejs }}');
 
         const dates = Object.keys(last5DaysData);
         const inValues = dates.map(date => last5DaysData[date].in);
