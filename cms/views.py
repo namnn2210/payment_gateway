@@ -6,6 +6,8 @@ from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from bank.models import BankAccount
+from employee.models import EmployeeDeposit
+from django.core.paginator import Paginator
 from notification.models import Notification
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -20,11 +22,16 @@ import os
 # Create your views here.
 @login_required(login_url='user_login')
 def index(request):
-    # Notification.objects.create(recipient=request.user, message='Welcome to our website!')
     list_user_bank = BankAccount.objects.filter(user=request.user, status=True)
-    # notifications = request.user.notifications.filter(read=False).order_by('-created_at')
-    # print(list(notifications)
-    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank})
+    if request.user.is_superuser:
+        list_deposit_requests = EmployeeDeposit.objects.filter(status=False)
+        paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
+        page_number = request.GET.get('page')
+        list_deposit_requests = paginator.get_page(page_number)
+    else:
+        list_deposit_requests = None
+        
+    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests})
 
 def user_login(request):
     if request.method == 'POST':

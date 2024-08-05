@@ -76,7 +76,8 @@ def report(request):
             bank_accounts.append({
                 "account_no":bank_account.account_number,
                 "bank_name":bank_account.bank_name.name,
-                "balance":bank_account.balance
+                "balance":bank_account.balance,
+                "bank_type":bank_account.bank_type
             })
         user_info_dict[user.username] = {
             "bank_accounts":bank_accounts
