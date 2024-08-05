@@ -2,18 +2,31 @@
 {% load humanize %}
 {% load i18n %}
 {% block title %}{% trans "Dashboard" %}{% endblock %}
+{% block head %}
+<style>
+
+.same-height {
+    flex: 1;
+    display: flex;
+}
+
+.same-height .card {
+    flex: 1;
+}
+</style>
+{% endblock %}
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
+    <div class="row d-flex">
         {% if user.is_superuser%}
-        <div class="col-md-6 col-sm-6">
+        <div class="col-md-6 col-sm-6 same-height">
             <div class="card info-card revenue-card">
-                <div class="card-body">
+                <div class="card-body justify-content-center">
                     <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                             <i class="bi bi-bullseye"></i>
                         </div>
-                        <div class="ps-3">
+                        <div class="ps-3 align-items-center">
                             <h6 class="balance-total"></h6>
                             <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span class="text-danger small pt-1 fw-bold total-out">-0</span> <span class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
                         </div>
@@ -23,7 +36,7 @@
         </div>
         {% endif %}
         {% if not user.is_superuser%}
-        <div class="col-md-6 col-sm-6">
+        <div class="col-md-6 col-sm-6 same-height">
             <div class="card info-card revenue-card">
                 <div class="card-body text-center mt-4 align-items-center">
                     <button type="button" class="btn btn-primary create-deposit-btn" data-bs-toggle="modal" data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
@@ -144,8 +157,8 @@
 </div>
 <!-- Bank IN - OUT-->
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-6 col-sm-12">
+    <div class="row d-flex">
+        <div class="col-md-6 col-sm-12 same-height">
             <div class="card">
                 <div class="card-body">
                     {% if user.is_superuser%}
@@ -201,7 +214,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-6 col-sm-12 same-height">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-danger small pt-1 fw-bold">{% trans "OUT" %}</span></h5>
@@ -302,8 +315,8 @@
 <!-- END Bank IN - OUT-->
 <!-- Latest Transactions -->
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-md-6 col-sm-12">
+    <div class="row d-flex">
+        <div class="col-md-6 col-sm-12 same-height">
             <div class="card recent-sales overflow-auto">
                 <div class="card-body">
                     <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-success">{% trans "IN" %}</span> {% trans "history" %}</h5>
@@ -333,7 +346,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-6 col-sm-12 same-height">
             <div class="card recent-sales overflow-auto">
                 <div class="card-body">
                     <h5 class="card-title">{% trans "Latest transaction" %} <span class="text-danger">{% trans "OUT" %}</span> {% trans "history" %}</h5>
