@@ -50,8 +50,6 @@ def list_payout(request):
     status_filter = request.GET.get('status', 'Pending')
     
     employee_filter = request.GET.get('employee')
-    
-    
 
     if search_query:
         list_payout = list_payout.filter(
@@ -96,9 +94,13 @@ def list_payout(request):
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
     
-    if employee_filter != 'All':
-        user = User.objects.filter(username=employee_filter).first()
-        list_payout = list_payout.filter(user=user)
+    
+    if not employee_filter:
+        list_payout = list_payout.filter(user=request.user)
+    else:
+        if employee_filter != 'All':
+            user = User.objects.filter(username=employee_filter).first()
+            list_payout = list_payout.filter(user=user)
 
     list_payout = list_payout.annotate(
         status_priority=Case(

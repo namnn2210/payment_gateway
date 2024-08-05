@@ -53,8 +53,8 @@
                 {% else %}
                 <select id="employeeFilter" name="employee" class="form-select">
                     <option value="All" {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
-                    {% for user in users%}
-                    <option value={{user}} {% if request.GET.employee == "Pending" or request.GET.employee is None %}selected{% endif %}>{{user.username}}</option>
+                    {% for item_user in users%}
+                    <option value={{item_user}} {% if item_user.username == user.username %}selected{% endif %}>{{item_user.username}}</option>
                     {% endfor %}
                 </select>
                 {% endif %}
