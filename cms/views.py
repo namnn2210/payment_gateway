@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from bank.models import BankAccount
+from bank.models import BankAccount, Bank
 from employee.models import EmployeeDeposit
 from django.core.paginator import Paginator
 from notification.models import Notification
@@ -22,7 +22,11 @@ import os
 # Create your views here.
 @login_required(login_url='user_login')
 def index(request):
-    list_user_bank = BankAccount.objects.filter(user=request.user, status=True)
+    list_bank_option = Bank.objects.filter(status=True)
+    if request.user.is_superuser:
+        list_user_bank = BankAccount.objects.all()
+    else:
+        list_user_bank = BankAccount.objects.filter(user=request.user)
     if request.user.is_superuser:
         list_deposit_requests = EmployeeDeposit.objects.filter(status=False)
         paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
@@ -30,6 +34,7 @@ def index(request):
         list_deposit_requests = paginator.get_page(page_number)
     else:
         list_deposit_requests = None
+    
         
     return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests})
 

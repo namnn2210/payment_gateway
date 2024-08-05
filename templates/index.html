@@ -14,7 +14,7 @@
                             <i class="bi bi-bullseye"></i>
                         </div>
                         <div class="ps-3">
-                            <h6 class="balance-total"><span class="text-success"></span></h6>
+                            <h6 class="balance-total"></h6>
                             <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span class="text-danger small pt-1 fw-bold total-out">-0</span> <span class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
                         </div>
                     </div>
@@ -142,56 +142,165 @@
         {% endif %}
     </div>
 </div>
+<!-- Bank IN - OUT-->
 <div class="container-fluid">
     <div class="row">
-        <div class="col-xxl-4 col-md-6 col-sm-12">
-            <div class="card info-card revenue-card">
+        <div class="col-md-6 col-sm-12">
+            <div class="card">
                 <div class="card-body">
-                    <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-success"> {% trans "IN" %} </span> - <b class="total-in"></b>
-                    <div class="d-flex align-items-center">
-                        <div class="table-responsive">
-                            <table class="table table-sm" style="font-size: 12px">
-                                <thead>
-                                    <tr style="font-size: 12px">
-                                        <th>#</th>
-                                        <th>{% trans "BANK" %}</th>
-                                        <th>{% trans "Account Number" %}</th>
-                                        <th>{% trans "Account Name" %}</th>
-                                        <th>{% trans "Balance" %}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="tbody-in"></tbody>
-                            </table>
-                        </div>
+                    {% if user.is_superuser%}
+                    <div>
+                        <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addBankModal">{% trans 'Add Bank' %}</button>
                     </div>
+                    {% endif %}
+                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-success small pt-1 fw-bold">{% trans "IN" %}</span></h5>
+                    <!-- Default Table -->
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-sm">
+                            <thead style="font-size: 12px">
+                                <tr>
+                                    <th>{% trans "Account Number" %}</th>
+                                    <th>{% trans "Bank Name" %}</th>
+                                    <th>{% trans "Balance" %}</th>
+                                    <th>{% trans "User" %}</th>
+                                    <th>{% trans "Last Update" %}</th>
+                                    {% if user.is_superuser %}
+                                    <th>{% trans "Actions" %}</th>
+                                    {% endif %}
+                            </thead>
+                            <tbody id="bankList" style="font-size: 12px">
+                                {% for bank_account in list_user_bank %}
+                                {% if bank_account.bank_type == 'IN'%}
+                                <tr>
+                                    <td>
+                                        <p>{{bank_account.account_number}}</p>
+                                        <i>{{bank_account.account_name}}</i>
+                                    </td>
+                                    <td>{{bank_account.bank_name}}</td>
+                                    <td id="balance-{{bank_account.id}}">{{bank_account.balance|floatformat:2|intcomma }} <span class="text-success"></span></td>
+                                    <td>{{bank_account.user.username}}</td>
+                                    <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
+                                    {% if user.is_superuser %}
+                                    <td>
+                                        {% if bank_account.status %}
+                                        <button class="btn btn-sm btn-danger btn-toggle-status"
+                                            data-account-id="{{ bank_account.id }}" data-status="ON">{% trans "OFF" %}</button>
+                                        {% else %}
+                                        <button class="btn btn-sm btn-success btn-toggle-status"
+                                            data-account-id="{{ bank_account.id }}" data-status="OFF">{% trans "ON" %}</button>
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- End Default Table Example -->
                 </div>
             </div>
         </div>
-        <div class="col-xxl-4 col-md-6 col-sm-12">
-            <div class="card info-card revenue-card">
+        <div class="col-md-6 col-sm-12">
+            <div class="card">
                 <div class="card-body">
-                    <span class="card-title">{% trans "BANK" %}</span> <span class="card-title text-danger"> {% trans "OUT" %} </span> - <b class="total-out"></b>
-                    <div class="d-flex align-items-center">
-                        <div class="table-responsive">
-                            <table class="table table-sm" style="font-size: 12px">
-                                <thead>
-                                    <tr style="font-size: 12px">
-                                        <th>#</th>
-                                        <th>{% trans "BANK" %}</th>
-                                        <th>{% trans "Account Number" %}</th>
-                                        <th>{% trans "Account Name" %}</th>
-                                        <th>{% trans "Balance" %}</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="tbody-out"></tbody>
-                            </table>
-                        </div>
+                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-danger small pt-1 fw-bold">{% trans "OUT" %}</span></h5>
+                    <!-- Default Table -->
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-sm">
+                            <thead style="font-size: 12px">
+                                <tr>
+                                    <th>{% trans "Account Number" %}</th>
+                                    <th>{% trans "Bank Name" %}</th>
+                                    <th>{% trans "Balance" %}</th>
+                                    <th>{% trans "User" %}</th>
+                                    <th>{% trans "Last Update" %}</th>
+                                    {% if user.is_superuser %}
+                                    <th>{% trans "Actions" %}</th>
+                                    {% endif %}
+                            </thead>
+                            <tbody id="bankList" style="font-size: 12px">
+                                {% for bank_account in list_user_bank %}
+                                {% if bank_account.bank_type == 'OUT'%}
+                                <tr>
+                                    <td>
+                                        <p>{{bank_account.account_number}}</p>
+                                        <i>{{bank_account.account_name}}</i>
+                                    </td>
+                                    <td>{{bank_account.bank_name}}</td>
+                                    <td id="balance-{{bank_account.id}}">{{bank_account.balance|floatformat:2|intcomma }} <span class="text-success"></span></td>
+                                    <td>{{bank_account.user.username}}</td>
+                                    <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
+                                    {% if user.is_superuser %}
+                                    <td>
+                                        {% if bank_account.status %}
+                                        <button class="btn btn-sm btn-danger btn-toggle-status"
+                                            data-account-id="{{ bank_account.id }}" data-status="ON">{% trans "OFF" %}</button>
+                                        {% else %}
+                                        <button class="btn btn-sm btn-success btn-toggle-status"
+                                            data-account-id="{{ bank_account.id }}" data-status="OFF">{% trans "ON" %}</button>
+                                        {% endif %}
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
+                    <!-- End Default Table Example -->
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade" id="addBankModal" tabindex="-1" aria-labelledby="addBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBankModalLabel">{% trans "Add New Bank" %}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modalAlertContainer"></div>
+                <form id="addBankForm">
+                    <div class="form-group">
+                        <label for="bankNumber">{% trans "Bank Number" %}</label>
+                        <input type="text" class="form-control" id="bankNumber" name="bankNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankUsername">{% trans "Bank Username" %}</label>
+                        <input type="text" class="form-control" id="bankUsername" name="bankUsername" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankPassword">{% trans "Bank Password" %}</label>
+                        <input type="password" class="form-control" id="bankPassword" name="bankPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankType">{% trans "Bank TYPE" %}</label>
+                        <select class="form-control" id="bankType" name="bankType" required>
+                            <option value="IN">IN</option>
+                            <option value="OUT">OUT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankName">{% trans "Bank Name" %}</label>
+                        <select class="form-control" id="bankName" name="bankName" required>
+                            {% for bank in list_bank_option %}
+                            <option value="{{ bank.name }}">{{ bank.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">{% trans "Add Bank" %}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Bank IN - OUT-->
+<!-- Latest Transactions -->
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-6 col-sm-12">
@@ -256,6 +365,7 @@
         </div>
     </div>
 </div>
+<!-- End Latest Transactions -->
 <div class="modal fade" id="createDepositModal" aria-labelledby="createDepositModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -314,6 +424,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+
         const fetchData = async (url, options = {}) => {
             try {
                 const response = await fetch(url, options);
@@ -321,6 +432,28 @@
                 return await response.json();
             } catch (error) {
                 console.error('Error fetching data:', error);
+            }
+        };
+
+        const updateBalanceCells = (balances) => {
+            let totalBalance = 0
+            balances.forEach(balance => {
+                const balanceCell = document.getElementById(`balance-${balance.id}`);
+                if (balanceCell) {
+                    totalBalance += balance.balance
+                    balanceCell.innerHTML = `${balance.balance.toLocaleString()}` + '.00';
+                }
+            });
+            const balanceTotalElem = document.querySelector('.balance-total');
+            if (balanceTotalElem) {
+                balanceTotalElem.innerHTML = `${totalBalance.toLocaleString()}` + '.00';
+            }
+        };
+
+        const fetchBalance = async () => {
+            const data = await fetchData('{% url "update_balance" %}');
+            if (data) {
+                updateBalanceCells(data.data.balance);
             }
         };
 
@@ -342,30 +475,6 @@
             `).join('');
         };
 
-        const updateBalanceTable = (balances, tableSelector, totalSelector, totalType) => {
-            const tableBody = document.querySelector(tableSelector);
-            const totalElement = document.querySelector(totalSelector);
-            if (!tableBody || !totalElement) {
-                console.error('Table or total element not found');
-                return;
-            }
-
-            let total = 0;
-            tableBody.innerHTML = balances.map((balance, index) => {
-                total += balance.balance;
-                return `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${balance.bank_name}</td>
-                        <td>${balance.account_number}</td>
-                        <td>${balance.account_name}</td>
-                        <td class="${totalType}">${balance.balance.toLocaleString()}</td>
-                    </tr>
-                `;
-            }).join('');
-            totalElement.innerHTML = `${total.toLocaleString()} <span class="${totalType}"></span>`;
-        };
-
         const updateAmountToday = (data) => {
             const totalInElem = document.querySelector('.total-in');
             const totalOutElem = document.querySelector('.total-out');
@@ -385,24 +494,6 @@
             }
         };
 
-        const fetchBalance = async () => {
-            const data = await fetchData('{% url "update_balance" %}');
-            if (data) {
-                const balancesIn = data.data.balance.filter(bank => bank.bank_type === 'IN');
-                const balancesOut = data.data.balance.filter(bank => bank.bank_type === 'OUT');
-                updateBalanceTable(balancesIn, 'table.table-sm tbody.tbody-in', 'b.total-in', 'text-success');
-                updateBalanceTable(balancesOut, 'table.table-sm tbody.tbody-out', 'b.total-out', 'text-danger');
-
-                const balanceTotalElem = document.querySelector('.balance-total');
-                if (balanceTotalElem) {
-                    const totalBalance = balancesIn.reduce((sum, bank) => sum + bank.balance, 0) +
-                                        balancesOut.reduce((sum, bank) => sum + bank.balance, 0);
-                    balanceTotalElem.innerHTML = `${totalBalance.toLocaleString()} <span class="text-success"></span>`;
-                } else {
-                    console.error('Balance total element not found');
-                }
-            }
-        };
 
         const fetchAmountToday = async () => {
             const data = await fetchData('{% url "get_amount_today" %}');
@@ -415,12 +506,13 @@
         });
 
         fetchLatestTransactions();
-        fetchBalance();
         fetchAmountToday();
+        fetchBalance();
 
-        setInterval(fetchLatestTransactions, 15000);
         setInterval(fetchBalance, 15000);
+        setInterval(fetchLatestTransactions, 15000);
         setInterval(fetchAmountToday, 15000);
+
     });
 
 </script>
@@ -496,7 +588,6 @@
         const accountno = $(this).data('accountno');
         const amount = $(this).data('amount');
         const accountname = $(this).data('accountname');
-        console.log('========', itemId)
         const qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${amount}/Z${accountname}/print.jpg`;
         document.getElementById('modalQrImage').setAttribute('src', qrUrl);
         document.querySelector('.done-btn-modal').dataset.itemId = itemId;
@@ -514,5 +605,82 @@
     });
 
     document.addEventListener('DOMContentLoaded', bindRowClickEvents);
+</script>
+<script>
+    function showAlert(message, type, container) {
+        const alertHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `;
+        container.html(alertHTML);
+    };
+
+    $(document).ready(function () {
+        $('#searchAccountNumber').on('keyup', function () {
+            var value = $(this).val().toLowerCase();
+            $('#bankList tr').filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        $('#addBankForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = {
+                bankNumber: $('#bankNumber').val(),
+                bankUsername: $('#bankUsername').val(),
+                bankPassword: $('#bankPassword').val(),
+                bankType: $('#bankType').val(),
+                bankName: $('#bankName').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "add_bank" %}',  // Ensure this URL name matches your urls.py
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.status === 200) {
+                        showAlert(response.message, 'success', $('#modalAlertContainer'));
+                        $('#addBankModal').modal('hide');
+                        location.reload();
+                    } else {
+                        showAlert(response.message, 'danger', $('#modalAlertContainer'));
+                    }
+                },
+                error: function (response) {
+                    showAlert(response.message, 'danger', $('#modalAlertContainer'));
+                }
+            });
+        });
+
+        $('.btn-toggle-status').on('click', function () {
+            var button = $(this);
+            var accountId = button.data('account-id');
+            var newStatus = button.data('status') === 'ON' ? 'OFF' : 'ON';
+            $.ajax({
+                type: 'POST',
+                url: '{% url "toggle_bank_status" %}',  // Ensure this URL name matches your urls.py
+                data: JSON.stringify({ id: accountId, status: newStatus }),
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.status === 200) {
+                        showAlert(response.message, 'success', $('#modalAlertContainer'));
+                        button.data('status', newStatus);
+                        button.toggleClass('btn-success btn-danger');
+                        button.text(newStatus === 'ON' ? 'OFF' : 'ON');
+                    } else {
+                        showAlert('Failed to update status.', 'danger', $('#modalAlertContainer'));
+                    }
+                },
+                error: function (response) {
+                    showAlert('An error occurred. Please try again.', 'danger', $('#modalAlertContainer'));
+                }
+            });
+        });
+    });
 </script>
 {% endblock %}

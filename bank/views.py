@@ -38,20 +38,6 @@ def record_book(request):
     start_date = request.GET.get('start_datetime', '')
     end_date = request.GET.get('end_datetime', '')
     
-    # Default start and end date to today if not provided
-    # today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    # today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-    
-    # if start_date:
-    #     start_date = parse_datetime(start_date)
-    # else:
-    #     start_date = today_start
-
-    # if end_date:
-    #     end_date = parse_datetime(end_date)
-    # else:
-    #     end_date = today_end
-    
     start_date, end_date = get_start_end_datetime(start_date, end_date)
 
 
@@ -152,9 +138,6 @@ class AddBankView(View):
         if existed_bank_account:
             return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
 
-        # Process the data and save to the database
-        # (e.g., create a new Bank object and save it)
-        # bank_account = get_bank(bank_name,bank_number, bank_username, bank_password)
         if bank_account:
             bank = Bank.objects.filter(name=bank_name).first()
             bank_account = BankAccount.objects.create(
@@ -187,8 +170,6 @@ def toggle_bank_status(request):
         except BankAccount.DoesNotExist:
             return JsonResponse({'status': 404, 'message': 'Bank account not found'})
     return JsonResponse({'status': 400, 'message': 'Invalid request'})
-
-
 
 
 def update_transaction_history(request):
@@ -246,13 +227,13 @@ def update_transaction_history(request):
 
 def update_balance(request):
     if request.user.is_superuser:
-        bank_accounts = BankAccount.objects.filter(status=True)
+        bank_accounts = BankAccount.objects.all()
     else:
-        bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
+        bank_accounts = BankAccount.objects.filter(user=request.user)
     
     list_dict_accounts = []
     for bank_account in bank_accounts:
-        list_dict_accounts.append(bank_account.as_dict())
+        list_dict_accounts.append(model_to_dict(bank_account))
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'balance':list_dict_accounts}})
 
 def update_amount_by_date(transaction_type, amount):
