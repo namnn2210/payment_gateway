@@ -55,7 +55,9 @@
                                     <th>{% trans "Balance" %}</th>
                                     <th>{% trans "User" %}</th>
                                     <th>{% trans "Last Update" %}</th>
+                                    {% if user.is_superuser %}
                                     <th>{% trans "Actions" %}</th>
+                                    {% endif %}
                             </thead>
                             <tbody id="bankList" style="font-size: 11px">
                                 {% for bank_account in list_user_bank %}
@@ -69,10 +71,8 @@
                                     <td>{{bank_account.balance|floatformat:2|intcomma }} <span class="text-success"></span></td>
                                     <td>{{bank_account.user.username}}</td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
+                                    {% if user.is_superuser %}
                                     <td>
-                                        <a href="{% url 'record_book' %}"><button
-                                                class="btn btn-sm btn-success">{% trans "History" %}</button>
-                                        </a>
                                         {% if bank_account.status %}
                                         <button class="btn btn-sm btn-danger btn-toggle-status"
                                             data-account-id="{{ bank_account.id }}" data-status="ON">{% trans "OFF" %}</button>
@@ -81,6 +81,7 @@
                                             data-account-id="{{ bank_account.id }}" data-status="OFF">{% trans "ON" %}</button>
                                         {% endif %}
                                     </td>
+                                    {% endif %}
                                 </tr>
                                 {% endif %}
                                 {% endfor %}
@@ -107,7 +108,7 @@
                                     <th>{% trans "Last Update" %}</th>
                                     {% if user.is_superuser %}
                                     <th>{% trans "Actions" %}</th>
-                                    {% endif }
+                                    {% endif %}
                             </thead>
                             <tbody id="bankList" style="font-size: 11px">
                                 {% for bank_account in list_user_bank %}
