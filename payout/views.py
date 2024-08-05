@@ -96,7 +96,7 @@ def list_payout(request):
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
     
-    if employee_filter:
+    if employee_filter != 'All':
         user = User.objects.filter(username=employee_filter).first()
         list_payout = list_payout.filter(user=user)
 
@@ -110,6 +110,8 @@ def list_payout(request):
 
     total_results = len(list_payout)
     total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
+    
+    print(list_payout)
 
     paginator = Paginator(list_payout, 10)  # Show 10 items per page
     page_number = request.GET.get('page')
