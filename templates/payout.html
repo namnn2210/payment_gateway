@@ -43,12 +43,21 @@
         </div>
         <div class="row mt-4">
             <div class="col-md-6 col-sm-12">
+                {% if user.is_superuser %}
                 <select id="employeeFilter" name="employee" class="form-select">
                     <option value="All" {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
                     {% for user in users%}
-                    <option value="{{ user.username  }}" {% if request.GET.employee == user.username %}selected{% endif %}>{{ user.username }}</option>
+                    <option value="{{ user.username  }}" {% if request.GET.employee == user.username %}selected{% endif %}>{{ user }}</option>
                     {% endfor %}
                 </select>
+                {% else %}
+                <select id="employeeFilter" name="employee" class="form-select">
+                    <option value="All" {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
+                    {% for user in users%}
+                    <option value={{user}} {% if request.GET.employee == "Pending" or request.GET.employee is None %}selected{% endif %}>{{user.username}}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
             </div>
             <div class="col-md-6 col-sm-12 text-right">
                 <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>

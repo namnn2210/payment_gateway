@@ -51,7 +51,7 @@ def list_payout(request):
     
     employee_filter = request.GET.get('employee')
     
-        
+    
 
     if search_query:
         list_payout = list_payout.filter(
