@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from bank.models import Bank
+from bank.models import Bank, BankAccount
 
 # Create your models here.
 class Payout(models.Model):
@@ -50,3 +50,14 @@ class UserTimeline(models.Model):
     
     class Meta:
         db_table = 'user_timeline'
+        
+class BalanceTimeline(models.Model):
+    timeline = models.ForeignKey(Timeline, on_delete=models.CASCADE, null=False)
+    bank_account = models.ForeignKey(BankAccount, on_delete=models.CASCADE, null=False)
+    balance = models.BigIntegerField(default=0)
+    status = models.BooleanField(default=True,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'balance_timeline'

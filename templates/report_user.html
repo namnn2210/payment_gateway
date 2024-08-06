@@ -17,8 +17,8 @@
     }
 </style>
 <div class="row">
-    <div class="col-md-12 mt-4">
-        <div class="table-responsive mt-4">
+    <div class="col-md-12">
+        <div class="table-responsive">
             <table class="table table-bordered table-sm" id="userReportTable">
                 <thead>
                     <tr class="text-center">
@@ -80,9 +80,6 @@
             searching: true,
             info: true,
             ordering:false,
-            columnDefs: [
-                { orderable: false, targets: [3] } // Disables sorting on the 'Bank Accounts' column
-            ],
         });
     });
 </script>

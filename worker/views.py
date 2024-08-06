@@ -241,7 +241,7 @@ def get_transaction(bank):
             pass
             # print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
 
-def get_balance_by_time(bank):
+def get_balance_by_bank(bank):
     bank_balance = None
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username, bank.password)
     # Get balance

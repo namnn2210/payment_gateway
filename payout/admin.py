@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Payout, Timeline, UserTimeline
+from .models import Payout, Timeline, UserTimeline, BalanceTimeline
 
 # Register your models here.
 @admin.register(Payout)
@@ -19,3 +19,10 @@ class UserTimelineAdmin(admin.ModelAdmin):
     list_display = ('user', 'timeline', 'status', 'created_at', 'updated_at')
     list_filter = ('user', 'timeline', 'status','created_at',)
     search_fields = ('user',)
+    
+    
+@admin.register(BalanceTimeline)
+class BalanceTimelineAdmin(admin.ModelAdmin):
+    list_display = ('timeline', 'bank_account', 'balance', 'status', 'created_at', 'updated_at')
+    list_filter = ('timeline', 'bank_account', 'status','created_at',)
+    search_fields = ('bank_account',)
