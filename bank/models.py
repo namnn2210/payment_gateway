@@ -10,6 +10,7 @@ load_dotenv()
 class Bank(models.Model):
     name = models.CharField(max_length=255)
     icon = models.CharField(max_length=255, null=True)
+    bankcode = models.CharField(max_length=255, null=True)
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

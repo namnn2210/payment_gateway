@@ -13,18 +13,13 @@ def employee_deposit(request):
         deposit_amount = int(request.POST.get('deposit', 0))
         bank_id = int(request.POST.get('bank'))
         bank = BankAccount.objects.filter(id=bank_id).first()
-        system_bank_data = json.load(open('bank.json', encoding='utf-8'))
-        bank_code = ''
-        for bank_data in system_bank_data:
-            if bank.bank_name.name == bank_data['short_name']:
-                bank_code = bank_data['code']
         EmployeeDeposit.objects.create(
             user = request.user,
             amount = deposit_amount,
             bankname = bank.bank_name,
             accountno = bank.account_number,
             accountname = bank.account_name,
-            bankcode = bank_code
+            bankcode = bank.bank_name.bankcode
         )
         return redirect('index')
     if request.user.is_superuser:
