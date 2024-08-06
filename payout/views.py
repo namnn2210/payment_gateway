@@ -363,9 +363,7 @@ def webhook(request):
                 if payeebankname == bank['bankname']:
                     print('get bank code')
                     system_bankcode = bank['code']
-                    # partner_bankcode = bank['code']
-                else:
-                    return JsonResponse({'status': 506, 'message': 'Bank not found'})
+
             admin = User.objects.filter(username="admin").first()
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
             if existed_settle_payout:
