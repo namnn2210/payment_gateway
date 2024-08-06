@@ -5,7 +5,7 @@ from settle_payout.models import SettlePayout
 from employee.models import EmployeeDeposit
 from bank.views import get_all_transactions, get_start_end_datetime, get_start_end_datetime_string
 from bank.models import BankAccount
-from payout.models import Timeline, UserTimeline
+from payout.models import Timeline, UserTimeline, BalanceTimeline
 from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
@@ -233,16 +233,35 @@ def report_payout_by_user(request):
             # Employee Deposit
             deposit = EmployeeDeposit.objects.filter(user=user, status=True).filter(time_range_query)
             total_amount_deposit = deposit.aggregate(total_money=Sum('amount'))['total_money']
+            
+            # Balance Timeline
+            bank_account = BankAccount.objects.filter(user=user).first()
+            balance_timeline = BalanceTimeline.objects.filter(bank_account=bank_account).filter(time_range_query).first()
+            if balance_timeline:
+                start_balance = balance_timeline.balance
+            else:
+                start_balance = 0
+            
+            if not total_amount_deposit:
+                total_amount_deposit = 0
+            if not total_amount_payout:
+                total_amount_payout = 0
+            if not total_amount_settle:
+                total_amount_settle = 0
+                
+            estimate_end_timeline_amount = start_balance + total_amount_deposit - total_amount_payout - total_amount_settle 
 
             results.append({
                 'date': current_day.strftime('%d/%m/%Y'),
                 'start_datetime': start_datetime.strftime('%H:%M'),
                 'end_datetime': end_datetime.strftime('%H:%M'),
+                'start_balance':start_balance or 0,
                 'deposit':total_amount_deposit or 0,
-                'total_amount_payout': total_amount_payout or 0,
+                'total_amount_payout': total_amount_payout,
                 'total_count_payout': total_count_payout or 0,
-                'total_amount_settle':total_amount_settle or 0,
-                'total_count_settle':total_count_settle or 0
+                'total_amount_settle':total_amount_settle,
+                'total_count_settle':total_count_settle or 0,
+                'estimate_end_timeline_amount':estimate_end_timeline_amount
             })
 
             current_day -= timedelta(days=1)

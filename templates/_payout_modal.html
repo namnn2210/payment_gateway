@@ -22,11 +22,13 @@
                                         <th>{% trans 'Date'%}</th>
                                         <th>{% trans 'Start At'%}</th>
                                         <th>{% trans 'End At'%}</th>
+                                        <th>{% trans 'Start Balance'%}</th>
                                         <th>{% trans 'Deposit'%}</th>
                                         <th>{% trans 'Total Payout Amount'%}</th>
                                         <th>{% trans 'Total Payouts'%}</th>
                                         <th>{% trans 'Total Settle Amount'%}</th>
                                         <th>{% trans 'Total Settles'%}</th>
+                                        <th>{% trans 'Estimate Total End Timeline Amount'%}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -74,11 +76,13 @@
                         row += '<td>' + item.date + '</td>';
                         row += '<td>' + item.start_datetime + '</td>';
                         row += '<td>' + item.end_datetime + '</td>';
+                        row += '<td>' + item.start_balance.toLocaleString() + '</td>';
                         row += '<td>' + item.deposit.toLocaleString() + '</td>';
                         row += '<td>' + item.total_amount_payout.toLocaleString() + '</td>';
                         row += '<td>' + item.total_count_payout + '</td>';
                         row += '<td>' + item.total_amount_settle.toLocaleString() + '</td>';
                         row += '<td>' + item.total_count_settle + '</td>';
+                        row += '<td>' + item.estimate_end_timeline_amount.toLocaleString() + '</td>';
                         row += '</tr>';
                         tbody.append(row);
                     });
