@@ -12,34 +12,14 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" id="search-form" action="{% url 'record_book_report'%}">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-5 col-sm-12">
-                            <label for="start_datetime">{% trans "Start Date" %}</label>
-                            <p>{{start_date}}</p>
-                            <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ request.GET.start_datetime|default_if_none:'' }}"/>
-                        </div>
-                        <div class="col-md-5 col-sm-12">
-                            <label for="end_datetime">{% trans "End Date" %}</label>
-                            <p>{{end_date}}</p>
-                            <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ request.GET.end_datetime|default_if_none:'' }}"/>
-                        </div>
-                        <div class="col-md-2 col-sm-12 text-right justify-content-center">
-                            <input type="hidden" name="in_page" value="{{ in_page_obj.number }}">
-                            <input type="hidden" name="out_page" value="{{ out_page_obj.number }}">
-                            <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
-                        </div>
-                    </div>
-                </form>
-                <div class="row d-flex justify-content-between same-height">
-                    <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
                         <div class="card-body table-wrapper" style="font-size: 12px">
                             <div class="table-responsive">
-                                <table class="table table-sm display">
+                                <table class="table table-sm display" id="transactionTable">
                                     <thead>
                                         <tr class="text-center" style="font-size: 12px">
-                                            <th></th>
+                                            <th>{% trans "Transaction Number" %}</th>
                                             <th>{% trans "Account Number" %}</th>
                                             <th>{% trans "Amount" %}</th>
                                             <th>{% trans "Date" %}</th>
@@ -48,117 +28,10 @@
                                         </tr>
                                     </thead>
                                     <tbody id="inTransactionTableBody" class="text-center">
+                                        <!-- Data will be populated by JavaScript -->
                                     </tbody>
                                 </table>
                             </div>
-                            <!-- Pagination for IN transactions -->
-                            {% if in_page_obj %}
-                            <div class="d-flex justify-content-center">
-                                <nav aria-label="In transactions page navigation">
-                                    <ul class="pagination" id="in-pagination">
-                                        {% if in_page_obj.has_previous %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" data-page="{{ in_page_obj.previous_page_number }}" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                        {% else %}
-                                        <li class="page-item disabled">
-                                            <span class="page-link" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </span>
-                                        </li>
-                                        {% endif %}
-                                        {% for num in in_page_obj.paginator.page_range %}
-                                            {% if num > in_page_obj.number|add:'-3' and num < in_page_obj.number|add:'3' %}
-                                                {% if in_page_obj.number == num %}
-                                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                                                {% else %}
-                                                    <li class="page-item"><a class="page-link" href="#" data-page="{{ num }}">{{ num }}</a></li>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if in_page_obj.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" data-page="{{ in_page_obj.next_page_number }}" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        {% else %}
-                                        <li class="page-item disabled">
-                                            <span class="page-link" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </span>
-                                        </li>
-                                        {% endif %}
-                                    </ul>
-                                </nav>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="card-body table-wrapper" style="font-size: 12px">
-                            <div class="table-responsive">
-                                <table class="table table-sm display">
-                                    <thead>
-                                        <tr class="text-center" style="font-size: 12px">
-                                            <th></th>
-                                            <th>{% trans "Account Number" %}</th>
-                                            <th>{% trans "Amount" %}</th>
-                                            <th>{% trans "Date" %}</th>
-                                            <th>{% trans "Status" %}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="outTransactionTableBody" class="text-center">
-                                    </tbody>
-                                </table>
-                            </div>
-                            <!-- Pagination for OUT transactions -->
-                            {% if out_page_obj %}
-                            <div class="d-flex justify-content-center">
-                                <nav aria-label="Out transactions page navigation">
-                                    <ul class="pagination" id="out-pagination">
-                                        {% if out_page_obj.has_previous %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" data-page="{{ out_page_obj.previous_page_number }}" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                        {% else %}
-                                        <li class="page-item disabled">
-                                            <span class="page-link" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </span>
-                                        </li>
-                                        {% endif %}
-                                        {% for num in out_page_obj.paginator.page_range %}
-                                            {% if num > out_page_obj.number|add:'-3' and num < out_page_obj.number|add:'3' %}
-                                                {% if out_page_obj.number == num %}
-                                                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-                                                {% else %}
-                                                    <li class="page-item"><a class="page-link" href="#" data-page="{{ num }}">{{ num }}</a></li>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% if out_page_obj.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" data-page="{{ out_page_obj.next_page_number }}" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                        {% else %}
-                                        <li class="page-item disabled">
-                                            <span class="page-link" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </span>
-                                        </li>
-                                        {% endif %}
-                                    </ul>
-                                </nav>
-                            </div>
-                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -169,89 +42,15 @@
         </div>
     </div>
 </div>
-<script>
-    function formatDateToYYYYMMDD(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
 
-    function setDateTimeInputs() {
-        const startInput = document.getElementById('start_datetime');
-        const endInput = document.getElementById('end_datetime');
-
-        // Get the current date and time
-        const currentDate = new Date();
-        const today = formatDateToYYYYMMDD(currentDate);
-        const startDateTime = `${today}T00:00`;
-        const endDateTime = `${today}T23:59`;
-
-        if (!startInput.value) {
-            startInput.value = startDateTime;
-        }
-        if (!endInput.value) {
-            endInput.value = endDateTime;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', setDateTimeInputs);
-</script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        function toggleDetailsRow(rowId) {
-            const detailsRow = $('#details-' + rowId);
-            const icon = $('#icon-' + rowId).find('i');
-
-            if (detailsRow.is(':visible')) {
-                detailsRow.hide();
-                icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
-            } else {
-                detailsRow.show();
-                icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
-            }
-        }
-
-        function bindRowClickEvents() {
-            $('.main-row').off('click').on('click', function() {
-                const rowId = $(this).data('transactionNumber');
-                toggleDetailsRow(rowId);
-            });
-        }
-
-        function updateTableData(tableId, data) {
-            const tableBody = $('#' + tableId);
-            tableBody.empty();
-            data.forEach((item) => {
-                const row = $('<tr>')
-                    .addClass('main-row text-center')
-                    .attr('data-transaction-number', item.transaction_number)
-                    .attr('style', 'font-size: 12px;');
-
-                row.append(`<td><span class="toggle-icon" id="icon-${item.transaction_number}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>`);
-                row.append(`<td>${item.account_number}</td>`);
-                row.append(`<td class="${tableId === 'inTransactionTableBody' ? 'text-success' : 'text-danger'}">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`);
-                row.append(`<td>${item.transaction_date}</td>`);
-                if (tableId === 'inTransactionTableBody') {
-                    row.append(`<td>${item.transfer_code}</td>`);
-                }
-                row.append(`<td>${item.status}</td>`);
-                tableBody.append(row);
-
-                const detailsRow = $('<tr>')
-                    .addClass('hidden-row')
-                    .attr('id', `details-${item.transaction_number}`)
-                    .attr('style', 'display: none;');
-
-                detailsRow.append(`<td colspan="6"><div><strong>{% trans "Transaction Number" %}:</strong> ${item.transaction_number}<br><strong>{% trans "Memo" %}:</strong> ${item.description}</div></td>`);
-                tableBody.append(detailsRow);
-            });
-
-            bindRowClickEvents();
-        }
-
-        // Bind the initial row click events
-        bindRowClickEvents();
+        var table = $('#transactionTable').DataTable({
+            paging: true,
+            searching: true,
+            info: true,
+            order: false,
+        });
 
         $('#transactionHistoryModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Button that triggered the modal
@@ -266,17 +65,30 @@
                 method: 'POST',
                 data: { account_no: accountNo },
                 success: function(data) {
-                    updateTableData('inTransactionTableBody', data.in_transactions);
-                    updateTableData('outTransactionTableBody', data.out_transactions);
+                    var tbody = $('#transactionTable tbody');
+                    tbody.empty(); // Clear existing data
+                    transactions = data.transactions
+                    console.log(transactions)
+                    $.each(transactions, function(index, item) {
+                        var amountClass = item.transaction_type === 'IN' ? 'text-success' : 'text-danger';
+                        var row = '<tr class="text-center">';
+                        row += '<td>' + item.transaction_number + '</td>';
+                        row += '<td>' + item.account_number + '</td>';
+                        row += '<td class="' + amountClass + '">' + item.amount.toLocaleString() + '</td>';
+                        row += '<td>' + item.transaction_date + '</td>';
+                        row += '<td>' + item.transfer_code + '</td>';
+                        row += '<td>' + item.status + '</td>';
+                        row += '</tr>';
+                        tbody.append(row);
+                    });
+
+                    // Reinitialize DataTable
+                    table.clear().rows.add($('#transactionTable tbody tr')).draw();
                 },
                 error: function() {
-                    modal.find('#transactionHistoryContent').html('<p>An error occurred while fetching the transaction history.</p>');
+                    modal.find('#inTransactionTableBody').html('<p>An error occurred while fetching the transaction history.</p>');
                 }
             });
         });
     });
 </script>
-
-
-
-

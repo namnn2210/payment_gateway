@@ -235,7 +235,7 @@ def report_payout_by_user(request):
             total_amount_deposit = deposit.aggregate(total_money=Sum('amount'))['total_money']
             
             # Balance Timeline
-            bank_account = BankAccount.objects.filter(user=user).first()
+            bank_account = BankAccount.objects.filter(user=user, status=True).first()
             balance_timeline = BalanceTimeline.objects.filter(bank_account=bank_account).filter(time_range_query).first()
             if balance_timeline:
                 start_balance = balance_timeline.balance
