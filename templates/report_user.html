@@ -52,7 +52,7 @@
                         <td>
                             <ul>
                                 {% for account in data.bank_accounts %}
-                                <li><a href="#" data-toggle="modal" data-target="#transactionHistoryModal" data-account="{{ account.account_no }}">{{ account.account_no }} - {{ account.bank_name }} - {{ account.bank_type }} - {{ account.balance|floatformat:2|intcomma }}</a></li>
+                                <li class="mt-2"><a href="#" data-toggle="modal" data-target="#transactionHistoryModal" data-account="{{ account.account_no }}">{{ account.account_no }} - {{ account.bank_name }} - {{ account.bank_type }} - {{ account.balance|floatformat:2|intcomma }}</a></li>
                                 {% endfor %}
                             </ul>
                         </td>

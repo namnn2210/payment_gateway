@@ -8,15 +8,13 @@
     <form id="searchForm" method="get" action="{% url 'report' %}">
         <div class="row mt-4">
             <div class="col-md-5 col-sm-12">
-                <label for="start_datetime">{% trans "Start Date" %}</label>
                 <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control" value="{{ request.GET.start_datetime|default_if_none:'' }}">
             </div>
             <div class="col-md-5 col-sm-12">
-                <label for="end_datetime">{% trans "End Date" %}</label>
                 <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime|default_if_none:'' }}">
             </div>
             <div class="col-md-2 col-sm-12">
-                <button type="submit" class="btn btn-primary mt-4">{% trans "Search" %}</button>
+                <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
             </div>
         </div>
     </form>
