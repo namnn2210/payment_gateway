@@ -161,9 +161,10 @@ def report(request):
         user_info_dict[user.username] = {
             "bank_accounts":bank_accounts,
             "online":online,
-            "timeline":timeline,
+            "timeline":timeline_info,
             "payout":current_payout_info
-        }        
+        }
+        print(user_info_dict)
     
     report_data = {
         "chart":json.dumps(last_5_days_data),
