@@ -18,6 +18,9 @@ import pandas as pd
 import json
 import pytz
 # Create your views here.
+
+timezone = pytz.timezone('Asia/Bangkok')
+
 def report(request):
     
     start_datetime_str = request.GET.get('start_datetime', '')
@@ -27,7 +30,7 @@ def report(request):
     total_transaction_amount = 0
     total_transaction_results = 0
     
-    # Get in out data 
+    # Get in out data for home
     redis_client = redis_connect(3)
     keys = redis_client.keys('*')
     data = {}
@@ -35,18 +38,8 @@ def report(request):
         data[key.decode('utf-8')] = redis_client.get(key).decode('utf-8')
     sorted_dates = sorted(data.keys())[-5:]
     last_5_days_data = {date: json.loads(data[date]) for date in sorted_dates}
-
-    # Get payout data
     
-    start_date, end_date = get_start_end_datetime_string(start_datetime_str, end_datetime_str)
-        
-    list_payout = Payout.objects.all()
-        
-    list_payout = list_payout.filter(created_at__gte=start_date, created_at__lte=end_date)
-    total_payout_results = len(list_payout)
-    total_payout_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
-    
-    # Get transactions data
+    # Get transactions data for home
     
     all_transactions_df = get_all_transactions()
     start_date, end_date = get_start_end_datetime(start_datetime_str, end_datetime_str)
@@ -71,8 +64,14 @@ def report(request):
         total_transaction_amount = int(float(filtered_transactions_df['amount'].sum()))
         total_transaction_results = filtered_transactions_df.shape[0]
         
+    # User info      
+    list_users = User.objects.filter(is_superuser=False)
     timelines = Timeline.objects.filter(status=True)
-    current_time = datetime.now().time()
+    current_time = datetime.now(timezone).time()
+    current_timeline_name = None
+
+    
+    # Checking current online users
     timelines = [
         {'name': 'Sáng', 'start_at': time(6, 0), 'end_at': time(14, 0)},
         {'name': 'Chiều', 'start_at': time(14, 0), 'end_at': time(22, 0)},
@@ -80,8 +79,6 @@ def report(request):
         {'name': 'Đêm', 'start_at': time(0, 0), 'end_at': time(6, 0)}
     ]
     
-    current_timeline_name = None
-
     for timeline in timelines:
         start_at = timeline['start_at']
         end_at = timeline['end_at']
@@ -101,24 +98,58 @@ def report(request):
             current_timeline_name = 'Đêm'
         active_timeline = Timeline.objects.filter(status=True, name=current_timeline_name).first()
         
-        user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
-        
-    # Get all user        
-    list_users = User.objects.filter(is_superuser=False)
+        current_user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
     
     user_info_dict = {}
-
-    
     for user in list_users:
+        timeline_info = {}
+        current_payout_info = {}
         bank_accounts = []
         user_bank_accounts = BankAccount.objects.filter(user=user, status=True)
-        for user_timeline in user_timelines:
+        
+        # Timeline 
+        for user_timeline in current_user_timelines:
             if user == user_timeline.user:
                 online = True
+                timeline_info = {
+                    'name':user_timeline.timeline.name,
+                    'start_at':user_timeline.timeline.start_at,
+                    'end_at':user_timeline.timeline.end_at
+                }
                 break
             else:
+                timeline_info = {}
                 online = False
-                break
+                
+        user_timeline = UserTimeline.objects.filter(user=user, status=True).first()
+        if user_timeline:
+            user_start_time = user_timeline.timeline.start_at
+            user_end_time = user_timeline.timeline.end_at
+                    
+            if not timeline_info:
+                timeline_info = {
+                    'name':user_timeline.timeline.name,
+                    'start_at':user_start_time,
+                    'end_at':user_end_time
+                }
+        
+            # Current payout data in timeline
+            now = datetime.now(timezone)
+            current_day = now.date()
+            
+            if user_start_time < user_end_time:
+                start_datetime = datetime.combine(current_day, user_start_time).replace(tzinfo=timezone)
+                end_datetime = datetime.combine(current_day, user_end_time).replace(tzinfo=timezone)
+            else:  # Over midnight scenario
+                start_datetime = datetime.combine(current_day - timedelta(days=1), user_start_time).replace(tzinfo=timezone)
+                end_datetime = datetime.combine(current_day, user_end_time).replace(tzinfo=timezone)
+            time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
+            payouts = Payout.objects.filter(user=user).filter(time_range_query)
+            
+            current_payout_info['current_total_amount_payout'] = payouts.aggregate(total_money=Sum('money'))['total_money'] or 0
+            current_payout_info['curent_total_count_payout'] = payouts.aggregate(payout_count=Count('id'))['payout_count'] or 0
+            
+        # Bank accounts data
         for bank_account in user_bank_accounts:   
             bank_accounts.append({
                 "account_no":bank_account.account_number,
@@ -126,9 +157,12 @@ def report(request):
                 "balance":bank_account.balance,
                 "bank_type":bank_account.bank_type
             })
+            
         user_info_dict[user.username] = {
             "bank_accounts":bank_accounts,
-            "online":online
+            "online":online,
+            "timeline":timeline,
+            "payout":current_payout_info
         }        
     
     report_data = {
@@ -150,14 +184,12 @@ def report(request):
 @require_POST
 def report_payout_by_user(request):
     if request.method == 'POST':
-        username = request.POST.get('username', 'huong-226pay')
+        username = request.POST.get('username')
         user = User.objects.filter(username=username).first()
         user_timeline = UserTimeline.objects.filter(user=user).first()
         start_time = user_timeline.timeline.start_at
         end_time = user_timeline.timeline.end_at
         
-        timezone = pytz.timezone('Asia/Bangkok')
-
         # Get the oldest created_at date for Payout
         oldest_payout_date = Payout.objects.filter(user=user).aggregate(oldest_date=Min('created_at'))['oldest_date']
 
@@ -184,7 +216,6 @@ def report_payout_by_user(request):
             if start_datetime < oldest_payout_date:
                 break
             
-            print(start_datetime, end_datetime)
 
             time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
 
@@ -199,9 +230,9 @@ def report_payout_by_user(request):
             total_count_settle = settle.aggregate(payout_count=Count('id'))['payout_count']
 
             results.append({
-                'date': current_day.isoformat(),
-                'start_datetime': start_datetime.isoformat(),
-                'end_datetime': end_datetime.isoformat(),
+                'date': current_day.strftime('%d/%m/%Y'),
+                'start_datetime': start_datetime.strftime('%H:%M'),
+                'end_datetime': end_datetime.strftime('%H:%M'),
                 'total_amount_payout': total_amount_payout or 0,
                 'total_count_payout': total_count_payout or 0,
                 'total_amount_settle':total_amount_settle or 0,

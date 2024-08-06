@@ -2,7 +2,7 @@
 {% load humanize %}
 <style>
     tr {
-        font-size: 13px;
+        font-size: 12px;
     }
     ul {
         list-style-type: none;
@@ -16,8 +16,6 @@
         margin-right: 5px;
     }
 </style>
-<!-- Include DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
 <div class="row">
     <div class="col-md-12 mt-4">
         <div class="table-responsive mt-4">
@@ -26,6 +24,7 @@
                     <tr class="text-center">
                         <th>#</th>
                         <th>{% trans 'User' %}</th>
+                        <th>{% trans 'Timeline' %}</th>
                         <th>{% trans 'Bank Accounts' %}</th>
                         <th>{% trans 'Payout' %}</th>
                     </tr>
@@ -33,7 +32,7 @@
                 <tbody>
                     {% for username, data in report_data.users.items %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+                        <td class="text-center"><b>{{ forloop.counter }}</b></td>
                         {% if data.online %}
                         <td>
                             <div class="online-status">
@@ -44,6 +43,12 @@
                         {% else %}
                         <td>{{ username }}</td>
                         {% endif %}
+                        <td class="text-center">
+                            {% if data.timeline %}
+                            <p>{{data.timeline.name}}</p>
+                            <i>{{data.timeline.start_at}} - {{data.timeline.end_at}}</i>
+                            {% endif %}
+                        </td>
                         <td>
                             <ul>
                                 {% for account in data.bank_accounts %}
@@ -51,7 +56,14 @@
                                 {% endfor %}
                             </ul>
                         </td>
-                        <td>{{ data.payout|floatformat:2|intcomma }}</td>
+                        <td class="text-center">
+                            {% if data.payout %}
+                            <a href="#" data-toggle="modal" data-target="#payoutModal" data-username="{{ username }}">
+                                <p>{% trans 'Timeline Amount' %}: {{data.payout.current_total_amount_payout|floatformat:2|intcomma}}</p>
+                                <i>{% trans 'Timeline Total' %}: {{data.payout.curent_total_count_payout}}</i>
+                            </a>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -60,7 +72,7 @@
     </div>
 </div>
 {% include "_transaction_history_modal.html" %}
-
+{% include "_payout_modal.html" %}
 <script>
     $(document).ready(function() {
         $('#userReportTable').DataTable({
@@ -68,8 +80,8 @@
             searching: true,
             info: true,
             columnDefs: [
-                { orderable: false, targets: [2] } // Disables sorting on the 'Bank Accounts' column
-            ]
+                { orderable: false, targets: [3] } // Disables sorting on the 'Bank Accounts' column
+            ],
         });
     });
 </script>
