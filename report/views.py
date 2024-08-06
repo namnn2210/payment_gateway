@@ -2,6 +2,7 @@ from django.shortcuts import render
 from bank.database import redis_connect
 from payout.models import Payout
 from settle_payout.models import SettlePayout
+from employee.models import EmployeeDeposit
 from bank.views import get_all_transactions, get_start_end_datetime, get_start_end_datetime_string
 from bank.models import BankAccount
 from payout.models import Timeline, UserTimeline
@@ -144,7 +145,7 @@ def report(request):
                 start_datetime = datetime.combine(current_day - timedelta(days=1), user_start_time).replace(tzinfo=timezone)
                 end_datetime = datetime.combine(current_day, user_end_time).replace(tzinfo=timezone)
             time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
-            payouts = Payout.objects.filter(user=user).filter(time_range_query)
+            payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
             
             current_payout_info['current_total_amount_payout'] = payouts.aggregate(total_money=Sum('money'))['total_money'] or 0
             current_payout_info['curent_total_count_payout'] = payouts.aggregate(payout_count=Count('id'))['payout_count'] or 0
@@ -164,7 +165,6 @@ def report(request):
             "timeline":timeline_info,
             "payout":current_payout_info
         }
-        print(user_info_dict)
     
     report_data = {
         "chart":json.dumps(last_5_days_data),
@@ -221,19 +221,24 @@ def report_payout_by_user(request):
             time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
 
             # Payout
-            payouts = Payout.objects.filter(user=user).filter(time_range_query)
+            payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
             total_amount_payout = payouts.aggregate(total_money=Sum('money'))['total_money']
             total_count_payout = payouts.aggregate(payout_count=Count('id'))['payout_count']
             
-            # Payout
-            settle = SettlePayout.objects.filter(user=user).filter(time_range_query)
+            # Settle Payout
+            settle = SettlePayout.objects.filter(user=user, status=True).filter(time_range_query)
             total_amount_settle = settle.aggregate(total_money=Sum('money'))['total_money']
             total_count_settle = settle.aggregate(payout_count=Count('id'))['payout_count']
+            
+            # Employee Deposit
+            deposit = EmployeeDeposit.objects.filter(user=user, status=True).filter(time_range_query)
+            total_amount_deposit = deposit.aggregate(total_money=Sum('amount'))['total_money']
 
             results.append({
                 'date': current_day.strftime('%d/%m/%Y'),
                 'start_datetime': start_datetime.strftime('%H:%M'),
                 'end_datetime': end_datetime.strftime('%H:%M'),
+                'deposit':total_amount_deposit or 0,
                 'total_amount_payout': total_amount_payout or 0,
                 'total_count_payout': total_count_payout or 0,
                 'total_amount_settle':total_amount_settle or 0,
