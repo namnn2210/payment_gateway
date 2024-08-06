@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load humanize %}
+
 <!-- Transaction History Modal -->
 <div class="modal fade" id="transactionHistoryModal" tabindex="-1" role="dialog" aria-labelledby="transactionHistoryModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
@@ -12,16 +13,19 @@
             </div>
             <div class="modal-body">
                 <form method="post" id="search-form" action="{% url 'record_book_report'%}">
+                    {% csrf_token %}
                     <div class="row">
                         <div class="col-md-5 col-sm-12">
                             <label for="start_datetime">{% trans "Start Date" %}</label>
-                            <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ start_date }}" />
+                            <p>{{start_date}}</p>
+                            <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ request.GET.start_datetime|default_if_none:'' }}"/>
                         </div>
                         <div class="col-md-5 col-sm-12">
                             <label for="end_datetime">{% trans "End Date" %}</label>
-                            <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ end_date }}" />
+                            <p>{{end_date}}</p>
+                            <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ request.GET.end_datetime|default_if_none:'' }}"/>
                         </div>
-                        <div class="col-md-2 col-sm-12 text-right">
+                        <div class="col-md-2 col-sm-12 text-right justify-content-center">
                             <input type="hidden" name="in_page" value="{{ in_page_obj.number }}">
                             <input type="hidden" name="out_page" value="{{ out_page_obj.number }}">
                             <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
@@ -48,7 +52,7 @@
                                 </table>
                             </div>
                             <!-- Pagination for IN transactions -->
-                            {% if in_page_obj%}
+                            {% if in_page_obj %}
                             <div class="d-flex justify-content-center">
                                 <nav aria-label="In transactions page navigation">
                                     <ul class="pagination" id="in-pagination">
@@ -93,7 +97,7 @@
                             {% endif %}
                         </div>
                     </div>
-            
+
                     <div class="col-md-6">
                         <div class="card-body table-wrapper" style="font-size: 12px">
                             <div class="table-responsive">
@@ -112,7 +116,7 @@
                                 </table>
                             </div>
                             <!-- Pagination for OUT transactions -->
-                            {% if in_page_obj%}
+                            {% if out_page_obj %}
                             <div class="d-flex justify-content-center">
                                 <nav aria-label="Out transactions page navigation">
                                     <ul class="pagination" id="out-pagination">
@@ -166,21 +170,35 @@
     </div>
 </div>
 <script>
-    $(document).ready(function() {
-        function formatDateTime(input) {
-            const date = new Date(input);
+    function formatDateToYYYYMMDD(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
 
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-            const year = date.getFullYear();
+    function setDateTimeInputs() {
+        const startInput = document.getElementById('start_datetime');
+        const endInput = document.getElementById('end_datetime');
 
-            const hours = String(date.getHours()).padStart(2, '0');
-            const minutes = String(date.getMinutes()).padStart(2, '0');
-            const seconds = String(date.getSeconds()).padStart(2, '0');
+        // Get the current date and time
+        const currentDate = new Date();
+        const today = formatDateToYYYYMMDD(currentDate);
+        const startDateTime = `${today}T00:00`;
+        const endDateTime = `${today}T23:59`;
 
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        if (!startInput.value) {
+            startInput.value = startDateTime;
         }
+        if (!endInput.value) {
+            endInput.value = endDateTime;
+        }
+    }
 
+    document.addEventListener('DOMContentLoaded', setDateTimeInputs);
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         function toggleDetailsRow(rowId) {
             const detailsRow = $('#details-' + rowId);
             const icon = $('#icon-' + rowId).find('i');
@@ -201,26 +219,6 @@
             });
         }
 
-        function updateTotals(totalIn, totalOut) {
-            $('#total-in-amount').text(totalIn.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-            $('#total-out-amount').text(totalOut.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
-        }
-
-        function fetchData(url, callback) {
-            $.ajax({
-                url: url,
-                method: 'POST',
-                dataType: 'json',
-                success: function(data) {
-                    callback(data);
-                    updateTotals(data.total_in_amount, data.total_out_amount);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        }
-
         function updateTableData(tableId, data) {
             const tableBody = $('#' + tableId);
             tableBody.empty();
@@ -233,7 +231,7 @@
                 row.append(`<td><span class="toggle-icon" id="icon-${item.transaction_number}"><i class="fa fa-plus-circle" style="color: green;"></i></span></td>`);
                 row.append(`<td>${item.account_number}</td>`);
                 row.append(`<td class="${tableId === 'inTransactionTableBody' ? 'text-success' : 'text-danger'}">${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>`);
-                row.append(`<td>${formatDateTime(item.transaction_date)}</td>`);
+                row.append(`<td>${item.transaction_date}</td>`);
                 if (tableId === 'inTransactionTableBody') {
                     row.append(`<td>${item.transfer_code}</td>`);
                 }
@@ -252,114 +250,13 @@
             bindRowClickEvents();
         }
 
-        function handlePaginationClick(event, paginationId) {
-            event.preventDefault();
-            const page = $(this).data('page');
-            if (page) {
-                const url = new URL(window.location.href);
-                const params = new URLSearchParams(url.search);
-
-                // Preserve the current search parameters
-                params.set('in_page', paginationId === 'in-pagination' ? page : params.get('in_page') || 1);
-                params.set('out_page', paginationId === 'out-pagination' ? page : params.get('out_page') || 1);
-
-                url.search = params.toString();
-                fetchData(url.toString(), function(data) {
-                    updateTableData('inTransactionTableBody', data.in_transactions);
-                    updateTableData('outTransactionTableBody', data.out_transactions);
-                    updatePagination('in-pagination', data.in_page, data.in_num_pages);
-                    updatePagination('out-pagination', data.out_page, data.out_num_pages);
-                });
-
-                history.pushState({}, '', url.toString());
-            }
-        }
-
-        function updatePagination(paginationId, currentPage, numPages) {
-            const pagination = $('#' + paginationId);
-            pagination.empty();
-            if (currentPage > 1) {
-                pagination.append(`
-                    <li class="page-item">
-                        <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                `);
-            } else {
-                pagination.append(`
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </span>
-                    </li>
-                `);
-            }
-            for (let i = Math.max(1, currentPage - 2); i <= Math.min(numPages, currentPage + 2); i++) {
-                pagination.append(`
-                    <li class="page-item ${i === currentPage ? 'active' : ''}">
-                        <a class="page-link" href="#" data-page="${i}">${i}</a>
-                    </li>
-                `);
-            }
-            if (currentPage < numPages) {
-                pagination.append(`
-                    <li class="page-item">
-                        <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                `);
-            } else {
-                pagination.append(`
-                    <li class="page-item disabled">
-                        <span class="page-link" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </span>
-                    </li>
-                `);
-            }
-            pagination.find('a.page-link').on('click', function(event) {
-                handlePaginationClick.call(this, event, paginationId);
-            });
-        }
-
-        $('#search-form').on('submit', function(event) {
-            event.preventDefault();
-            const url = new URL(window.location.href);
-            const params = new URLSearchParams($(this).serialize());
-
-            // Preserve pagination parameters
-            const inPage = params.get('in_page') || 1;
-            const outPage = params.get('out_page') || 1;
-            params.set('in_page', inPage);
-            params.set('out_page', outPage);
-
-            fetchData(`${url.pathname}?${params.toString()}`, function(data) {
-                updateTableData('inTransactionTableBody', data.in_transactions);
-                updateTableData('outTransactionTableBody', data.out_transactions);
-                updatePagination('in-pagination', data.in_page, data.in_num_pages);
-                updatePagination('out-pagination', data.out_page, data.out_num_pages);
-            });
-
-            history.pushState({}, '', `${url.pathname}?${params.toString()}`);
-        });
-
         // Bind the initial row click events
         bindRowClickEvents();
-
-        // Initial pagination binding
-        $('#in-pagination').find('a.page-link').on('click', function(event) {
-            handlePaginationClick.call(this, event, 'in-pagination');
-        });
-        $('#out-pagination').find('a.page-link').on('click', function(event) {
-            handlePaginationClick.call(this, event, 'out-pagination');
-        });
 
         $('#transactionHistoryModal').on('show.bs.modal', function(event) {
             var button = $(event.relatedTarget); // Button that triggered the modal
             var accountNo = button.data('account'); // Extract info from data-* attributes
-            
+
             var modal = $(this);
             modal.find('.modal-title').text('Transaction History - ' + accountNo);
 
@@ -369,7 +266,6 @@
                 method: 'POST',
                 data: { account_no: accountNo },
                 success: function(data) {
-                    console.log(data);
                     updateTableData('inTransactionTableBody', data.in_transactions);
                     updateTableData('outTransactionTableBody', data.out_transactions);
                 },
@@ -380,3 +276,7 @@
         });
     });
 </script>
+
+
+
+

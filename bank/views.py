@@ -38,6 +38,20 @@ def record_book(request):
     start_date = request.GET.get('start_datetime', '')
     end_date = request.GET.get('end_datetime', '')
     
+    # Default start and end date to today if not provided
+    # today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    # today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+    
+    # if start_date:
+    #     start_date = parse_datetime(start_date)
+    # else:
+    #     start_date = today_start
+
+    # if end_date:
+    #     end_date = parse_datetime(end_date)
+    # else:
+    #     end_date = today_end
+    
     start_date, end_date = get_start_end_datetime(start_date, end_date)
 
 
@@ -138,6 +152,9 @@ class AddBankView(View):
         if existed_bank_account:
             return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
 
+        # Process the data and save to the database
+        # (e.g., create a new Bank object and save it)
+        # bank_account = get_bank(bank_name,bank_number, bank_username, bank_password)
         if bank_account:
             bank = Bank.objects.filter(name=bank_name).first()
             bank_account = BankAccount.objects.create(
@@ -170,6 +187,8 @@ def toggle_bank_status(request):
         except BankAccount.DoesNotExist:
             return JsonResponse({'status': 404, 'message': 'Bank account not found'})
     return JsonResponse({'status': 400, 'message': 'Invalid request'})
+
+
 
 
 def update_transaction_history(request):
@@ -308,7 +327,7 @@ def get_transactions_by_key(account_number):
 def get_start_end_datetime(start_datetime, end_datetime):
     today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-    
+
     if start_datetime:
         start_datetime = parse_datetime(start_datetime)
     else:
@@ -318,7 +337,7 @@ def get_start_end_datetime(start_datetime, end_datetime):
         end_datetime = parse_datetime(end_datetime)
     else:
         end_datetime = today_end
-    
+
     return start_datetime, end_datetime
 
 def get_start_end_datetime_string(start_datetime, end_datetime):
@@ -343,53 +362,55 @@ def record_book_report(request):
     if request.method == 'POST':
         account_number = request.POST.get('account_no')
         transaction_df = get_transactions_by_key(account_number)
-        
+
         start_date = request.POST.get('start_datetime', '')
         end_date = request.POST.get('end_datetime', '')
-        
+
         start_date, end_date = get_start_end_datetime(start_date, end_date)
 
-        print(start_date, end_date)
+        print(start_date.strftime('%d/%m/%YT%H:%M'), end_date.strftime('%d/%m/%YT%H:%M'))
 
         if not transaction_df.empty:
-        
             # Convert the 'transaction_date' column to datetime format if it exists
             if 'transaction_date' in transaction_df.columns:
                 transaction_df['transaction_date'] = pd.to_datetime(transaction_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
 
-            # Get form inputs
-            
             # Filter transactions based on form input
             filtered_transactions_df = transaction_df[
                 (transaction_df['transaction_date'] >= start_date) &
                 (transaction_df['transaction_date'] <= end_date)
             ]
-            
+
             # Separate and sort transactions by type
             in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
             out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
 
-            
             # Pagination for "IN" transactions
             in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
-            in_page_number = request.POST.get('in_page',1)
+            in_page_number = request.POST.get('in_page', 1)
             in_page_obj = in_paginator.get_page(in_page_number)
 
             # Pagination for "OUT" transactions
             out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
-            out_page_number = request.POST.get('out_page',1)
+            out_page_number = request.POST.get('out_page', 1)
             out_page_obj = out_paginator.get_page(out_page_number)
-  
+
             data = {
+                # 'in_page_obj': in_page_obj, 
+                # 'out_page_obj': out_page_obj, 
                 'in_transactions': list(in_page_obj),
                 'out_transactions': list(out_page_obj),
                 'in_page': in_page_obj.number,
                 'in_num_pages': in_page_obj.paginator.num_pages,
                 'out_page': out_page_obj.number,
                 'out_num_pages': out_page_obj.paginator.num_pages,
+                'start_date': start_date.strftime('%d/%m/%YT%H:%M'),  # formatted for datetime-local input
+                'end_date': end_date.strftime('%d/%m/%YT%H:%M'),  # formatted for datetime-local input
             }
 
             return JsonResponse(data)
+
+    return JsonResponse({'error': 'Invalid request method'})
             
 
 

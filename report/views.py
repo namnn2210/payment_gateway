@@ -1,13 +1,22 @@
 from django.shortcuts import render
 from bank.database import redis_connect
 from payout.models import Payout
+from settle_payout.models import SettlePayout
 from bank.views import get_all_transactions, get_start_end_datetime, get_start_end_datetime_string
 from bank.models import BankAccount
+from payout.models import Timeline, UserTimeline
 from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
+from datetime import datetime, time
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q, Sum, Count,Min
+from datetime import datetime, timedelta, time
+from django.http import JsonResponse
 import pandas as pd
 import json
+import pytz
 # Create your views here.
 def report(request):
     
@@ -62,16 +71,54 @@ def report(request):
         total_transaction_amount = int(float(filtered_transactions_df['amount'].sum()))
         total_transaction_results = filtered_transactions_df.shape[0]
         
+    timelines = Timeline.objects.filter(status=True)
+    current_time = datetime.now().time()
+    timelines = [
+        {'name': 'Sáng', 'start_at': time(6, 0), 'end_at': time(14, 0)},
+        {'name': 'Chiều', 'start_at': time(14, 0), 'end_at': time(22, 0)},
+        {'name': 'Tối', 'start_at': time(22, 0), 'end_at': time(23, 59, 59)},
+        {'name': 'Đêm', 'start_at': time(0, 0), 'end_at': time(6, 0)}
+    ]
+    
+    current_timeline_name = None
+
+    for timeline in timelines:
+        start_at = timeline['start_at']
+        end_at = timeline['end_at']
+
+        if start_at <= end_at:
+            if start_at <= current_time <= end_at:
+                current_timeline_name = timeline['name']
+                break
+        else:  
+            if current_time >= start_at or current_time <= end_at:
+                current_timeline_name = timeline['name']
+                break
+    
+    if current_timeline_name:
+        # Get the active timelines from the database
+        if current_timeline_name == 'Tối' or current_timeline_name == 'Đêm':
+            current_timeline_name = 'Đêm'
+        active_timeline = Timeline.objects.filter(status=True, name=current_timeline_name).first()
+        
+        user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
         
     # Get all user        
     list_users = User.objects.filter(is_superuser=False)
     
     user_info_dict = {}
-    
+
     
     for user in list_users:
         bank_accounts = []
         user_bank_accounts = BankAccount.objects.filter(user=user, status=True)
+        for user_timeline in user_timelines:
+            if user == user_timeline.user:
+                online = True
+                break
+            else:
+                online = False
+                break
         for bank_account in user_bank_accounts:   
             bank_accounts.append({
                 "account_no":bank_account.account_number,
@@ -80,7 +127,8 @@ def report(request):
                 "bank_type":bank_account.bank_type
             })
         user_info_dict[user.username] = {
-            "bank_accounts":bank_accounts
+            "bank_accounts":bank_accounts,
+            "online":online
         }        
     
     report_data = {
@@ -97,3 +145,69 @@ def report(request):
     }
     
     return render(request=request, template_name='report.html', context={'report_data':report_data})
+
+@csrf_exempt
+@require_POST
+def report_payout_by_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username', 'huong-226pay')
+        user = User.objects.filter(username=username).first()
+        user_timeline = UserTimeline.objects.filter(user=user).first()
+        start_time = user_timeline.timeline.start_at
+        end_time = user_timeline.timeline.end_at
+        
+        timezone = pytz.timezone('Asia/Bangkok')
+
+        # Get the oldest created_at date for Payout
+        oldest_payout_date = Payout.objects.filter(user=user).aggregate(oldest_date=Min('created_at'))['oldest_date']
+
+        if not oldest_payout_date:
+            return JsonResponse([], safe=False)
+        
+        oldest_payout_date = oldest_payout_date.astimezone(timezone)
+
+        # Ensure the current time is timezone-aware
+        now = datetime.now(timezone)
+        current_day = now.date()
+
+        results = []
+
+        while True:
+            if start_time < end_time:
+                start_datetime = datetime.combine(current_day, start_time).replace(tzinfo=timezone)
+                end_datetime = datetime.combine(current_day, end_time).replace(tzinfo=timezone)
+            else:  # Over midnight scenario
+                start_datetime = datetime.combine(current_day - timedelta(days=1), start_time).replace(tzinfo=timezone)
+                end_datetime = datetime.combine(current_day, end_time).replace(tzinfo=timezone)
+
+            # Break the loop if start_datetime is less than the oldest_date
+            if start_datetime < oldest_payout_date:
+                break
+            
+            print(start_datetime, end_datetime)
+
+            time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
+
+            # Payout
+            payouts = Payout.objects.filter(user=user).filter(time_range_query)
+            total_amount_payout = payouts.aggregate(total_money=Sum('money'))['total_money']
+            total_count_payout = payouts.aggregate(payout_count=Count('id'))['payout_count']
+            
+            # Payout
+            settle = SettlePayout.objects.filter(user=user).filter(time_range_query)
+            total_amount_settle = settle.aggregate(total_money=Sum('money'))['total_money']
+            total_count_settle = settle.aggregate(payout_count=Count('id'))['payout_count']
+
+            results.append({
+                'date': current_day.isoformat(),
+                'start_datetime': start_datetime.isoformat(),
+                'end_datetime': end_datetime.isoformat(),
+                'total_amount_payout': total_amount_payout or 0,
+                'total_count_payout': total_count_payout or 0,
+                'total_amount_settle':total_amount_settle or 0,
+                'total_count_settle':total_count_settle or 0
+            })
+
+            current_day -= timedelta(days=1)
+
+        return JsonResponse(results, safe=False)
