@@ -363,7 +363,7 @@ def webhook(request):
                 if payeebankname == bank['bankname']:
                     print('get bank code')
                     system_bankcode = bank['code']
-                    partner_bankcode = bank['code']
+                    # partner_bankcode = bank['code']
 
             admin = User.objects.filter(username="admin").first()
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
@@ -379,7 +379,7 @@ def webhook(request):
                     accountname=accountname,
                     bankname=payeebankname,
                     bankcode=system_bankcode,
-                    partner_bankcode=partner_bankcode,
+                    # partner_bankcode=partner_bankcode,
                     updated_by=None,
                     is_auto=True,
                     is_cancel=False,
