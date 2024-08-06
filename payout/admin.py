@@ -23,6 +23,6 @@ class UserTimelineAdmin(admin.ModelAdmin):
     
 @admin.register(BalanceTimeline)
 class BalanceTimelineAdmin(admin.ModelAdmin):
-    list_display = ('timeline', 'bank_account', 'balance', 'status', 'created_at', 'updated_at')
+    list_display = ('id','timeline', 'bank_account', 'balance', 'status', 'created_at', 'updated_at')
     list_filter = ('timeline', 'bank_account', 'status','created_at',)
     search_fields = ('bank_account',)
