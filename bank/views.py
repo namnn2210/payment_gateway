@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Bank, BankAccount
+from payout.models import UserTimeline, Payout
+from employee.models import EmployeeDeposit
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -7,14 +9,14 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
-from .utils import unix_to_datetime, send_telegram_message
+from .utils import get_start_end_datetime_by_timeline
 from django.views.decorators.http import require_POST
 from django.utils.dateparse import parse_datetime
 from .database import redis_connect
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 import pandas as pd
-import os
+from django.db.models import Q, Sum
 from django.core.paginator import Paginator
 from dotenv import load_dotenv
 
@@ -277,13 +279,29 @@ def update_amount_by_date(transaction_type, amount):
     redis_client.set(today_str, json.dumps(current_totals))
     
 def get_amount_today(request):
-    redis_client = redis_connect(3)
-    today_str = datetime.now().strftime('%Y-%m-%d')
-    if redis_client.exists(today_str):
-        current_totals = json.loads(redis_client.get(today_str))
-        return JsonResponse({'status': 200, 'message': 'Done', 'data': current_totals})
+    if request.user.is_superuser:
+        redis_client = redis_connect(3)
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        if redis_client.exists(today_str):
+            current_totals = json.loads(redis_client.get(today_str))
+            return JsonResponse({'status': 200, 'message': 'Done', 'data': current_totals})
+        else:
+            return JsonResponse({'status': 500, 'message': 'Invalid request'})
     else:
-        return JsonResponse({'status': 500, 'message': 'Invalid request'})
+        try:
+            user_timeline = UserTimeline.objects.filter(user=request.user).first()
+            start_at = user_timeline.timeline.start_at
+            end_at = user_timeline.timeline.end_at
+            start_datetime, end_datetime = get_start_end_datetime_by_timeline(start_at,end_at)
+            time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
+            payouts = Payout.objects.filter(user=request.user, status=True).filter(time_range_query)
+            total_out = payouts.aggregate(total_money=Sum('money'))['total_money'] or 0
+            deposit = EmployeeDeposit.objects.filter(user=request.user, status=True).filter(time_range_query)
+            total_in = deposit.aggregate(total_money=Sum('amount'))['total_money'] or 0
+            return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':total_in,'out':total_out}})
+        except Exception as ex:
+            return JsonResponse({'status': 500, 'message': 'Invalid request'})
+        
     
 
 def update_transaction_history_status(account_number, transfer_code, status):
@@ -351,6 +369,7 @@ def get_start_end_datetime_string(start_datetime, end_datetime):
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
         
     return start_datetime, end_datetime
+
 
 
 @csrf_exempt
