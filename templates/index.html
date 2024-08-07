@@ -500,11 +500,10 @@
         const fetchLatestTransactions = async () => {
             const data = await fetchData('{% url "update_transaction_history" %}');
             if (data) {
-                console.log(data)
-                if (data.data.in) {
+                if (Object.keys(data.data.in).length !== 0) {
                     updateTransactionTable(data.data.in, 'table.table-in tbody');
                 }
-                if (data.data.out) {
+                if (Object.keys(data.data.out).length !== 0) {
                     updateTransactionTable(data.data.out, 'table.table-out tbody');
                 }   
             }
