@@ -54,7 +54,7 @@ class Command(BaseCommand):
                 
             if current_user_timelines:
                 for user_timeline in current_user_timelines:
-                    bank_accounts = BankAccount.objects.filter(user=user_timeline.user, bank_type='IN')
+                    bank_accounts = BankAccount.objects.filter(user=user_timeline.user)
                     for bank_account in bank_accounts:
                         balance = get_balance_by_bank(bank=bank_account)
                         BalanceTimeline.objects.create(
