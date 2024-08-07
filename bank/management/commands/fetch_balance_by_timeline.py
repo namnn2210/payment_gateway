@@ -6,7 +6,7 @@ from bank.utils import send_telegram_message
 from datetime import datetime, time
 from payout.models import Timeline, UserTimeline, BalanceTimeline
 import pytz
-
+import os
 
 load_dotenv()
 
@@ -54,13 +54,14 @@ class Command(BaseCommand):
                 
             if current_user_timelines:
                 for user_timeline in current_user_timelines:
-                    bank_account = BankAccount.objects.filter(user=user_timeline.user).first()
-                    balance = get_balance_by_bank(bank=bank_account)
-                    BalanceTimeline.objects.create(
-                      timeline=user_timeline.timeline,
-                      bank_account=bank_account,
-                      balance=balance  
-                    )
+                    bank_accounts = BankAccount.objects.filter(user=user_timeline.user, bank_type='IN')
+                    for bank_account in bank_accounts:
+                        balance = get_balance_by_bank(bank=bank_account)
+                        BalanceTimeline.objects.create(
+                        timeline=user_timeline.timeline,
+                        bank_account=bank_account,
+                        balance=balance  
+                        )
         except Exception as ex:
             alert = (
                 f'🔴 - LỖI HỆ THỐNG\n'
