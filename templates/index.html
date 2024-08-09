@@ -403,7 +403,7 @@
                 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success done-btn-modal" data-item-id="">{% trans "Done" %}</button>
+                <button type="button" class="btn btn-success create-done-btn-modal" data-item-id="">{% trans "Done" %}</button>
             </div>
         </div>
     </div>
@@ -515,7 +515,7 @@
             if (data) updateAmountToday(data.data);
         };
 
-        $(document).on('click', '.done-btn-modal', function () {
+        $(document).on('click', '.create-done-btn-modal', function () {
             const form = document.getElementById('depositForm');
             form.submit();
         });
