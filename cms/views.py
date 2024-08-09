@@ -36,7 +36,7 @@ def index(request):
         list_deposit_requests = None
     
         
-    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests})
+    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option})
 
 def user_login(request):
     if request.method == 'POST':

@@ -164,10 +164,10 @@
                         <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addBankModal">{% trans 'Add Bank' %}</button>
                     </div>
                     {% endif %}
-                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-success small pt-1 fw-bold">{% trans "IN" %}</span></h5>
+                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-success small pt-1 fw-bold">{% trans "IN" %} - <span class="totalIn"></span></span></h5>
                     <!-- Default Table -->
                     <div class="table-responsive">
-                        <table class="table table-borderless table-sm">
+                        <table class="table table-sm">
                             <thead style="font-size: 12px">
                                 <tr>
                                     <th>{% trans "Account Number" %}</th>
@@ -188,7 +188,7 @@
                                         <i>{{bank_account.account_name}}</i>
                                     </td>
                                     <td>{{bank_account.bank_name}}</td>
-                                    <td id="balance-{{bank_account.id}}">{{bank_account.balance|floatformat:2|intcomma }} <span class="text-success"></span></td>
+                                    <td id="balance-{{bank_account.id}}"><span class="text-success">{{bank_account.balance|floatformat:2|intcomma }}</span></td>
                                     <td>{{bank_account.user.username}}</td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     {% if user.is_superuser %}
@@ -215,10 +215,10 @@
         <div class="col-md-6 col-sm-12 same-height">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-danger small pt-1 fw-bold">{% trans "OUT" %}</span></h5>
+                    <h5 class="card-title">{% trans 'Bank List' %} - <span class="text-danger small pt-1 fw-bold">{% trans "OUT" %}</span> - <span class="totalOut"></span></h5>
                     <!-- Default Table -->
                     <div class="table-responsive">
-                        <table class="table table-borderless table-sm">
+                        <table class="table table-sm">
                             <thead style="font-size: 12px">
                                 <tr>
                                     <th>{% trans "Account Number" %}</th>
@@ -239,7 +239,7 @@
                                         <i>{{bank_account.account_name}}</i>
                                     </td>
                                     <td>{{bank_account.bank_name}}</td>
-                                    <td id="balance-{{bank_account.id}}">{{bank_account.balance|floatformat:2|intcomma }} <span class="text-success"></span></td>
+                                    <td id="balance-{{bank_account.id}}"><span class="text-success">{{bank_account.balance|floatformat:2|intcomma }}</span></td>
                                     <td>{{bank_account.user.username}}</td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     {% if user.is_superuser %}
@@ -280,6 +280,10 @@
                     <div class="form-group">
                         <label for="bankNumber">{% trans "Bank Number" %}</label>
                         <input type="text" class="form-control" id="bankNumber" name="bankNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bankNumber">{% trans "Account Name" %}</label>
+                        <input type="text" class="form-control" id="bankAccountName" name="bankAccountName" required>
                     </div>
                     <div class="form-group">
                         <label for="bankUsername">{% trans "Bank Username" %}</label>
@@ -447,17 +451,39 @@
         };
 
         const updateBalanceCells = (balances) => {
-            let totalBalance = 0
+            let totalBalance = 0;
+            let totalIn = 0;
+            let totalOut = 0;
+
             balances.forEach(balance => {
                 const balanceCell = document.getElementById(`balance-${balance.id}`);
                 if (balanceCell) {
-                    totalBalance += balance.balance
-                    balanceCell.innerHTML = `${balance.balance.toLocaleString()}` + '.00';
+                    totalBalance += balance.balance;
+                    const balanceClass = balance.bank_type === 'IN' ? 'text-success' : 'text-danger';
+                    balanceCell.innerHTML = `<span class="${balanceClass}">${balance.balance.toLocaleString()}.00</span>`;
+
+                    if (balance.bank_type === 'IN') {
+                        totalIn += balance.balance;
+                    } else if (balance.bank_type === 'OUT') {
+                        totalOut += balance.balance;
+                    }
                 }
             });
+
             const balanceTotalElem = document.querySelector('.balance-total');
             if (balanceTotalElem) {
-                balanceTotalElem.innerHTML = `${totalBalance.toLocaleString()}` + '.00';
+                // const totalBalanceClass = totalBalance >= 0 ? 'text-success' : 'text-danger';
+                balanceTotalElem.innerHTML = `${totalBalance.toLocaleString()}.00`;
+            }
+
+            const totalInElem = document.querySelector('.totalIn');
+            const totalOutElem = document.querySelector('.totalOut');
+
+            if (totalInElem) {
+                totalInElem.innerHTML = `${totalIn.toLocaleString()}`;
+            }
+            if (totalOutElem) {
+                totalOutElem.innerHTML = `${totalOut.toLocaleString()}`;
             }
         };
 
