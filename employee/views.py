@@ -26,6 +26,7 @@ def employee_deposit(request):
         list_deposit_requests = EmployeeDeposit.objects.all()
     else:
         list_deposit_requests = EmployeeDeposit.objects.filter(user=request.user)
+    list_deposit_requests = list_deposit_requests.order_by('-created_at')
         
     paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
     page_number = request.GET.get('page')
