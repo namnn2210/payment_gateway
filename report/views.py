@@ -3,7 +3,7 @@ from bank.database import redis_connect
 from payout.models import Payout
 from settle_payout.models import SettlePayout
 from employee.models import EmployeeDeposit
-from bank.views import get_all_transactions, get_start_end_datetime, get_start_end_datetime_string
+from bank.views import get_all_transactions, get_start_end_datetime, get_transactions_by_key
 from bank.models import BankAccount
 from payout.models import Timeline, UserTimeline, BalanceTimeline
 from django.db.models import Sum
@@ -237,12 +237,35 @@ def report_payout_by_user(request):
             # Balance Timeline
             bank_accounts = BankAccount.objects.filter(user=user, status=True)
             start_balance = 0
+            
+            # Valid payout has Z
+            total_amount_valid_payout = 0
+            total_count_valid_payout = 0
             for bank_account in bank_accounts:
+                # Get start balance
                 balance_timeline = BalanceTimeline.objects.filter(bank_account=bank_account).filter(time_range_query).first()
                 if balance_timeline:
                     start_balance += balance_timeline.balance
                 else:
                     start_balance += 0
+                    
+                    
+                # Get transations
+                bank_transations_df = get_transactions_by_key(bank_account.account_number)
+                bank_transations_df['transaction_date'] = pd.to_datetime(bank_transations_df['transaction_date']).dt.tz_localize('UTC').dt.tz_convert(timezone)
+                start_date = pd.to_datetime(start_datetime).tz_convert(timezone)
+                end_date = pd.to_datetime(end_datetime).tz_convert(timezone)
+                # Filter the DataFrame
+                filtered_df = bank_transations_df[(bank_transations_df['transaction_type'] == 'OUT') & 
+                                                (bank_transations_df['description'].str.contains('Z', case=True, na=False)) &
+                                                (bank_transations_df['transaction_date'] >= start_date) & 
+                                                (bank_transations_df['transaction_date'] <= end_date)
+                                                ]
+
+                total_amount_valid_payout += filtered_df['amount'].sum()
+
+                # Get the total count of rows
+                total_count_valid_payout += filtered_df.shape[0]
             
             if not total_amount_deposit:
                 total_amount_deposit = 0
@@ -250,8 +273,10 @@ def report_payout_by_user(request):
                 total_amount_payout = 0
             if not total_amount_settle:
                 total_amount_settle = 0
+            
                 
-            estimate_end_timeline_amount = start_balance + total_amount_deposit - total_amount_payout - total_amount_settle 
+            estimate_end_timeline_amount = start_balance + total_amount_deposit - total_amount_payout - total_amount_settle
+            
 
             results.append({
                 'date': current_day.strftime('%d/%m/%Y'),
@@ -263,6 +288,8 @@ def report_payout_by_user(request):
                 'total_count_payout': total_count_payout or 0,
                 'total_amount_settle':total_amount_settle,
                 'total_count_settle':total_count_settle or 0,
+                'total_amount_valid_payout':int(total_amount_valid_payout),
+                'total_count_valid_payout': int(total_count_valid_payout),
                 'estimate_end_timeline_amount':estimate_end_timeline_amount
             })
 
