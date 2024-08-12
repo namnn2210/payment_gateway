@@ -83,7 +83,7 @@
                                                             data-is-report="{{item.is_report}}"
                                                             data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
                                                     {% endif %}
-                                                    <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ item.id }}"">{% trans "Delete" %}</button>
+                                                    <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ item.id }}">{% trans "Delete" %}</button> 
                                                 {% else %}
                                                     {% if item.user == user or item.user.username == 'admin' %}
                                                         {% if not item.status and not item.is_cancel%}
@@ -96,6 +96,7 @@
                                                         {% endif %}
                                                     {% endif %}
                                                 {% endif %}
+                                                <button class="btn btn-sm btn-danger edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" data-item-id="{{ item.id }}">{% trans "Edit" %}</button>
                                             </p>
                                         </div>
                                     </div>
