@@ -400,8 +400,8 @@
         var money = $(this).data('money');
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
-
-        var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${accountname}/print.jpg`;
+        var firstName = accountname.split(' ')[0];
+        var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${firstName}/print.jpg`;
 
         $('#modalQrImage').attr('src', qrUrl);
         $('.done-btn-modal').data('item-id', itemId);
