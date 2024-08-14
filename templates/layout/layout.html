@@ -91,50 +91,50 @@
                     </a>
                 </li>
 
-                <li class="nav-item dropdown mr-2">
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown" href="#">
-                        <i class="bi bi-cash"></i>
-                        <span class="d-none d-md-block dropdown-toggle ps-2">{% trans "Payout" %}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="{% url 'list_payout' %}">
-                                <i class="bi bi-receipt"></i><span>{% trans "Withdrawal" %}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="{% url 'list_settle_payout' %}">
-                                <i class="bi bi-receipt"></i><span>{% trans "Settle" %}</span>
-                            </a>
-                        </li>
-                        <!-- {% if user.is_superuser %}
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="{% url 'user_payout_statistics' %}">
-                                <i class="bi bi-clipboard-data"></i><span>{% trans "User Payout Statistic" %}</span>
-                            </a>
-                        </li>
-                        {% endif %} -->
-                    </ul>
-                </li>
+{#                <li class="nav-item dropdown mr-2">#}
+{#                    <a class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown" href="#">#}
+{#                        <i class="bi bi-cash"></i>#}
+{#                        <span class="d-none d-md-block dropdown-toggle ps-2">{% trans "Payout" %}</span>#}
+{#                    </a>#}
+{#                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">#}
+{#                        <li>#}
+{#                            <a class="dropdown-item d-flex align-items-center" href="{% url 'list_payout' %}">#}
+{#                                <i class="bi bi-receipt"></i><span>{% trans "Withdrawal" %}</span>#}
+{#                            </a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="dropdown-item d-flex align-items-center" href="{% url 'list_settle_payout' %}">#}
+{#                                <i class="bi bi-receipt"></i><span>{% trans "Settle" %}</span>#}
+{#                            </a>#}
+{#                        </li>#}
+{#                        <!-- {% if user.is_superuser %}#}
+{#                        <li>#}
+{#                            <a class="dropdown-item d-flex align-items-center" href="{% url 'user_payout_statistics' %}">#}
+{#                                <i class="bi bi-clipboard-data"></i><span>{% trans "User Payout Statistic" %}</span>#}
+{#                            </a>#}
+{#                        </li>#}
+{#                        {% endif %} -->#}
+{#                    </ul>#}
+{#                </li>#}
 
-                <li class="nav-item dropdown mr-2">
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown" href="#">
-                        <i class="bi bi-person-square"></i>
-                        <span class="d-none d-md-block dropdown-toggle ps-2">{% trans "Employee" %}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="{% url 'employee_deposit' %}">
-                                <i class="bi bi-receipt"></i><span>{% trans "Employee Deposit" %}</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
-                                <i class="bi bi-receipt"></i><span>{% trans "Coming Soon" %}</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+{#                <li class="nav-item dropdown mr-2">#}
+{#                    <a class="nav-link nav-profile d-flex align-items-center pe-0" data-bs-toggle="dropdown" href="#">#}
+{#                        <i class="bi bi-person-square"></i>#}
+{#                        <span class="d-none d-md-block dropdown-toggle ps-2">{% trans "Employee" %}</span>#}
+{#                    </a>#}
+{#                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">#}
+{#                        <li>#}
+{#                            <a class="dropdown-item d-flex align-items-center" href="{% url 'employee_deposit' %}">#}
+{#                                <i class="bi bi-receipt"></i><span>{% trans "Employee Deposit" %}</span>#}
+{#                            </a>#}
+{#                        </li>#}
+{#                        <li>#}
+{#                            <a class="dropdown-item d-flex align-items-center" href="#">#}
+{#                                <i class="bi bi-receipt"></i><span>{% trans "Coming Soon" %}</span>#}
+{#                            </a>#}
+{#                        </li>#}
+{#                    </ul>#}
+{#                </li>#}
 
                 <!-- Language Selector -->
                 <li class="nav-item dropdown mr-2">
