@@ -140,7 +140,7 @@ class AddSettlePayoutView(View):
     
         payout = SettlePayout.objects.create(
             user=request.user,
-            scode='CID1630'+scode,
+            scode='CID16301',
             orderno=orderid,
             orderid=orderid,
             money=int(float(money)),

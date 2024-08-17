@@ -52,7 +52,7 @@
         {% include 'settle_payout_list.html' %}
     </div>
 </div>
-<div class="modal fade" id="addPayoutModal"  aria-labelledby="addPayoutModalLabel" aria-hidden="true">
+<div class="modal fade" id="addPayoutModal" aria-labelledby="addPayoutModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -64,18 +64,14 @@
             <div class="modal-body">
                 <div id="modalAlertContainer"></div>
                 <form id="addPayoutForm">
-                    <div class="form-group">
-                        <label for="scode">{% trans "CID" %}</label>
-                        <select class="form-select" id="scode" name="scode" required>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                        </select>
-                    </div>
+{#                    <div class="form-group">#}
+{#                        <label for="scode">{% trans "CID" %}</label>#}
+{#                        <select class="form-select" id="scode" name="scode" required>#}
+{#                            <option value="1">1</option>#}
+{#                            <option value="2">2</option>#}
+{#                            <!-- More options -->#}
+{#                        </select>#}
+{#                    </div>#}
                     <div class="form-group">
                         <label for="orderid">{% trans "Order ID" %}</label>
                         <input type="text" class="form-control" id="orderid" name="orderid" required>
@@ -83,6 +79,19 @@
                     <div class="form-group">
                         <label for="amount">{% trans "Amount" %}</label>
                         <input type="text" class="form-control" id="money" name="money" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="currencyType">{% trans "Currency/Crypto" %}</label>
+                        <select class="form-select" id="currencyType" name="currencyType" required>
+                            <option value="BTC">Bitcoin (BTC)</option>
+                                <option value="ETH">Ethereum (ETH)</option>
+                                <option value="BNB">Binance Coin (BNB)</option>
+                                <option value="USDT">Tether (USDT)</option>
+                                <option value="USD">US Dollar (USD)</option>
+                                <option value="VND">Vietnamese Dong (VND)</option>
+                                <option value="JPY">Japanese Yen (JPY)</option>
+                                <option value="KRW">Korean Won (KRW)</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="accountno">{% trans "Account Number" %}</label>
@@ -106,6 +115,7 @@
         </div>
     </div>
 </div>
+
 <div class="modal fade" id="payModal" aria-labelledby="payModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
