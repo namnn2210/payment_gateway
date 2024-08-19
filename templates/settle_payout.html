@@ -404,7 +404,8 @@
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
         var firstName = accountname.split(' ').slice(-1);
-        var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${firstName}/print.jpg`;
+        {#var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${firstName}/print.jpg`;#}
+        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
 
         $('#modalQrImage').attr('src', qrUrl);
         $('.done-btn-modal').data('item-id', itemId);
