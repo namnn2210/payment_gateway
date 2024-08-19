@@ -196,8 +196,8 @@ def update_settle_payout(request, update_type):
     try:
         data = json.loads(request.body)
         payout_id = data.get('id')
-        bank_id = data.get('bank_id')
-        payout = get_object_or_404(SettlePayout, id=payout_id)
+        bank_id = data.get('bank_id',0)
+        payout = SettlePayout.objects.filter(id=payout_id).first()
         formatted_amount = '{:,.2f}'.format(payout.money)
         payout.updated_by = request.user
         payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
