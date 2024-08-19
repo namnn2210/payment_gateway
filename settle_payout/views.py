@@ -195,10 +195,13 @@ def update_settle_payout(request, update_type):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            print(data)
             payout_id = data.get('id')
+            print(payout_id)
             bank_id = data.get('bank_id',0)
+            print(bank_id)
             payout = SettlePayout.objects.filter(id=payout_id).first()
-            print('_____', payout)
+
             formatted_amount = '{:,.2f}'.format(payout.money)
             payout.updated_by = request.user
             payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
