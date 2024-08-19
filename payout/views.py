@@ -349,7 +349,7 @@ def webhook(request):
         system_bankcode = ''
         partner_bankcode = ''
         settle = False
-        if bankcode == 'NA':
+        if bankcode == 'NA' or payeebankbranch == 'NA':
             settle = True
         elif bankcode == '' and payeebankbranch == '':
             settle = True
