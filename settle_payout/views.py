@@ -192,91 +192,87 @@ def edit_settle_payout(request):
 @csrf_exempt
 @require_POST
 def update_settle_payout(request, update_type):
-    try:
-        data = json.loads(request.body)
-        print(data)
-        payout_id = data.get('id')
-        print(payout_id)
-        bank_id = data.get('bank_id',0)
-        print(bank_id)
-        payout = SettlePayout.objects.filter(id=payout_id).first()
+    data = json.loads(request.body)
+    print(data)
+    payout_id = data.get('id')
+    print(payout_id)
+    bank_id = data.get('bank_id',0)
+    print(bank_id)
+    payout = SettlePayout.objects.filter(id=payout_id).first()
 
-        formatted_amount = '{:,.2f}'.format(payout.money)
-        payout.updated_by = request.user
-        payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
-        if update_type == 'done':
-            payout.status = True
-            bank = Bank.objects.filter(id=bank_id).first()
-            payout.process_bank = bank
-            alert = (
-                f'🟢🟢🟢Success🟢🟢🟢\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
-                f'\n'
-                f'Amount: {formatted_amount} \n'
-                f'\n'
-                f'Bank name: {payout.bankcode}\n'
-                f'\n'
-                f'Account name: {payout.accountname}\n'
-                f'\n'
-                f'Account number: {payout.accountno}\n'
-                f'\n'
-                f'Process bank: {payout.process_bank.name}\n'
-                f'\n'
-                f'Created by: {payout.user}\n'
-                f'\n'
-                f'Done by: {request.user}\n'
-                f'\n'
-                f'Date: {payout.updated_at}'
-            )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-            update_amount_by_date('OUT',payout.money)
-        elif update_type == 'report':
-            payout.is_report = True
-            alert = (
-                f'Hi team !\n'
-                f'Please check this payout :\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
-                f'\n'
-                f'Amount: {formatted_amount} \n'
-                f'\n'
-                f'Bank name: {payout.bankcode}\n'
-                f'\n'
-                f'Account name: {payout.accountname}\n'
-                f'\n'
-                f'Account number: {payout.accountno}\n'
-                f'\n'
-                f'Reason: The receiving account information is incorrect!'
-            )
-            send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-        elif update_type == 'cancel':
-            payout.is_cancel = True
-            payout.status = None
-            alert = (
-                f'🔴🔴🔴Failed🔴🔴🔴\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
-                f'\n'
-                f'Amount: {formatted_amount} \n'
-                f'\n'
-                f'Bank name: {payout.bankcode}\n'
-                f'\n'
-                f'Account name: {payout.accountname}\n'
-                f'\n'
-                f'Account number: {payout.accountno}\n'
-                f'\n'
-                f'Created by: {payout.user}\n'
-                f'\n'
-                f'Done by: {request.user}\n'
-                f'\n'
-                f'Date: {payout.updated_at}'
-            )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-        else:
-            return JsonResponse({'status': 422, 'message': 'Done','success': False})
-        payout.save()
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
-    except Exception as ex:
-        print(str(ex))
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+    formatted_amount = '{:,.2f}'.format(payout.money)
+    payout.updated_by = request.user
+    payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
+    if update_type == 'done':
+        payout.status = True
+        bank = Bank.objects.filter(id=bank_id).first()
+        payout.process_bank = bank
+        alert = (
+            f'🟢🟢🟢Success🟢🟢🟢\n'
+            f'\n'
+            f'Order ID: {payout.orderid}\n'
+            f'\n'
+            f'Amount: {formatted_amount} \n'
+            f'\n'
+            f'Bank name: {payout.bankcode}\n'
+            f'\n'
+            f'Account name: {payout.accountname}\n'
+            f'\n'
+            f'Account number: {payout.accountno}\n'
+            f'\n'
+            f'Process bank: {payout.process_bank.name}\n'
+            f'\n'
+            f'Created by: {payout.user}\n'
+            f'\n'
+            f'Done by: {request.user}\n'
+            f'\n'
+            f'Date: {payout.updated_at}'
+        )
+        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+        update_amount_by_date('OUT',payout.money)
+    elif update_type == 'report':
+        payout.is_report = True
+        alert = (
+            f'Hi team !\n'
+            f'Please check this payout :\n'
+            f'\n'
+            f'Order ID: {payout.orderid}\n'
+            f'\n'
+            f'Amount: {formatted_amount} \n'
+            f'\n'
+            f'Bank name: {payout.bankcode}\n'
+            f'\n'
+            f'Account name: {payout.accountname}\n'
+            f'\n'
+            f'Account number: {payout.accountno}\n'
+            f'\n'
+            f'Reason: The receiving account information is incorrect!'
+        )
+        send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+    elif update_type == 'cancel':
+        payout.is_cancel = True
+        payout.status = None
+        alert = (
+            f'🔴🔴🔴Failed🔴🔴🔴\n'
+            f'\n'
+            f'Order ID: {payout.orderid}\n'
+            f'\n'
+            f'Amount: {formatted_amount} \n'
+            f'\n'
+            f'Bank name: {payout.bankcode}\n'
+            f'\n'
+            f'Account name: {payout.accountname}\n'
+            f'\n'
+            f'Account number: {payout.accountno}\n'
+            f'\n'
+            f'Created by: {payout.user}\n'
+            f'\n'
+            f'Done by: {request.user}\n'
+            f'\n'
+            f'Date: {payout.updated_at}'
+        )
+        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+    else:
+        return JsonResponse({'status': 422, 'message': 'error','success': False})
+    payout.save()
+    return JsonResponse({'status': 200, 'message': 'Done','success': True})
