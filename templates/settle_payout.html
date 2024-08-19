@@ -517,7 +517,8 @@
 
         // Cancel button click handler
         $('.cancel-btn').off('click').on('click', function () {
-            var itemId = $(this).data('item-id');
+            {#var itemId = $(this).data('item-id');#}
+            console.log("========== cancel: ", itemId)
             const csrftoken = getCookie('csrftoken');
             Swal.fire({
                 title: 'Are you sure?',
