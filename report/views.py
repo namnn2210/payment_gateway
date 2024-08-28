@@ -21,7 +21,7 @@ import pytz
 
 # Create your views here.
 
-timezone = pytz.timezone('Asia/Bangkok')
+timezone = pytz.timezone('UTC')
 
 
 def report(request):
@@ -32,7 +32,7 @@ def report(request):
     total_transaction_amount = 0
     total_transaction_results = 0
 
-    # Get in out data for home
+    # Get in-out data for home
     redis_client = redis_connect(3)
     keys = redis_client.keys('*')
     data = {}
@@ -42,24 +42,21 @@ def report(request):
     last_5_days_data = {date: json.loads(data[date]) for date in sorted_dates}
 
     # Get transactions data for home
-
     all_transactions_df = get_all_transactions()
     start_date, end_date = get_start_end_datetime(start_datetime_str, end_datetime_str)
     filtered_transactions_df = pd.DataFrame()
-    if not all_transactions_df.empty:
 
+    if not all_transactions_df.empty:
         # Convert the 'transaction_date' column to datetime format if it exists
         if 'transaction_date' in all_transactions_df.columns:
             all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'],
                                                                      format='%d/%m/%Y %H:%M:%S')
 
-        # Get form inputs
-
         # Filter transactions based on form input
         filtered_transactions_df = all_transactions_df[
             (all_transactions_df['transaction_date'] >= start_date) &
             (all_transactions_df['transaction_date'] <= end_date)
-            ]
+        ]
 
         filtered_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] == 'Success']
 
@@ -67,10 +64,9 @@ def report(request):
         total_transaction_amount = int(float(filtered_transactions_df['amount'].sum()))
         total_transaction_results = filtered_transactions_df.shape[0]
 
-    # User info      
+    # User info
     list_users = User.objects.filter(is_superuser=False)
-    # timelines = Timeline.objects.filter(status=True)
-    current_time = datetime.now(timezone).time()
+    current_time = datetime.now().time()
     current_timeline_name = None
 
     # Checking current online users
@@ -96,7 +92,6 @@ def report(request):
 
     current_user_timelines = []
     if current_timeline_name:
-        # Get the active timelines from the database
         if current_timeline_name == 'Tối' or current_timeline_name == 'Đêm':
             current_timeline_name = 'Đêm'
         active_timeline = Timeline.objects.filter(status=True, name=current_timeline_name).first()
@@ -110,7 +105,7 @@ def report(request):
         bank_accounts = []
         user_bank_accounts = BankAccount.objects.filter(user=user, status=True)
 
-        # Timeline 
+        # Timeline
         for user_timeline in current_user_timelines:
             if user == user_timeline.user:
                 online = True
@@ -137,16 +132,16 @@ def report(request):
                 }
 
             # Current payout data in timeline
-            now = datetime.now(timezone)
+            now = datetime.now()
             current_day = now.date()
 
             if user_start_time < user_end_time:
-                start_datetime = datetime.combine(current_day, user_start_time).replace(tzinfo=timezone)
-                end_datetime = datetime.combine(current_day, user_end_time).replace(tzinfo=timezone)
+                start_datetime = datetime.combine(current_day, user_start_time)
+                end_datetime = datetime.combine(current_day, user_end_time)
             else:  # Over midnight scenario
-                start_datetime = datetime.combine(current_day - timedelta(days=1), user_start_time).replace(
-                    tzinfo=timezone)
-                end_datetime = datetime.combine(current_day, user_end_time).replace(tzinfo=timezone)
+                start_datetime = datetime.combine(current_day - timedelta(days=1), user_start_time)
+                end_datetime = datetime.combine(current_day, user_end_time)
+
             time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
             payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
 
@@ -187,6 +182,7 @@ def report(request):
     return render(request=request, template_name='report.html', context={'report_data': report_data})
 
 
+
 @csrf_exempt
 @require_POST
 def report_payout_by_user(request):
@@ -194,7 +190,7 @@ def report_payout_by_user(request):
         username = request.POST.get('username')
         print(username)
         user = User.objects.filter(username=username).first()
-        user_timeline = UserTimeline.objects.filter(user=user).first()
+        user_timeline = UserTimeline.objects.filter(user=user, status=True).first()
 
         start_time = user_timeline.timeline.start_at
         end_time = user_timeline.timeline.end_at
@@ -202,27 +198,27 @@ def report_payout_by_user(request):
         print(start_time, end_time)
 
         # Get the oldest created_at date for Payout
-        oldest_payout_date = Payout.objects.filter(user=user).aggregate(oldest_date=Min('created_at'))['oldest_date']
+        oldest_payout_date = Payout.objects.filter(user=user, status=True).aggregate(oldest_date=Min('created_at'))['oldest_date']
 
         if not oldest_payout_date:
             return JsonResponse([], safe=False)
 
-        oldest_payout_date = oldest_payout_date.astimezone(timezone)
-
-        # Ensure the current time is timezone-aware
-        now = datetime.now(timezone)
+        # Ensure the current time is without timezone
+        now = datetime.now()
         current_day = now.date()
 
         results = []
 
         while True:
             if start_time < end_time:
-                start_datetime = datetime.combine(current_day, start_time).replace(tzinfo=timezone)
-                end_datetime = datetime.combine(current_day, end_time).replace(tzinfo=timezone)
+                start_datetime = datetime.combine(current_day, start_time)
+                end_datetime = datetime.combine(current_day, end_time)
             else:  # Over midnight scenario
-                start_datetime = datetime.combine(current_day - timedelta(days=1), start_time).replace(tzinfo=timezone)
-                end_datetime = datetime.combine(current_day, end_time).replace(tzinfo=timezone)
+                start_datetime = datetime.combine(current_day - timedelta(days=1), start_time)
+                end_datetime = datetime.combine(current_day, end_time)
 
+            if oldest_payout_date.tzinfo is not None:
+                oldest_payout_date = oldest_payout_date.replace(tzinfo=None)
             # Break the loop if start_datetime is less than the oldest_date
             if start_datetime < oldest_payout_date:
                 break
@@ -233,6 +229,8 @@ def report_payout_by_user(request):
             payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
             total_amount_payout = payouts.aggregate(total_money=Sum('money'))['total_money']
             total_count_payout = payouts.aggregate(payout_count=Count('id'))['payout_count']
+            print(start_datetime, end_datetime)
+            print(total_amount_payout, total_count_payout)
 
             # Settle Payout
             settle = SettlePayout.objects.filter(user=user, status=True).filter(time_range_query)
@@ -259,16 +257,16 @@ def report_payout_by_user(request):
                 else:
                     start_balance += 0
 
-                # Get transations
+                # Get transactions
                 bank_transations_df = get_transactions_by_key(bank_account.account_number)
                 bank_transations_df['transaction_date'] = pd.to_datetime(
-                    bank_transations_df['transaction_date'],format="%d/%m/%Y %H:%M:%S").dt.tz_localize('UTC').dt.tz_convert(timezone)
-                start_date = pd.to_datetime(start_datetime).tz_convert(timezone)
-                end_date = pd.to_datetime(end_datetime).tz_convert(timezone)
+                    bank_transations_df['transaction_date'], format="%d/%m/%Y %H:%M:%S")
+
                 # Filter the DataFrame
+                start_date = pd.to_datetime(start_datetime)
+                end_date = pd.to_datetime(end_datetime)
                 filtered_df = bank_transations_df[(bank_transations_df['transaction_type'] == 'OUT') &
-                                                  (bank_transations_df['description'].str.contains('Z', case=True,
-                                                                                                   na=False)) &
+                                                  (bank_transations_df['description'].str.contains('Z', case=True, na=False)) &
                                                   (bank_transations_df['transaction_date'] >= start_date) &
                                                   (bank_transations_df['transaction_date'] <= end_date)
                                                   ]
@@ -305,3 +303,4 @@ def report_payout_by_user(request):
             current_day -= timedelta(days=1)
 
         return JsonResponse(results, safe=False)
+

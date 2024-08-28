@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.core.paginator import Paginator
+from rest_framework.decorators import api_view, permission_classes
 from django.forms.models import model_to_dict
 from .utils import get_start_end_datetime_by_timeline
 from django.views.decorators.http import require_POST
@@ -19,18 +19,50 @@ import pandas as pd
 from django.db.models import Q, Sum
 from django.core.paginator import Paginator
 from dotenv import load_dotenv
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from .serializers import BankAccountSerializer, BankSerializer
 
 load_dotenv()
 
 # Create your views here.
-@login_required(login_url='user_login')
+@csrf_exempt
+@permission_classes([IsAuthenticated])
 def list_bank(request):
-    list_bank_option = Bank.objects.filter(status=True)
-    if request.user.is_superuser:
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+
+    # list_bank_option = Bank.objects.filter(status=True)
+    if user.is_superuser:
         list_user_bank = BankAccount.objects.all()
     else:
-        list_user_bank = BankAccount.objects.filter(user=request.user)
-    return render(request=request, template_name='bank.html',context={'list_bank_option':list_bank_option, 'list_user_bank':list_user_bank})
+        list_user_bank = BankAccount.objects.filter(user=user)
+    list_user_bank_serializer = BankAccountSerializer(list_user_bank, many=True).data
+
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'list_user_bank':list_user_bank_serializer}})
+
+@permission_classes([IsAuthenticated])
+def get_banks(request):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    
+    list_banks = Bank.objects.filter(status=True)
+    list_bank_serializers = BankSerializer(list_banks, many=True).data
+    
+    return JsonResponse({'status': 200, 'data': {'list_banks':list_bank_serializers}})
 
 @login_required(login_url='user_login')
 def record_book(request):
@@ -147,7 +179,7 @@ class AddBankView(View):
             bank_password = data.get('bankPassword')
             bank_type = data.get('bankType')
             bank_name = data.get('bankName')
-            
+
             # Check if any bank_account with the same type is ON
             existed_bank_account = BankAccount.objects.filter(
                 user=request.user,
@@ -156,20 +188,19 @@ class AddBankView(View):
             if existed_bank_account:
                 return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
 
-
             bank = Bank.objects.filter(name=bank_name).first()
-            bank_account = BankAccount.objects.create(
+            BankAccount.objects.create(
                 user=request.user,
                 bank_name=bank,
-                account_number=bank_account.get('accountNumber'),
+                account_number=data.get('bankNumber'),
                 account_name=bank_accountname,
                 balance=0,
                 bank_type=bank_type,
                 username=bank_username,
                 password=bank_password
             )
+            return JsonResponse({'status': 200, 'message': 'success'})
 
-            return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         except Exception as ex:
             print(str(ex))
             return JsonResponse({'status': 500, 'message': 'Failed to add bank'})
@@ -179,9 +210,11 @@ def toggle_bank_status(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         try:
-            bank_account = BankAccount.objects.get(id=data['id'])
+            print("=====", data['id'])
+            bank_account = BankAccount.objects.filter(id=data['id']).first()
+            print(bank_account)
             new_status = False
-            if data['status'] == 'ON':
+            if not bank_account.status:
                 new_status = True
             bank_account.status = new_status
             bank_account.save()
@@ -192,11 +225,20 @@ def toggle_bank_status(request):
 
 
 
-
+@csrf_exempt
+@permission_classes([IsAuthenticated])
 def update_transaction_history(request):
-    # all_transactions = get_all_transactions(request)
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+
     redis_client = redis_connect(1)
-    if request.user.is_superuser:
+    if user.is_superuser:
         bank_accounts = BankAccount.objects.filter(status=True)
     else:
         bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
@@ -278,8 +320,17 @@ def update_amount_by_date(transaction_type, amount):
     # Save updated totals back to Redis
     redis_client.set(today_str, json.dumps(current_totals))
     
+@permission_classes([IsAuthenticated])
 def get_amount_today(request):
-    if request.user.is_superuser:
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    if user.is_superuser:
         redis_client = redis_connect(3)
         today_str = datetime.now().strftime('%Y-%m-%d')
         if redis_client.exists(today_str):
@@ -289,14 +340,14 @@ def get_amount_today(request):
             return JsonResponse({'status': 500, 'message': 'Invalid request'})
     else:
         try:
-            user_timeline = UserTimeline.objects.filter(user=request.user).first()
+            user_timeline = UserTimeline.objects.filter(user=user).first()
             start_at = user_timeline.timeline.start_at
             end_at = user_timeline.timeline.end_at
             start_datetime, end_datetime = get_start_end_datetime_by_timeline(start_at,end_at)
             time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
-            payouts = Payout.objects.filter(user=request.user, status=True).filter(time_range_query)
+            payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
             total_out = payouts.aggregate(total_money=Sum('money'))['total_money'] or 0
-            deposit = EmployeeDeposit.objects.filter(user=request.user, status=True).filter(time_range_query)
+            deposit = EmployeeDeposit.objects.filter(user=user, status=True).filter(time_range_query)
             total_in = deposit.aggregate(total_money=Sum('amount'))['total_money'] or 0
             return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in':total_in,'out':total_out}})
         except Exception as ex:

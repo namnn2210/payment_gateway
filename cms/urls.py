@@ -1,9 +1,6 @@
 from django.urls import path, include
-from .views import index, user_login, user_logout, profile
+from .views import api_login
 
 urlpatterns = [
-    path('', index, name='index'),
-    path('user_login', user_login, name='user_login'),
-    path('profile', profile, name='profile'),
-    path('user/logout', user_logout, name='user_logout'),
+    path('api/login', api_login, name='api_login'),
 ]
