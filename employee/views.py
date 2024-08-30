@@ -42,9 +42,9 @@ def employee_deposit(request):
         )
         return Response(APIResponse(success=True, message="").__dict__(), status=status.HTTP_201_CREATED)
     if user.is_superuser:
-        list_deposit_requests = EmployeeDeposit.objects.filter(status=False)
+        list_deposit_requests = EmployeeDeposit.objects.all()
     else:
-        list_deposit_requests = EmployeeDeposit.objects.filter(user=request.user)
+        list_deposit_requests = EmployeeDeposit.objects.filter(user=user)
     list_deposit_requests = list_deposit_requests.order_by('-created_at')
         
     deposit_serializer = DepositSerializer(list_deposit_requests, many=True).data

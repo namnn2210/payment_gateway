@@ -59,32 +59,30 @@ def get_banks(request):
     except AuthenticationFailed as e:
         return JsonResponse({'status': 403, 'message': str(e)}, status=403)
     
-    list_banks = Bank.objects.filter(status=True)
-    list_bank_serializers = BankSerializer(list_banks, many=True).data
+    # list_banks = Bank.objects.filter(status=True)
+    # list_bank_serializers = BankSerializer(list_banks, many=True).data
+    bank_data = json.load(open('bank.json', encoding='utf-8'))
     
-    return JsonResponse({'status': 200, 'data': {'list_banks':list_bank_serializers}})
+    return JsonResponse({'status': 200, 'data': {'list_banks':bank_data}})
 
-@login_required(login_url='user_login')
+@csrf_exempt
+@permission_classes([IsAuthenticated])
 def record_book(request):
+
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+
     
     all_transactions_df = get_all_transactions()
     search_query = request.GET.get('search', '')
     start_date = request.GET.get('start_datetime', '')
     end_date = request.GET.get('end_datetime', '')
-    
-    # Default start and end date to today if not provided
-    # today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    # today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-    
-    # if start_date:
-    #     start_date = parse_datetime(start_date)
-    # else:
-    #     start_date = today_start
-
-    # if end_date:
-    #     end_date = parse_datetime(end_date)
-    # else:
-    #     end_date = today_end
     
     start_date, end_date = get_start_end_datetime(start_date, end_date)
 
@@ -111,62 +109,9 @@ def record_book(request):
         # Separate and sort transactions by type
         in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
         out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
-        
-        # Calculate total amounts
-        total_in_amount = in_transactions_df['amount'].sum()
-        total_out_amount = out_transactions_df['amount'].sum()
-        
 
-        # Pagination for "IN" transactions
-        in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
-        in_page_number = request.GET.get('in_page')
-        in_page_obj = in_paginator.get_page(in_page_number)
-
-        # Pagination for "OUT" transactions
-        out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
-        out_page_number = request.GET.get('out_page')
-        out_page_obj = out_paginator.get_page(out_page_number)
-
-        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-            # Return JSON response for AJAX requests
-            
-            total_in_amount = int(float(in_transactions_df['amount'].sum()))
-            total_out_amount = int(float(out_transactions_df['amount'].sum()))
-            
-            
-            
-            data = {
-                'in_transactions': list(in_page_obj),
-                'out_transactions': list(out_page_obj),
-                'in_page': in_page_obj.number,
-                'in_num_pages': in_page_obj.paginator.num_pages,
-                'out_page': out_page_obj.number,
-                'out_num_pages': out_page_obj.paginator.num_pages,
-                'total_in_amount': total_in_amount,
-                'total_out_amount': total_out_amount,
-            }
-
-            return JsonResponse(data)
-        
-
-        return render(request, 'record_book.html', {
-            'in_page_obj': in_page_obj, 
-            'out_page_obj': out_page_obj, 
-            'search_query': search_query, 
-            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
-            'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
-            'total_in_amount': total_in_amount,
-            'total_out_amount': total_out_amount,
-        })
-    return render(request, 'record_book.html', {
-            'in_page_obj': None, 
-            'out_page_obj': None, 
-            'search_query': search_query, 
-            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
-            'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
-            'total_in_amount': 0,
-            'total_out_amount': 0,
-        })
+        return JsonResponse({'status': 200, 'data': {'in_transactions':in_transactions_df.to_dict(orient='records'), 'out_transactions':out_transactions_df.to_dict(orient='records')}})
+    return JsonResponse({'status': 200, 'data': {'in_transactions':None, 'out_transactions':None}})
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddBankView(View):

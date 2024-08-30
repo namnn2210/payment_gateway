@@ -16,14 +16,29 @@ from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime
 from django.db.models import Q, BooleanField, Case, Value, When, IntegerField, Sum
+from rest_framework.decorators import permission_classes, api_view
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from .serializers import SettlePayoutSerializer
 import pytz
 import os
 import json
 
 load_dotenv()
 # Create your views here.
-@login_required(login_url='user_login')
+@csrf_exempt
+@permission_classes([IsAuthenticated])
 def list_settle_payout(request):
+
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
     
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     banks = Bank.objects.filter(status=True)
@@ -64,12 +79,12 @@ def list_settle_payout(request):
     end_datetime_str = request.GET.get('end_datetime', '')
 
     if start_datetime_str:
-        start_datetime = datetime.strptime(start_datetime_str, '%Y-%m-%dT%H:%M')
+        start_datetime = datetime.strptime(start_datetime_str, '%Y-%m-%d %H:%M:%S')
     else:
         start_datetime = datetime.strptime(f'{today} 00:00', '%d/%m/%Y %H:%M')
 
     if end_datetime_str:
-        end_datetime = datetime.strptime(end_datetime_str, '%Y-%m-%dT%H:%M')
+        end_datetime = datetime.strptime(end_datetime_str, '%Y-%m-%d %H:%M:%S')
     else:
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
 
@@ -83,89 +98,85 @@ def list_settle_payout(request):
         )
     ).order_by('status_priority', '-created_at')
 
-    total_results = len(list_payout)
-    total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
+    list_settle_serializers = SettlePayoutSerializer(list_payout, many=True).data
 
-    paginator = Paginator(list_payout, 10)  # Show 10 items per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'settle_payout_list.html', {
-            'list_payout': page_obj,
-            'total_results': total_results,
-            'total_amount': total_amount,
-            'banks': banks,
-            'bank_data': bank_data,
-        })
-
-    return render(request, 'settle_payout.html', {
-        'list_payout': page_obj,
-        'bank_data': bank_data,
-        'banks': banks,
-        'total_results': total_results,
-        'total_amount': total_amount
-    })
+    return JsonResponse({'status': 200, 'data': {'list_settle':list_settle_serializers}})
 
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AddSettlePayoutView(View):
-    def post(self, request, *args, **kwargs):
-        decoded_str = request.body.decode('utf-8')
-        data = json.loads(decoded_str)
-        scode = data.get('scode').strip()
-        orderid = data.get('orderid').strip()
-        money = data.get('money')
-        accountno = data.get('accountno').strip()
-        accountname = data.get('accountname')
-        bankcode = data.get('bankcode')
-        
-        try:
-            float(money)
-        except Exception as ex:
-            return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
-        
-        if '.00' not in money:
-            return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
-        
-        # Check if any bank_account with the same type is ON
-        existed_bank_account = SettlePayout.objects.filter(
-            orderid=orderid).first()
-        if existed_bank_account:
-            return JsonResponse({'status': 505, 'message': 'Lệnh rút đã tồn tại. Vui lòng kiểm tra mã đơn hàng'})
-
-        #Process the data and save to the database
-    
-        payout = SettlePayout.objects.create(
-            user=request.user,
-            scode='CID1630'+scode,
-            orderno=orderid,
-            orderid=orderid,
-            money=int(float(money)),
-            accountno=accountno,
-            accountname=accountname,
-            bankname='',
-            bankcode=bankcode,
-            updated_by=None,
-            is_auto=False,
-            is_cancel=False,
-            is_report=False,
-            created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
-        )
-        payout.save()
-        send_notification('New payout added. Please check and process')
-        alert = (
-            f'🔴 - THÔNG BÁO PAYOUT\n'
-            f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
-        )
-        send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-        return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
-
 @csrf_exempt
-@require_POST
+@permission_classes([IsAuthenticated])
+def add_settle(request):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+
+    data = json.loads(request.body.decode('utf-8'))
+    scode = data.get('scode').strip()
+    orderid = data.get('orderid').strip()
+    money = data.get('money')
+    accountno = data.get('accountno').strip()
+    accountname = data.get('accountname')
+    bankcode = data.get('bankcode')
+    
+    try:
+        float(money)
+    except Exception as ex:
+        return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
+    
+    if '.00' not in money:
+        return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
+    
+    # Check if any bank_account with the same type is ON
+    existed_bank_account = SettlePayout.objects.filter(
+        orderid=orderid).first()
+    if existed_bank_account:
+        return JsonResponse({'status': 505, 'message': 'Lệnh rút đã tồn tại. Vui lòng kiểm tra mã đơn hàng'})
+
+    #Process the data and save to the database
+
+    payout = SettlePayout.objects.create(
+        user=user,
+        scode='CID1630'+scode,
+        orderno=orderid,
+        orderid=orderid,
+        money=int(float(money)),
+        accountno=accountno,
+        accountname=accountname,
+        bankname='',
+        bankcode=bankcode,
+        updated_by=None,
+        is_auto=False,
+        is_cancel=False,
+        is_report=False,
+        created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+    )
+    payout.save()
+    send_notification('New settle payout added. Please check and process')
+    alert = (
+        f'🔴 - THÔNG BÁO PAYOUT\n'
+        f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
+    )
+    send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+    return JsonResponse({'status': 200, 'message': 'Settle added successfully'})
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def delete_settle_payout(request):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
     try:
         data = json.loads(request.body)
         settle_payout_id = data.get('id')
@@ -175,9 +186,17 @@ def delete_settle_payout(request):
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
 
-@csrf_exempt
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def edit_settle_payout(request):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
     try:
         data = json.loads(request.body)
         settle_payout_id = data.get('id')
@@ -189,9 +208,17 @@ def edit_settle_payout(request):
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
 
-@csrf_exempt
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def update_settle_payout(request, update_type):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
     try:
         data = json.loads(request.body)
         print(data)

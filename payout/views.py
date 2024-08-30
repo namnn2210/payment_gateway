@@ -20,6 +20,13 @@ from partner.models import PartnerMapping, CID
 from django.db.models.functions import TruncDate
 from .tasks import update_payout_background
 from django.utils.dateparse import parse_date
+from rest_framework.decorators import permission_classes, api_view
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from cms.serializers import UserSerializer
+from payout.serializers import PayoutSerializer
+from bank.serializers import BankSerializer
 import pytz
 import os
 import json
@@ -36,9 +43,26 @@ BANK_CODE_MAPPING = {
     'EXIM':'EIB'
 }
 
+@csrf_exempt
+@permission_classes([IsAuthenticated])
+def list_users(request):
+    users = User.objects.filter(is_active=True)
+    user_serializers = UserSerializer(users, many=True).data
+    return JsonResponse({'status': 200, 'data': {'list_users':user_serializers}})
+
 # Create your views here.
-@login_required(login_url='user_login')
+@csrf_exempt
+@permission_classes([IsAuthenticated])
 def list_payout(request):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     banks = Bank.objects.filter(status=True)
     users = User.objects.all()
@@ -83,12 +107,12 @@ def list_payout(request):
     end_datetime_str = request.GET.get('end_datetime', '')
 
     if start_datetime_str:
-        start_datetime = datetime.strptime(start_datetime_str, '%Y-%m-%dT%H:%M')
+        start_datetime = datetime.strptime(start_datetime_str, '%Y-%m-%d %H:%M:%S')
     else:
         start_datetime = datetime.strptime(f'{today} 00:00', '%d/%m/%Y %H:%M')
 
     if end_datetime_str:
-        end_datetime = datetime.strptime(end_datetime_str, '%Y-%m-%dT%H:%M')
+        end_datetime = datetime.strptime(end_datetime_str, '%Y-%m-%d %H:%M:%S')
     else:
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
 
@@ -96,11 +120,11 @@ def list_payout(request):
     
     
     if not employee_filter:
-        list_payout = list_payout.filter(user=request.user)
+        list_payout = list_payout.filter(user=user)
     else:
         if employee_filter != 'All':
-            user = User.objects.filter(username=employee_filter).first()
-            list_payout = list_payout.filter(user=user)
+            user_obj = User.objects.filter(username=employee_filter).first()
+            list_payout = list_payout.filter(user=user_obj)
 
     list_payout = list_payout.annotate(
         status_priority=Case(
@@ -109,99 +133,93 @@ def list_payout(request):
             output_field=IntegerField()
         )
     ).order_by('status_priority', '-created_at')
+    list_payout_serializers = PayoutSerializer(list_payout, many=True).data
 
-    total_results = len(list_payout)
-    total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
-    
-    print(list_payout)
-
-    paginator = Paginator(list_payout, 10)  # Show 10 items per page
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'payout_list.html', {
-            'list_payout': page_obj,
-            'total_results': total_results,
-            'total_amount': total_amount,
-            'banks': banks,
-            'bank_data': bank_data,
-        })
-
-    return render(request, 'payout.html', {
-        'list_payout': page_obj,
-        'bank_data': bank_data,
-        'banks': banks,
-        'total_results': total_results,
-        'total_amount': total_amount,
-        'users':users
-    })
+    return JsonResponse({'status': 200, 'data': {'list_payouts':list_payout_serializers}})
 
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
 
-@method_decorator(csrf_exempt, name='dispatch')
-class AddPayoutView(View):
-    def post(self, request, *args, **kwargs):
-        decoded_str = request.body.decode('utf-8')
-        data = json.loads(decoded_str)
-        scode = data.get('scode').strip()
-        orderid = data.get('orderid').strip()
-        money = data.get('money')
-        accountno = data.get('accountno').strip()
-        accountname = data.get('accountname')
-        bankcode = data.get('bankcode')
-        
-        try:
-            float(money)
-        except Exception as ex:
-            return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
-        
-        if '.00' not in money:
-            return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
-        
-        # Check if any bank_account with the same type is ON
-        existed_bank_account = Payout.objects.filter(
-            orderid=orderid).first()
-        if existed_bank_account:
-            return JsonResponse({'status': 505, 'message': 'Lệnh rút đã tồn tại. Vui lòng kiểm tra mã đơn hàng'})
-
-        #Process the data and save to the database
-    
-        payout = Payout.objects.create(
-            user=request.user,
-            scode='CID1630'+scode,
-            orderno=orderid,
-            orderid=orderid,
-            money=int(float(money)),
-            accountno=accountno,
-            accountname=accountname,
-            bankname='',
-            bankcode=bankcode,
-            updated_by=None,
-            is_auto=False,
-            is_cancel=False,
-            is_report=False,
-            created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
-        )
-        payout.save()
-        send_notification('New payout added. Please check and process')
-        alert = (
-            f'🔴 - THÔNG BÁO PAYOUT\n'
-            f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
-        )
-        send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-        return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
-
-
 @csrf_exempt
-@require_POST
+@permission_classes([IsAuthenticated])
+def add_payout(request):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    
+    data = json.loads(request.body.decode('utf-8'))
+    
+    scode = data.get('scode').strip()
+    orderid = data.get('orderid').strip()
+    money = data.get('money')
+    accountno = data.get('accountno').strip()
+    accountname = data.get('accountname')
+    bankcode = data.get('bankcode')
+    
+    try:
+        float(money)
+    except Exception as ex:
+        return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
+    
+    if '.00' not in money:
+        return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
+    
+    # Check if any bank_account with the same type is ON
+    existed_bank_account = Payout.objects.filter(
+        orderid=orderid).first()
+    if existed_bank_account:
+        return JsonResponse({'status': 505, 'message': 'Lệnh rút đã tồn tại. Vui lòng kiểm tra mã đơn hàng'})
+
+    #Process the data and save to the database
+
+    payout = Payout.objects.create(
+        user=user,
+        scode='CID1630'+scode,
+        orderno=orderid,
+        orderid=orderid,
+        money=int(float(money)),
+        accountno=accountno,
+        accountname=accountname,
+        bankname='',
+        bankcode=bankcode,
+        updated_by=None,
+        is_auto=False,
+        is_cancel=False,
+        is_report=False,
+        created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+    )
+    payout.save()
+    send_notification('New payout added. Please check and process')
+    alert = (
+        f'🔴 - THÔNG BÁO PAYOUT\n'
+        f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
+    )
+    send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+    return JsonResponse({'status': 200, 'message': 'Payout added successfully'})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def update_payout(request, update_type):
     try:
-        data = json.loads(request.body)
+        jwt_auth = JWTAuthentication()
+        try:
+            user_auth_tuple = jwt_auth.authenticate(request)
+            if user_auth_tuple is None:
+                raise AuthenticationFailed('No user found from token or invalid token.')
+            user = user_auth_tuple[0]  # The user is the first element in the tuple
+        except AuthenticationFailed as e:
+            return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+        data = json.loads(request.body.decode('utf-8'))
+
         payout_id = data.get('id')
         bank_id = data.get('bank_id')
-        request_user_username = model_to_dict(request.user)['username']
+        request_user_username = model_to_dict(user)['username']
         
         update_body = {
             'payout_id':payout_id,
@@ -209,6 +227,9 @@ def update_payout(request, update_type):
             'request_user_username':request_user_username,
             'update_type':update_type
         }
+
+        print(update_body)
+
         update_payout_background.delay(update_body)
         
         return JsonResponse({'status': 200, 'message': 'Done','success': True})

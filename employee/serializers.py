@@ -1,7 +1,11 @@
 from rest_framework import serializers
 from .models import EmployeeDeposit
+from cms.serializers import UserSerializer
 
 class DepositSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+    updated_by = UserSerializer(read_only=True)
+
     class Meta:
         model = EmployeeDeposit
-        fields = ('id', 'amount', 'bankname', 'accountno', 'accountname', 'bankcode', 'note', 'status', 'created_at', 'updated_at')
+        fields = ('id', 'user', 'amount', 'bankname', 'accountno', 'accountname', 'bankcode', 'note', 'status', 'created_at','updated_by', 'updated_at')
