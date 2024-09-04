@@ -31,7 +31,7 @@ SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['api.226pay.com', 'www.api.226pay.com', 'localhost','15.235.131.24']
+ALLOWED_HOSTS = ['restapi.226pay.com', 'www.restapi.226pay.com', 'localhost','15.235.131.24']
 
 
 # Application definition
