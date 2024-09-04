@@ -236,66 +236,22 @@ def report_payout_by_user(request):
         deposit = EmployeeDeposit.objects.filter(user=user, status=True).filter(time_range_query)
         total_amount_deposit = deposit.aggregate(total_money=Sum('amount'))['total_money']
 
-        # Balance Timeline
-        bank_accounts = BankAccount.objects.filter(user=user, status=True)
-        start_balance = 0
+       
 
-        # Valid payout has Z
-        total_amount_valid_payout = 0
-        total_count_valid_payout = 0
-        for bank_account in bank_accounts:
-            # Get start balance
-            balance_timeline = BalanceTimeline.objects.filter(bank_account=bank_account).filter(
-                time_range_query).first()
-            if balance_timeline:
-                start_balance += balance_timeline.balance
-            else:
-                start_balance += 0
-
-            # Get transactions
-            bank_transations_df = get_transactions_by_key(bank_account.account_number)
-            bank_transations_df['transaction_date'] = pd.to_datetime(
-                bank_transations_df['transaction_date'], format="%d/%m/%Y %H:%M:%S")
-
-            # Filter the DataFrame
-            start_date = pd.to_datetime(start_datetime)
-            end_date = pd.to_datetime(end_datetime)
-            filtered_df = bank_transations_df[(bank_transations_df['transaction_type'] == 'OUT') &
-                                                (bank_transations_df['description'].str.contains('Z', case=True, na=False)) &
-                                                (bank_transations_df['transaction_date'] >= start_date) &
-                                                (bank_transations_df['transaction_date'] <= end_date)
-                                                ]
-
-            total_amount_valid_payout += filtered_df['amount'].sum()
-
-            # Get the total count of rows
-            total_count_valid_payout += filtered_df.shape[0]
-
-        if not total_amount_deposit:
-            total_amount_deposit = 0
-        if not total_amount_payout:
-            total_amount_payout = 0
-        if not total_amount_settle:
-            total_amount_settle = 0
-
-        estimate_end_timeline_amount = start_balance + total_amount_deposit - total_amount_payout - total_amount_settle
-
-        results.append({
-            'date': current_day.strftime('%d/%m/%Y'),
-            'start_datetime': start_datetime.strftime('%H:%M'),
-            'end_datetime': end_datetime.strftime('%H:%M'),
-            'start_balance': start_balance or 0,
+        report_data.append({
+            'start_datetime': start_time,
+            'end_datetime': end_time,
+            'start_balance': session.start_balance or 0,
             'deposit': total_amount_deposit or 0,
             'total_amount_payout': total_amount_payout,
             'total_count_payout': total_count_payout or 0,
             'total_amount_settle': total_amount_settle,
             'total_count_settle': total_count_settle or 0,
-            'total_amount_valid_payout': int(total_amount_valid_payout),
-            'total_count_valid_payout': int(total_count_valid_payout),
-            'estimate_end_timeline_amount': estimate_end_timeline_amount
+            # 'total_amount_valid_payout': int(total_amount_valid_payout),
+            # 'total_count_valid_payout': int(total_count_valid_payout),
+            # 'estimate_end_timeline_amount': estimate_end_timeline_amount
         })
 
-        current_day -= timedelta(days=1)
 
-    return JsonResponse(results, safe=False)
+    return JsonResponse({'status': 200, 'message': 'Done','data': {'report_data':report_data}})
 
