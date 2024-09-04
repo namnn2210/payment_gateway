@@ -22,8 +22,7 @@ from .tasks import update_payout_background
 from django.utils.dateparse import parse_date
 from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.exceptions import AuthenticationFailed
+from cms.views import jwt_auth_check
 from cms.serializers import UserSerializer
 from payout.serializers import PayoutSerializer
 from bank.serializers import BankSerializer
@@ -54,14 +53,7 @@ def list_users(request):
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def list_payout(request):
-    jwt_auth = JWTAuthentication()
-    try:
-        user_auth_tuple = jwt_auth.authenticate(request)
-        if user_auth_tuple is None:
-            raise AuthenticationFailed('No user found from token or invalid token.')
-        user = user_auth_tuple[0]  # The user is the first element in the tuple
-    except AuthenticationFailed as e:
-        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    user = jwt_auth_check(request=request)
     
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     banks = Bank.objects.filter(status=True)
@@ -143,14 +135,7 @@ def search_payout(request):
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def add_payout(request):
-    jwt_auth = JWTAuthentication()
-    try:
-        user_auth_tuple = jwt_auth.authenticate(request)
-        if user_auth_tuple is None:
-            raise AuthenticationFailed('No user found from token or invalid token.')
-        user = user_auth_tuple[0]  # The user is the first element in the tuple
-    except AuthenticationFailed as e:
-        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    user = jwt_auth_check(request=request)
     
     data = json.loads(request.body.decode('utf-8'))
     
@@ -207,14 +192,7 @@ def add_payout(request):
 @permission_classes([IsAuthenticated])
 def update_payout(request, update_type):
     try:
-        jwt_auth = JWTAuthentication()
-        try:
-            user_auth_tuple = jwt_auth.authenticate(request)
-            if user_auth_tuple is None:
-                raise AuthenticationFailed('No user found from token or invalid token.')
-            user = user_auth_tuple[0]  # The user is the first element in the tuple
-        except AuthenticationFailed as e:
-            return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+        user = jwt_auth_check(request=request)
         data = json.loads(request.body.decode('utf-8'))
 
         payout_id = data.get('id')
@@ -236,8 +214,8 @@ def update_payout(request, update_type):
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
     
-@csrf_exempt
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def delete_payout(request):
     try:
         data = json.loads(request.body)
@@ -248,8 +226,8 @@ def delete_payout(request):
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
     
-@csrf_exempt
-@require_POST
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def move_payout(request):
     try:
         data = json.loads(request.body)

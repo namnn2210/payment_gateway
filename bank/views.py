@@ -20,8 +20,7 @@ from django.db.models import Q, Sum
 from django.core.paginator import Paginator
 from dotenv import load_dotenv
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework.exceptions import AuthenticationFailed
+from cms.views import jwt_auth_check
 from .serializers import BankAccountSerializer, BankSerializer
 
 load_dotenv()
@@ -30,14 +29,7 @@ load_dotenv()
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def list_bank(request):
-    jwt_auth = JWTAuthentication()
-    try:
-        user_auth_tuple = jwt_auth.authenticate(request)
-        if user_auth_tuple is None:
-            raise AuthenticationFailed('No user found from token or invalid token.')
-        user = user_auth_tuple[0]  # The user is the first element in the tuple
-    except AuthenticationFailed as e:
-        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    user = jwt_auth_check(request=request)
 
     # list_bank_option = Bank.objects.filter(status=True)
     if user.is_superuser:
@@ -50,14 +42,7 @@ def list_bank(request):
 
 @permission_classes([IsAuthenticated])
 def get_banks(request):
-    jwt_auth = JWTAuthentication()
-    try:
-        user_auth_tuple = jwt_auth.authenticate(request)
-        if user_auth_tuple is None:
-            raise AuthenticationFailed('No user found from token or invalid token.')
-        user = user_auth_tuple[0]  # The user is the first element in the tuple
-    except AuthenticationFailed as e:
-        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    jwt_auth_check(request=request)
     
     # list_banks = Bank.objects.filter(status=True)
     # list_bank_serializers = BankSerializer(list_banks, many=True).data
@@ -69,14 +54,7 @@ def get_banks(request):
 @permission_classes([IsAuthenticated])
 def record_book(request):
 
-    jwt_auth = JWTAuthentication()
-    try:
-        user_auth_tuple = jwt_auth.authenticate(request)
-        if user_auth_tuple is None:
-            raise AuthenticationFailed('No user found from token or invalid token.')
-        user = user_auth_tuple[0]  # The user is the first element in the tuple
-    except AuthenticationFailed as e:
-        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    user = jwt_auth_check(request=request)
 
     
     all_transactions_df = get_all_transactions()
@@ -173,14 +151,7 @@ def toggle_bank_status(request):
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def update_transaction_history(request):
-    jwt_auth = JWTAuthentication()
-    try:
-        user_auth_tuple = jwt_auth.authenticate(request)
-        if user_auth_tuple is None:
-            raise AuthenticationFailed('No user found from token or invalid token.')
-        user = user_auth_tuple[0]  # The user is the first element in the tuple
-    except AuthenticationFailed as e:
-        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    user = jwt_auth_check(request=request)
 
     redis_client = redis_connect(1)
     if user.is_superuser:
@@ -267,14 +238,7 @@ def update_amount_by_date(transaction_type, amount):
     
 @permission_classes([IsAuthenticated])
 def get_amount_today(request):
-    jwt_auth = JWTAuthentication()
-    try:
-        user_auth_tuple = jwt_auth.authenticate(request)
-        if user_auth_tuple is None:
-            raise AuthenticationFailed('No user found from token or invalid token.')
-        user = user_auth_tuple[0]  # The user is the first element in the tuple
-    except AuthenticationFailed as e:
-        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
+    user = jwt_auth_check(request=request)
     if user.is_superuser:
         redis_client = redis_connect(3)
         today_str = datetime.now().strftime('%Y-%m-%d')
@@ -367,26 +331,27 @@ def get_start_end_datetime_string(start_datetime, end_datetime):
     return start_datetime, end_datetime
 
 
-
 @csrf_exempt
-@require_POST    
+@permission_classes([IsAuthenticated])    
 def record_book_report(request):
-    if request.method == 'POST':
-        account_number = request.POST.get('account_no')
-        transaction_df = get_transactions_by_key(account_number)
+    _ = jwt_auth_check(request=request)
+    body = json.loads(request.body)
+    account_number = body.get('account_no')
+    
+    transaction_df = get_transactions_by_key(account_number)
 
-        if not transaction_df.empty:
-            # Convert the 'transaction_date' column to datetime format if it exists
-            if 'transaction_date' in transaction_df.columns:
-                transaction_df['transaction_date'] = pd.to_datetime(transaction_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
-            transaction_df = transaction_df.sort_values(by='transaction_date', ascending=False)
-            data = {
-                'transactions': transaction_df.to_dict(orient='records'),
-            }
+    if not transaction_df.empty:
+        # Convert the 'transaction_date' column to datetime format if it exists
+        if 'transaction_date' in transaction_df.columns:
+            transaction_df['transaction_date'] = pd.to_datetime(transaction_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
+        transaction_df = transaction_df.sort_values(by='transaction_date', ascending=False)
+        data = {
+            'transactions': transaction_df.to_dict(orient='records'),
+        }
 
-            return JsonResponse(data)
+        return JsonResponse(data)
 
-    return JsonResponse({'error': 'Invalid request method'})
+    
             
 
 

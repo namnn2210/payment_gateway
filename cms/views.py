@@ -5,6 +5,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from django.http import JsonResponse
 from django.contrib.auth import login as django_login
 from .serializers import UserSerializer
 from django.contrib.auth.models import User
@@ -49,3 +52,16 @@ def api_login(request):
 
         return Response(APIResponse(success=True, data={'token': access_token, 'user': user_serializer},
                                     message="").__dict__(), status=status.HTTP_200_OK)
+    
+
+
+def jwt_auth_check(request):
+    jwt_auth = JWTAuthentication()
+    try:
+        user_auth_tuple = jwt_auth.authenticate(request)
+        if user_auth_tuple is None:
+            raise AuthenticationFailed('No user found from token or invalid token.')
+        user = user_auth_tuple[0]  # The user is the first element in the tuple
+        return user
+    except AuthenticationFailed as e:
+        return JsonResponse({'status': 403, 'message': str(e)}, status=403)
