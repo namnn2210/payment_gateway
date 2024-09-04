@@ -8,9 +8,7 @@ from bank.models import BankAccount
 from payout.models import Timeline, UserTimeline, BalanceTimeline
 from django.db.models import Sum
 from django.contrib.auth.models import User
-from django.forms.models import model_to_dict
 from datetime import datetime, time
-from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, Sum, Count, Min
 from datetime import datetime, timedelta, time
@@ -20,6 +18,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from cms.views import jwt_auth_check
 from cms.serializers import UserSerializer
 from bank.serializers import BankAccountSerializer
+from employee.models import EmployeeWorkingSession
 import pandas as pd
 import json
 import pytz
