@@ -11,6 +11,6 @@ class EmployeeDepositAdmin(admin.ModelAdmin):
 
 @admin.register(EmployeeWorkingSession)
 class EmployeeWorkingSessionAdmin(admin.ModelAdmin):
-    list_display = ('user', 'start_time', 'end_time','status')
+    list_display = ('user', 'start_time', 'start_balance', 'end_time', 'end_balance','status')
     list_filter = ('user',)
     search_fields = ('user',)
