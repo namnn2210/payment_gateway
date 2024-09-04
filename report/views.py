@@ -206,7 +206,7 @@ def report_all(request):
 @csrf_exempt
 @permission_classes([IsAuthenticated])
 def report_payout_by_user(request):
-    user = jwt_auth_check(request=request)
+    _ = jwt_auth_check(request=request)
     username = request.GET.get('username')
     print(username)
     user = User.objects.filter(username=username).first()
