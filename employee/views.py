@@ -9,10 +9,15 @@ from cms.views import jwt_auth_check
 from rest_framework.response import Response
 from rest_framework import status
 from cms.models import APIResponse
+from bank.models import BankAccount
+from worker.views import get_balance_by_bank
 from employee.models import EmployeeWorkingSession
 from datetime import datetime
 from django.contrib.auth.models import User
 import json
+import pytz
+
+tz = pytz.timezone('Asia/Ho_Chi_Minh')
 
 # Create your views here.
 @csrf_exempt
@@ -83,15 +88,25 @@ def employee_session(request, session_type):
     user = jwt_auth_check(request=request)
     try:
         undone_session = EmployeeWorkingSession.objects.filter(user=user, status=False).first()
+        bank_accounts = BankAccount.objects.filter(user=user)
         if session_type == 'start':
             if undone_session:
                 return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
+            start_balance = 0
+            for bank_account in bank_accounts:
+                start_balance += get_balance_by_bank(bank=bank_account)
             EmployeeWorkingSession.objects.create(
-                user=user
+                user=user,
+                start_time=datetime.now(tz=tz),
+                start_balance = start_balance
             )
         elif session_type == 'end':
             if undone_session:
-                undone_session.end_time = datetime.now(tz='Asia/Ho')
+                end_balance = 0
+                for bank_account in bank_accounts:
+                    end_balance += get_balance_by_bank(bank=bank_account)
+                undone_session.end_time = datetime.now(tz=tz)
+                undone_session.end_balance = end_balance
                 undone_session.status = True
                 undone_session.save()
         else:

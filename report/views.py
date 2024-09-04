@@ -210,47 +210,22 @@ def report_payout_by_user(request):
     username = request.GET.get('username')
     print(username)
     user = User.objects.filter(username=username).first()
-    user_timeline = UserTimeline.objects.filter(user=user, status=True).first()
+    report_data = []
+    working_sessions = EmployeeWorkingSession.objects.filter(user=user)
 
-    start_time = user_timeline.timeline.start_at
-    end_time = user_timeline.timeline.end_at
+    for session in working_sessions:
+        start_time = session.start_time
+        end_time = session.end_time
 
-    print(start_time, end_time)
+        if not end_time:
+            end_time = datetime.now()
 
-    # Get the oldest created_at date for Payout
-    oldest_payout_date = Payout.objects.filter(user=user, status=True).aggregate(oldest_date=Min('created_at'))['oldest_date']
-
-    if not oldest_payout_date:
-        return JsonResponse([], safe=False)
-
-    # Ensure the current time is without timezone
-    now = datetime.now()
-    current_day = now.date()
-
-    results = []
-
-    while True:
-        if start_time < end_time:
-            start_datetime = datetime.combine(current_day, start_time)
-            end_datetime = datetime.combine(current_day, end_time)
-        else:  # Over midnight scenario
-            start_datetime = datetime.combine(current_day - timedelta(days=1), start_time)
-            end_datetime = datetime.combine(current_day, end_time)
-
-        if oldest_payout_date.tzinfo is not None:
-            oldest_payout_date = oldest_payout_date.replace(tzinfo=None)
-        # Break the loop if start_datetime is less than the oldest_date
-        if start_datetime < oldest_payout_date:
-            break
-
-        time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
+        time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
 
         # Payout
         payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
         total_amount_payout = payouts.aggregate(total_money=Sum('money'))['total_money']
         total_count_payout = payouts.aggregate(payout_count=Count('id'))['payout_count']
-        print(start_datetime, end_datetime)
-        print(total_amount_payout, total_count_payout)
 
         # Settle Payout
         settle = SettlePayout.objects.filter(user=user, status=True).filter(time_range_query)
