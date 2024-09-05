@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import list_payout, AddPayoutView, update_payout, webhook, user_payout_statistics, delete_payout, move_payout
+from .views import list_payout, AddPayoutView, update_payout, webhook, delete_payout, move_payout
 
 urlpatterns = [
     path('list', list_payout, name='list_payout'),
@@ -8,5 +8,4 @@ urlpatterns = [
     path('delete_payout', delete_payout, name='delete_payout'),
     path('move_payout', move_payout, name='move_payout'),
     path('webhook', webhook, name='payout_webhook'),
-    path('user_payout_statistics', user_payout_statistics, name='user_payout_statistics')
 ]

@@ -5,7 +5,7 @@ from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from bank.utils import send_telegram_message, find_substring
-from bank.views import update_amount_by_date, update_transaction_history_status
+from bank.views import update_amount_by_date, update_transaction_history_status, update_out_transaction_history_status
 from bank.models import BankAccount
 from partner.views import create_deposit_order
 from partner.models import PartnerMapping
@@ -15,6 +15,8 @@ import json
 import os
 import pytz
 from bank.database import redis_connect
+from payout.models import Payout
+from settle_payout.models import SettlePayout
 import time
 
 load_dotenv()
@@ -222,7 +224,14 @@ def get_transaction(bank):
                         transaction_type = '-'
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-                        
+
+                        success = False
+                        payout = Payout.objects.filter(money=row['amount'], process_bank=bank.bank_name).order_by('-created_at').first()
+                        settle_payout = SettlePayout.objects.filter(money=row['amount'], process_bank=bank.bank_name).order_by('-created_at').first()
+                        if payout or settle_payout:
+                            success = True
+                            update_out_transaction_history_status(bank.account_number, row['amount'])
+
                         alert = (
                             f'PAYOUT DONE\n'
                             f'\n'
