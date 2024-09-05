@@ -319,7 +319,7 @@ def update_out_transaction_history_status(account_number, memo, amount):
     redis_client = redis_connect(1)
     transactions = json.loads(redis_client.get(account_number))
     for transaction in transactions:
-        if transaction['amount'] == amount and memo in transaction['description']:
+        if transaction['amount'] == amount and memo == transaction['description']:
             print(transaction)
             transaction['status'] = 'Success'
             break
