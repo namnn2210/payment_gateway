@@ -121,7 +121,7 @@ def get_transaction(bank):
         final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
         # Detect new transactions
         new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(subset='transaction_number', keep=False)
-        print(new_transaction_df)
+        new_bank_history_df['status'] = 'Success'
         # Add new transactions to current history
         updated_df = pd.concat([old_bank_history_df, new_transaction_df])
         # Update Redis
