@@ -226,8 +226,9 @@ def get_transaction(bank):
                         formatted_amount = '{:,.2f}'.format(row['amount'])
 
                         success = False
-                        payout = Payout.objects.filter(money=row['amount'], process_bank=bank.bank_name).order_by('-created_at').first()
-                        settle_payout = SettlePayout.objects.filter(money=row['amount'], process_bank=bank.bank_name).order_by('-created_at').first()
+                        memo = find_substring(row['description'])
+                        payout = Payout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
+                        settle_payout = SettlePayout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
                         if payout or settle_payout:
                             success = True
                             update_out_transaction_history_status(bank.account_number, row['amount'])
