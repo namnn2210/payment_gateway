@@ -121,7 +121,6 @@ def get_transaction(bank):
         final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
         # Detect new transactions
         new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(subset='transaction_number', keep=False)
-        new_bank_history_df['status'] = 'Success'
         # Add new transactions to current history
         updated_df = pd.concat([old_bank_history_df, new_transaction_df])
         # Update Redis
@@ -225,15 +224,14 @@ def get_transaction(bank):
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
 
-                        # success = False
-                        # memo = find_substring(row['description'])
-                        # payout = Payout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
-                        # settle_payout = SettlePayout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
-                        # print(payout)
-                        # print(settle_payout)
-                        # if payout or settle_payout:
-                        #     success = True
-                        update_out_transaction_history_status(bank.account_number, row['description'], row['amount'])
+                        success = False
+                        memo = find_substring(row['description'])
+                        payout = Payout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
+                        settle_payout = SettlePayout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
+                        print(payout)
+                        print(settle_payout)
+                        if payout or settle_payout:
+                            update_out_transaction_history_status(bank.account_number, row['description'], row['amount'])
 
                         alert = (
                             f'PAYOUT DONE\n'

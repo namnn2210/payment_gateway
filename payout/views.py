@@ -20,6 +20,7 @@ from partner.models import PartnerMapping, CID
 from django.db.models.functions import TruncDate
 from .tasks import update_payout_background
 from django.utils.dateparse import parse_date
+from employee.models import EmployeeWorkingSession
 import pytz
 import os
 import json
@@ -312,39 +313,10 @@ def webhook(request):
         if existed_payout:
             return JsonResponse({'status': 505, 'message': 'Payout existed'})
         
-        # Gán payout ngẫu nhiên cho user theo ca làm
-        current_time = datetime.now().time()
-        user_timelines = []
-        timelines = Timeline.objects.filter(status=True)
-        timelines = [
-            {'name': 'Sáng', 'start_at': time(6, 0), 'end_at': time(14, 0)},
-            {'name': 'Chiều', 'start_at': time(14, 0), 'end_at': time(22, 0)},
-            {'name': 'Tối', 'start_at': time(22, 0), 'end_at': time(23, 59, 59)},
-            {'name': 'Đêm', 'start_at': time(0, 0), 'end_at': time(6, 0)}
-        ]
-        
-        current_timeline_name = None
-
-        for timeline in timelines:
-            start_at = timeline['start_at']
-            end_at = timeline['end_at']
-
-            if start_at <= end_at:
-                if start_at <= current_time <= end_at:
-                    current_timeline_name = timeline['name']
-                    break
-            else:  
-                if current_time >= start_at or current_time <= end_at:
-                    current_timeline_name = timeline['name']
-                    break
-        
-        if current_timeline_name:
-            # Get the active timelines from the database
-            if current_timeline_name == 'Tối' or current_timeline_name == 'Đêm':
-                current_timeline_name = 'Đêm'
-            active_timeline = Timeline.objects.filter(status=True, name=current_timeline_name).first()
-            
-            user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
+        current_sessions = EmployeeWorkingSession.objects.filter(status=False)
+        current_working_user = []
+        for session in current_sessions:
+            current_working_user.append(session.user)
                 
         system_bankcode = ''
         partner_bankcode = ''
@@ -370,7 +342,7 @@ def webhook(request):
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
             settle_payout = SettlePayout.objects.create(
-                    user=random.choice(user_timelines).user,
+                    user=random.choice(current_working_user),
                     scode=scode,
                     orderno=orderno,
                     orderid=orderid,
@@ -408,7 +380,7 @@ def webhook(request):
                 partner_bankcode = bankcode
         
             payout = Payout.objects.create(
-                    user=random.choice(user_timelines).user,
+                    user=random.choice(current_working_user),
                     scode=scode,
                     orderno=orderno,
                     orderid=orderid,
