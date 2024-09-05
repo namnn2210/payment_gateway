@@ -4,15 +4,14 @@
 {% block title %}{% trans "Dashboard" %}{% endblock %}
 {% block head %}
 <style>
+    .same-height {
+        flex: 1;
+        display: flex;
+    }
 
-.same-height {
-    flex: 1;
-    display: flex;
-}
-
-.same-height .card {
-    flex: 1;
-}
+    .same-height .card {
+        flex: 1;
+    }
 </style>
 {% endblock %}
 {% block content %}
@@ -27,7 +26,9 @@
                         </div>
                         <div class="ps-3 align-items-center">
                             <h6 class="balance-total"></h6>
-                            <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span class="text-danger small pt-1 fw-bold total-out">-0</span> <span class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
+                            <span class="text-success small pt-1 fw-bold total-in">+0</span> / <span
+                                class="text-danger small pt-1 fw-bold total-out">-0</span> <span
+                                class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
                         </div>
                     </div>
                 </div>
@@ -37,7 +38,13 @@
         <div class="col-md-6 col-sm-6 same-height">
             <div class="card info-card revenue-card">
                 <div class="card-body text-center mt-4 align-items-center">
-                    <button type="button" class="btn btn-primary create-deposit-btn" data-bs-toggle="modal" data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
+                    <button type="button" class="btn btn-primary create-deposit-btn" data-bs-toggle="modal"
+                        data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
+                    {% if is_session %}
+                        <button type="button" class="btn btn-danger start-session-btn">{% trans "End Session" %}</button>
+                    {% else %}
+                        <button type="button" class="btn btn-success start-session-btn">{% trans "Start Session" %}</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -58,51 +65,65 @@
                             </thead>
                             <tbody id="depositList">
                                 {% for deposit in list_deposit_requests %}
-                                    <tr class="text-center main-row" style="font-size: 12px;" data-id="{{ deposit.id }}">
-                                        <td>
-                                            <span class="toggle-icon" id="icon-{{ deposit.id }}">
-                                                <i class="fa fa-plus-circle" style="color: green;"></i>
-                                            </span>
-                                        </td>
-                                        <td>{{ deposit.user }}</td>
-                                        <td>{{ deposit.amount|floatformat:2|intcomma }}</td>
-                                        <td>
-                                            {% if deposit.status %}
-                                            <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
-                                            {% else %}
-                                            <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>{{ deposit.created_at|date:"d/m/Y H:i:s" }}</td>
-                                    </tr>
-                                    <tr class="hidden-row" id="details-{{ deposit.id }}" style="display: none;">
-                                        <td colspan="5">
-                                            <div class="row">
-                                                <div class="col-md-3 col-sm-12" style="font-size: 12px;"style="font-size: 12px;">
-                                                    <p><strong>{% trans "Note" %}:</strong> {{ deposit.note }} </p>
-                                                    <p><strong>{% trans "Bank Name" %}:</strong> {{ deposit.bankname }} </p>
-                                                    <p><strong>{% trans "Bank Code" %}:</strong> {{ deposit.bankcode }} </p>
-                                                    <p><strong>{% trans "Account Number" %}:</strong> {{ deposit.accountno }} </p>
-                                                    <p><strong>{% trans "Account Name" %}:</strong> {{ deposit.accountname }} </p>
-                                                </div>
-                                                <div class="col-md-3 col-sm-12" style="font-size: 12px;"style="font-size: 12px;">
-                                                    <p><strong>{% trans "Updated By" %}:</strong> {{ deposit.updated_by }} </p>
-                                                    <p><strong>{% trans "Updated At" %}:</strong> {{ deposit.updated_at|date:"d/m/Y H:i:s" }}</p>
-                                                </div>
-                                                <div class="col-md-4 col-sm-12" style="font-size: 12px;"style="font-size: 12px;">
-                                                    <p>
-                                                        <strong>{% trans "Action" %}:</strong> 
-                                                        {% if not deposit.status and user.is_superuser %}
-                                                        <button class="btn btn-sm btn-success pay-btn" data-bs-toggle="modal" data-bs-target="#payModal" data-item-id="{{ deposit.id }}" data-bankcode="{{ deposit.bankcode }}" data-accountno="{{ deposit.accountno }}" data-accountname="{{ deposit.accountname }}" data-amount="{{ deposit.amount }}">{% trans "Pay" %}</button>
-                                                        {% endif %}
-                                                        {% if user.is_superuser %}
-                                                            <button class="btn btn-sm btn-danger delete-btn" data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
-                                                        {% endif %}
-                                                    </p>
-                                                </div>
+                                <tr class="text-center main-row" style="font-size: 12px;" data-id="{{ deposit.id }}">
+                                    <td>
+                                        <span class="toggle-icon" id="icon-{{ deposit.id }}">
+                                            <i class="fa fa-plus-circle" style="color: green;"></i>
+                                        </span>
+                                    </td>
+                                    <td>{{ deposit.user }}</td>
+                                    <td>{{ deposit.amount|floatformat:2|intcomma }}</td>
+                                    <td>
+                                        {% if deposit.status %}
+                                        <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
+                                        {% else %}
+                                        <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ deposit.created_at|date:"d/m/Y H:i:s" }}</td>
+                                </tr>
+                                <tr class="hidden-row" id="details-{{ deposit.id }}" style="display: none;">
+                                    <td colspan="5">
+                                        <div class="row">
+                                            <div class="col-md-3 col-sm-12" style="font-size: 12px;"
+                                                style="font-size: 12px;">
+                                                <p><strong>{% trans "Note" %}:</strong> {{ deposit.note }} </p>
+                                                <p><strong>{% trans "Bank Name" %}:</strong> {{ deposit.bankname }} </p>
+                                                <p><strong>{% trans "Bank Code" %}:</strong> {{ deposit.bankcode }} </p>
+                                                <p><strong>{% trans "Account Number" %}:</strong> {{ deposit.accountno
+                                                    }} </p>
+                                                <p><strong>{% trans "Account Name" %}:</strong> {{ deposit.accountname
+                                                    }} </p>
                                             </div>
-                                        </td>
-                                    </tr>
+                                            <div class="col-md-3 col-sm-12" style="font-size: 12px;"
+                                                style="font-size: 12px;">
+                                                <p><strong>{% trans "Updated By" %}:</strong> {{ deposit.updated_by }}
+                                                </p>
+                                                <p><strong>{% trans "Updated At" %}:</strong> {{
+                                                    deposit.updated_at|date:"d/m/Y H:i:s" }}</p>
+                                            </div>
+                                            <div class="col-md-4 col-sm-12" style="font-size: 12px;"
+                                                style="font-size: 12px;">
+                                                <p>
+                                                    <strong>{% trans "Action" %}:</strong>
+                                                    {% if not deposit.status and user.is_superuser %}
+                                                    <button class="btn btn-sm btn-success pay-btn"
+                                                        data-bs-toggle="modal" data-bs-target="#payModal"
+                                                        data-item-id="{{ deposit.id }}"
+                                                        data-bankcode="{{ deposit.bankcode }}"
+                                                        data-accountno="{{ deposit.accountno }}"
+                                                        data-accountname="{{ deposit.accountname }}"
+                                                        data-amount="{{ deposit.amount }}">{% trans "Pay" %}</button>
+                                                    {% endif %}
+                                                    {% if user.is_superuser %}
+                                                    <button class="btn btn-sm btn-danger delete-btn"
+                                                        data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
+                                                    {% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
@@ -188,7 +209,9 @@
                                         <i>{{bank_account.account_name}}</i>
                                     </td>
                                     <td>{{bank_account.bank_name}}</td>
-                                    <td id="balance-{{bank_account.id}}"><span class="text-success">{{bank_account.balance|floatformat:2|intcomma }}</span></td>
+                                    <td id="balance-{{bank_account.id}}"><span
+                                            class="text-success">{{bank_account.balance|floatformat:2|intcomma }}</span>
+                                    </td>
                                     <td>{{bank_account.user.username}}</td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     {% if user.is_superuser %}
@@ -239,17 +262,19 @@
                                         <i>{{bank_account.account_name}}</i>
                                     </td>
                                     <td>{{bank_account.bank_name}}</td>
-                                    <td id="balance-{{bank_account.id}}"><span class="text-success">{{bank_account.balance|floatformat:2|intcomma }}</span></td>
+                                    <td id="balance-{{bank_account.id}}"><span
+                                            class="text-success">{{bank_account.balance|floatformat:2|intcomma }}</span>
+                                    </td>
                                     <td>{{bank_account.user.username}}</td>
                                     <td>{{bank_account.updated_at|date:"d/m/Y H:i:s"}}</td>
                                     {% if user.is_superuser %}
                                     <td>
                                         {% if bank_account.status %}
                                         <button class="btn btn-sm btn-danger btn-toggle-status"
-                                            data-account-id="{{ bank_account.id }}" data-status="ON">{% trans "OFF" %}</button>
+                                            data-account-id="{{ bank_account.id }}" data-status="ON">{% trans "OFF"%}</button>
                                         {% else %}
                                         <button class="btn btn-sm btn-success btn-toggle-status"
-                                            data-account-id="{{ bank_account.id }}" data-status="OFF">{% trans "ON" %}</button>
+                                            data-account-id="{{ bank_account.id }}" data-status="OFF">{% trans "ON"%}</button>
                                         {% endif %}
                                     </td>
                                     {% endif %}
@@ -385,7 +410,8 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createDepositModalcreateDepositModalLabel">{% trans "Deposit Details" %}</h5>
+                <h5 class="modal-title" id="createDepositModalcreateDepositModalLabel">{% trans "Deposit Details" %}
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body row">
@@ -399,15 +425,16 @@
                         <label for="bank">{% trans 'Bank Account' %}</label>
                         <select class="form-select" id="bank" name="bank" required>
                             {% for bank_account in list_user_bank%}
-                                <option value="{{bank_account.id}}">{{bank_account.account_number}} - {{bank_account.bank_name}}</option>
+                            <option value="{{bank_account.id}}">{{bank_account.account_number}} -
+                                {{bank_account.bank_name}}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </form>
-                
+
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success create-done-btn-modal" data-item-id="">{% trans "Done" %}</button>
+                <button type="button" class="btn btn-success create-done-btn-modal" data-item-id="">{% trans "Done"%}</button>
             </div>
         </div>
     </div>
@@ -531,7 +558,7 @@
                 }
                 if (Object.keys(data.data.out).length !== 0) {
                     updateTransactionTable(data.data.out, 'table.table-out tbody');
-                }   
+                }
             }
         };
 
@@ -561,7 +588,7 @@
 
     const bindRowClickEvents = () => {
         document.querySelectorAll('.main-row').forEach(row => {
-            row.addEventListener('click', function() {
+            row.addEventListener('click', function () {
                 const id = this.dataset.id;
                 const hiddenRow = document.getElementById(`details-${id}`);
                 const icon = document.getElementById(`icon-${id}`).querySelector('i');
@@ -629,7 +656,6 @@
         const accountno = $(this).data('accountno');
         const amount = $(this).data('amount');
         const accountname = $(this).data('accountname');
-        {#const qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${amount}/${accountname}/print.jpg`;#}
         const qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${amount}&addInfo=Z${accountname}&accountName=${accountname}`;
         document.getElementById('modalQrImage').setAttribute('src', qrUrl);
         document.querySelector('.done-btn-modal').dataset.itemId = itemId;
@@ -724,5 +750,47 @@
             });
         });
     });
+</script>
+<script>
+    $(document).on('click', '.start-session-btn', function () {
+        const button = $(this);
+        if (button.hasClass('btn-success')) {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "employee_session" "start" %}',  // Ensure this URL name matches your urls.py
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.status === 200) {
+                        button.removeClass('btn-success').addClass('btn-danger');
+                        button.text('{% trans "End Session" %}');
+                    } else {
+                        showAlert('Failed to update session.', 'danger', $('#modalAlertContainer'));
+                    }
+                },
+                error: function (response) {
+                    showAlert('An error occurred. Please try again.', 'danger', $('#modalAlertContainer'));
+                }
+            });
+        } else {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "employee_session" "end" %}',  // Ensure this URL name matches your urls.py
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.status === 200) {
+                        button.removeClass('btn-danger').addClass('btn-success');
+                        button.text('{% trans "Start Session" %}');
+                    } else {
+                        showAlert('Failed to update session.', 'danger', $('#modalAlertContainer'));
+                    }
+                },
+                error: function (response) {
+                    showAlert('An error occurred. Please try again.', 'danger', $('#modalAlertContainer'));
+                }
+            });
+            
+        }
+    });
+
 </script>
 {% endblock %}

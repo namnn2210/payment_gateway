@@ -19,7 +19,6 @@
                                 <thead>
                                     <tr class="text-center">
                                         <th>#</th>
-                                        <th>{% trans 'Date'%}</th>
                                         <th>{% trans 'Start At'%}</th>
                                         <th>{% trans 'End At'%}</th>
                                         <th>{% trans 'Start Balance'%}</th>
@@ -28,9 +27,9 @@
                                         <th>{% trans 'Total Payouts'%}</th>
                                         <th>{% trans 'Total Settle Amount'%}</th>
                                         <th>{% trans 'Total Settles'%}</th>
-                                        <th>{% trans 'Total Valid Payout Amount'%}</th>
+                                        <!-- <th>{% trans 'Total Valid Payout Amount'%}</th>
                                         <th>{% trans 'Total Valid Payout'%}</th>
-                                        <th>{% trans 'Estimate Total End Timeline Amount'%}</th>
+                                        <th>{% trans 'Estimate Total End Timeline Amount'%}</th> -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -72,10 +71,10 @@
                 success: function(data) {
                     var tbody = $('#reportTable tbody');
                     tbody.empty(); // Clear existing data
-                    $.each(data, function(index, item) {
+                    console.log(data);
+                    $.each(data.data.report_data, function(index, item) {
                         var row = '<tr class="text-center">';
                         row += '<td>' + (index + 1) + '</td>';
-                        row += '<td>' + item.date + '</td>';
                         row += '<td>' + item.start_datetime + '</td>';
                         row += '<td>' + item.end_datetime + '</td>';
                         row += '<td>' + item.start_balance.toLocaleString() + '</td>';
@@ -84,9 +83,9 @@
                         row += '<td>' + item.total_count_payout + '</td>';
                         row += '<td>' + item.total_amount_settle.toLocaleString() + '</td>';
                         row += '<td>' + item.total_count_settle + '</td>';
-                        row += '<td>' + item.total_amount_valid_payout.toLocaleString() + '</td>';
-                        row += '<td>' + item.total_count_valid_payout + '</td>';
-                        row += '<td>' + item.estimate_end_timeline_amount.toLocaleString() + '</td>';
+                        // row += '<td>' + item.total_amount_valid_payout.toLocaleString() + '</td>';
+                        // row += '<td>' + item.total_count_valid_payout + '</td>';
+                        // row += '<td>' + item.estimate_end_timeline_amount.toLocaleString() + '</td>';
                         row += '</tr>';
                         tbody.append(row);
                     });

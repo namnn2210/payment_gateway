@@ -5,7 +5,13 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
+from worker.views import get_balance_by_bank
+from employee.models import EmployeeWorkingSession
+from datetime import datetime
+import pytz
 import json
+
+tz = pytz.timezone('Asia/Ho_Chi_Minh')
 
 # Create your views here.
 def employee_deposit(request):
@@ -60,6 +66,39 @@ def delete_deposit(request):
         
         deposit.delete()
         
+        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    except Exception as ex:
+        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+    
+
+@csrf_exempt
+@require_POST
+def employee_session(request, session_type):
+    try:
+        undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
+        bank_accounts = BankAccount.objects.filter(user=request.user)
+        if session_type == 'start':
+            if undone_session:
+                return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
+            start_balance = 0
+            for bank_account in bank_accounts:
+                start_balance += get_balance_by_bank(bank=bank_account)
+            EmployeeWorkingSession.objects.create(
+                user=request.user,
+                start_time=datetime.now(tz=tz),
+                start_balance = start_balance
+            )
+        elif session_type == 'end':
+            if undone_session:
+                end_balance = 0
+                for bank_account in bank_accounts:
+                    end_balance += get_balance_by_bank(bank=bank_account)
+                undone_session.end_time = datetime.now(tz=tz)
+                undone_session.end_balance = end_balance
+                undone_session.status = True
+                undone_session.save()
+        else:
+            return JsonResponse({'status': 504, 'message': 'Trạng thái không hợp lệ','success': False})
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})

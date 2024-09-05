@@ -8,9 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from bank.models import BankAccount, Bank
 from employee.models import EmployeeDeposit
 from django.core.paginator import Paginator
-from notification.models import Notification
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from employee.models import EmployeeWorkingSession
 
 
 import subprocess
@@ -34,9 +32,15 @@ def index(request):
         list_deposit_requests = paginator.get_page(page_number)
     else:
         list_deposit_requests = None
+
+    session = EmployeeWorkingSession.objects.filter(status=False, user=request.user).first()
+    if session:
+        is_session = True
+    else:
+        is_session = False
     
         
-    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option})
+    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option, 'is_session':is_session})
 
 def user_login(request):
     if request.method == 'POST':

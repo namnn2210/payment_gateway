@@ -24,7 +24,6 @@
                     <tr class="text-center">
                         <th>#</th>
                         <th>{% trans 'User' %}</th>
-                        <th>{% trans 'Timeline' %}</th>
                         <th>{% trans 'Bank Accounts' %}</th>
                         <th>{% trans 'Payout' %}</th>
                     </tr>
@@ -43,12 +42,6 @@
                         {% else %}
                         <td>{{ username }}</td>
                         {% endif %}
-                        <td class="text-center">
-                            {% if data.timeline %}
-                            <p>{{data.timeline.name}}</p>
-                            <i>{{data.timeline.start_at}} - {{data.timeline.end_at}}</i>
-                            {% endif %}
-                        </td>
                         <td>
                             <ul>
                                 {% for account in data.bank_accounts %}
