@@ -315,12 +315,11 @@ def update_transaction_history_status(account_number, transfer_code, status):
 
     redis_client.set(account_number, json.dumps(transactions))
 
-def update_out_transaction_history_status(account_number, memo, amount):
+def update_out_transaction_history_status(account_number, amount):
     redis_client = redis_connect(1)
     transactions = json.loads(redis_client.get(account_number))
     for transaction in transactions:
-        if transaction['amount'] == amount and memo == transaction['description']:
-            print(transaction)
+        if transaction['amount'] == amount and 'Z' in transaction['description']:
             transaction['status'] = 'Success'
             break
 
