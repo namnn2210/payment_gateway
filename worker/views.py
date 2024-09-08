@@ -224,14 +224,8 @@ def get_transaction(bank):
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
 
-                        success = False
-                        memo = find_substring(row['description'])
-                        payout = Payout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
-                        settle_payout = SettlePayout.objects.filter(money=row['amount'], process_bank=bank.bank_name).first()
-                        print(payout)
-                        print(settle_payout)
-                        if payout or settle_payout:
-                            update_out_transaction_history_status(bank.account_number, row['description'], row['amount'])
+                    
+                        update_out_transaction_history_status(bank.account_number, row['amount'])
 
                         alert = (
                             f'PAYOUT DONE\n'

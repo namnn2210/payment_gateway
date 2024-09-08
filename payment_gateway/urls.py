@@ -16,11 +16,12 @@ urlpatterns = i18n_patterns(
     path('notifications/', include('notification.urls')),
     path('employee/', include('employee.urls')),
     path('report/', include('report.urls')),
-    path('i18n/', include('django.conf.urls.i18n')),  # Added this line for handling language setting
+    path('i18n/', include('django.conf.urls.i18n')),  
 )
 
 urlpatterns += [
     path('set_language/', set_language, name='set_language'),  # Added this line for setting language
+    
 ]
 
 if settings.DEBUG:

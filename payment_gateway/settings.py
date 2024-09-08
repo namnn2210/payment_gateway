@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'partner',
     'employee',
     'report',
+    'two_factor_auth',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +68,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -197,3 +199,7 @@ CELERY_TIMEZONE = 'Asia/Bangkok'
 CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True 
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
+
+TWO_FACTOR_PATCH_ADMIN = True
+LOGIN_URL = 'two_factor:login'
+LOGIN_REDIRECT_URL = 'index'
