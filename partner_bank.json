@@ -1,0 +1,220 @@
+{
+    "banks": [
+        {
+            "code": "TCB",
+            "bankname": "Techcombank"
+        },
+        {
+            "code": "TCB",
+            "bankname": "Techcom Bank"
+        },
+        {
+            "code": "STB",
+            "bankname": "Sacombank"
+        },
+        {
+            "code": "VCB",
+            "bankname": "Vietcombank"
+        },
+        {
+            "code": "VCB",
+            "bankname": "Vietcom Bank"
+        },
+        {
+            "code": "ACB",
+            "bankname": "Asia Commercial Bank"
+        },
+        {
+            "code": "ACB",
+            "bankname": "ACB - Asia Commercial Bank"
+        },
+        {
+            "code": "DOB",
+            "bankname": "DongA Bank"
+        },
+        {
+            "code": "DOB",
+            "bankname": "DONG-A"
+        },
+        {
+            "code": "DOB",
+            "bankname": "DONG A"
+        },
+        {
+            "code": "DOB",
+            "bankname": "DONG A Bank"
+        },
+        {
+            "code": "ICB",
+            "bankname": "Vietin Bank"
+        },
+        {
+            "code": "ICB",
+            "bankname": "VietinBank"
+        },
+        {
+            "code": "BIDV",
+            "bankname": "Bank for Investment and Development of Vietnam"
+        },
+        {
+            "code": "BIDV",
+            "bankname": "BIDV - Bank Investment and Development of Vietnam"
+        },
+        {
+            "code": "EIB",
+            "bankname": "Eximbank Vietnam"
+        },
+        {
+            "code": "CIMB",
+            "bankname": "CIMB Niaga"
+        },
+        {
+            "code": "VPB",
+            "bankname": "Vietnam Prosperity Joint-Stock Commercial Bank"
+        },
+        {
+            "code": "VPB",
+            "bankname": "VP Bank"
+        },
+        {
+            "code": "MB",
+            "bankname": "MB bank"
+        },
+        {
+            "code": "MB",
+            "bankname": "MB Bank"
+        },
+        {
+            "code": "MB",
+            "bankname": "MBBank"
+        },
+        {
+            "code": "MB",
+            "bankname": "Military Commercial Joint Stock Bank"
+        },
+        {
+            "code": "TPB",
+            "bankname": "Tien Phong Commercial"
+        },
+        {
+            "code":"TPB",
+            "bankname":"Tien Phong Bank"
+        },
+        {
+            "code": "TPB",
+            "bankname": "TPB"
+        },
+        {
+            "code": "VBA",
+            "bankname": "AGRI BANK"
+        },
+        {
+            "code": "LPB",
+            "bankname": "Lien Viet Post Joint Stock Commercial Bank"
+        },
+        {
+            "code": "SHB",
+            "bankname": "Saigon - Hanoi Commercial Joint Stock Bank"
+        },
+        {
+            "code": "PVCB",
+            "bankname": "Vietnam Public Joint-stock Commercial Bank"
+        },
+        {
+            "code": "SGICB",
+            "bankname": "SAIGON BANK"
+        },
+        {
+            "code": "SEAB",
+            "bankname": "Southeast Asia Commercial Joint Stock Bank"
+        },
+        {
+            "code": "ABB",
+            "bankname": "An Binh Commercial Join Stock Bank"
+        },
+        {
+            "code": "BAB",
+            "bankname": "Bac A Bank"
+        },
+        {
+            "code": "VCCB",
+            "bankname": "Viet Capital Bank"
+        },
+        {
+            "code": "MSB",
+            "bankname": "Vietnam Maritime Commercial Joint Stock Bank"
+        },
+        {
+            "code": "MSB",
+            "bankname": "Maritime Bank"
+        },
+        {
+            "code": "KLB",
+            "bankname": "Kien Long Commercial Joint Stock Bank"
+        },
+        {
+            "code": "NAB",
+            "bankname": "Nam A Commercial Joint Stock Bank"
+        },
+        {
+            "code": "NCB",
+            "bankname": "National Citizen Commercial Joint Stock Bank"
+        },
+        {
+            "code": "HDB",
+            "bankname": "HD Bank"
+        },
+        {
+            "code": "OCB",
+            "bankname": "Orient Commercial Joint Stock Bank"
+        },
+        {
+            "code": "VIB",
+            "bankname": "Vietnam International Commercial Joint Stock Bank"
+        },
+        {
+            "code": "VIB",
+            "bankname": "Vietnam International Bank"
+        },
+        {
+            "code": "SCB",
+            "bankname": "Sai Gon Joint Stock Commercial Bank"
+        },
+        {
+            "code": "SGICB",
+            "bankname": "Saigon Bank for Industry and Trade"
+        },
+        {
+            "code": "VAB",
+            "bankname": "VietABank"
+        },
+        {
+            "code": "BVB",
+            "bankname": "BAOVIET Bank"
+        },
+        {
+            "code": "VIETBANK",
+            "bankname": "Vietnam Thuong Tin Commercial Joint Stock Bank"
+        },
+        {
+            "code": "PGB",
+            "bankname": "Petrolimex Group Commercial Joint Stock Bank"
+        },
+        {
+            "code": "PGB",
+            "bankname": "PGBank"
+        },
+        {
+            "code": "Oceanbank",
+            "bankname": "Ocean Bank"
+        },
+        {
+            "code": "GPB",
+            "bankname": "GP Bank"
+        },
+        {
+            "code": "SHBVN",
+            "bankname": "Shinhan bank"
+        }
+    ]
+}

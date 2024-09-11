@@ -71,6 +71,7 @@ MIDDLEWARE = [
     'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cms.middleware.TwoFactorAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'payment_gateway.urls'

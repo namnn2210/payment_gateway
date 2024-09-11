@@ -15,7 +15,9 @@ import pyotp
 import qrcode
 import base64
 from PIL import Image
+from django.utils import timezone
 
+TWO_FA_EXPIRATION_TIME = 21600 
 
 # Create your views here.
 @login_required(login_url='user_login')
@@ -106,6 +108,9 @@ def verify_otp(request):
         totp = pyotp.TOTP(user_2fa.otp_secret)
 
         if totp.verify(otp_code):
+            request.session['is_2fa_verified'] = True
+            request.session['2fa_verified_at'] = timezone.now().timestamp()
+            request.session.set_expiry(0)
             user_2fa.is_2fa_enabled = True
             user_2fa.save()
             return redirect('profile')
