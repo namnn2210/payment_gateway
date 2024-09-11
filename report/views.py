@@ -157,6 +157,8 @@ def report_payout_by_user(request):
             # Employee Deposit
             deposit = EmployeeDeposit.objects.filter(user=user, status=True).filter(time_range_query)
             total_amount_deposit = deposit.aggregate(total_money=Sum('amount'))['total_money']
+            
+            # 
 
         
 
