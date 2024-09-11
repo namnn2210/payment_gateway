@@ -131,7 +131,6 @@ def report(request):
 def report_payout_by_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
-        print(username)
         user = User.objects.filter(username=username).first()
         report_data = []
         working_sessions = EmployeeWorkingSession.objects.filter(user=user)

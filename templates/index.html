@@ -35,7 +35,7 @@
             </div>
         </div>
         {% if not user.is_superuser%}
-        <div class="col-md-6 col-sm-6 same-height">
+        <div class="col-md-6 col-sm-12 same-height">
             <div class="card info-card revenue-card">
                 <div class="card-body text-center mt-4 align-items-center">
                     <button type="button" class="btn btn-primary create-deposit-btn" data-bs-toggle="modal"
@@ -663,7 +663,6 @@
 
     $(document).on('click', '.done-btn-modal', function () {
         const itemId = $(this).data('item-id');
-        console.log('+++++++', itemId)
         handleAction("{% url 'update_deposit' %}", itemId, 'The request has been marked as done.', 'An error occurred while marking the request as done.');
     });
 
