@@ -54,9 +54,9 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            user_2fa = User2Fa.objects.filter(user=request.user).first()
-            if user_2fa.is_2fa_enabled:
-                return render(request, '2fa.html')
+            # user_2fa = User2Fa.objects.filter(user=request.user).first()
+            # if user_2fa.is_2fa_enabled:
+            #     return render(request, '2fa.html')
             return redirect('index') 
         else:
             return render(request=request, template_name='login.html', context={'error': 'Invalid username or password. Contact admin for support'})

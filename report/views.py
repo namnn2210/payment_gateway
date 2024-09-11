@@ -70,72 +70,21 @@ def report(request):
 
     # User info      
     list_users = User.objects.filter(is_superuser=False)
-    # timelines = Timeline.objects.filter(status=True)
-    current_time = datetime.now(timezone).time()
-    current_timeline_name = None
-
-    # Checking current online users
-    timelines = [
-        {'name': 'Sáng', 'start_at': time(6, 0), 'end_at': time(14, 0)},
-        {'name': 'Chiều', 'start_at': time(14, 0), 'end_at': time(22, 0)},
-        {'name': 'Tối', 'start_at': time(22, 0), 'end_at': time(23, 59, 59)},
-        {'name': 'Đêm', 'start_at': time(0, 0), 'end_at': time(6, 0)}
-    ]
-
-    for timeline in timelines:
-        start_at = timeline['start_at']
-        end_at = timeline['end_at']
-
-        if start_at <= end_at:
-            if start_at <= current_time <= end_at:
-                current_timeline_name = timeline['name']
-                break
-        else:
-            if current_time >= start_at or current_time <= end_at:
-                current_timeline_name = timeline['name']
-                break
-
-    current_user_timelines = []
-    if current_timeline_name:
-        # Get the active timelines from the database
-        if current_timeline_name == 'Tối' or current_timeline_name == 'Đêm':
-            current_timeline_name = 'Đêm'
-        active_timeline = Timeline.objects.filter(status=True, name=current_timeline_name).first()
-
-        current_user_timelines = list(UserTimeline.objects.filter(timeline=active_timeline, status=True))
 
     user_info_dict = {}
     for user in list_users:
-        timeline_info = {}
         current_payout_info = {}
+        online = False
         bank_accounts = []
         user_bank_accounts = BankAccount.objects.filter(user=user, status=True)
 
-        # Timeline 
-        for user_timeline in current_user_timelines:
-            if user == user_timeline.user:
+        user_working_session = EmployeeWorkingSession.objects.filter(user=user).order_by('-created_at').first()
+        if user_working_session:
+            user_start_time = user_working_session.start_time
+            user_end_time = user_working_session.end_time
+
+            if not user_end_time:
                 online = True
-                timeline_info = {
-                    'name': user_timeline.timeline.name,
-                    'start_at': user_timeline.timeline.start_at,
-                    'end_at': user_timeline.timeline.end_at
-                }
-                break
-            else:
-                timeline_info = {}
-                online = False
-
-        user_timeline = UserTimeline.objects.filter(user=user, status=True).first()
-        if user_timeline:
-            user_start_time = user_timeline.timeline.start_at
-            user_end_time = user_timeline.timeline.end_at
-
-            if not timeline_info:
-                timeline_info = {
-                    'name': user_timeline.timeline.name,
-                    'start_at': user_start_time,
-                    'end_at': user_end_time
-                }
 
             # Current payout data in timeline
             now = datetime.now(timezone)

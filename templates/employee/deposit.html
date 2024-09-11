@@ -217,16 +217,13 @@
         const accountno = $(this).data('accountno');
         const amount = $(this).data('amount');
         const accountname = $(this).data('accountname');
-        console.log('========', itemId)
-        {#const qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${amount}/${accountname}/print.jpg`;#}
-        const qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${amount}&addInfo=Z${accountname}&accountName=${accountname}`;
+        const qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${amount}&addInfo=D${accountname}&accountName=${accountname}`;
         document.getElementById('modalQrImage').setAttribute('src', qrUrl);
         document.querySelector('.done-btn-modal').dataset.itemId = itemId;
     });
 
     $(document).on('click', '.done-btn-modal', function () {
         const itemId = $(this).data('item-id');
-        console.log('+++++++', itemId)
         handleAction("{% url 'update_deposit' %}", itemId, 'The request has been marked as done.', 'An error occurred while marking the request as done.');
     });
 

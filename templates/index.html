@@ -656,7 +656,7 @@
         const accountno = $(this).data('accountno');
         const amount = $(this).data('amount');
         const accountname = $(this).data('accountname');
-        const qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${amount}&addInfo=Z${accountname}&accountName=${accountname}`;
+        const qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${amount}&addInfo=D${accountname}&accountName=${accountname}`;
         document.getElementById('modalQrImage').setAttribute('src', qrUrl);
         document.querySelector('.done-btn-modal').dataset.itemId = itemId;
     });

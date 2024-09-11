@@ -223,9 +223,9 @@ def get_transaction(bank):
                         transaction_type = '-'
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-
+                        transaction_number = row['transaction_number']
                     
-                        update_out_transaction_history_status(bank.account_number, row['amount'])
+                        update_out_transaction_history_status(transaction_number, bank.account_number, row['amount'])
 
                         alert = (
                             f'PAYOUT DONE\n'
