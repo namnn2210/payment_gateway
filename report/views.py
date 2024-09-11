@@ -78,7 +78,7 @@ def report(request):
         bank_accounts = []
         user_bank_accounts = BankAccount.objects.filter(user=user, status=True)
 
-        user_working_session = EmployeeWorkingSession.objects.filter(user=user).order_by('-created_at').first()
+        user_working_session = EmployeeWorkingSession.objects.filter(user=user).order_by('-start_time').first()
         if user_working_session:
             user_start_time = user_working_session.start_time
             user_end_time = user_working_session.end_time
