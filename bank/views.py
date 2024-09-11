@@ -319,7 +319,7 @@ def update_out_transaction_history_status(transaction_number, account_number, am
     redis_client = redis_connect(1)
     transactions = json.loads(redis_client.get(account_number))
     for transaction in transactions:
-        if transaction['transaction_number'] == transaction_number and 'Z' in transaction['description']:
+        if transaction['transaction_number'] == transaction_number:
             transaction['status'] = 'Success'
             break
 
