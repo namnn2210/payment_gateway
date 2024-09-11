@@ -85,19 +85,9 @@ def report(request):
 
             if not user_end_time:
                 online = True
+                user_end_time = datetime.now(timezone)
 
-            # Current payout data in timeline
-            now = datetime.now(timezone)
-            current_day = now.date()
-
-            if user_start_time < user_end_time:
-                start_datetime = datetime.combine(current_day, user_start_time).replace(tzinfo=timezone)
-                end_datetime = datetime.combine(current_day, user_end_time).replace(tzinfo=timezone)
-            else:  # Over midnight scenario
-                start_datetime = datetime.combine(current_day - timedelta(days=1), user_start_time).replace(
-                    tzinfo=timezone)
-                end_datetime = datetime.combine(current_day, user_end_time).replace(tzinfo=timezone)
-            time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
+            time_range_query = Q(created_at__gte=user_start_time) & Q(created_at__lt=user_end_time)
             payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
 
             current_payout_info['current_total_amount_payout'] = payouts.aggregate(total_money=Sum('money'))[
