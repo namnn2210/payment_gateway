@@ -209,15 +209,23 @@ def update_transaction_history(request):
         if bank_redis:
             json_data = json.loads(bank_redis)
             df = pd.DataFrame(json_data)
-            if bank_account.bank_type == 'IN':
-                if not df.empty:
-                    in_transaction_df = df[df['transaction_type'] == 'IN']
-                    if not in_transaction_df.empty:
-                        list_df_in.append(in_transaction_df)
+            if request.user.is_superuser:
+                if bank_account.bank_type == 'IN':
+                    if not df.empty:
+                        in_transaction_df = df[df['transaction_type'] == 'IN']
+                        if not in_transaction_df.empty:
+                            list_df_in.append(in_transaction_df)
+                else:
+                    if not df.empty:
+                        out_transaction_df = df[df['transaction_type'] == 'OUT']
+                        if not out_transaction_df.empty:
+                            list_df_out.append(out_transaction_df)
             else:
                 if not df.empty:
+                    in_transaction_df = df[df['transaction_type'] == 'IN']
                     out_transaction_df = df[df['transaction_type'] == 'OUT']
-                    if not out_transaction_df.empty:
+                    if not in_transaction_df.empty:
+                        list_df_in.append(in_transaction_df)
                         list_df_out.append(out_transaction_df)
 
     if len(list_df_in) > 0:
@@ -315,10 +323,11 @@ def update_transaction_history_status(account_number, transfer_code, status):
 
     redis_client.set(account_number, json.dumps(transactions))
 
-def update_out_transaction_history_status(transaction_number, account_number, amount):
+def update_out_transaction_history_status(transaction_number, account_number):
     redis_client = redis_connect(1)
     transactions = json.loads(redis_client.get(account_number))
     for transaction in transactions:
+        print(transaction)
         if transaction['transaction_number'] == transaction_number:
             transaction['status'] = 'Success'
             break
