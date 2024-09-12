@@ -186,7 +186,7 @@ def report_payout_by_user(request):
                 
                 print(filtered_df)
             
-            calculate_total = session.start_balance + total_amount_deposit - total_amount_payout - total_amount_settle
+            calculate_total = session.start_balance + int(total_amount_deposit) - int(total_amount_payout) - int(total_amount_settle)
             
             report_data.append({
                 'start_datetime': str(start_time),  # Already in datetime64[ns]
