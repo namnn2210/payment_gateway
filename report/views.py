@@ -186,6 +186,8 @@ def report_payout_by_user(request):
                 
                 print(filtered_df)
             
+            calculate_total = session.start_balance + total_amount_deposit - total_amount_payout - total_amount_settle
+            
             report_data.append({
                 'start_datetime': str(start_time),  # Already in datetime64[ns]
                 'end_datetime': str(end_time),      # Already in datetime64[ns]
@@ -197,6 +199,8 @@ def report_payout_by_user(request):
                 'total_count_settle': int(total_count_settle or 0),
                 'total_count_valid_payout': int(total_valid_transactions or 0),
                 'total_amount_valid_payout': float(total_amount or 0),
+                'end_balance': session.end_balance or 0,
+                'calculate_total':calculate_total or 0
             })
 
         return JsonResponse({'status': 200, 'message': 'Done', 'data': {'report_data': report_data}})

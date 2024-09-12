@@ -29,6 +29,7 @@
                                         <th>{% trans 'Total Settles'%}</th>
                                         <th>{% trans 'Total Valid Payout Amount'%}</th>
                                         <th>{% trans 'Total Valid Payout'%}</th>
+                                        <th>{% trans 'End Balance'%}</th>
                                         <th>{% trans 'Estimate Total End Timeline Amount'%}</th>
                                     </tr>
                                 </thead>
@@ -85,7 +86,8 @@
                         row += '<td>' + item.total_count_settle + '</td>';
                         row += '<td>' + item.total_amount_valid_payout.toLocaleString() + '</td>';
                         row += '<td>' + item.total_count_valid_payout + '</td>';
-                        // row += '<td>' + item.estimate_end_timeline_amount.toLocaleString() + '</td>';
+                        row += '<td>' + item.end_balance.toLocaleString() + '</td>';
+                        row += '<td>' + item.calculate_total.toLocaleString() + '</td>';
                         row += '</tr>';
                         tbody.append(row);
                     });
