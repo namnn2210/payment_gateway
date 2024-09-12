@@ -776,9 +776,11 @@
                 url: '{% url "employee_session" "end" %}',  // Ensure this URL name matches your urls.py
                 contentType: 'application/json',
                 success: function (response) {
+                    console.log(response)
                     if (response.status === 200) {
                         button.removeClass('btn-danger').addClass('btn-success');
                         button.text('{% trans "Start Session" %}');
+                        
                     } else {
                         showAlert('Failed to update session.', 'danger', $('#modalAlertContainer'));
                     }
