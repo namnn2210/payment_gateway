@@ -75,6 +75,7 @@ def delete_deposit(request):
 @require_POST
 def employee_session(request, session_type):
     try:
+        print(session_type)
         undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
         bank_accounts = BankAccount.objects.filter(user=request.user)
         if session_type == 'start':
@@ -102,4 +103,5 @@ def employee_session(request, session_type):
             return JsonResponse({'status': 504, 'message': 'Trạng thái không hợp lệ','success': False})
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
+        print(ex)
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
