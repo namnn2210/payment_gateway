@@ -247,7 +247,8 @@ def get_transaction(bank):
             # print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
 
 def get_balance_by_bank(bank):
-    bank_balance = None
+    bank_balance = 0
+    error_count = 0
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username, bank.password)
     # Get balance
     if bank.bank_name.name == 'MB':
@@ -257,8 +258,8 @@ def get_balance_by_bank(bank):
     elif bank.bank_name.name == 'Vietinbank':
         bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
     else:
-        bank_balance = None
-    while bank_balance is None:
+        bank_balance = 0
+    while bank_balance == 0:
         print('Error fetching bank balance, try to login')
         error_count += 1
         print('Retry logging in: ', error_count)
@@ -269,7 +270,7 @@ def get_balance_by_bank(bank):
                 f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
             )
             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-            return
+            return 0 
             
         if bank.bank_name.name == 'MB':
             bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
@@ -286,6 +287,6 @@ def get_balance_by_bank(bank):
             elif bank.bank_name.name == 'Vietinbank':
                 bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
             else:
-                bank_balance = None
+                bank_balance = 0
                 
     return bank_balance
