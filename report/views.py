@@ -178,13 +178,12 @@ def report_payout_by_user(request):
                 filtered_df = transactions_df[
                     (transactions_df['transaction_date'] >= start_time) &
                     (transactions_df['transaction_date'] <= end_time) &
-                    (transactions_df['transaction_type'] == 'OUT')
+                    (transactions_df['transaction_type'] == 'OUT') &
+                    (transactions_df['status'] == 'Success')
                 ]
                 
                 total_valid_transactions += len(filtered_df)
                 total_amount += filtered_df['amount'].sum()
-                
-                print(filtered_df)
             
             if not total_amount_deposit:
                 total_amount_deposit = 0
