@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, Sum, Count, Min
 from datetime import datetime, timedelta, time
+from bank.views import get_transactions_by_key
 from django.http import JsonResponse
 from employee.models import EmployeeWorkingSession
 import pandas as pd
@@ -136,11 +137,16 @@ def report_payout_by_user(request):
         working_sessions = EmployeeWorkingSession.objects.filter(user=user)
 
         for session in working_sessions:
-            start_time = session.start_time
-            end_time = session.end_time
+            # Convert start_time_str and end_time_str to pd.Timestamp
+            start_time_str = session.start_time
+            end_time_str = session.end_time
 
-            if not end_time:
-                end_time = datetime.now()
+            if not end_time_str:
+                end_time_str = datetime.now()
+
+            # Convert start_time_str and end_time_str to datetime64[ns] and remove timezone
+            start_time = pd.to_datetime(start_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
+            end_time = pd.to_datetime(end_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
 
             time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
 
@@ -158,23 +164,40 @@ def report_payout_by_user(request):
             deposit = EmployeeDeposit.objects.filter(user=user, status=True).filter(time_range_query)
             total_amount_deposit = deposit.aggregate(total_money=Sum('amount'))['total_money']
             
-            # 
+            # Valid bank transaction
+            bank_accounts = BankAccount.objects.filter(user=session.user)
+            total_valid_transactions = 0
+            total_amount = 0
+            for accounts in bank_accounts:
+                transactions_df = get_transactions_by_key(account_number=accounts.account_number)
 
-        
+                # Convert 'transaction_date' to datetime64[ns] and ensure no timezone
+                transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], format="%d/%m/%Y %H:%M:%S").dt.tz_localize(None)
 
+                # Filter the DataFrame between start_time and end_time
+                filtered_df = transactions_df[
+                    (transactions_df['transaction_date'] >= start_time) &
+                    (transactions_df['transaction_date'] <= end_time) &
+                    (transactions_df['transaction_type'] == 'OUT')
+                ]
+                
+                total_valid_transactions += len(filtered_df)
+                total_amount += filtered_df['amount'].sum()
+                
+                print(filtered_df)
+            
             report_data.append({
-                'start_datetime': start_time,
-                'end_datetime': end_time,
+                'start_datetime': str(start_time),  # Already in datetime64[ns]
+                'end_datetime': str(end_time),      # Already in datetime64[ns]
                 'start_balance': session.start_balance or 0,
                 'deposit': total_amount_deposit or 0,
-                'total_amount_payout': total_amount_payout or 0,
-                'total_count_payout': total_count_payout or 0,
-                'total_amount_settle': total_amount_settle or 0,
-                'total_count_settle': total_count_settle or 0,
-                # 'total_amount_valid_payout': int(total_amount_valid_payout),
-                # 'total_count_valid_payout': int(total_count_valid_payout),
-                # 'estimate_end_timeline_amount': estimate_end_timeline_amount
+                'total_amount_payout': float(total_amount_payout or 0),
+                'total_count_payout': int(total_count_payout or 0),
+                'total_amount_settle': float(total_amount_settle or 0),
+                'total_count_settle': int(total_count_settle or 0),
+                'total_count_valid_payout': int(total_valid_transactions or 0),
+                'total_amount_valid_payout': float(total_amount or 0),
             })
 
+        return JsonResponse({'status': 200, 'message': 'Done', 'data': {'report_data': report_data}})
 
-        return JsonResponse({'status': 200, 'message': 'Done','data': {'report_data':report_data}})
