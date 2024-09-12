@@ -259,7 +259,7 @@ def get_balance_by_bank(bank):
         bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
     else:
         bank_balance = 0
-    while bank_balance == 0:
+    while bank_balance is None:
         print('Error fetching bank balance, try to login')
         error_count += 1
         print('Retry logging in: ', error_count)
