@@ -122,8 +122,8 @@ def get_transaction(bank):
         # Detect new transactions
         new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(subset='transaction_number', keep=False)
         # Add new transactions to current history
+        new_transaction_df.loc[(new_transaction_df['description'].str.contains('Z')) & (new_transaction_df['transaction_type'] == 'OUT'), 'status'] = 'Success'
         updated_df = pd.concat([old_bank_history_df, new_transaction_df])
-        updated_df.loc[(updated_df['description'].str.contains('Z')) & (updated_df['transaction_type'] == 'OUT'), 'status'] = 'Success'
         # Update Redis
         redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
         if not new_transaction_df.empty:    
@@ -226,7 +226,7 @@ def get_transaction(bank):
                         formatted_amount = '{:,.2f}'.format(row['amount'])
                         transaction_number = row['transaction_number']
                     
-                        update_out_transaction_history_status(transaction_number, bank.account_number, row['amount'])
+                        
 
                         alert = (
                             f'PAYOUT DONE\n'
