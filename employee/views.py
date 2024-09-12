@@ -82,6 +82,7 @@ def employee_session(request, session_type):
                 return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
             start_balance = 0
             for bank_account in bank_accounts:
+                print(bank_account)
                 start_balance += get_balance_by_bank(bank=bank_account)
             EmployeeWorkingSession.objects.create(
                 user=request.user,
