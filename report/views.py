@@ -94,10 +94,10 @@ def report(request):
             time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
             payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
             
-            bank_accounts = BankAccount.objects.filter(user=user)
+            
             total_valid_transactions = 0
-            total_amount = 0
-            for accounts in bank_accounts:
+            
+            for accounts in user_bank_accounts:
                 transactions_df = get_transactions_by_key(account_number=accounts.account_number)
 
                 # Convert 'transaction_date' to datetime64[ns] and ensure no timezone
