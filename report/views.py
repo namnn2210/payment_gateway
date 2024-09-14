@@ -89,7 +89,7 @@ def report(request):
                 user_end_time = datetime.now(timezone)
 
             time_range_query = Q(created_at__gte=user_start_time) & Q(created_at__lt=user_end_time)
-            payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
+            payouts = Payout.objects.filter(user=user, status=True)
 
             current_payout_info['current_total_amount_payout'] = payouts.aggregate(total_money=Sum('money'))[
                                                                      'total_money'] or 0
