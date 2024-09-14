@@ -114,8 +114,7 @@ def report(request):
                 total_valid_transactions += len(filtered_df)
                 # total_amount += filtered_df['amount'].sum()
 
-            current_payout_info['current_total_done_payout'] = payouts.aggregate(total_money=Sum('money'))[
-                                                                     'total_money'] or 0
+            current_payout_info['current_total_done_payout'] = len(payouts) or 0
             current_payout_info['current_total_valid_transaction'] = total_valid_transactions or 0
 
         # Bank accounts data
