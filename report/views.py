@@ -87,14 +87,36 @@ def report(request):
             if not user_end_time:
                 online = True
                 user_end_time = datetime.now(timezone)
+                
+            start_time = pd.to_datetime(user_start_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
+            end_time = pd.to_datetime(user_end_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
 
-            time_range_query = Q(created_at__gte=user_start_time) & Q(created_at__lt=user_end_time)
-            payouts = Payout.objects.filter(user=user, status=True)
+            time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
+            payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
+            
+            bank_accounts = BankAccount.objects.filter(user=user)
+            total_valid_transactions = 0
+            total_amount = 0
+            for accounts in bank_accounts:
+                transactions_df = get_transactions_by_key(account_number=accounts.account_number)
 
-            current_payout_info['current_total_amount_payout'] = payouts.aggregate(total_money=Sum('money'))[
+                # Convert 'transaction_date' to datetime64[ns] and ensure no timezone
+                transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], format="%d/%m/%Y %H:%M:%S").dt.tz_localize(None)
+
+                # Filter the DataFrame between start_time and end_time
+                filtered_df = transactions_df[
+                    (transactions_df['transaction_date'] >= start_time) &
+                    (transactions_df['transaction_date'] <= end_time) &
+                    (transactions_df['transaction_type'] == 'OUT') &
+                    (transactions_df['status'] == 'Success')
+                ]
+                
+                total_valid_transactions += len(filtered_df)
+                # total_amount += filtered_df['amount'].sum()
+
+            current_payout_info['current_total_done_payout'] = payouts.aggregate(total_money=Sum('money'))[
                                                                      'total_money'] or 0
-            current_payout_info['curent_total_count_payout'] = payouts.aggregate(payout_count=Count('id'))[
-                                                                   'payout_count'] or 0
+            current_payout_info['current_total_valid_transaction'] = total_valid_transactions or 0
 
         # Bank accounts data
         for bank_account in user_bank_accounts:

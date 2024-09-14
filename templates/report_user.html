@@ -52,8 +52,8 @@
                         <td class="text-center">
                             {% if data.payout %}
                             <a href="#" data-toggle="modal" data-target="#payoutModal" data-username="{{ username }}">
-                                <p>{% trans 'Total Amount' %}: {{data.payout.current_total_amount_payout|floatformat:2|intcomma}}</p>
-                                <i>{% trans 'Total Count' %}: {{data.payout.curent_total_count_payout}}</i>
+                                <p>{% trans 'Current Total Payout' %}: {{data.payout.current_total_amount_payout}}</p>
+                                <i>{% trans 'Current Total Valid Transactions' %}: {{data.payout.current_total_valid_transaction}}</i>
                             </a>
                             {% endif %}
                         </td>
