@@ -71,6 +71,11 @@ def delete_deposit(request):
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
     
+def calculate_total_balance(bank_accounts):
+    total_balance = 0
+    for bank_account in bank_accounts:
+        total_balance += get_balance_by_bank(bank=bank_account)
+    return total_balance
 
 @csrf_exempt
 @require_POST
@@ -82,23 +87,18 @@ def employee_session(request, session_type):
         if session_type == 'start':
             if undone_session:
                 return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
-            start_balance = 0
-            for bank_account in bank_accounts:
-                print(bank_account)
-                print(datetime.now())
-                start_balance += get_balance_by_bank(bank=bank_account)
+            start_balance = calculate_total_balance(bank_accounts)
                 
             EmployeeWorkingSession.objects.create(
                 user=request.user,
-                start_time=datetime.now(),
+                start_time=timezone.now(),
                 start_balance = start_balance
             )
         elif session_type == 'end':
             if undone_session:
-                end_balance = 0
-                for bank_account in bank_accounts:
-                    end_balance += get_balance_by_bank(bank=bank_account)
-                undone_session.end_time = datetime.now()
+                end_balance = calculate_total_balance(bank_accounts)
+            
+                undone_session.end_time = timezone.now()
                 undone_session.end_balance = end_balance
                 undone_session.status = True
                 undone_session.save()
