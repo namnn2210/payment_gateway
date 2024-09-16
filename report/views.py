@@ -88,8 +88,8 @@ def report(request):
                 online = True
                 user_end_time = datetime.now(timezone)
                 
-            start_time = pd.to_datetime(user_start_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
-            end_time = pd.to_datetime(user_end_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
+            start_time = pd.to_datetime(user_start_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(timezone)
+            end_time = pd.to_datetime(user_end_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(timezone)
 
             time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
             payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
@@ -101,7 +101,7 @@ def report(request):
                 transactions_df = get_transactions_by_key(account_number=accounts.account_number)
 
                 # Convert 'transaction_date' to datetime64[ns] and ensure no timezone
-                transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], format="%d/%m/%Y %H:%M:%S").dt.tz_localize(None)
+                transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], format="%d/%m/%Y %H:%M:%S").dt.tz_localize(timezone)
 
                 # Filter the DataFrame between start_time and end_time
                 filtered_df = transactions_df[
@@ -166,8 +166,8 @@ def report_payout_by_user(request):
                 end_time_str = datetime.now()
 
             # Convert start_time_str and end_time_str to datetime64[ns] and remove timezone
-            start_time = pd.to_datetime(start_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
-            end_time = pd.to_datetime(end_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
+            start_time = pd.to_datetime(start_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(timezone)
+            end_time = pd.to_datetime(end_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(timezone)
 
             time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
 
@@ -193,7 +193,7 @@ def report_payout_by_user(request):
                 transactions_df = get_transactions_by_key(account_number=accounts.account_number)
 
                 # Convert 'transaction_date' to datetime64[ns] and ensure no timezone
-                transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], format="%d/%m/%Y %H:%M:%S").dt.tz_localize(None)
+                transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], format="%d/%m/%Y %H:%M:%S").dt.tz_localize(timezone)
 
                 # Filter the DataFrame between start_time and end_time
                 filtered_df = transactions_df[
