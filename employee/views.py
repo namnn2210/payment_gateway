@@ -11,7 +11,7 @@ from datetime import datetime
 import pytz
 import json
 
-tz = pytz.timezone('Asia/Ho_Chi_Minh')
+tz = pytz.timezone('Asia/Bangkok')
 
 # Create your views here.
 def employee_deposit(request):
