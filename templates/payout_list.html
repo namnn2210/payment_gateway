@@ -99,6 +99,9 @@
                                                         {% endif %}
                                                     {% endif %}
                                                 {% endif %}
+                                                {% if not item.status or item.is_report %}
+                                                <button class="btn btn-sm btn-danger edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" data-item-id="{{ item.id }}">{% trans "Edit" %}</button>
+                                                {% endif %}
                                             </p>
                                         </div>
                                     </div>

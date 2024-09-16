@@ -21,6 +21,7 @@ from django.db.models.functions import TruncDate
 from .tasks import update_payout_background
 from django.utils.dateparse import parse_date
 from employee.models import EmployeeWorkingSession
+
 import pytz
 import os
 import json
@@ -224,6 +225,33 @@ def delete_payout(request):
         payout_id = data.get('id')
         payout = get_object_or_404(Payout, id=payout_id)
         payout.delete()
+        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    except Exception as ex:
+        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+    
+@csrf_exempt
+@require_POST
+def edit_payout(request):
+    try:
+        data = json.loads(request.body)
+        payout_id = data.get('id')
+        bank_code = data.get('bankCode')
+        payout = get_object_or_404(Payout, id=payout_id)
+        system_bankcode = BANK_CODE_MAPPING.get(bank_code,'')
+        partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
+        if not system_bankcode:
+            for bank in partner_bank_data:
+                if bank['bankname'] == bank_code:
+                    system_bankcode = bank['code']
+                    partner_bankcode = bank['code']
+            if not system_bankcode and not partner_bankcode:
+                partner_bankcode = bank_code
+                system_bankcode = bank_code
+        else:
+            partner_bankcode = bank_code
+        payout.bankcode = bank_code
+        payout.partner_bankcode = partner_bankcode
+        payout.save()
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
