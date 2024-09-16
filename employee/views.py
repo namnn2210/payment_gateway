@@ -11,6 +11,7 @@ from datetime import datetime
 import pytz
 import json
 
+
 tz = pytz.timezone('Asia/Bangkok')
 
 # Create your views here.
@@ -87,7 +88,7 @@ def employee_session(request, session_type):
                 start_balance += get_balance_by_bank(bank=bank_account)
             EmployeeWorkingSession.objects.create(
                 user=request.user,
-                start_time=datetime.now(tz=tz),
+                start_time=tz.localize(datetime.now()),
                 start_balance = start_balance
             )
         elif session_type == 'end':
@@ -95,7 +96,7 @@ def employee_session(request, session_type):
                 end_balance = 0
                 for bank_account in bank_accounts:
                     end_balance += get_balance_by_bank(bank=bank_account)
-                undone_session.end_time = datetime.now(tz=tz)
+                undone_session.end_time = tz.localize(datetime.now())
                 undone_session.end_balance = end_balance
                 undone_session.status = True
                 undone_session.save()
