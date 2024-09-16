@@ -91,7 +91,6 @@ def employee_session(request, session_type):
                 
             EmployeeWorkingSession.objects.create(
                 user=request.user,
-                start_time=datetime.now(pytz.timezone('Asia/Bangkok')),
                 start_balance = start_balance
             )
         elif session_type == 'end':
