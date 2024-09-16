@@ -24,7 +24,7 @@ class EmployeeDeposit(models.Model):
 
 class EmployeeWorkingSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False)
-    start_time = models.DateTimeField(default=timezone.now(), null=False)
+    start_time = models.DateTimeField(default=timezone.now().strftime('%Y-%m-%d %H:%M:S'), null=False)
     start_balance = models.BigIntegerField(default=0)
     end_time = models.DateTimeField(null=True)
     end_balance = models.BigIntegerField(default=0)
