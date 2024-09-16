@@ -16,12 +16,14 @@ import qrcode
 import base64
 from PIL import Image
 from django.utils import timezone
+from datetime import datetime
 
 TWO_FA_EXPIRATION_TIME = 21600 
 
 # Create your views here.
 @login_required(login_url='user_login')
 def index(request):
+    print('===========', datetime.now())
     user_2fa = User2Fa.objects.filter(user=request.user).first()
     # if user_2fa.is_2fa_enabled:
     #     return render(request, '2fa.html')
