@@ -79,7 +79,7 @@ def employee_session(request, session_type):
         print(session_type)
         undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
         bank_accounts = BankAccount.objects.filter(user=request.user)
-        now = timezone.now().st
+        
         if session_type == 'start':
             if undone_session:
                 return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
