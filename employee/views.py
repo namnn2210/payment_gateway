@@ -91,7 +91,7 @@ def employee_session(request, session_type):
             print("=====", localtime)
             EmployeeWorkingSession.objects.create(
                 user=request.user,
-                start_time=timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+                start_time=localtime,
                 start_balance = start_balance
             )
         elif session_type == 'end':
@@ -99,7 +99,7 @@ def employee_session(request, session_type):
                 end_balance = 0
                 for bank_account in bank_accounts:
                     end_balance += get_balance_by_bank(bank=bank_account)
-                undone_session.end_time = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+                undone_session.end_time = localtime
                 undone_session.end_balance = end_balance
                 undone_session.status = True
                 undone_session.save()
