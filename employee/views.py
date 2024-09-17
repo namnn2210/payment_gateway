@@ -91,14 +91,14 @@ def employee_session(request, session_type):
                 
             EmployeeWorkingSession.objects.create(
                 user=request.user,
-                start_time=timezone.localtime(timezone.now()),
+                start_time=timezone.now(),
                 start_balance = start_balance
             )
         elif session_type == 'end':
             if undone_session:
                 end_balance = calculate_total_balance(bank_accounts)
             
-                undone_session.end_time = timezone.localtime(timezone.now()),
+                undone_session.end_time = timezone.now(),
                 undone_session.end_balance = end_balance
                 undone_session.status = True
                 undone_session.save()
