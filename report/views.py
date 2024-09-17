@@ -24,8 +24,6 @@ import pytz
 
 # Create your views here.
 
-timezone = pytz.timezone('Asia/Bangkok')
-
 
 def report(request):
     start_datetime_str = request.GET.get('start_datetime', '')
