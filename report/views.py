@@ -164,7 +164,7 @@ def report_payout_by_user(request):
             end_time_str = session.end_time
 
             if not end_time_str:
-                end_time_str = timezone.now()
+                end_time_str = timezone.now().strftime('%Y-%m-%d %H:%M:%S')
 
             # Convert start_time_str and end_time_str to datetime64[ns] and remove timezone
             start_time = pd.to_datetime(start_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
