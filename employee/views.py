@@ -99,7 +99,7 @@ def employee_session(request, session_type):
         if undone_session:
             end_balance = calculate_total_balance(bank_accounts)
         
-            undone_session.end_time = timezone.now(),
+            undone_session.end_time = timezone.now()
             undone_session.end_balance = end_balance
             undone_session.status = True
             undone_session.save()
