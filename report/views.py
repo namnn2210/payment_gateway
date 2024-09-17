@@ -93,6 +93,7 @@ def report(request):
             time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
             payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
             
+            settles = SettlePayout.objects.filter(user=user, status=True).filter(time_range_query)
             
             total_valid_transactions = 0
             
@@ -113,7 +114,7 @@ def report(request):
                 total_valid_transactions += len(filtered_df)
                 # total_amount += filtered_df['amount'].sum()
 
-            current_payout_info['current_total_done_payout'] = len(payouts) or 0
+            current_payout_info['current_total_done_payout'] = len(payouts) + len(settles) or 0
             current_payout_info['current_total_valid_transaction'] = total_valid_transactions or 0
 
         # Bank accounts data
