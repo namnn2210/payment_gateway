@@ -80,32 +80,32 @@ def calculate_total_balance(bank_accounts):
 @csrf_exempt
 @require_POST
 def employee_session(request, session_type):
-    try:
-        print(session_type)
-        undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
-        bank_accounts = BankAccount.objects.filter(user=request.user)
-        if session_type == 'start':
-            if undone_session:
-                return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
-            start_balance = calculate_total_balance(bank_accounts)
-                
-            EmployeeWorkingSession.objects.create(
-                user=request.user,
-                start_time=timezone.now(),
-                start_balance = start_balance
-            )
-        elif session_type == 'end':
-            print('end', undone_session)
-            if undone_session:
-                end_balance = calculate_total_balance(bank_accounts)
+    # try:
+    print(session_type)
+    undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
+    bank_accounts = BankAccount.objects.filter(user=request.user)
+    if session_type == 'start':
+        if undone_session:
+            return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
+        start_balance = calculate_total_balance(bank_accounts)
             
-                undone_session.end_time = timezone.now(),
-                undone_session.end_balance = end_balance
-                undone_session.status = True
-                undone_session.save()
-        else:
-            return JsonResponse({'status': 504, 'message': 'Trạng thái không hợp lệ','success': False})
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
-    except Exception as ex:
-        print(ex)
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+        EmployeeWorkingSession.objects.create(
+            user=request.user,
+            start_time=timezone.now(),
+            start_balance = start_balance
+        )
+    elif session_type == 'end':
+        print('end', undone_session)
+        if undone_session:
+            end_balance = calculate_total_balance(bank_accounts)
+        
+            undone_session.end_time = timezone.now(),
+            undone_session.end_balance = end_balance
+            undone_session.status = True
+            undone_session.save()
+    else:
+        return JsonResponse({'status': 504, 'message': 'Trạng thái không hợp lệ','success': False})
+    return JsonResponse({'status': 200, 'message': 'Done','success': True})
+    # except Exception as ex:
+    #     print(ex)
+    #     return JsonResponse({'status': 500, 'message': str(ex),'success': False})
