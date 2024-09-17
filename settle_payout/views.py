@@ -19,6 +19,7 @@ from django.db.models import Q, BooleanField, Case, Value, When, IntegerField, S
 import pytz
 import os
 import json
+from django.utils import timezone
 
 load_dotenv()
 # Create your views here.
@@ -58,7 +59,7 @@ def list_settle_payout(request):
     elif status_filter == 'Reported':
         list_payout = list_payout.filter(is_report=True)
 
-    today = datetime.now().date().strftime('%d/%m/%Y')
+    today = timezone.now().date().strftime('%d/%m/%Y')
 
     start_datetime_str = request.GET.get('start_datetime', '')
     end_datetime_str = request.GET.get('end_datetime', '')
@@ -152,7 +153,7 @@ class AddSettlePayoutView(View):
             is_auto=False,
             is_cancel=False,
             is_report=False,
-            created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+            created_at=timezone.now()
         )
         payout.save()
         send_notification('New payout added. Please check and process')

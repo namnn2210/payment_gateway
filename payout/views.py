@@ -21,6 +21,7 @@ from django.db.models.functions import TruncDate
 from .tasks import update_payout_background
 from django.utils.dateparse import parse_date
 from employee.models import EmployeeWorkingSession
+from django.utils import timezone
 
 import pytz
 import os
@@ -79,7 +80,7 @@ def list_payout(request):
         
     
 
-    today = datetime.now().date().strftime('%d/%m/%Y')
+    today = timezone.now().date().strftime('%d/%m/%Y')
 
     start_datetime_str = request.GET.get('start_datetime', '')
     end_datetime_str = request.GET.get('end_datetime', '')
@@ -184,7 +185,7 @@ class AddPayoutView(View):
             is_auto=False,
             is_cancel=False,
             is_report=False,
-            created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+            created_at=timezone.now()
         )
         payout.save()
         send_notification('New payout added. Please check and process')
@@ -384,7 +385,7 @@ def webhook(request):
                     is_auto=True,
                     is_cancel=False,
                     is_report=False,
-                    created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+                    created_at=timezone.now()
                 )
             settle_payout.save()
             send_notification('New settle payout added. Please check and process')
@@ -422,7 +423,7 @@ def webhook(request):
                     is_auto=True,
                     is_cancel=False,
                     is_report=False,
-                    created_at=datetime.now(pytz.timezone('Asia/Bangkok'))
+                    created_at=timezone.now()
                 )
             payout.save()
             send_notification('New payout added. Please check and process')
