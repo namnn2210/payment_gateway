@@ -17,6 +17,7 @@ from datetime import datetime, timedelta, time
 from bank.views import get_transactions_by_key
 from django.http import JsonResponse
 from employee.models import EmployeeWorkingSession
+from django.utils import timezone
 import pandas as pd
 import json
 import pytz
@@ -163,7 +164,7 @@ def report_payout_by_user(request):
             end_time_str = session.end_time
 
             if not end_time_str:
-                end_time_str = datetime.now()
+                end_time_str = timezone.now()
 
             # Convert start_time_str and end_time_str to datetime64[ns] and remove timezone
             start_time = pd.to_datetime(start_time_str, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)

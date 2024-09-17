@@ -19,6 +19,7 @@ import pandas as pd
 from django.db.models import Q, Sum
 from django.core.paginator import Paginator
 from dotenv import load_dotenv
+from django.utils import timezone
 
 load_dotenv()
 
@@ -41,8 +42,8 @@ def record_book(request):
     end_date = request.GET.get('end_datetime', '')
     
     # Default start and end date to today if not provided
-    # today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    # today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+    # today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    # today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
     
     # if start_date:
     #     start_date = parse_datetime(start_date)
@@ -267,7 +268,7 @@ def update_balance(request):
 
 def update_amount_by_date(transaction_type, amount):
     redis_client = redis_connect(3)
-    today_str = datetime.now().strftime('%Y-%m-%d')
+    today_str = timezone.now().strftime('%Y-%m-%d')
     
     # Initialize today's key if it doesn't exist
     if not redis_client.exists(today_str):
@@ -289,7 +290,7 @@ def update_amount_by_date(transaction_type, amount):
 def get_amount_today(request):
     if request.user.is_superuser:
         redis_client = redis_connect(3)
-        today_str = datetime.now().strftime('%Y-%m-%d')
+        today_str = timezone.now().strftime('%Y-%m-%d')
         if redis_client.exists(today_str):
             current_totals = json.loads(redis_client.get(today_str))
             return JsonResponse({'status': 200, 'message': 'Done', 'data': current_totals})
@@ -359,8 +360,8 @@ def get_transactions_by_key(account_number):
 
 
 def get_start_end_datetime(start_datetime, end_datetime):
-    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end = datetime.now().replace(hour=23, minute=59, second=59, microsecond=999999)
+    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
 
     if start_datetime:
         start_datetime = parse_datetime(start_datetime)
@@ -375,7 +376,7 @@ def get_start_end_datetime(start_datetime, end_datetime):
     return start_datetime, end_datetime
 
 def get_start_end_datetime_string(start_datetime, end_datetime):
-    today = datetime.now().date().strftime('%d/%m/%Y')
+    today = timezone.now().date().strftime('%d/%m/%Y')
 
     if start_datetime:
         start_datetime = datetime.strptime(start_datetime, '%Y-%m-%dT%H:%M')

@@ -17,6 +17,7 @@ import pytz
 from bank.database import redis_connect
 from payout.models import Payout
 from settle_payout.models import SettlePayout
+from django.utils import timezone
 import time
 
 load_dotenv()
@@ -69,7 +70,7 @@ def get_balance(bank):
             bank.balance = bank_balance
             bank.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
             bank.save()
-            print('Update for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+            print('Update for bank: %s. Updated at %s' % (bank.account_number, timezone.now().strftime('%Y-%m-%d %H:%M:%S')))
 
             # Get transactions
             if bank.bank_name.name == 'MB':
@@ -128,7 +129,7 @@ def get_transaction(bank):
         redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
         if not new_transaction_df.empty:    
             for _, row in new_transaction_df.iterrows():
-                if not datetime.strptime(row["transaction_date"], '%d/%m/%Y %H:%M:%S').date() >= datetime.now().date():
+                if not datetime.strptime(row["transaction_date"], '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
                     continue
                 if row['transaction_type'] == 'IN':
                     if bank.bank_type == 'IN':
