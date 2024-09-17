@@ -156,7 +156,7 @@ USE_I18N = True
 USE_L10N = True
 
 # Enable timezone support
-USE_TZ = True
+USE_TZ = False
 
 TIME_ZONE = 'Asia/Bangkok'
 
