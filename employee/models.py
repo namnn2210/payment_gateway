@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import datetime
 import pytz
+from timezone_field import TimeZoneField
 
 # Create your models here.
 class EmployeeDeposit(models.Model):
@@ -24,9 +25,9 @@ class EmployeeDeposit(models.Model):
 
 class EmployeeWorkingSession(models.Model):
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False)
-    start_time = models.DateTimeField(auto_now_add=True, null=False)
+    start_time = TimeZoneField(default="Asia/Bangkok")
     start_balance = models.BigIntegerField(default=0)
-    end_time = models.DateTimeField(null=True)
+    end_time = TimeZoneField(default="Asia/Bangkok")
     end_balance = models.BigIntegerField(default=0)
     status = models.BooleanField(default=False,null=True)
 
