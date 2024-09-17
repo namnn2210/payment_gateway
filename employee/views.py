@@ -95,6 +95,7 @@ def employee_session(request, session_type):
                 start_balance = start_balance
             )
         elif session_type == 'end':
+            print('end', undone_session)
             if undone_session:
                 end_balance = calculate_total_balance(bank_accounts)
             
