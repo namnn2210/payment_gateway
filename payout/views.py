@@ -234,6 +234,7 @@ def delete_payout(request):
 @require_POST
 def edit_payout(request):
     try:
+        partner_bankcode = None
         data = json.loads(request.body)
         payout_id = data.get('id')
         bank_code = data.get('bankCode')
