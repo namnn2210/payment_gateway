@@ -345,8 +345,13 @@ def webhook(request):
         
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
         current_working_user = []
-        for session in current_sessions:
-            current_working_user.append(session.user)
+        if len(current_sessions) == 0 :
+            for session in current_sessions:
+                current_working_user.append(session.user)
+        else:
+            admin_user = User.objects.filter(username='admin-huong').first()
+            current_working_user.append(admin_user)
+        
                 
         system_bankcode = ''
         partner_bankcode = ''
