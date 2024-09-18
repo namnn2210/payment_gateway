@@ -115,7 +115,7 @@ def report(request):
                 # total_amount += filtered_df['amount'].sum()
 
             current_payout_info['current_total_done_payout'] = len(payouts) + len(settles) or 0
-            current_payout_info['current_total_valid_transaction'] = total_valid_transactions or 0
+            current_payout_info['current_total_valid_transaction'] = len(payouts) + len(settles) or 0
 
         # Bank accounts data
         for bank_account in user_bank_accounts:
