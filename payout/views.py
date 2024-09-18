@@ -345,7 +345,7 @@ def webhook(request):
         
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
         current_working_user = []
-        if len(current_sessions) == 0 :
+        if len(current_sessions) != 0 :
             for session in current_sessions:
                 current_working_user.append(session.user)
         else:
