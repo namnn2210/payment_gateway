@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.utils import timezone
 from cms.models import User2Fa
 
-TWO_FA_EXPIRATION_TIME = 21600  # 6 hours
+TWO_FA_EXPIRATION_TIME = 28800  # 6 hours
 
 class TwoFactorAuthenticationMiddleware:
     def __init__(self, get_response):
