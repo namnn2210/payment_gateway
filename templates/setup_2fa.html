@@ -65,7 +65,7 @@
                                     {% csrf_token %}
                                     <div class="col-12">
                                         <p>Scan the QR code below to set up 2FA:</p>
-                                        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code">
+                                        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" width="300" height="300">
                                         <p>Or use this secret: {{ totp_secret }}</p>
                                         <label for="username" class="form-label">{% trans "OTP" %}</label>
                                         <div class="input-group has-validation">
