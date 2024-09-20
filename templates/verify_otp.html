@@ -10,7 +10,7 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
 
-    <title>226Pay - {% trans "Verify 2FA" %}</title>
+    <title>226Pay - {% trans "Login" %}</title>
     <meta content="" name="description">
     <meta content="" name="keywords">
 
@@ -56,30 +56,27 @@
                         <div class="card mb-3">
                             <div class="card-body">
                                 <div class="pt-4 pb-2">
-                                    <h5 class="card-title text-center pb-0 fs-4">{% trans "Verify 2FA" %}</h5>
-                                    <p class="text-center small">{% trans "Enter your OTP to login" %}</p>
+                                    <h5 class="card-title text-center pb-0 fs-4">{% trans "Verify OTP" %}</h5>
                                 </div>
                                 {% if error %}
                                 <span class="text-center small text-danger">{{ error }}</span>
                                 {% endif %}
-                                <form class="row g-3 needs-validation" action="{% url 'submit_otp' %}" method="POST">
+                                <form class="row g-3 needs-validation" action="{% url 'setup_2fa' %}" method="POST">
                                     {% csrf_token %}
                                     <div class="col-12">
                                         <div class="input-group has-validation">
                                             <span class="input-group-text" id="inputGroupPrepend">@</span>
-                                            <input type="text" name="otpCode" class="form-control" id="otpCode"
+                                            <input type="text" name="otp_code" class="form-control" id="otp_code"
                                                    required>
-                                            <div class="invalid-feedback">{% trans "Please enter your otpCode" %}</div>
+                                            <div class="invalid-feedback">{% trans "Please enter your OTP" %}</div>
                                         </div>
                                     </div>
-
                                     <div class="col-12">
                                         <button class="btn btn-primary w-100" type="submit">{% trans "Submit" %}</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
-                        
                     </div>
                 </div>
             </div>

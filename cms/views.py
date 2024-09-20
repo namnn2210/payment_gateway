@@ -55,35 +55,15 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            # user_2fa = User2Fa.objects.filter(user=request.user).first()
-            # if user_2fa.is_2fa_enabled:
-            #     return render(request, '2fa.html')
-            return redirect('index') 
+            user_2fa = User2Fa.objects.filter(user=user).first()
+            if user_2fa and user_2fa.is_2fa_enabled:
+                return redirect('verify_otp')
+            return redirect('setup_2fa')
         else:
             return render(request=request, template_name='login.html', context={'error': 'Invalid username or password. Contact admin for support'})
     return render(request=request, template_name='login.html')
 
 def profile(request):
-    two_factor = User2Fa.objects.filter(user=request.user).first()
-    is_2fa = False
-    qr_code_base64 = None
-    otp_secret = None
-    if not two_factor:
-        User2Fa.objects.create(
-            user=request.user,
-            otp_secret=pyotp.random_base32()
-        )
-    two_factor = User2Fa.objects.filter(user=request.user).first()
-    is_2fa = two_factor.is_2fa_enabled
-    otp_secret = two_factor.otp_secret
-    totp = pyotp.TOTP(otp_secret)
-    totp_uri = totp.provisioning_uri(name="226Pay", issuer_name="226Pay")
-
-    # Generate a QR code for scanning
-    qr = qrcode.make(totp_uri)
-    buffer = BytesIO()
-    qr.save(buffer, format="PNG")
-    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
     if request.method == 'POST':
         current_password = request.POST.get('password')
@@ -97,26 +77,54 @@ def profile(request):
             return render(request=request, template_name='profile.html', context={'error': 'Current password is incorrect'})
         request.user.set_password(new_password)
         request.user.save()
-        return render(request=request, template_name='profile.html', context={'success': 'Password changed successfully','qr_code':qr_code_image,'totp_secret':two_factor.otp_secret})
+        return render(request=request, template_name='profile.html', context={'success': 'Password changed successfully'})
     
-    return render(request=request, template_name='profile.html', context={'error': None,'is_2fa':is_2fa,'qr_code':qr_code_base64,'totp_secret':two_factor.otp_secret})
+    return render(request=request, template_name='profile.html', context={'error': None})
+
+@login_required(login_url='user_login')
+def setup_2fa(request):
+    user_2fa, created = User2Fa.objects.get_or_create(user=request.user)
+    if not user_2fa.otp_secret:
+        user_2fa.otp_secret = pyotp.random_base32()
+        user_2fa.save()
+
+    totp = pyotp.TOTP(user_2fa.otp_secret)
+    totp_uri = totp.provisioning_uri(name=request.user.username, issuer_name="YourAppName")
+
+    qr = qrcode.make(totp_uri)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    if request.method == 'POST':
+        otp_code = request.POST.get('otp_code')
+        print(otp_code)
+        if totp.verify(otp_code):
+            user_2fa.is_2fa_enabled = True
+            user_2fa.last_verified = timezone.now()
+            user_2fa.save()
+            request.session['is_2fa_verified'] = True
+            request.session['2fa_verified_at'] = timezone.now().timestamp()
+            return redirect('index')
+        else:
+            return render(request, 'setup_2fa.html', {"error": "Invalid OTP", "qr_code": qr_code_base64, "totp_secret": user_2fa.otp_secret})
+    return render(request, 'setup_2fa.html', {"qr_code": qr_code_base64, "totp_secret": user_2fa.otp_secret})
 
 @login_required(login_url='user_login')
 def verify_otp(request):
-    if request.method == "POST":
-        otp_code = request.POST.get("otpCode")
+    if request.method == 'POST':
+        otp_code = request.POST.get('otp_code')
         user_2fa = User2Fa.objects.filter(user=request.user).first()
-        totp = pyotp.TOTP(user_2fa.otp_secret)
-
-        if totp.verify(otp_code):
-            request.session['is_2fa_verified'] = True
-            request.session['2fa_verified_at'] = timezone.now().timestamp()
-            request.session.set_expiry(0)
-            user_2fa.is_2fa_enabled = True
-            user_2fa.save()
-            return redirect('profile')
-        else:
-            return render(request, 'profile.html', {"error": "Invalid OTP"})
+        if user_2fa:
+            totp = pyotp.TOTP(user_2fa.otp_secret)
+            if totp.verify(otp_code):
+                request.session['is_2fa_verified'] = True
+                request.session['2fa_verified_at'] = timezone.now().timestamp()
+                user_2fa.last_verified = timezone.now()
+                user_2fa.save()
+                return redirect('index')
+            else:
+                return render(request, 'verify_otp.html', {"error": "Invalid OTP"})
+    return render(request, 'verify_otp.html')
         
 @login_required(login_url='user_login')
 def submit_otp(request):
