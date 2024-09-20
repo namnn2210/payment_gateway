@@ -61,7 +61,7 @@
                                 {% if error %}
                                 <span class="text-center small text-danger">{{ error }}</span>
                                 {% endif %}
-                                <form class="row g-3 needs-validation" action="{% url 'setup_2fa' %}" method="POST">
+                                <form class="row g-3 needs-validation" action="{% url 'verify_otp' %}" method="POST">
                                     {% csrf_token %}
                                     <div class="col-12">
                                         <div class="input-group has-validation">
