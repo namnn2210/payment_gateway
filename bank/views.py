@@ -342,7 +342,7 @@ def get_all_transactions():
 
     all_transactions = []
     for bank in list_banks:
-        transactions_str = redis_client.get(bank.account_number)
+        transactions_str = redis_client.get(bank)
         if transactions_str:
             all_transactions += json.loads(transactions_str)
     all_transactions_df = pd.DataFrame(all_transactions)
