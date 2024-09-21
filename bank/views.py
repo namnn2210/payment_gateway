@@ -337,8 +337,8 @@ def update_out_transaction_history_status(transaction_number, account_number):
     
 def get_all_transactions():
     redis_client = redis_connect(1)
-
-    list_banks = BankAccount.objects.all()
+    
+    list_banks = redis_client.scan_iter('*')
 
     all_transactions = []
     for bank in list_banks:
