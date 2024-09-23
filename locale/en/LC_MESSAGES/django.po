@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-08-07 00:01+0700\n"
+"POT-Creation-Date: 2024-09-23 09:51+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,92 +18,110 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: payment_gateway/settings.py:139
+#: payment_gateway/settings.py:142
 msgid "English"
 msgstr "English"
 
-#: payment_gateway/settings.py:140
+#: payment_gateway/settings.py:143
 msgid "Vietnamese"
 msgstr "Vietnamese"
 
-#: templates/_transaction_history_modal.html:19 templates/payout.html:36
-#: templates/record_book.html:69 templates/report_home.html:11
-#: templates/settle_payout.html:36 templates/user_payout_statistic.html:79
-msgid "Start Date"
+#: templates/_payout_modal.html:22
+msgid "Start At"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:24 templates/payout.html:40
-#: templates/record_book.html:73 templates/report_home.html:15
-#: templates/settle_payout.html:40 templates/user_payout_statistic.html:83
-msgid "End Date"
+#: templates/_payout_modal.html:23
+msgid "End At"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:31 templates/payout.html:22
-#: templates/payout.html:63 templates/record_book.html:65
-#: templates/record_book.html:81 templates/report_home.html:19
-#: templates/settle_payout.html:22 templates/settle_payout.html:46
-#: templates/user_payout_statistic.html:87
-msgid "Search"
+#: templates/_payout_modal.html:24
+msgid "Start Balance"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:43
-#: templates/_transaction_history_modal.html:108
-#: templates/employee/deposit.html:53 templates/index.html:87
-#: templates/index.html:175 templates/index.html:226 templates/index.html:327
-#: templates/index.html:357 templates/payout.html:105
+#: templates/_payout_modal.html:25
+msgid "Deposit"
+msgstr ""
+
+#: templates/_payout_modal.html:26 templates/report_home.html:23
+msgid "Total Payout Amount"
+msgstr ""
+
+#: templates/_payout_modal.html:27 templates/report_home.html:22
+msgid "Total Payouts"
+msgstr ""
+
+#: templates/_payout_modal.html:28
+msgid "Total Settle Amount"
+msgstr ""
+
+#: templates/_payout_modal.html:29
+msgid "Total Settles"
+msgstr ""
+
+#: templates/_payout_modal.html:30
+msgid "Total Valid Payout Amount"
+msgstr ""
+
+#: templates/_payout_modal.html:31
+msgid "Total Valid Payout"
+msgstr ""
+
+#: templates/_payout_modal.html:32
+msgid "End Balance"
+msgstr ""
+
+#: templates/_payout_modal.html:33
+msgid "Estimate Total End Timeline Amount"
+msgstr ""
+
+#: templates/_transaction_history_modal.html:22 templates/record_book.html:121
+#: templates/record_book.html:211 templates/record_book.html:353
+msgid "Transaction Number"
+msgstr ""
+
+#: templates/_transaction_history_modal.html:23
+#: templates/employee/deposit.html:53 templates/index.html:93
+#: templates/index.html:194 templates/index.html:247 templates/index.html:354
+#: templates/index.html:384 templates/payout.html:105
 #: templates/payout_list.html:58 templates/record_book.html:96
 #: templates/record_book.html:188 templates/settle_payout.html:88
 #: templates/settle_payout_list.html:58
 msgid "Account Number"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:44
-#: templates/_transaction_history_modal.html:109
-#: templates/employee/deposit.html:22 templates/index.html:56
-#: templates/index.html:329 templates/index.html:359 templates/index.html:393
+#: templates/_transaction_history_modal.html:24
+#: templates/employee/deposit.html:22 templates/index.html:61
+#: templates/index.html:356 templates/index.html:386 templates/index.html:421
 #: templates/payout.html:101 templates/payout_list.html:57
 #: templates/record_book.html:97 templates/record_book.html:189
 #: templates/settle_payout.html:84 templates/settle_payout_list.html:57
 msgid "Amount"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:45
-#: templates/_transaction_history_modal.html:110 templates/index.html:330
-#: templates/index.html:360 templates/record_book.html:98
+#: templates/_transaction_history_modal.html:25 templates/index.html:357
+#: templates/index.html:387 templates/record_book.html:98
 #: templates/record_book.html:190
 msgid "Date"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:46 templates/record_book.html:99
+#: templates/_transaction_history_modal.html:26 templates/record_book.html:99
 msgid "Transfer Code"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:47
-#: templates/_transaction_history_modal.html:111
-#: templates/employee/deposit.html:23 templates/index.html:57
-#: templates/index.html:332 templates/index.html:362
+#: templates/_transaction_history_modal.html:27
+#: templates/employee/deposit.html:23 templates/index.html:62
+#: templates/index.html:359 templates/index.html:389
 #: templates/payout_list.html:24 templates/record_book.html:100
 #: templates/record_book.html:191 templates/settle_payout_list.html:24
 msgid "Status"
 msgstr ""
 
-#: templates/_transaction_history_modal.html:246 templates/record_book.html:121
-#: templates/record_book.html:211 templates/record_book.html:353
-msgid "Transaction Number"
-msgstr ""
-
-#: templates/_transaction_history_modal.html:246 templates/index.html:331
-#: templates/index.html:361 templates/record_book.html:122
-#: templates/record_book.html:212 templates/record_book.html:353
-msgid "Memo"
-msgstr ""
-
-#: templates/bank.html:4 templates/index.html:397
+#: templates/bank.html:4 templates/index.html:425
 #: templates/layout/layout.html:83
 msgid "Bank Account"
 msgstr ""
 
-#: templates/employee/deposit.html:4 templates/layout/layout.html:128
+#: templates/employee/deposit.html:4 templates/layout/layout.html:121
 #: templates/report.html:4
 msgid "Employee Deposit"
 msgstr ""
@@ -112,79 +130,81 @@ msgstr ""
 msgid "Deposit List"
 msgstr ""
 
-#: templates/employee/deposit.html:21 templates/index.html:55
+#: templates/employee/deposit.html:21 templates/index.html:60
 msgid "Request User"
 msgstr ""
 
-#: templates/employee/deposit.html:24 templates/index.html:58
+#: templates/employee/deposit.html:24 templates/index.html:63
 #: templates/payout_list.html:64 templates/settle_payout_list.html:64
 msgid "Created At"
 msgstr ""
 
 #: templates/employee/deposit.html:39 templates/employee/deposit.html:134
-#: templates/index.html:73 templates/index.html:408 templates/index.html:424
-#: templates/payout.html:28 templates/payout.html:140 templates/payout.html:165
-#: templates/payout_list.html:39 templates/settle_payout.html:28
-#: templates/settle_payout.html:122 templates/settle_payout.html:147
+#: templates/index.html:78 templates/index.html:437 templates/index.html:453
+#: templates/payout.html:28 templates/payout.html:140 templates/payout.html:162
+#: templates/payout.html:187 templates/payout_list.html:39
+#: templates/settle_payout.html:28 templates/settle_payout.html:122
+#: templates/settle_payout.html:142 templates/settle_payout.html:165
 #: templates/settle_payout_list.html:39
 msgid "Done"
 msgstr ""
 
-#: templates/employee/deposit.html:41 templates/index.html:75
+#: templates/employee/deposit.html:41 templates/index.html:80
 #: templates/payout.html:27 templates/payout_list.html:41
 #: templates/settle_payout.html:27 templates/settle_payout_list.html:41
 msgid "Pending"
 msgstr ""
 
-#: templates/employee/deposit.html:50 templates/index.html:84
+#: templates/employee/deposit.html:50 templates/index.html:90
 msgid "Note"
 msgstr ""
 
-#: templates/employee/deposit.html:51 templates/index.html:85
-#: templates/index.html:176 templates/index.html:227 templates/index.html:302
+#: templates/employee/deposit.html:51 templates/index.html:91
+#: templates/index.html:195 templates/index.html:248 templates/index.html:329
 #: templates/payout_list.html:60 templates/settle_payout_list.html:60
 msgid "Bank Name"
 msgstr ""
 
-#: templates/employee/deposit.html:52 templates/index.html:86
+#: templates/employee/deposit.html:52 templates/index.html:92
 #: templates/payout_list.html:61 templates/settle_payout_list.html:61
 msgid "Bank Code"
 msgstr ""
 
-#: templates/employee/deposit.html:54 templates/index.html:88
-#: templates/payout.html:109 templates/payout_list.html:59
-#: templates/settle_payout.html:92 templates/settle_payout_list.html:59
+#: templates/employee/deposit.html:54 templates/index.html:95
+#: templates/index.html:310 templates/payout.html:109
+#: templates/payout_list.html:59 templates/settle_payout.html:92
+#: templates/settle_payout_list.html:59
 msgid "Account Name"
 msgstr ""
 
-#: templates/employee/deposit.html:57 templates/index.html:91
+#: templates/employee/deposit.html:57 templates/index.html:100
 #: templates/payout_list.html:67 templates/settle_payout_list.html:67
 msgid "Updated By"
 msgstr ""
 
-#: templates/employee/deposit.html:58 templates/index.html:92
+#: templates/employee/deposit.html:58 templates/index.html:102
 #: templates/payout_list.html:66 templates/settle_payout_list.html:66
 msgid "Updated At"
 msgstr ""
 
-#: templates/employee/deposit.html:62 templates/index.html:96
+#: templates/employee/deposit.html:62 templates/index.html:108
 #: templates/payout_list.html:76 templates/settle_payout_list.html:76
 msgid "Action"
 msgstr ""
 
-#: templates/employee/deposit.html:64 templates/index.html:98
+#: templates/employee/deposit.html:64 templates/index.html:116
 #: templates/payout_list.html:84 templates/payout_list.html:98
 #: templates/settle_payout_list.html:84 templates/settle_payout_list.html:95
 msgid "Pay"
 msgstr ""
 
-#: templates/employee/deposit.html:67 templates/index.html:101
+#: templates/employee/deposit.html:67 templates/index.html:120
 #: templates/payout_list.html:86 templates/settle_payout_list.html:86
 msgid "Delete"
 msgstr ""
 
-#: templates/employee/deposit.html:127 templates/index.html:386
-#: templates/index.html:417
+#: templates/employee/deposit.html:127 templates/index.html:413
+#: templates/index.html:446
 msgid "Deposit Details"
 msgstr ""
 
@@ -200,77 +220,91 @@ msgstr ""
 msgid "Create Deposit Request"
 msgstr ""
 
-#: templates/index.html:166 templates/index.html:309
+#: templates/index.html:44 templates/index.html:764
+msgid "End Session"
+msgstr ""
+
+#: templates/index.html:46 templates/index.html:782
+msgid "Start Session"
+msgstr ""
+
+#: templates/index.html:185 templates/index.html:336
 msgid "Add Bank"
 msgstr ""
 
-#: templates/index.html:169 templates/index.html:220
+#: templates/index.html:188 templates/index.html:241
 msgid "Bank List"
 msgstr ""
 
-#: templates/index.html:169 templates/index.html:322
+#: templates/index.html:188 templates/index.html:349
 msgid "IN"
 msgstr ""
 
-#: templates/index.html:177 templates/index.html:228
+#: templates/index.html:196 templates/index.html:249
 msgid "Balance"
 msgstr ""
 
-#: templates/index.html:178 templates/index.html:229
+#: templates/index.html:197 templates/index.html:250
 #: templates/report_user.html:26 templates/user_payout_statistic.html:95
 msgid "User"
 msgstr ""
 
-#: templates/index.html:179 templates/index.html:230
+#: templates/index.html:198 templates/index.html:251
 msgid "Last Update"
 msgstr ""
 
-#: templates/index.html:181 templates/index.html:232
+#: templates/index.html:200 templates/index.html:253
 msgid "Actions"
 msgstr ""
 
-#: templates/index.html:200 templates/index.html:251
+#: templates/index.html:221 templates/index.html:274
 msgid "OFF"
 msgstr ""
 
-#: templates/index.html:203 templates/index.html:254
+#: templates/index.html:224 templates/index.html:277
 msgid "ON"
 msgstr ""
 
-#: templates/index.html:220 templates/index.html:352
+#: templates/index.html:241 templates/index.html:379
 msgid "OUT"
 msgstr ""
 
-#: templates/index.html:274
+#: templates/index.html:297
 msgid "Add New Bank"
 msgstr ""
 
-#: templates/index.html:283
+#: templates/index.html:306
 msgid "Bank Number"
 msgstr ""
 
-#: templates/index.html:287
+#: templates/index.html:314
 msgid "Bank Username"
 msgstr ""
 
-#: templates/index.html:291
+#: templates/index.html:318
 msgid "Bank Password"
 msgstr ""
 
-#: templates/index.html:295
+#: templates/index.html:322
 msgid "Bank TYPE"
 msgstr ""
 
-#: templates/index.html:322 templates/index.html:352
+#: templates/index.html:349 templates/index.html:379
 msgid "Latest transaction"
 msgstr ""
 
-#: templates/index.html:322 templates/index.html:352
+#: templates/index.html:349 templates/index.html:379
 msgid "history"
 msgstr ""
 
-#: templates/index.html:328 templates/index.html:358
+#: templates/index.html:355 templates/index.html:385
 msgid "Reference Number"
+msgstr ""
+
+#: templates/index.html:358 templates/index.html:388
+#: templates/record_book.html:122 templates/record_book.html:212
+#: templates/record_book.html:353
+msgid "Memo"
 msgstr ""
 
 #: templates/layout/layout.html:13
@@ -296,7 +330,7 @@ msgid "Record Book"
 msgstr ""
 
 #: templates/layout/layout.html:97 templates/payout.html:11
-#: templates/report_user.html:29 templates/settle_payout.html:11
+#: templates/report_user.html:28 templates/settle_payout.html:11
 msgid "Payout"
 msgstr ""
 
@@ -308,44 +342,41 @@ msgstr ""
 msgid "Settle"
 msgstr ""
 
-#: templates/layout/layout.html:113 templates/user_payout_statistic.html:6
-msgid "User Payout Statistic"
-msgstr ""
-
-#: templates/layout/layout.html:123
+#: templates/layout/layout.html:116
 msgid "Employee"
 msgstr ""
 
-#: templates/layout/layout.html:133
+#: templates/layout/layout.html:126
 msgid "Coming Soon"
 msgstr ""
 
-#: templates/layout/layout.html:143 templates/login.html:94
+#: templates/layout/layout.html:136 templates/login.html:94
 msgid "Language"
 msgstr ""
 
-#: templates/layout/layout.html:147
+#: templates/layout/layout.html:140
 msgid "Select Language"
 msgstr ""
 
-#: templates/layout/layout.html:186
+#: templates/layout/layout.html:179
 msgid "Dev"
 msgstr ""
 
-#: templates/layout/layout.html:195 templates/profile.html:5
+#: templates/layout/layout.html:188 templates/profile.html:5
 #: templates/profile.html:8
 msgid "Profile"
 msgstr ""
 
-#: templates/layout/layout.html:207
+#: templates/layout/layout.html:200
 msgid "Go to Admin"
 msgstr ""
 
-#: templates/layout/layout.html:219
+#: templates/layout/layout.html:212
 msgid "Sign Out"
 msgstr ""
 
-#: templates/login.html:13 templates/login.html:85
+#: templates/login.html:13 templates/login.html:85 templates/setup_2fa.html:13
+#: templates/verify_otp.html:13
 msgid "Login"
 msgstr ""
 
@@ -381,6 +412,13 @@ msgstr ""
 msgid "Add Payout"
 msgstr ""
 
+#: templates/payout.html:22 templates/payout.html:63
+#: templates/record_book.html:65 templates/record_book.html:81
+#: templates/report_home.html:17 templates/settle_payout.html:22
+#: templates/settle_payout.html:46 templates/user_payout_statistic.html:87
+msgid "Search"
+msgstr ""
+
 #: templates/payout.html:26 templates/payout.html:48 templates/payout.html:55
 #: templates/settle_payout.html:26
 msgid "All"
@@ -395,6 +433,16 @@ msgstr ""
 #: templates/payout.html:30 templates/payout_list.html:43
 #: templates/settle_payout.html:30 templates/settle_payout_list.html:43
 msgid "Reported"
+msgstr ""
+
+#: templates/payout.html:36 templates/record_book.html:69
+#: templates/settle_payout.html:36 templates/user_payout_statistic.html:79
+msgid "Start Date"
+msgstr ""
+
+#: templates/payout.html:40 templates/record_book.html:73
+#: templates/settle_payout.html:40 templates/user_payout_statistic.html:83
+msgid "End Date"
 msgstr ""
 
 #: templates/payout.html:85 templates/payout_list.html:23
@@ -423,12 +471,16 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: templates/payout.html:151 templates/settle_payout.html:133
+#: templates/payout.html:151 templates/settle_payout.html:131
+msgid "Edit Bank"
+msgstr ""
+
+#: templates/payout.html:173 templates/settle_payout.html:153
 msgid "Select Payout Bank"
 msgstr ""
 
-#: templates/payout.html:155 templates/payout_list.html:68
-#: templates/settle_payout.html:137 templates/settle_payout_list.html:68
+#: templates/payout.html:177 templates/payout_list.html:68
+#: templates/settle_payout.html:157 templates/settle_payout_list.html:68
 msgid "Process Bank"
 msgstr ""
 
@@ -461,6 +513,10 @@ msgstr ""
 msgid "Move"
 msgstr ""
 
+#: templates/payout_list.html:103 templates/settle_payout_list.html:99
+msgid "Edit"
+msgstr ""
+
 #: templates/profile.html:44
 msgid "Current Password"
 msgstr ""
@@ -475,6 +531,14 @@ msgstr ""
 
 #: templates/profile.html:65
 msgid "Change Password"
+msgstr ""
+
+#: templates/profile.html:85
+msgid "Enter the OTP:"
+msgstr ""
+
+#: templates/profile.html:91 templates/setup_2fa.html:79
+msgid "Verify"
 msgstr ""
 
 #: templates/record_book.html:66
@@ -494,39 +558,27 @@ msgid "User Statistic"
 msgstr ""
 
 #: templates/report_home.html:24
-msgid "Total Payouts"
-msgstr ""
-
-#: templates/report_home.html:25
-msgid "Total Payout Amount"
-msgstr ""
-
-#: templates/report_home.html:26
 msgid "Total Success Transations"
 msgstr ""
 
-#: templates/report_home.html:27
+#: templates/report_home.html:25
 msgid "Total Success Transations Amount"
 msgstr ""
 
-#: templates/report_home.html:79
+#: templates/report_home.html:77
 msgid "Total Amount In and Out for the last 5 days"
 msgstr ""
 
 #: templates/report_user.html:27
-msgid "Timeline"
-msgstr ""
-
-#: templates/report_user.html:28
 msgid "Bank Accounts"
 msgstr ""
 
-#: templates/report_user.html:62
-msgid "Timeline Amount"
+#: templates/report_user.html:55
+msgid "Current Total Payout"
 msgstr ""
 
-#: templates/report_user.html:63
-msgid "Timeline Total"
+#: templates/report_user.html:56
+msgid "Current Total Valid Transactions"
 msgstr ""
 
 #: templates/settle_payout.html:5 templates/settle_payout_list.html:16
@@ -535,6 +587,22 @@ msgstr ""
 
 #: templates/settle_payout.html:16 templates/settle_payout.html:59
 msgid "Add Settle Payout"
+msgstr ""
+
+#: templates/setup_2fa.html:59
+msgid "Setup 2FA Your Account"
+msgstr ""
+
+#: templates/setup_2fa.html:70
+msgid "OTP"
+msgstr ""
+
+#: templates/setup_2fa.html:75 templates/verify_otp.html:71
+msgid "Please enter your OTP"
+msgstr ""
+
+#: templates/user_payout_statistic.html:6
+msgid "User Payout Statistic"
 msgstr ""
 
 #: templates/user_payout_statistic.html:49
@@ -569,4 +637,12 @@ msgstr ""
 #: templates/user_payout_statistic.html:121
 #: templates/user_payout_statistic.html:228
 msgid "No info found for the selected criteria."
+msgstr ""
+
+#: templates/verify_otp.html:59
+msgid "Verify OTP"
+msgstr ""
+
+#: templates/verify_otp.html:75
+msgid "Submit"
 msgstr ""
