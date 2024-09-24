@@ -8,15 +8,13 @@ from bank.utils import send_telegram_message, find_substring
 from bank.views import update_amount_by_date, update_transaction_history_status, update_out_transaction_history_status
 from bank.models import BankAccount
 from partner.views import create_deposit_order
-from partner.models import PartnerMapping, CID
+from partner.models import CID
 from datetime import datetime
 import pandas as pd
 import json
 import os
 import pytz
 from bank.database import redis_connect
-from payout.models import Payout
-from settle_payout.models import SettlePayout
 from django.utils import timezone
 import time
 

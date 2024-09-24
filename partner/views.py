@@ -1,9 +1,6 @@
-from django.shortcuts import render
 from dotenv import load_dotenv
-from django.http import JsonResponse
-from partner.models import PartnerMapping, CID
+from partner.models import CID
 import hashlib
-import pandas as pd
 import os
 import requests
 
@@ -59,9 +56,8 @@ def create_deposit_order(transaction,cid):
 def update_status_request(payout, status='S'):
     
     cid = CID.objects.filter(name=payout.scode).first()
-    partner_mapping = PartnerMapping.objects.filter(cid=cid).first()
     
-    key = partner_mapping.key
+    key = cid.key
     sign_string = f"{payout.scode}|{payout.orderno}:{key}"
     # Generate MD5 signature
     sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()

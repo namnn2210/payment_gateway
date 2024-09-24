@@ -16,7 +16,7 @@ from notification.views import send_notification
 from dotenv import load_dotenv
 from datetime import datetime, time
 from django.db.models import Q, Case, Value, When, IntegerField, Sum
-from partner.models import PartnerMapping, CID
+from partner.models import CID
 from django.db.models.functions import TruncDate
 from .tasks import update_payout_background
 from django.utils.dateparse import parse_date
@@ -318,9 +318,9 @@ def webhook(request):
         body_sign = data.get('sign')
         
         cid = CID.objects.filter(name=scode).first()
-        partner_mapping = PartnerMapping.objects.filter(cid=cid).first()
+
         
-        key = partner_mapping.key
+        key = cid.key
         
         
         sign_string = f"{scode}|{orderno}|{orderid}|{payeebankname}|{payeebankbranch}|{bankcode}|{accountno}|{accountname}|{money}:{key}"
