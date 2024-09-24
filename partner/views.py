@@ -9,13 +9,13 @@ import requests
 
 load_dotenv()
 
-def create_deposit_order(transaction,partner_mapping):
+def create_deposit_order(transaction,cid):
     try:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         # key_df = pd.read_csv(os.environ.get('MID_KEY'))
-        scode = partner_mapping.cid
-        cardtype = partner_mapping.cardtype
-        key = partner_mapping.key
+        scode = cid.name
+        cardtype = cid.cardtype
+        key = cid.key
         
         payeeaccountno = str(transaction['account_number'])
         amount = f'{str(transaction['amount'])}.00'

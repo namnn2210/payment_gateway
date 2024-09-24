@@ -360,6 +360,8 @@ def webhook(request):
             settle = True
         elif bankcode == '' and payeebankbranch == '':
             settle = True
+        elif bankcode == '-' and payeebankbranch == '-':
+            settle = True
         # Get bank code
         # Format through bank code dict mapping
         if settle:

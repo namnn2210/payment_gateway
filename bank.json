@@ -302,10 +302,10 @@
     },
     {
         "id": "7d721f6b-504a-42b4-8405-41ca6830971d",
-        "name": "Ngân hàng TMCP Bưu Điện Liên Việt",
+        "name": "Ngân hàng TMCP Lộc Phát Việt Nam",
         "code": "LPB",
         "bin": 970449,
-        "short_name": "LienVietPostBank",
+        "short_name": "LPBank",
         "logo_url": "https://api.vietqr.io/img/LPB.png",
         "icon_url": "https://cdn.httzip.com/shared/bank/icon/LPB.png",
         "swift_code": "LVBKVNVX",

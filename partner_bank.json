@@ -9,6 +9,10 @@
             "bankname": "Techcom Bank"
         },
         {
+            "code": "TCB",
+            "bankname": "Techcom"
+        },
+        {
             "code": "STB",
             "bankname": "Sacombank"
         },
@@ -111,6 +115,10 @@
         {
             "code": "LPB",
             "bankname": "Lien Viet Post Joint Stock Commercial Bank"
+        },
+        {
+            "code": "LPB",
+            "bankname": "Lien Viet Post Commercial Joint Stock Bank"
         },
         {
             "code": "SHB",
