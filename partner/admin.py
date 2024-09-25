@@ -9,8 +9,8 @@ class CIDAdmin(admin.ModelAdmin):
     search_fields = ('name','key',)
     
 
-@admin.register(PartnerMapping)
-class PartnerMappingAdmin(admin.ModelAdmin):
-    list_display = ('cid', 'key', 'cardtype', 'bank', 'status', 'created_at', 'updated_at')
-    list_filter = ('cid','cardtype', 'bank',)
-    search_fields = ('cid','bank',)
+# @admin.register(PartnerMapping)
+# class PartnerMappingAdmin(admin.ModelAdmin):
+#     list_display = ('cid', 'key', 'cardtype', 'bank', 'status', 'created_at', 'updated_at')
+#     list_filter = ('cid','cardtype', 'bank',)
+#     search_fields = ('cid','bank',)
