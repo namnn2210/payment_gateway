@@ -177,7 +177,7 @@ def get_transaction(bank):
                                         else:
                                             update_transaction_history_status(row['account_number'], row['transfer_code'], 'Success')
                                             alert = (
-                                                f'🟩🟩🟩 Success! CID: {item.cid.name}\n'
+                                                f'🟩🟩🟩 Success! CID: {item.name}\n'
                                                 f'\n'
                                                 f'Account: {row['account_number']}'
                                                 f'\n'
