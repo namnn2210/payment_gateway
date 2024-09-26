@@ -206,13 +206,13 @@ def update_payout(request, update_type):
         bank_id = data.get('bank_id')
         request_user_username = model_to_dict(request.user)['username']
         reason = data.get('reason',1)
-        
+        print('---', type(reason))
         update_body = {
             'payout_id':payout_id,
             'bank_id':bank_id,
             'request_user_username':request_user_username,
             'update_type':update_type,
-            'reason':reason
+            'reason': int(reason)
         }
         update_payout_background.delay(update_body)
         
