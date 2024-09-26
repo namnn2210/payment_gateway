@@ -15,6 +15,7 @@ def update_payout_background(update_body):
     payout_id = update_body['payout_id']
     bank_id = update_body['bank_id']
     update_type = update_body['update_type']
+    reason = update_body['reason']
     payout = get_object_or_404(Payout, id=payout_id)
     formatted_amount = '{:,.2f}'.format(payout.money)
     request_user = User.objects.filter(username=update_body['request_user_username']).first()
@@ -80,6 +81,13 @@ def update_payout_background(update_body):
             payout.save()
     elif update_type == 'report':
         payout.is_report = True
+        reason_text = ''
+        if reason == 1:
+            reason_text = 'Invalid receiving account number!'
+        elif reason == 2:
+            reason_text = 'Invalid receiving bank!'
+        elif reason == 3:
+            reason_text = 'Invalid receiving account name!'
         alert = (
             f'Hi team !\n'
             f'Please check this payout :\n'
@@ -94,7 +102,7 @@ def update_payout_background(update_body):
             f'\n'
             f'Account number: {payout.accountno}\n'
             f'\n'
-            f'Reason: The receiving account information is incorrect!'
+            f'Reason: {reason_text}'
         )
         send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         payout.save()

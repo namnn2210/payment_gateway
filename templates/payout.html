@@ -135,7 +135,7 @@
                 <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger report-btn" data-item-id="">{% trans "Report" %}</button>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#selectReportModal" class="btn btn-danger report-btn" data-item-id="">{% trans "Report" %}</button>
                 <button type="button" class="btn btn-warning cancel-btn" data-item-id="">{% trans "Cancel" %}</button>
                 <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selectPayoutBankModal">{% trans "Done" %}</button>
             </div>
@@ -185,6 +185,28 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success done-btn-modal" data-item-id="">{% trans "Done" %}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="selectReportModal" aria-labelledby="selectReportBankModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="selectReportBankModalLabel">{% trans "Select Report Reason" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label for="processBank">{% trans "Reason" %}</label>
+                <select class="form-select" id="reason" name="reason" required>
+                    <option value=1>{% trans 'Invalid Account Number' %}
+                    <option value=2>{% trans 'Invalid Bank' %}
+                    <option value=3>{% trans 'Invalid Account Name' %}
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success done-report-btn" data-item-id="">{% trans "Done" %}</button>
             </div>
         </div>
     </div>
@@ -476,6 +498,7 @@
         var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
         $('#modalQrImage').attr('src', qrUrl);
         $('.done-btn-modal').data('item-id', itemId);
+        $('.done-report-btn').data('item-id', itemId);
 
         // Show/hide Report button
         if (isReport === 'False') {
@@ -539,8 +562,9 @@
             });
         });
 
-        $('.report-btn').off('click').on('click', function () {
+        $('.done-report-btn').off('click').on('click', function () {
             var itemId = $(this).data('item-id');
+            var reason = $('#reason').val();
             const csrftoken = getCookie('csrftoken');
             Swal.fire({
                 title: 'Are you sure?',
@@ -555,7 +579,7 @@
                     $.ajax({
                         url: "{% url 'update_payout' 'report' %}",
                         type: 'POST',
-                        data: JSON.stringify({ id: itemId }),
+                        data: JSON.stringify({ id: itemId, reason:reason }),
                         contentType: 'application/json',
                         headers: {
                             'X-CSRFToken': csrftoken

@@ -200,6 +200,8 @@ def update_settle_payout(request, update_type):
         print(payout_id)
         bank_id = data.get('bank_id',0)
         print(bank_id)
+        reason = data.get('reason',0)
+        print(reason)
         payout = SettlePayout.objects.filter(id=payout_id).first()
 
         formatted_amount = '{:,.2f}'.format(payout.money)
@@ -234,6 +236,13 @@ def update_settle_payout(request, update_type):
             update_amount_by_date('OUT',payout.money)
         elif update_type == 'report':
             payout.is_report = True
+            reason_text = ''
+            if reason == 1:
+                reason_text = 'Invalid receiving account number!'
+            elif reason == 2:
+                reason_text = 'Invalid receiving bank!'
+            elif reason == 3:
+                reason_text = 'Invalid receiving account name!'
             # payout.status = False
             alert = (
                 f'Hi team !\n'
@@ -249,7 +258,7 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Account number: {payout.accountno}\n'
                 f'\n'
-                f'Reason: The receiving account information is incorrect!'
+                f'Reason: {reason_text}'
             )
             send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         elif update_type == 'cancel':
