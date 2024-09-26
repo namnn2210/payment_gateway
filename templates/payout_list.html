@@ -37,9 +37,9 @@
                                 <td>
                                     {% if item.status %}
                                         <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
-                                    {% elif not item.status and not item.is_cancel %}
+                                    {% elif not item.status and not item.is_cancel and not item.is_report %}
                                         <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
-                                    {% elif item.is_report and not item.is_cancel %}
+                                    {% elif item.is_report and not item.is_cancel and not item.status %}
                                         <span class="btn btn-sm bg-danger">{% trans "Reported" %}</span>
                                     {% elif item.is_cancel and item.is_report %}
                                         <span class="btn btn-sm bg-danger">{% trans "Canceled" %}</span>
