@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+<form action="" method="POST">{% csrf_token %}
+    {{ action_form.as_p }}
+
+    <!-- Hidden field to pass the selected action (important!) -->
+    <input type="hidden" name="action" value="update_user">
+
+    <!-- Pass the selected checkboxes (important!) -->
+    {% for obj in queryset %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk }}">
+    {% endfor %}
+    
+    <button type="submit" name="apply" class="button">Apply</button>
+</form>
+{% endblock %}
