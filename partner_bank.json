@@ -21,6 +21,10 @@
             "bankname": "Sacombank"
         },
         {
+            "code": "STB",
+            "bankname": "SACOMBANK"
+        },
+        {
             "code": "VCB",
             "bankname": "Vietcombank"
         },
@@ -29,8 +33,20 @@
             "bankname": "Vietcom Bank"
         },
         {
+            "code": "VCB",
+            "bankname": "VIETCOMBANK"
+        },
+        {
+            "code": "ACB",
+            "bankname": "ACB"
+        },
+        {
             "code": "ACB",
             "bankname": "Asia Commercial Bank"
+        },
+        {
+            "code": "ACB",
+            "bankname": "ASIA COMMERCIAL BANK"
         },
         {
             "code": "ACB",
@@ -40,6 +56,7 @@
             "code": "DOB",
             "bankname": "DongA Bank"
         },
+
         {
             "code": "DOB",
             "bankname": "DONG-A"
@@ -61,12 +78,20 @@
             "bankname": "VietinBank"
         },
         {
+            "code": "ICB",
+            "bankname": "VIETINBANK"
+        },
+        {
             "code": "BIDV",
             "bankname": "Bank for Investment and Development of Vietnam"
         },
         {
             "code": "BIDV",
             "bankname": "BIDV - Bank Investment and Development of Vietnam"
+        },
+        {
+            "code": "BIDV",
+            "bankname": "BIDV"
         },
         {
             "code": "EIB",
@@ -85,6 +110,10 @@
             "bankname": "VP Bank"
         },
         {
+            "code": "VPB",
+            "bankname": "Ngan hang viet nam thinh vuong"
+        },
+        {
             "code": "MB",
             "bankname": "MB bank"
         },
@@ -95,6 +124,14 @@
         {
             "code": "MB",
             "bankname": "MBBank"
+        },
+         {
+            "code": "MB",
+            "bankname": "MBBANK"
+        },
+        {
+            "code": "MB",
+            "bankname": "MB"
         },
         {
             "code": "MB",
@@ -151,6 +188,10 @@
         {
             "code": "BAB",
             "bankname": "Bac A Bank"
+        },
+        {
+            "code": "BAB",
+            "bankname": "Bac A Commercial Joint Stock Bank"
         },
         {
             "code": "VCCB",
