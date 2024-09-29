@@ -13,6 +13,10 @@
             "bankname": "Techcom"
         },
         {
+            "code": "TCB",
+            "bankname": "TECHCOMBANK"
+        },
+        {
             "code": "STB",
             "bankname": "Sacombank"
         },
@@ -103,6 +107,10 @@
         {
             "code":"TPB",
             "bankname":"Tien Phong Bank"
+        },
+        {
+            "code":"TPB",
+            "bankname":"Tpbank"
         },
         {
             "code": "TPB",
