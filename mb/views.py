@@ -1,13 +1,18 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime, timedelta
+from bank.database import redis_connect
 from django.http import JsonResponse
 from bank.utils import Transaction
+from bank.models import BankAccount
+from partner.models import CID
+from partner.views import create_deposit_order
 from bank.utils import get_dates, find_substring
+from bank.views import update_amount_by_date, update_transaction_history_status
 import requests
 import json
 import os
-import re
+from bank.utils import send_telegram_message
+import pandas as pd
 from dotenv import load_dotenv
 from datetime import datetime
 from django.utils import timezone
@@ -88,7 +93,176 @@ def mb_balance(username, password, account_number):
 @csrf_exempt
 def mb_webhook(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        print(data)
+        data = json.loads(request.body)[0]
+
+        formatted_transactions = []
+        new_formatted_transaction = Transaction(
+            transaction_number=data['refNo'],
+            transaction_date=data['transactionDate'],
+            transaction_type=data['type'],
+            account_number=data['accountNo'],
+            description=data['description'],
+            transfer_code=find_substring(data['description']),
+            amount=int(data['amount'])
+        )
+        formatted_transactions.append(new_formatted_transaction.__dict__())
+        redis_client = redis_connect(1)
+        bank_exists = redis_client.get(new_formatted_transaction.account_number)
+        bank = BankAccount.objects.filter(account_number=new_formatted_transaction.account_number).first()
+        bank.balance = int(data['availableBalance'])
+        bank.save()
+        new_bank_history_df = pd.DataFrame(formatted_transactions)
+        if new_bank_history_df.empty:
+            alert = (
+                f'🔴 - LỖI HỆ THỐNG\n'
+                f'Lỗi lấy lịch sử giao dịch từ {new_formatted_transaction.account_number} - MB empty\n'
+                f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
+            )
+            send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+        final_new_bank_history_df = new_bank_history_df.fillna('')
+        if not bank_exists:
+            redis_client.set(new_formatted_transaction.account_number,
+                             json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+        else:
+            # Transform current transactions history and new transaction history
+            old_bank_history = json.loads(redis_client.get(new_formatted_transaction.account_number))
+            old_bank_history_df = pd.DataFrame(old_bank_history)
+            old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
+            final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
+            # Detect new transactions
+            new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(
+                subset='transaction_number', keep=False)
+            # Add new transactions to current history
+            new_transaction_df.loc[(new_transaction_df['description'].str.contains('Z')) & (
+                        new_transaction_df['transaction_type'] == 'OUT'), 'status'] = 'Success'
+            updated_df = pd.concat([old_bank_history_df, new_transaction_df])
+            # Update Redis
+            redis_client.set(new_formatted_transaction.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
+            if not new_transaction_df.empty:
+                for _, row in new_transaction_df.iterrows():
+                    if not datetime.strptime(row["transaction_date"],
+                                             '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
+                        continue
+                    if row['transaction_type'] == 'IN':
+                        if bank.bank_type == 'IN':
+                            transaction_type = '+'
+                            transaction_color = '🟢'  # Green circle emoji for IN transactions
+                            formatted_amount = '{:,.2f}'.format(row['amount'])
+                            # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                            bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
+                            success = False
+                            reported = False
+                            if bank_account:
+                                cids = CID.objects.filter(status=True)
+                                # partner_mapping = PartnerMapping.objects.filter(bank=bank_account)
+                                # print('partner mapping found: ', len(partner_mapping))
+                                # if partner_mapping:
+                                for item in cids:
+                                    print('test partner: ', item.name)
+                                    result = create_deposit_order(row, item)
+                                    print('result partner', result)
+                                    if result:
+                                        if result['msg'] == 'transfercode is null':
+                                            update_transaction_history_status(row['account_number'],
+                                                                              row['transfer_code'], 'Failed')
+                                            alert = (
+                                                f'Hi, failed\n'
+                                                f'\n'
+                                                f'Account: {row['account_number']}'
+                                                f'\n'
+                                                f'Confirmed by order: \n'
+                                                f'\n'
+                                                f'Received amount💲: {formatted_amount} \n'
+                                                f'\n'
+                                                f'Memo: {row['description']}\n'
+                                                f'\n'
+                                                f'Code: {find_substring(row['description'])}\n'
+                                                f'\n'
+                                                f'Time: {row["transaction_date"]}\n'
+                                                f'\n'
+                                                f'Reason of not be credited: No transfer code!!!'
+                                            )
+                                            send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
+                                                                  os.environ.get('226PAY_BOT'))
+                                            reported = True
+                                            break
+
+                                        if result['prc'] == '1' and result['errcode'] == '00':
+                                            if result['orderno'] == '':
+                                                continue
+                                            else:
+                                                update_transaction_history_status(row['account_number'],
+                                                                                  row['transfer_code'], 'Success')
+                                                alert = (
+                                                    f'🟩🟩🟩 Success! CID: {item.name}\n'
+                                                    f'\n'
+                                                    f'Account: {row['account_number']}'
+                                                    f'\n'
+                                                    f'Confirmed by order: \n'
+                                                    f'\n'
+                                                    f'Received amount💲: {formatted_amount} \n'
+                                                    f'\n'
+                                                    f'Memo: {row['description']}\n'
+                                                    f'\n'
+                                                    f'Code: {find_substring(row['description'])}\n'
+                                                    f'\n'
+                                                    f'Time: {row["transaction_date"]}\n'
+                                                )
+                                                send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'),
+                                                                      os.environ.get('TRANSACTION_BOT_API_KEY'))
+                                                update_amount_by_date('IN', row['amount'])
+                                                success = True
+                                                break
+                                        else:
+                                            continue
+                                    else:
+                                        continue
+                                if not success and not reported:
+                                    update_transaction_history_status(row['account_number'], row['transfer_code'],
+                                                                      'Failed')
+                                    alert = (
+                                        f'Hi, failed\n'
+                                        f'\n'
+                                        f'Account: {row['account_number']}'
+                                        f'\n'
+                                        f'Confirmed by order: \n'
+                                        f'\n'
+                                        f'Received amount💲: {formatted_amount} \n'
+                                        f'\n'
+                                        f'Memo: {row['description']}\n'
+                                        f'\n'
+                                        f'Code: {find_substring(row['description'])}\n'
+                                        f'\n'
+                                        f'Time: {row["transaction_date"]}\n'
+                                        f'\n'
+                                        f'Reason of not be credited: Order not found!!!'
+                                    )
+                                    send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
+                                                          os.environ.get('226PAY_BOT'))
+                    else:
+                        if bank.bank_type == 'OUT':
+                            transaction_type = '-'
+                            transaction_color = '🔴'  # Red circle emoji for OUT transactions
+                            formatted_amount = '{:,.2f}'.format(row['amount'])
+                            transaction_number = row['transaction_number']
+
+                            alert = (
+                                f'PAYOUT DONE\n'
+                                f'\n'
+                                f'🏦 {bank.account_number} - {bank.account_name}\n'
+                                f'\n'
+                                f'Nội dung: {row["description"]}\n'
+                                f'\n'
+                                f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
+                                f'\n'
+                                f'🕒 {row["transaction_date"]}'
+                            )
+                            # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                                  os.environ.get('TRANSACTION_BOT_API_KEY'))
+                print('Update transactions for bank: %s. Updated at %s' % (
+                bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+            else:
+                pass
         return JsonResponse({'status': 200, 'message': 'Done','success': True, 'data':data})
     return JsonResponse({'status': 500, 'message': 'Invalid request','success': False})
