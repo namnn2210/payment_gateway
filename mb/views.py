@@ -94,7 +94,7 @@ def mb_balance(username, password, account_number):
 def mb_webhook(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        print(data)
+        print('================',data)
         formatted_transactions = []
         new_formatted_transaction = Transaction(
             transaction_number=data['refNo'],
