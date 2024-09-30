@@ -54,6 +54,7 @@ def create_deposit_order(transaction,cid):
         
         if response.status_code == 200:
             response_data = response.json()
+            logger.info(response_data)
             return response_data
         else:
             return None
