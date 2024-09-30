@@ -94,7 +94,7 @@ def mb_balance(username, password, account_number):
 @csrf_exempt
 def mb_webhook(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
+        data = json.loads(request.body)['data'][0]
         logger.info(data)
         formatted_transactions = []
         new_formatted_transaction = Transaction(
