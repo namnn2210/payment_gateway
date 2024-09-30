@@ -89,7 +89,6 @@ def mb_balance(username, password, account_number):
 def mb_webhook(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        with open('mb_webhook.txt', 'a') as f:
-            f.write(str(data))
+        print(data)
         return JsonResponse({'status': 200, 'message': 'Done','success': True, 'data':data})
     return JsonResponse({'status': 500, 'message': 'Invalid request','success': False})
