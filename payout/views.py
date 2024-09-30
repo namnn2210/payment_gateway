@@ -115,8 +115,7 @@ def list_payout(request):
 
     total_results = len(list_payout)
     total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
-    
-    print(list_payout)
+
 
     paginator = Paginator(list_payout, 10)  # Show 10 items per page
     page_number = request.GET.get('page')
@@ -206,7 +205,6 @@ def update_payout(request, update_type):
         bank_id = data.get('bank_id')
         request_user_username = model_to_dict(request.user)['username']
         reason = data.get('reason',1)
-        print('---', type(reason))
         update_body = {
             'payout_id':payout_id,
             'bank_id':bank_id,

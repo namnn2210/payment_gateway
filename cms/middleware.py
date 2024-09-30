@@ -9,7 +9,6 @@ class TwoFactorAuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        print(request.path)
         if request.path in ['/vi/user_login','/en/user_login', '/en/verify_otp', '/vi/verify_otp', '/en/setup_2fa','/vi/setup_2fa']:
             return self.get_response(request)
 
