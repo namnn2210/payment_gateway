@@ -44,6 +44,9 @@ def create_deposit_order(transaction,cid):
             'sign': sign,
         }
 
+        print(os.environ.get('DEPOSIT_URL'))
+        print(payload)
+
         logger.info(os.environ.get('DEPOSIT_URL'))
         logger.info(payload)
         
