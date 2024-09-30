@@ -90,5 +90,5 @@ def mb_webhook(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         print(data)
-        return JsonResponse({'error': 'ok'}, status=200)
-    return JsonResponse({'error': 'Invalid request'}, status=400)
+        return JsonResponse({'status': 200, 'message': 'Done','success': True, 'data':data})
+    return JsonResponse({'status': 500, 'message': 'Invalid request','success': False})
