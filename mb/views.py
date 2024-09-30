@@ -84,3 +84,11 @@ def mb_balance(username, password, account_number):
             if account['acctNo'] == account_number:
                 return int(account['currentBalance'])
     return None
+
+
+def mb_webhook(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print(data)
+        return JsonResponse({'error': 'ok'}, status=200)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
