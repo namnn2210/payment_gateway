@@ -85,7 +85,7 @@ def mb_balance(username, password, account_number):
                 return int(account['currentBalance'])
     return None
 
-
+@csrf_exempt
 def mb_webhook(request):
     if request.method == 'POST':
         data = json.loads(request.body)
