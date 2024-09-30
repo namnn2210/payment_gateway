@@ -204,3 +204,18 @@ CELERY_TASK_EAGER_PROPAGATES = True
 TWO_FACTOR_PATCH_ADMIN = True
 LOGIN_URL = 'two_factor:login'
 LOGIN_REDIRECT_URL = 'index'
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+    }
+}
+

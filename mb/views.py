@@ -1,4 +1,4 @@
-from django.shortcuts import render
+import logging
 from django.views.decorators.csrf import csrf_exempt
 from bank.database import redis_connect
 from django.http import JsonResponse
@@ -20,6 +20,7 @@ import pytz
 
 
 load_dotenv()
+logger = logging.getLogger('django')
 
 
 def mb_login(username, password, account_number):
@@ -94,7 +95,7 @@ def mb_balance(username, password, account_number):
 def mb_webhook(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        print('================',data)
+        logger.info(data)
         formatted_transactions = []
         new_formatted_transaction = Transaction(
             transaction_number=data['refNo'],
