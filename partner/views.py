@@ -3,8 +3,12 @@ from partner.models import CID
 import hashlib
 import os
 import requests
+import logging
 
 load_dotenv()
+
+logger = logging.getLogger('django')
+
 
 def create_deposit_order(transaction,cid):
     try:
@@ -39,6 +43,9 @@ def create_deposit_order(transaction,cid):
             'hashid': hashid,
             'sign': sign,
         }
+
+        logger.info(os.environ.get('DEPOSIT_URL'))
+        logger.info(payload)
         
         response = requests.post(os.environ.get('DEPOSIT_URL'), data=payload, headers=headers)
         
