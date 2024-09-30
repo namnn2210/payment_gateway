@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from celery import Celery
+import logging
 from dotenv import load_dotenv
 from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
@@ -19,6 +20,7 @@ from django.utils import timezone
 import time
 
 load_dotenv()
+logger = logging.getLogger('django')
 
 def get_balance(bank):
     error_count = 0
@@ -144,9 +146,9 @@ def get_transaction(bank):
                             # print('partner mapping found: ', len(partner_mapping))
                             # if partner_mapping:
                             for item in cids:
-                                print('test partner: ', item.name)
+                                logger.info(item.name)
                                 result = create_deposit_order(row,item)
-                                print('result partner', result)
+                                logger.info(result)
                                 if result:
                                     if result['msg'] == 'transfercode is null':
                                         update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')
