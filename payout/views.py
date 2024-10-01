@@ -334,9 +334,7 @@ def webhook(request):
             float(money)
         except Exception as ex:
             return JsonResponse({'status': 504, 'message': 'Invalid amount'})
-        
-        if '.00' not in money:
-            return JsonResponse({'status': 503, 'message': 'Amount must ends with .00'})
+
         
         existed_payout = Payout.objects.filter(
         orderid=orderid).first()

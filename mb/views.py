@@ -18,7 +18,6 @@ from datetime import datetime
 from django.utils import timezone
 import pytz
 
-
 load_dotenv()
 logger = logging.getLogger('django')
 
@@ -36,7 +35,8 @@ def mb_login(username, password, account_number):
         print('end login: ', datetime.now())
         return True
     return False
-    
+
+
 def mb_transactions(username, password, account_number, start=''):
     end_date, start_date = get_dates(start_date=start)
     body = {
@@ -64,7 +64,7 @@ def mb_transactions(username, password, account_number, start=''):
                     new_formatted_transaction = Transaction(
                         transaction_number=transaction['refNo'],
                         transaction_date=transaction['transactionDate'],
-                        transaction_type= transaction_type,
+                        transaction_type=transaction_type,
                         account_number=transaction['accountNo'],
                         description=transaction['description'],
                         transfer_code=find_substring(transaction['description']),
@@ -91,42 +91,52 @@ def mb_balance(username, password, account_number):
                 return int(account['currentBalance'])
     return None
 
+
 @csrf_exempt
 def mb_webhook(request):
     if request.method == 'POST':
-        data = json.loads(request.body)['data'][0]
+        data = json.loads(request.body)['data']
         logger.info(data)
-        formatted_transactions = []
-        new_formatted_transaction = Transaction(
-            transaction_number=data['refNo'],
-            transaction_date=data['transactionDate'],
-            transaction_type=data['type'],
-            account_number=data['accountNo'],
-            description=data['description'],
-            transfer_code=find_substring(data['description']),
-            amount=int(data['amount'])
-        )
-        formatted_transactions.append(new_formatted_transaction.__dict__())
         redis_client = redis_connect(1)
-        bank_exists = redis_client.get(new_formatted_transaction.account_number)
-        bank = BankAccount.objects.filter(account_number=new_formatted_transaction.account_number).first()
-        bank.balance = int(data['availableBalance'])
-        bank.save()
+        formatted_transactions = []
+        account_number = ''
+        balance = 0
+        for item in data:
+            bank_history = json.loads(redis_client.get(item['accountNo']))
+            transaction_existed = False
+            for transaction in bank_history:
+                if transaction['transaction_number'] == item['refNo']:
+                    transaction_existed = True
+            if not transaction_existed:
+                new_formatted_transaction = Transaction(
+                    transaction_number=item['refNo'],
+                    transaction_date=item['transactionDate'],
+                    transaction_type=item['type'],
+                    account_number=item['accountNo'],
+                    description=item['description'],
+                    transfer_code=find_substring(item['description']),
+                    amount=int(item['amount'])
+                )
+                account_number = item['accountNo']
+                balance = int(item['availableBalance'])
+                formatted_transactions.append(new_formatted_transaction.__dict__())
+
+        bank_exists = redis_client.get(account_number)
         new_bank_history_df = pd.DataFrame(formatted_transactions)
         if new_bank_history_df.empty:
             alert = (
                 f'🔴 - LỖI HỆ THỐNG\n'
-                f'Lỗi lấy lịch sử giao dịch từ {new_formatted_transaction.account_number} - MB empty\n'
+                f'Lỗi lấy lịch sử giao dịch từ {account_number} - MB empty\n'
                 f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
             )
             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         final_new_bank_history_df = new_bank_history_df.fillna('')
         if not bank_exists:
-            redis_client.set(new_formatted_transaction.account_number,
+            redis_client.set(account_number,
                              json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
         else:
             # Transform current transactions history and new transaction history
-            old_bank_history = json.loads(redis_client.get(new_formatted_transaction.account_number))
+            old_bank_history = json.loads(redis_client.get(account_number))
             old_bank_history_df = pd.DataFrame(old_bank_history)
             old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
             final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
@@ -135,38 +145,27 @@ def mb_webhook(request):
                 subset='transaction_number', keep=False)
             # Add new transactions to current history
             new_transaction_df.loc[(new_transaction_df['description'].str.contains('Z')) & (
-                        new_transaction_df['transaction_type'] == 'OUT'), 'status'] = 'Success'
+                    new_transaction_df['transaction_type'] == 'OUT'), 'status'] = 'Success'
             updated_df = pd.concat([old_bank_history_df, new_transaction_df])
             # Update Redis
-            redis_client.set(new_formatted_transaction.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
+            redis_client.set(account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
             if not new_transaction_df.empty:
                 for _, row in new_transaction_df.iterrows():
-                    history = json.loads(redis_client.get(new_formatted_transaction.account_number))
-                    transaction_exists = False
-                    # for transaction in history:
-                    #     if transaction['transaction_number'] == row['transaction_number']:
-                    #         transaction_exists = True
-                    #         break
-                    # if transaction_exists:
-                    #     continue
+                    bank = BankAccount.objects.filter(account_number=row['']).first()
+                    bank.balance = balance
+                    bank.save()
                     if not datetime.strptime(row["transaction_date"],
                                              '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
                         continue
                     if row['transaction_type'] == 'IN':
                         if bank.bank_type == 'IN':
-                            transaction_type = '+'
-                            transaction_color = '🟢'  # Green circle emoji for IN transactions
                             formatted_amount = '{:,.2f}'.format(row['amount'])
-                            balance = '{:,.2f}'.format(int(data['availableBalance']))
-                            # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                            balance = '{:,.2f}'.format(bank.balance)
                             bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                             success = False
                             reported = False
                             if bank_account:
                                 cids = CID.objects.filter(status=True)
-                                # partner_mapping = PartnerMapping.objects.filter(bank=bank_account)
-                                # print('partner mapping found: ', len(partner_mapping))
-                                # if partner_mapping:
                                 for item in cids:
                                     print('test partner: ', item.name)
                                     result = create_deposit_order(row, item)
@@ -212,8 +211,6 @@ def mb_webhook(request):
                                                     f'\n'
                                                     f'Received amount💲: {formatted_amount} \n'
                                                     f'\n'
-                                                    f'Balance💲: {balance} \n'
-                                                    f'\n'
                                                     f'Memo: {row['description']}\n'
                                                     f'\n'
                                                     f'Code: {find_substring(row['description'])}\n'
@@ -256,8 +253,6 @@ def mb_webhook(request):
                             transaction_type = '-'
                             transaction_color = '🔴'  # Red circle emoji for OUT transactions
                             formatted_amount = '{:,.2f}'.format(row['amount'])
-                            transaction_number = row['transaction_number']
-
                             alert = (
                                 f'PAYOUT DONE\n'
                                 f'\n'
@@ -269,12 +264,11 @@ def mb_webhook(request):
                                 f'\n'
                                 f'🕒 {row["transaction_date"]}'
                             )
-                            # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                                   os.environ.get('TRANSACTION_BOT_API_KEY'))
                 print('Update transactions for bank: %s. Updated at %s' % (
-                bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+                    bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
             else:
                 pass
-        return JsonResponse({'status': 200, 'message': 'Done','success': True, 'data':data})
-    return JsonResponse({'status': 500, 'message': 'Invalid request','success': False})
+        return JsonResponse({'status': 200, 'message': 'Done', 'success': True, 'data': data})
+    return JsonResponse({'status': 500, 'message': 'Invalid request', 'success': False})
