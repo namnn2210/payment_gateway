@@ -151,7 +151,7 @@ def mb_webhook(request):
             redis_client.set(account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
             if not new_transaction_df.empty:
                 for _, row in new_transaction_df.iterrows():
-                    bank = BankAccount.objects.filter(account_number=row['']).first()
+                    bank = BankAccount.objects.filter(account_number=row['account_number']).first()
                     bank.balance = balance
                     bank.save()
                     if not datetime.strptime(row["transaction_date"],
