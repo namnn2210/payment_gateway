@@ -162,7 +162,7 @@ def mb_webhook(request):
                     if row['transaction_type'] == 'IN':
                         if bank.bank_type == 'IN':
                             formatted_amount = '{:,.2f}'.format(row['amount'])
-                            balance = '{:,.2f}'.format(balance)
+                            balance = '{:,.2f}'.format(new_balance)
                             bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                             success = False
                             reported = False
