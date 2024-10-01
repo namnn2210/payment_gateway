@@ -100,7 +100,7 @@ def mb_webhook(request):
         redis_client = redis_connect(1)
         formatted_transactions = []
         account_number = ''
-        balance = 0
+        new_balance = 0
         for item in data:
             bank_history = json.loads(redis_client.get(item['accountNo']))
             transaction_existed = False
@@ -118,8 +118,8 @@ def mb_webhook(request):
                     amount=int(item['amount'])
                 )
                 account_number = item['accountNo']
-                balance = int(item['availableBalance'])
-                logger.info(balance)
+                new_balance = int(item['availableBalance'])
+                logger.info(new_balance)
                 formatted_transactions.append(new_formatted_transaction.__dict__())
 
         bank_exists = redis_client.get(account_number)
@@ -153,8 +153,8 @@ def mb_webhook(request):
             if not new_transaction_df.empty:
                 for _, row in new_transaction_df.iterrows():
                     bank = BankAccount.objects.filter(account_number=row['account_number']).first()
-                    logger.info(f'Bank balance: {balance}')
-                    bank.balance = balance
+                    logger.info(f'Bank balance: {new_balance}')
+                    bank.balance = new_balance
                     bank.save()
                     if not datetime.strptime(row["transaction_date"],
                                              '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
@@ -269,7 +269,7 @@ def mb_webhook(request):
                             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                                   os.environ.get('TRANSACTION_BOT_API_KEY'))
                 print('Update transactions for bank: %s. Updated at %s' % (
-                    bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+                    account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
             else:
                 pass
         return JsonResponse({'status': 200, 'message': 'Done', 'success': True, 'data': data})
