@@ -202,28 +202,34 @@ def mb_webhook(request):
                                             if result['orderno'] == '':
                                                 continue
                                             else:
-                                                update_transaction_history_status(row['account_number'],
-                                                                                  row['transfer_code'], 'Success')
-                                                alert = (
-                                                    f'🟩🟩🟩 Success! CID: {item.name}\n'
-                                                    f'\n'
-                                                    f'Account: {row['account_number']}'
-                                                    f'\n'
-                                                    f'Confirmed by order: \n'
-                                                    f'\n'
-                                                    f'Received amount💲: {formatted_amount} \n'
-                                                    f'\n'
-                                                    f'Memo: {row['description']}\n'
-                                                    f'\n'
-                                                    f'Code: {find_substring(row['description'])}\n'
-                                                    f'\n'
-                                                    f'Time: {row["transaction_date"]}\n'
-                                                )
-                                                send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'),
-                                                                      os.environ.get('TRANSACTION_BOT_API_KEY'))
-                                                update_amount_by_date('IN', row['amount'])
-                                                success = True
-                                                break
+                                                ok = False
+                                                old_bank_history = json.loads(redis_client.get(row['account_number']))
+                                                for transaction in old_bank_history:
+                                                    if transaction['transaction_number'] == row['transaction_number']:
+                                                        ok = True
+                                                if not ok:
+                                                    update_transaction_history_status(row['account_number'],
+                                                                                      row['transfer_code'], 'Success')
+                                                    alert = (
+                                                        f'🟩🟩🟩 Success! CID: {item.name}\n'
+                                                        f'\n'
+                                                        f'Account: {row['account_number']}'
+                                                        f'\n'
+                                                        f'Confirmed by order: \n'
+                                                        f'\n'
+                                                        f'Received amount💲: {formatted_amount} \n'
+                                                        f'\n'
+                                                        f'Memo: {row['description']}\n'
+                                                        f'\n'
+                                                        f'Code: {find_substring(row['description'])}\n'
+                                                        f'\n'
+                                                        f'Time: {row["transaction_date"]}\n'
+                                                    )
+                                                    send_telegram_message(alert, os.environ.get('TRANSACTION_CHAT_ID'),
+                                                                          os.environ.get('TRANSACTION_BOT_API_KEY'))
+                                                    update_amount_by_date('IN', row['amount'])
+                                                    success = True
+                                                    break
                                         else:
                                             continue
                                     else:
