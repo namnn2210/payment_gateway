@@ -21,6 +21,7 @@
                             <th></th>
                             <th scope="col">{% trans "Order ID" %}</th>
                             <th scope="col">{% trans "CID" %}</th>
+                            <th scope="col">{% trans "User" %}</th>
                             <th scope="col">{% trans "Status" %}</th>
                         </tr>
                     </thead>
@@ -34,6 +35,7 @@
                                 </td>
                                 <td>{{ item.orderid }}</td>
                                 <td>{{ item.scode }}</td>
+                                <td>{{ item.user }}</td>
                                 <td>
                                     {% if item.status %}
                                         <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
