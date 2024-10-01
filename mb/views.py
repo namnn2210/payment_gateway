@@ -141,10 +141,14 @@ def mb_webhook(request):
             redis_client.set(new_formatted_transaction.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
             if not new_transaction_df.empty:
                 for _, row in new_transaction_df.iterrows():
-                    # history = json.loads(redis_client.get(new_formatted_transaction.account_number))
-                    # for transaction in history:
-                    #     if transaction['transaction_number'] == row['transaction_number']:
-                    #         break
+                    history = json.loads(redis_client.get(new_formatted_transaction.account_number))
+                    transaction_exists = False
+                    for transaction in history:
+                        if transaction['transaction_number'] == row['transaction_number']:
+                            transaction_exists = True
+                            break
+                    if transaction_exists:
+                        continue
                     if not datetime.strptime(row["transaction_date"],
                                              '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
                         continue
