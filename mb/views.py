@@ -249,27 +249,27 @@ def mb_webhook(request):
                                         )
                                         send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
                                                               os.environ.get('226PAY_BOT'))
-                    else:
-                        if bank.bank_type == 'OUT':
-                            transaction_type = '-'
-                            transaction_color = '🔴'  # Red circle emoji for OUT transactions
-                            formatted_amount = '{:,.2f}'.format(row['amount'])
-                            transaction_number = row['transaction_number']
+                        else:
+                            if bank.bank_type == 'OUT':
+                                transaction_type = '-'
+                                transaction_color = '🔴'  # Red circle emoji for OUT transactions
+                                formatted_amount = '{:,.2f}'.format(row['amount'])
+                                transaction_number = row['transaction_number']
 
-                            alert = (
-                                f'PAYOUT DONE\n'
-                                f'\n'
-                                f'🏦 {bank.account_number} - {bank.account_name}\n'
-                                f'\n'
-                                f'Nội dung: {row["description"]}\n'
-                                f'\n'
-                                f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
-                                f'\n'
-                                f'🕒 {row["transaction_date"]}'
-                            )
-                            # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
-                            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                                  os.environ.get('TRANSACTION_BOT_API_KEY'))
+                                alert = (
+                                    f'PAYOUT DONE\n'
+                                    f'\n'
+                                    f'🏦 {bank.account_number} - {bank.account_name}\n'
+                                    f'\n'
+                                    f'Nội dung: {row["description"]}\n'
+                                    f'\n'
+                                    f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
+                                    f'\n'
+                                    f'🕒 {row["transaction_date"]}'
+                                )
+                                # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                                      os.environ.get('TRANSACTION_BOT_API_KEY'))
                 print('Update transactions for bank: %s. Updated at %s' % (
                 bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
             else:
