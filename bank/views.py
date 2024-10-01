@@ -1,3 +1,4 @@
+from OpenSSL.rand import status
 from django.shortcuts import render, redirect
 from .models import Bank, BankAccount
 from payout.models import UserTimeline, Payout
@@ -16,6 +17,8 @@ from .database import redis_connect
 from datetime import datetime
 import json
 import pandas as pd
+import requests
+import os
 from django.db.models import Q, Sum
 from django.core.paginator import Paginator
 from dotenv import load_dotenv
@@ -159,16 +162,21 @@ class AddBankView(View):
 
 
             bank = Bank.objects.filter(name=bank_name).first()
-            bank_account = BankAccount.objects.create(
+
+            if bank_name == 'MB':
+                login_logout_mb(bank_username, bank_password, bank_number, 'ON')
+
+            BankAccount.objects.create(
                 user=request.user,
                 bank_name=bank,
-                account_number=bank_account.get('accountNumber'),
+                account_number=bank_number,
                 account_name=bank_accountname,
                 balance=0,
                 bank_type=bank_type,
                 username=bank_username,
                 password=bank_password
             )
+
 
             return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         except Exception as ex:
@@ -186,12 +194,48 @@ def toggle_bank_status(request):
                 new_status = True
             bank_account.status = new_status
             bank_account.save()
+            if bank_account.bank_name.name == 'MB':
+                if data['status'] == 'ON':
+                    login_logout_mb(bank_account.username, bank_account.password, bank_account.account_number, 'ON')
+                else:
+                    login_logout_mb(bank_account.username, bank_account.password, bank_account.account_number, 'OFF')
             return JsonResponse({'status': 200, 'message': 'Status updated successfully'})
         except BankAccount.DoesNotExist:
             return JsonResponse({'status': 404, 'message': 'Bank account not found'})
     return JsonResponse({'status': 400, 'message': 'Invalid request'})
 
+def login_logout_mb(username, password, account_number, toggle_status):
 
+    if toggle_status == 'ON':
+        payload = json.dumps({
+            "username": username,
+            "password": password,
+            "accountNo": account_number,
+            "webhook": "https://gateway.226pay.com/en/bank/mb_webhook"
+        })
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.post(f'{os.environ.get('MB_WEBHOOK')}doLogin', headers=headers,
+                                 data=payload).json()
+
+        if response['type'] != 'success':
+            return JsonResponse({'status': 500, 'message': 'Failed to login MB Bank'})
+    else:
+        payload = json.dumps({
+            "username": username,
+        })
+        headers = {
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.post(f'{os.environ.get('MB_WEBHOOK')}doDelete', headers=headers,
+                                 data=payload).json()
+
+        if response['type'] != 'success':
+            return JsonResponse({'status': 500, 'message': 'Failed to delete MB Bank'})
+    return JsonResponse({'status': 200, 'message': 'Success'})
 
 
 def update_transaction_history(request):
