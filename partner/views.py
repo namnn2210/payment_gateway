@@ -43,12 +43,6 @@ def create_deposit_order(transaction,cid):
             'hashid': hashid,
             'sign': sign,
         }
-
-        print(os.environ.get('DEPOSIT_URL'))
-        print(payload)
-
-        logger.info(os.environ.get('DEPOSIT_URL'))
-        logger.info(payload)
         
         response = requests.post(os.environ.get('DEPOSIT_URL'), data=payload, headers=headers)
         
