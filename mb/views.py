@@ -119,6 +119,7 @@ def mb_webhook(request):
                 )
                 account_number = item['accountNo']
                 balance = int(item['availableBalance'])
+                logger.info(balance)
                 formatted_transactions.append(new_formatted_transaction.__dict__())
 
         bank_exists = redis_client.get(account_number)
