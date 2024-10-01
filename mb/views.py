@@ -152,6 +152,7 @@ def mb_webhook(request):
             if not new_transaction_df.empty:
                 for _, row in new_transaction_df.iterrows():
                     bank = BankAccount.objects.filter(account_number=row['account_number']).first()
+                    logger.info(f'Bank balance: {balance}')
                     bank.balance = balance
                     bank.save()
                     if not datetime.strptime(row["transaction_date"],
@@ -160,7 +161,7 @@ def mb_webhook(request):
                     if row['transaction_type'] == 'IN':
                         if bank.bank_type == 'IN':
                             formatted_amount = '{:,.2f}'.format(row['amount'])
-                            balance = '{:,.2f}'.format(bank.balance)
+                            balance = '{:,.2f}'.format(balance)
                             bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                             success = False
                             reported = False
