@@ -149,6 +149,7 @@ def mb_webhook(request):
                             transaction_type = '+'
                             transaction_color = '🟢'  # Green circle emoji for IN transactions
                             formatted_amount = '{:,.2f}'.format(row['amount'])
+                            balance = '{:,.2f}'.format(int(data['availableBalance']))
                             # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                             bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                             success = False
@@ -202,6 +203,8 @@ def mb_webhook(request):
                                                     f'Confirmed by order: \n'
                                                     f'\n'
                                                     f'Received amount💲: {formatted_amount} \n'
+                                                    f'\n'
+                                                    f'Balance💲: {balance} \n'
                                                     f'\n'
                                                     f'Memo: {row['description']}\n'
                                                     f'\n'
