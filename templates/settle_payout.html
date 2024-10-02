@@ -13,7 +13,7 @@
         <div class="col-md-6 col-sm-12 text-right mt-4">
         </div>
         <div class="col-md-6 col-sm-12 text-right mt-4">
-            <button class="btn btn-primary btn-add" data-toggle="modal" data-target="#addPayoutModal">{% trans "Add Settle Payout" %}</button>
+            <button class="btn btn-primary rounded-pill btn-add" data-toggle="modal" data-target="#addPayoutModal"><i class="bi bi-plus me-1"></i>{% trans "Add Settle Payout" %}</button>
         </div>
     </div>
     <form id="searchForm" method="get" action="{% url 'list_settle_payout' %}">
@@ -43,7 +43,7 @@
         </div>
         <div class="row mt-4">
             <div class="col-md-12 col-sm-12 text-right">
-                <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+                <button type="submit" class="btn rounded-pill btn-primary"><i class="bi bi-search me-1"></i>{% trans "Search" %}</button>
             </div>
         </div>
     </form>
@@ -100,7 +100,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">{% trans "Add" %}</button>
+                    <button type="submit" class="btn rounded-pill btn-primary">{% trans "Add" %}</button>
                 </form>
             </div>
         </div>
@@ -117,9 +117,9 @@
                 <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
             </div>
             <div class="modal-footer">
-                <button type="button" data-bs-toggle="modal" data-bs-target="#selectReportModal" class="btn btn-danger report-btn">{% trans "Report" %}</button>
-                <button type="button" class="btn btn-warning cancel-btn">{% trans "Cancel" %}</button>
-                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#selectPayoutBankModal">{% trans "Done" %}</button>
+                <button type="button" data-bs-toggle="modal" data-bs-target="#selectReportModal" class="btn rounded-pill btn-danger report-btn"><i class="bi bi-exclamation-triangle me-1"></i>{% trans "Report" %}</button>
+                <button type="button" class="btn btn-warning rounded-pill cancel-btn"><i class="bi bi-exclamation-octagon me-1"></i>{% trans "Cancel" %}</button>
+                <button type="button" class="btn btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#selectPayoutBankModal"><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
             </div>
         </div>
     </div>
@@ -139,7 +139,7 @@
                 </select>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success edit-done-btn-modal">{% trans "Done" %}</button>
+                <button type="button" class="btn btn-success rounded-pill edit-done-btn-modal"><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
             </div>
         </div>
     </div>
@@ -162,7 +162,7 @@
                 </select>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success done-btn-modal" data-item-id="">{% trans "Done" %}</button>
+                <button type="button" class="btn btn-success rounded-pill done-btn-modal" data-item-id=""><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
             </div>
         </div>
     </div>
@@ -184,7 +184,7 @@
                 </select>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success done-report-btn" data-item-id="">{% trans "Done" %}</button>
+                <button type="button" class="btn btn-success rounded-pill done-report-btn" data-item-id=""><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
             </div>
         </div>
     </div>
