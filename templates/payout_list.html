@@ -38,15 +38,15 @@
                                 <td><span class="badge rounded-pill bg-primary">{{ item.user }}</span></td>
                                 <td>
                                     {% if item.status %}
-                                        <span class="btn btn-sm bg-success text-center"><i class="bi bi-emoji-heart-eyes me-1"></i>{% trans "Done" %}</span>
+                                        <span class="btn btn-sm rounded-pill bg-success text-center"><i class="bi bi-emoji-heart-eyes me-1"></i>{% trans "Done" %}</span>
                                     {% elif not item.status and not item.is_cancel and not item.is_report %}
-                                        <span class="btn btn-sm bg-warning text-center"><i class="bi bi-emoji-neutral me-1"></i>{% trans "Pending" %}</span>
+                                        <span class="btn btn-sm rounded-pill bg-warning text-center"><i class="bi bi-emoji-neutral me-1"></i>{% trans "Pending" %}</span>
                                     {% elif item.is_report and not item.is_cancel and not item.status %}
-                                        <span class="btn btn-sm bg-danger"><i class="bi bi-emoji-angry me-1"></i>{% trans "Reported" %}</span>
+                                        <span class="btn btn-sm rounded-pill bg-danger"><i class="bi bi-emoji-angry me-1"></i>{% trans "Reported" %}</span>
                                     {% elif item.is_cancel and item.is_report %}
-                                        <span class="btn btn-sm bg-danger"><i class="bi bi-emoji-dizzy me-1"></i>{% trans "Canceled" %}</span>
+                                        <span class="btn btn-sm rounded-pill bg-danger"><i class="bi bi-emoji-dizzy me-1"></i>{% trans "Canceled" %}</span>
                                     {% elif item.is_cancel and not item.is_report %}
-                                        <span class="btn btn-sm bg-danger"><i class="bi bi-emoji-dizzy me-1"></i>{% trans "Canceled" %}</span>
+                                        <span class="btn btn-sm rounded-pill bg-danger"><i class="bi bi-emoji-dizzy me-1"></i>{% trans "Canceled" %}</span>
                                     {% else %}
                                         <span></span>
                                     {% endif %}
