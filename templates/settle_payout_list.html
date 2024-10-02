@@ -35,7 +35,7 @@
                                 </td>
                                 <td>{{ item.orderid }}</td>
                                 <td>{{ item.scode }}</td>
-                                <td>{{ item.user }}</td>
+                                <td><span class="badge rounded-pill bg-primary">{{ item.user }}</span></td>
                                 <td>
                                     {% if item.status %}
                                         <span class="btn btn-sm bg-success text-center"><i class="bi bi-emoji-heart-eyes me-1"></i>{% trans "Done" %}</span>
