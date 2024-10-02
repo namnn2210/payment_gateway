@@ -105,8 +105,6 @@ def get_transaction(bank):
     else:
         new_transactions = None
 
-    # new_bank_history = transactions
-    # new_bank_history_df = pd.DataFrame(new_bank_history)
     if not new_transactions:
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
@@ -114,7 +112,7 @@ def get_transaction(bank):
             f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-    # final_new_bank_history_df = new_bank_history_df.fillna('')
+
     if not bank_exists:
         redis_client.set(bank.account_number,
                          json.dumps(new_transactions, default=str))
@@ -122,12 +120,7 @@ def get_transaction(bank):
         # Transform current transactions history and new transaction history
         old_bank_history = json.loads(redis_client.get(bank.account_number))
         list_old_transaction_numbers = [item['transaction_number'] for item in old_bank_history]
-        # old_bank_history_df = pd.DataFrame(old_bank_history)
-        # old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
-        # final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
-        # Detect new transactions
-        # new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(
-        #     subset='transaction_number', keep=False)
+
         different_transactions = [item for item in new_transactions if item['transaction_number'] not in list_old_transaction_numbers]
         # Add new transactions to current history
         for transaction in different_transactions:
@@ -135,7 +128,6 @@ def get_transaction(bank):
                 transaction['status'] = 'Success'
         updated_transactions = old_bank_history + different_transactions
         # Update Redis
-        # redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
         redis_client.set(bank.account_number, json.dumps(updated_transactions, default=str))
         if different_transactions:
             for row in different_transactions:
@@ -143,18 +135,12 @@ def get_transaction(bank):
                     continue
                 if row['transaction_type'] == 'IN':
                     if bank.bank_type == 'IN':
-                        transaction_type = '+'
-                        transaction_color = '🟢'  # Green circle emoji for IN transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-                        # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                         success = False
                         reported = False
                         if bank_account:
                             cids = CID.objects.filter(status=True)
-                            # partner_mapping = PartnerMapping.objects.filter(bank=bank_account)
-                            # print('partner mapping found: ', len(partner_mapping))
-                            # if partner_mapping:
                             for item in cids:
                                 logger.info(item.name)
                                 result = create_deposit_order(row, item)
@@ -241,7 +227,6 @@ def get_transaction(bank):
                         transaction_type = '-'
                         transaction_color = '🔴'  # Red circle emoji for OUT transactions
                         formatted_amount = '{:,.2f}'.format(row['amount'])
-                        transaction_number = row['transaction_number']
 
                         alert = (
                             f'PAYOUT DONE\n'
@@ -254,7 +239,6 @@ def get_transaction(bank):
                             f'\n'
                             f'🕒 {row["transaction_date"]}'
                         )
-                        # redis_client.set(bank.account_number, json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
                         send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                               os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (

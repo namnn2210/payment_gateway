@@ -194,11 +194,11 @@ def toggle_bank_status(request):
                 new_status = True
             bank_account.status = new_status
             bank_account.save()
-            if bank_account.bank_name.name == 'MB':
-                if data['status'] == 'ON':
-                    login_logout_mb(bank_account.username, bank_account.password, bank_account.account_number, 'ON')
-                else:
-                    login_logout_mb(bank_account.username, bank_account.password, bank_account.account_number, 'OFF')
+            # if bank_account.bank_name.name == 'MB':
+            #     if data['status'] == 'ON':
+            #         login_logout_mb(bank_account.username, bank_account.password, bank_account.account_number, 'ON')
+            #     else:
+            #         login_logout_mb(bank_account.username, bank_account.password, bank_account.account_number, 'OFF')
             return JsonResponse({'status': 200, 'message': 'Status updated successfully'})
         except BankAccount.DoesNotExist:
             return JsonResponse({'status': 404, 'message': 'Bank account not found'})
