@@ -83,9 +83,9 @@
                                                             data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
                                                             data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
                                                             data-is-report="{{item.is_report}}"
-                                                            data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
+                                                            data-is-cancel="{{item.is_cancel}}"><i class="bi bi-cash me-1"></i>{% trans "Pay" %}</button>
                                                     {% endif %}
-                                                    <button class="btn btn-sm rounded-pill btn-danger delete-btn" data-item-id="{{ item.id }}"><i class="bi bi-exclamation-octagon me-1"></i>{% trans "Delete" %}</button>
+                                                    <button class="btn btn-sm rounded-pill btn-danger delete-btn" data-item-id="{{ item.id }}"><i class="bi bi-trash me-1"></i>{% trans "Delete" %}</button>
                                                 {% else %}
                                                     {% if item.user == user or item.user.username == 'admin' %}
                                                         {% if not item.status and not item.is_cancel%}
@@ -94,11 +94,11 @@
                                                                 data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
                                                                 data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
                                                                 data-is-report="{{item.is_report}}"
-                                                                data-is-cancel="{{item.is_cancel}}">{% trans "Pay" %}</button>
+                                                                data-is-cancel="{{item.is_cancel}}"><i class="bi bi-cash me-1"></i>{% trans "Pay" %}</button>
                                                         {% endif %}
                                                     {% endif %}
                                                 {% endif %}
-                                                <button class="btn btn-sm rounded-pill btn-danger edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" data-item-id="{{ item.id }}">{% trans "Edit" %}</button>
+                                                <button class="btn btn-sm rounded-pill btn-danger edit-btn" data-bs-toggle="modal" data-bs-target="#editModal" data-item-id="{{ item.id }}"><i class="bi bi-pencil-square me-1"></i>{% trans "Edit" %}</button>
                                             </p>
                                         </div>
                                     </div>
