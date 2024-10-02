@@ -97,44 +97,48 @@ def get_transaction(bank):
     redis_client = redis_connect(1)
     bank_exists = redis_client.get(bank.account_number)
     if bank.bank_name.name == 'MB':
-        transactions = mb_transactions(bank.username, bank.password, bank.account_number)
+        new_transactions = mb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'ACB':
-        transactions = acb_transactions(bank.username, bank.password, bank.account_number)
+        new_transactions = acb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
-        transactions = vietin_transactions(bank.username, bank.password, bank.account_number)
+        new_transactions = vietin_transactions(bank.username, bank.password, bank.account_number)
     else:
-        transactions = None
+        new_transactions = None
 
-    new_bank_history = transactions
-    new_bank_history_df = pd.DataFrame(new_bank_history)
-    if new_bank_history_df.empty:
+    # new_bank_history = transactions
+    # new_bank_history_df = pd.DataFrame(new_bank_history)
+    if not new_transactions:
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
             f'Lỗi lấy lịch sử giao dịch từ {bank.account_number} - {bank.bank_name.name} empty\n'
             f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-    final_new_bank_history_df = new_bank_history_df.fillna('')
+    # final_new_bank_history_df = new_bank_history_df.fillna('')
     if not bank_exists:
         redis_client.set(bank.account_number,
-                         json.dumps(final_new_bank_history_df.to_dict(orient='records'), default=str))
+                         json.dumps(new_transactions, default=str))
     else:
         # Transform current transactions history and new transaction history
         old_bank_history = json.loads(redis_client.get(bank.account_number))
-        old_bank_history_df = pd.DataFrame(old_bank_history)
-        old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
-        final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
+        list_old_transaction_numbers = [item['transaction_number'] for item in old_bank_history]
+        # old_bank_history_df = pd.DataFrame(old_bank_history)
+        # old_bank_history_df['amount'] = old_bank_history_df['amount'].astype(int)
+        # final_new_bank_history_df['amount'] = final_new_bank_history_df['amount'].astype(int)
         # Detect new transactions
-        new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(
-            subset='transaction_number', keep=False)
+        # new_transaction_df = pd.concat([old_bank_history_df, final_new_bank_history_df]).drop_duplicates(
+        #     subset='transaction_number', keep=False)
+        different_transactions = [item for item in new_transactions if item['transaction_number'] not in list_old_transaction_numbers]
         # Add new transactions to current history
-        new_transaction_df.loc[(new_transaction_df['description'].str.contains('Z')) & (
-                    new_transaction_df['transaction_type'] == 'OUT'), 'status'] = 'Success'
-        updated_df = pd.concat([old_bank_history_df, new_transaction_df])
+        for transaction in different_transactions:
+            if 'Z' in transaction['description'] and transaction['transaction_type'] == 'OUT':
+                transaction['status'] = 'Success'
+        updated_transactions = old_bank_history + different_transactions
         # Update Redis
-        redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
-        if not new_transaction_df.empty:
-            for _, row in new_transaction_df.iterrows():
+        # redis_client.set(bank.account_number, json.dumps(updated_df.to_dict(orient='records'), default=str))
+        redis_client.set(bank.account_number, json.dumps(updated_transactions, default=str))
+        if different_transactions:
+            for row in different_transactions:
                 if not datetime.strptime(row["transaction_date"], '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
                     continue
                 if row['transaction_type'] == 'IN':
