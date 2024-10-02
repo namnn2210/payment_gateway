@@ -39,11 +39,11 @@
             <div class="card info-card revenue-card">
                 <div class="card-body text-center mt-4 align-items-center">
                     <button type="button" class="btn btn-primary rounded-pill create-deposit-btn" data-bs-toggle="modal"
-                        data-bs-target="#createDepositModal"></i>{% trans "Create Deposit Request" %}</button>
+                        data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
                     {% if is_session %}
-                        <button type="button" class="btn btn-danger start-session-btn">{% trans "End Session" %}</button>
+                        <button type="button" class="btn btn-danger rounded-pill start-session-btn">{% trans "End Session" %}</button>
                     {% else %}
-                        <button type="button" class="btn btn-success start-session-btn">{% trans "Start Session" %}</button>
+                        <button type="button" class="btn btn-success rounded-pill start-session-btn">{% trans "Start Session" %}</button>
                     {% endif %}
                 </div>
             </div>
@@ -75,9 +75,9 @@
                                     <td>{{ deposit.amount|floatformat:2|intcomma }}</td>
                                     <td>
                                         {% if deposit.status %}
-                                        <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
+                                        <span class="btn btn-sm rounded-pill bg-success text-center">{% trans "Done" %}</span>
                                         {% else %}
-                                        <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
+                                        <span class="btn btn-sm rounded-pill bg-warning text-center">{% trans "Pending" %}</span>
                                         {% endif %}
                                     </td>
                                     <td>{{ deposit.created_at|date:"d/m/Y H:i:s" }}</td>
@@ -104,7 +104,7 @@
                                                 <p>
                                                     <strong>{% trans "Action" %}:</strong>
                                                     {% if not deposit.status and user.is_superuser %}
-                                                    <button class="btn btn-sm btn-success pay-btn"
+                                                    <button class="btn btn-sm rounded-pill btn-success pay-btn"
                                                         data-bs-toggle="modal" data-bs-target="#payModal"
                                                         data-item-id="{{ deposit.id }}"
                                                         data-bankcode="{{ deposit.bankcode }}"
@@ -113,7 +113,7 @@
                                                         data-amount="{{ deposit.amount }}">{% trans "Pay" %}</button>
                                                     {% endif %}
                                                     {% if user.is_superuser %}
-                                                    <button class="btn btn-sm btn-danger delete-btn"
+                                                    <button class="btn btn-sm rounded-pill btn-danger delete-btn"
                                                         data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
                                                     {% endif %}
                                                 </p>
