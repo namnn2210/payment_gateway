@@ -104,26 +104,26 @@ class Command(BaseCommand):
                                     continue
                             else:
                                 continue
-                        # if not success and not reported:
-                        #     if bank.bank_name.name != 'MB':
-                        #         update_transaction_history_status(row['account_number'], row['transfer_code'],
-                        #                                           'Failed')
-                        #         alert = (
-                        #             f'Hi, failed\n'
-                        #             f'\n'
-                        #             f'Account: {row['account_number']}'
-                        #             f'\n'
-                        #             f'Confirmed by order: \n'
-                        #             f'\n'
-                        #             f'Received amount💲: {formatted_amount} \n'
-                        #             f'\n'
-                        #             f'Memo: {row['description']}\n'
-                        #             f'\n'
-                        #             f'Code: {find_substring(row['description'])}\n'
-                        #             f'\n'
-                        #             f'Time: {row["transaction_date"]}\n'
-                        #             f'\n'
-                        #             f'Reason of not be credited: Order not found!!!'
-                        #         )
-                        #         send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
-                        #                               os.environ.get('226PAY_BOT'))
+                        if not success and not reported:
+
+                            update_transaction_history_status(row['account_number'], row['transfer_code'],
+                                                              'Failed')
+                            alert = (
+                                f'Hi, failed\n'
+                                f'\n'
+                                f'Account: {row['account_number']}'
+                                f'\n'
+                                f'Confirmed by order: \n'
+                                f'\n'
+                                f'Received amount💲: {formatted_amount} \n'
+                                f'\n'
+                                f'Memo: {row['description']}\n'
+                                f'\n'
+                                f'Code: {find_substring(row['description'])}\n'
+                                f'\n'
+                                f'Time: {row["transaction_date"]}\n'
+                                f'\n'
+                                f'Reason of not be credited: Order not found!!!'
+                            )
+                            send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
+                                                  os.environ.get('226PAY_BOT'))
