@@ -39,8 +39,9 @@ def acb_balance(username, password, account_number):
     }
     response = requests.post(os.environ.get("ACB_URL"), json=body)
     logger.info(response)
+    response = response.json()
     if response:
-        if 'codeStatus' in response.json().keys():
+        if 'codeStatus' in response.keys():
             if response['codeStatus'] == 200:
                 acc_list = response['data']
                 for account in acc_list:
