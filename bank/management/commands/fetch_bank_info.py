@@ -8,6 +8,7 @@ from partner.views import create_deposit_order
 from bank.utils import send_telegram_message, find_substring
 from bank.views import update_amount_by_date, update_transaction_history_status
 import os
+import pandas as pd
 load_dotenv()
 
 
@@ -18,7 +19,20 @@ class Command(BaseCommand):
         redis_client = redis_connect(1)
         value = redis_client.get('5410118608842').decode('utf-8')
         value_json = json.loads(value)
-        for row in value_json:
+        df = pd.DataFrame(value_json)
+        # get transactions on 2024-10-02
+        df['transaction_date'] = pd.to_datetime(df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
+
+        # Filtering transactions for October 2nd, 2024
+        start_date = pd.to_datetime('2024-10-02 00:00:00')
+        end_date = pd.to_datetime('2024-10-02 23:59:59')
+
+        # Filtering transactions for October 2nd, 2024 between 00:00:00 and 23:59:59
+        filtered_df = df[(df['transaction_date'] >= start_date) & (df['transaction_date'] <= end_date)]
+        print(filtered_df)
+        a = filtered_df.to_dict(orient='records')
+        print(type(a))
+        for row in a:
             if len(row['transfer_code']) == 7 and row['transaction_type'] == 'IN' and row['status'] != 'Success':
                 print(row['transfer_code'], row['transaction_type'], row['status'])
                 formatted_amount = '{:,.2f}'.format(row['amount'])
