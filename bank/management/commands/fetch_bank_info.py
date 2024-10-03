@@ -33,7 +33,7 @@ class Command(BaseCommand):
         a = filtered_df.to_dict(orient='records')
         print(type(a))
         for row in a:
-            if row['transfer_code'] or len(row['transfer_code']) == 7:
+            if row['transfer_code'] and len(row['transfer_code']) == 7:
                 if row['transaction_type'] == 'IN' and row['status'] != 'Success':
                     print(row['transfer_code'], row['transaction_type'], row['status'])
                     formatted_amount = '{:,.2f}'.format(row['amount'])
