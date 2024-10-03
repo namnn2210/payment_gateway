@@ -5,9 +5,11 @@ import requests
 from django.views.decorators.csrf import csrf_exempt
 import os
 from dotenv import load_dotenv
+import logging
 
 
 load_dotenv()
+logger = logging.getLogger('django')
 
 # Create your views here.
 def acb_login(username, password, account_number):
@@ -36,7 +38,7 @@ def acb_balance(username, password, account_number):
         "action":"balance"
     }
     response = requests.post(os.environ.get("ACB_URL"), json=body)
-    print(response)
+    logger.info(response)
     if response:
         if 'codeStatus' in response.json().keys():
             if response['codeStatus'] == 200:
