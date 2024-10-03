@@ -43,8 +43,12 @@ def create_deposit_order(transaction,cid):
             'hashid': hashid,
             'sign': sign,
         }
+
+        print(payload)
         
         response = requests.post(os.environ.get('DEPOSIT_URL'), data=payload, headers=headers)
+
+        print(response)
         
         if response.status_code == 200:
             response_data = response.json()
