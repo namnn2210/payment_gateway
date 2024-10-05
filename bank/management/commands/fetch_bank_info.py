@@ -17,15 +17,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         redis_client = redis_connect(1)
-        value = redis_client.get('5410118608842').decode('utf-8')
+        value = redis_client.get('41721137').decode('utf-8')
         value_json = json.loads(value)
         df = pd.DataFrame(value_json)
         # get transactions on 2024-10-02
         df['transaction_date'] = pd.to_datetime(df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
 
         # Filtering transactions for October 2nd, 2024
-        start_date = pd.to_datetime('2024-10-02 00:00:00')
-        end_date = pd.to_datetime('2024-10-02 23:59:59')
+        start_date = pd.to_datetime('2024-10-05 00:00:00')
+        end_date = pd.to_datetime('2024-10-05 23:59:59')
 
         # Filtering transactions for October 2nd, 2024 between 00:00:00 and 23:59:59
         filtered_df = df[(df['transaction_date'] >= start_date) & (df['transaction_date'] <= end_date)]
