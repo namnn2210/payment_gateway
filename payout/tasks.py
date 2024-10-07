@@ -30,9 +30,7 @@ def update_payout_background(update_body):
             if update_status_request(payout=payout, status='S'):
                 payout.status = True
                 alert = (
-                    f'🟢🟢🟢Success🟢🟢🟢\n'
-                    f'\n'
-                    f'Order ID: {payout.orderid}\n'
+                    f'🟢🟢🟢{payout.orderid}\n'
                     f'\n'
                     f'Amount: {formatted_amount} \n'
                     f'\n'
@@ -56,9 +54,7 @@ def update_payout_background(update_body):
         else:
             payout.status = True
             alert = (
-                f'🟢🟢🟢Success🟢🟢🟢\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
+                f'🟢🟢🟢{payout.orderid}\n'
                 f'\n'
                 f'Amount: {formatted_amount} \n'
                 f'\n'

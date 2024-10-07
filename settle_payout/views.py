@@ -212,9 +212,7 @@ def update_settle_payout(request, update_type):
             bank = Bank.objects.filter(id=bank_id).first()
             payout.process_bank = bank
             alert = (
-                f'🟢🟢🟢Success🟢🟢🟢\n'
-                f'\n'
-                f'Order ID: {payout.orderid}\n'
+                f'🟢🟢🟢{payout.orderid}\n'
                 f'\n'
                 f'Amount: {formatted_amount} \n'
                 f'\n'
