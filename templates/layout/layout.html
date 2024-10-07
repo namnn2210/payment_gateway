@@ -318,7 +318,7 @@
                     if (Object.keys(data.data.out).length !== 0) {
                         console.log(data.data.out[0]);
                         var spanTransaction = document.querySelector('.lastTransaction');
-                        spanTransaction.innerHTML = data.data.out[0].transaction_date + ' - ' + data.data.out[0].description + ' - ' + data.data.out[0].amount.toLocaleString()+'.00';
+                        spanTransaction.innerHTML = data.data.out[0].account_number + ' - ' + data.data.out[0].transaction_date + ' - ' + data.data.out[0].description + ' - ' + data.data.out[0].amount.toLocaleString()+'.00';
                     }
                 }
             };
