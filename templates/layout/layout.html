@@ -48,8 +48,10 @@
 </head>
 
 <body>
-
-    <header id="header" class="header fixed-top d-flex align-items-center">
+    <div class="w-100 text-center text-white" style="background-color: green">
+        <span class="lastTransaction">aaaa</span>
+    </div>
+    <header id="header" class="header d-flex align-items-center">
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="{% url 'index' %}" class="logo d-flex align-items-center">
@@ -222,7 +224,8 @@
     </header><!-- End Header -->
 
     <main id="main" class="main">
-        <section class="section dashboard">
+        <section class="section dashboard mt-4">
+
             {% block content %}
             {% endblock %}
         </section>
@@ -295,6 +298,32 @@
             dropdowns.forEach(function (dropdown) {
                 new bootstrap.Dropdown(dropdown);
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fetchData = async (url, options = {}) => {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`Network response was not ok ${response.statusText}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+            
+            const fetchLastTransaction = async () => {
+                const data = await fetchData('{% url "update_transaction_history" %}');
+                if (data) {
+                    if (Object.keys(data.data.out).length !== 0) {
+                        var spanTransaction = document.querySelector('.lastTransaction');
+                        spanTransaction.innerHTML = data.data.out[0].fields.transaction_date + ' - ' + data.data.out[0].fields.description + ' - ' + data.data.out[0].fields.amount;
+                    }
+                }
+            };
+            
+            fetchLastTransaction();
+            setInterval(fetchLastTransaction, 15000);
         });
     </script>
     <!-- <script>
