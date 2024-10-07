@@ -499,8 +499,17 @@
         var money = $(this).data('money');
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
-        {#var firstName = accountname.split(' ')[0];#}
-        {#var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${accountname}/print.jpg`;#}
+        
+        
+        const data = fetchData('{% url "update_transaction_history" %}');
+        if (data) {
+            if (Object.keys(data.data.out).length !== 0) {
+                console.log('payout', data.data.out)
+            }
+        }
+        
+        
+        
         var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
         $('#modalQrImage').attr('src', qrUrl);
         $('.done-btn-modal').data('item-id', itemId);
