@@ -491,7 +491,7 @@
         });
     })
 
-    $(document).on('click', '.pay-btn', function () {
+    $(document).on('click', '.pay-btn', async function () {
         var itemId = $(this).data('item-id');
         var bankcode = $(this).data('bankcode');
         var accountno = $(this).data('accountno');
@@ -499,7 +499,7 @@
         var money = $(this).data('money');
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
-        
+
         const fetchData = async (url, options = {}) => {
             try {
                 const response = await fetch(url, options);
@@ -509,13 +509,12 @@
                 console.error('Error fetching data:', error);
             }
         };
-        
-        
-        const data = fetchData('{% url "update_transaction_history" %}');
-        console.log('payout',data)
-        
-        
-        
+
+
+        const data = await fetchData('{% url "update_transaction_history" %}');
+        console.log('payout', data)
+
+
         var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
         $('#modalQrImage').attr('src', qrUrl);
         $('.done-btn-modal').data('item-id', itemId);
@@ -555,7 +554,7 @@
                     $.ajax({
                         url: "{% url 'update_payout' 'done' %}",
                         type: 'POST',
-                        data: JSON.stringify({ id: itemId, bank_id: bankId }),
+                        data: JSON.stringify({id: itemId, bank_id: bankId}),
                         contentType: 'application/json',
                         headers: {
                             'X-CSRFToken': csrftoken
@@ -600,7 +599,7 @@
                     $.ajax({
                         url: "{% url 'update_payout' 'report' %}",
                         type: 'POST',
-                        data: JSON.stringify({ id: itemId, reason:reason }),
+                        data: JSON.stringify({id: itemId, reason: reason}),
                         contentType: 'application/json',
                         headers: {
                             'X-CSRFToken': csrftoken
@@ -644,7 +643,7 @@
                     $.ajax({
                         url: "{% url 'update_payout' 'cancel' %}",
                         type: 'POST',
-                        data: JSON.stringify({ id: itemId }),
+                        data: JSON.stringify({id: itemId}),
                         contentType: 'application/json',
                         headers: {
                             'X-CSRFToken': csrftoken
