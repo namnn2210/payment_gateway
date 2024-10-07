@@ -512,11 +512,24 @@
 
 
         const data = await fetchData('{% url "update_transaction_history" %}');
-        console.log('payout', data)
+        const dataIn = data.data.in
+        var existed = false
+        // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
+        dataIn.map(transaction => {
+            if (transaction.description.includes(`Z${accountname}`) && transaction.amount === money) {
+                existed = true
+            }
+        })
 
-
-        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
-        $('#modalQrImage').attr('src', qrUrl);
+        if (!existed) {
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
+            $('#modalQrImage').attr('src', qrUrl);
+        }
+        else {
+            toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
+        }
+        
+        
         $('.done-btn-modal').data('item-id', itemId);
         $('.done-report-btn').data('item-id', itemId);
 
