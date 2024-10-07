@@ -230,13 +230,11 @@ def get_transaction(bank):
                         formatted_amount = '{:,.2f}'.format(row['amount'])
 
                         alert = (
-                            f'PAYOUT DONE\n'
-                            f'\n'
-                            f'🏦 {bank.account_number} - {bank.account_name}\n'
+                            f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
                             f'\n'
                             f'Nội dung: {row["description"]}\n'
                             f'\n'
-                            f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
+                            f'🏦 {bank.account_number} - {bank.account_name}\n'
                             f'\n'
                             f'🕒 {row["transaction_date"]}'
                         )
