@@ -512,11 +512,7 @@
         
         
         const data = fetchData('{% url "update_transaction_history" %}');
-        if (data) {
-            if (Object.keys(data.data.out).length !== 0) {
-                console.log('payout', data.data.out)
-            }
-        }
+        console.log('payout',data)
         
         
         
