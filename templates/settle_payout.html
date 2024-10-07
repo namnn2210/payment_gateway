@@ -114,12 +114,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
+                <div class="row">
+                    <div class="col-md-4 col-sm-12">
+                        <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
+                    </div>
+                    <div class="col-md-8 col-sm-12">
+                        <label for="processBank">{% trans "Process Bank" %}</label>
+                            <select class="form-select" id="processBank" name="processBank" required>
+                                {% for bank in banks %}
+                                <option value="{{ bank.id }}">{{ bank.name }}</option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" data-bs-toggle="modal" data-bs-target="#selectReportModal" class="btn rounded-pill btn-danger report-btn"><i class="bi bi-exclamation-triangle me-1"></i>{% trans "Report" %}</button>
                 <button type="button" class="btn btn-warning rounded-pill cancel-btn"><i class="bi bi-exclamation-octagon me-1"></i>{% trans "Cancel" %}</button>
-                <button type="button" class="btn btn-success rounded-pill" data-bs-toggle="modal" data-bs-target="#selectPayoutBankModal"><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+                <button type="button" class="btn btn-success rounded-pill done-btn-modal" data-item-id=""><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
             </div>
         </div>
     </div>
