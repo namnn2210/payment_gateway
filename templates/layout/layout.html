@@ -311,17 +311,18 @@
                     console.error('Error fetching data:', error);
                 }
             };
-            
+
             const fetchLastTransaction = async () => {
                 const data = await fetchData('{% url "update_transaction_history" %}');
                 if (data) {
                     if (Object.keys(data.data.out).length !== 0) {
+                        console.log(data.data.out);
                         var spanTransaction = document.querySelector('.lastTransaction');
                         spanTransaction.innerHTML = data.data.out[0].fields.transaction_date + ' - ' + data.data.out[0].fields.description + ' - ' + data.data.out[0].fields.amount;
                     }
                 }
             };
-            
+
             fetchLastTransaction();
             setInterval(fetchLastTransaction, 15000);
         });
