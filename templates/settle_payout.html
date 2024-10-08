@@ -5,6 +5,12 @@
 {% block title %}{% trans "List Settle Payout" %}{% endblock %}
 {% block head %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    .blur {
+        filter: blur(10px); /* Adjust the blur strength as needed */
+        transition: filter 0.3s ease-in-out;
+    }
+</style>
 {% endblock %}
 {% block content %}
 <div class="container-fluid">
@@ -440,21 +446,21 @@
         var firstName = accountname.split(' ').slice(-1);
         if (!existed) {
             var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
-            $('#modalQrImage').attr('src', qrUrl);
+            $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
             setTimeout(function() {
-                $('#modalQrImage').hide();
+                $('#modalQrImage').addClass('blur');
             }, 5000);
         }
         else {
             toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
         }
-        
+
         $('#modalQrImage').on('click', function() {
-            $(this).show();
-            
+            $(this).removeClass('blur');
+
             // Hide it again after 5 seconds when clicked
             setTimeout(function() {
-                $('#modalQrImage').hide();
+                $('#modalQrImage').addClass('blur');
             }, 5000);
         });
         $('.done-btn-modal').data('item-id', itemId);
