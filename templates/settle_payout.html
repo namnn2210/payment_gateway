@@ -444,6 +444,7 @@
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
         var firstName = accountname.split(' ').slice(-1);
+        var existed = false
         if (!existed) {
             var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
