@@ -541,9 +541,9 @@
             $('.qr-info').html(
                 `
                 <p>Mã ngân hàng: ${bankcode}</p>
-                <p>Số tài khoản: ${accountno}</p>
-                <p>Chủ tài khoản: ${accountname}</p>
-                <p>Số tiền: ${money.toLocaleString()}</p>
+                <p>Số tài khoản: <span class="text-bold">${accountno}</span></p>
+                <p>Chủ tài khoản: <span class="text-bold">${accountname}</span></p>
+                <p>Số tiền: <span class="text-bold">${money.toLocaleString()}</span></p>
                 `);
             setTimeout(function() {
                 $('#modalQrImage').addClass('blur');
