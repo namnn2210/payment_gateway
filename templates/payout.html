@@ -139,10 +139,18 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-4 col-sm-12">
-                        <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
+                    <div class="col-md-5 col-sm-12">
+                        <div class="row">
+                            <div class="col-md-12 col-sm-12">
+                                <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
+                            </div>
+                            <div class="col-md-12 col-sm-12">
+                                <div class="qr-info"></div>
+                            </div>
+                        </div>
+                        
                     </div>
-                    <div class="col-md-8 col-sm-12">
+                    <div class="col-md-7 col-sm-12">
                         <label for="processBank">{% trans "Process Bank" %}</label>
                             <select class="form-select" id="processBank" name="processBank" required>
                                 {% for bank in banks %}
@@ -528,8 +536,15 @@
         })
 
         if (!existed) {
-            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
+            $('#qr-info').html(
+                `
+                <p>Mã ngân hàng: ${bankcode}</p>
+                <p>Số tài khoản: ${accountno}</p>
+                <p>Chủ tài khoản: ${accountname}</p>        
+                <p>Số tin: ${money.toLocaleString()}</p>    
+                `);
             setTimeout(function() {
                 $('#modalQrImage').addClass('blur');
             }, 5000);
