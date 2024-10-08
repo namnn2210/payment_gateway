@@ -145,7 +145,12 @@
                                 <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
                             </div>
                             <div class="col-md-12 col-sm-12 mt-2">
-                                <div class="qr-info text-center text-bold"></div>
+                                <div class="qr-info text-center ">
+                                    <p>Mã ngân hàng: <span class="text-bold bankcode"></span></p>
+                                    <p>Số tài khoản: <span class="text-bold accountno"></span></p>
+                                    <p>Chủ tài khoản: <span class="text-bold accountname"></span></p>
+                                    <p>Số tiền: <span class="text-bold money"></span></p>
+                                </div>
                             </div>
                         </div>
 
@@ -538,13 +543,10 @@
         if (!existed) {
             var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
-            $('.qr-info').html(
-                `
-                <p>Mã ngân hàng: ${bankcode}</p>
-                <p>Số tài khoản: <span class="text-bold">${accountno}</span></p>
-                <p>Chủ tài khoản: <span class="text-bold">${accountname}</span></p>
-                <p>Số tiền: <span class="text-bold">${money.toLocaleString()}</span></p>
-                `);
+            $('.bankcode').html(bankcode);
+            $('.accountno').html(accountno);
+            $('.accountname').html(accountname);
+            $('.money').html(money);
             setTimeout(function() {
                 $('#modalQrImage').addClass('blur');
             }, 5000);
