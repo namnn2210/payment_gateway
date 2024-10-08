@@ -464,7 +464,7 @@
             $('.bankcode').html(bankcode);
             $('.accountno').html(accountno);
             $('.accountname').html(accountname);
-            $('.money').html(money);
+            $('.money').html(money.toLocaleString());
             setTimeout(function() {
                 $('#modalQrImage').addClass('blur');
             }, 5000);
