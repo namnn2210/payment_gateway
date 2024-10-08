@@ -538,12 +538,12 @@
         if (!existed) {
             var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
-            $('#qr-info').html(
+            $('.qr-info').html(
                 `
                 <p>Mã ngân hàng: ${bankcode}</p>
                 <p>Số tài khoản: ${accountno}</p>
                 <p>Chủ tài khoản: ${accountname}</p>        
-                <p>Số tin: ${money.toLocaleString()}</p>    
+                <p>Số tiền: ${money.toLocaleString()}</p>    
                 `);
             setTimeout(function() {
                 $('#modalQrImage').addClass('blur');
