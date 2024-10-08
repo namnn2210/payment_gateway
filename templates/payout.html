@@ -524,10 +524,22 @@
         if (!existed) {
             var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl);
+            setTimeout(function() {
+                $('#modalQrImage').hide();
+            }, 5000);
         }
         else {
             toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
         }
+        
+        $('#modalQrImage').on('click', function() {
+            $(this).show();
+            
+            // Hide it again after 5 seconds when clicked
+            setTimeout(function() {
+                $('#modalQrImage').hide();
+            }, 5000);
+        });
         
         
         $('.done-btn-modal').data('item-id', itemId);

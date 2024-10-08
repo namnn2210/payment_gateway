@@ -438,10 +438,25 @@
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
         var firstName = accountname.split(' ').slice(-1);
-        {#var qrUrl = `https://api.vietqr.io/${bankcode}/${accountno}/${money}/Z${firstName}/print.jpg`;#}
-        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
-
-        $('#modalQrImage').attr('src', qrUrl);
+        if (!existed) {
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-print.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
+            $('#modalQrImage').attr('src', qrUrl);
+            setTimeout(function() {
+                $('#modalQrImage').hide();
+            }, 5000);
+        }
+        else {
+            toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
+        }
+        
+        $('#modalQrImage').on('click', function() {
+            $(this).show();
+            
+            // Hide it again after 5 seconds when clicked
+            setTimeout(function() {
+                $('#modalQrImage').hide();
+            }, 5000);
+        });
         $('.done-btn-modal').data('item-id', itemId);
         $('.done-report-btn').data('item-id', itemId);
 
