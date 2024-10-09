@@ -458,6 +458,7 @@
         var isCancel = $(this).data('is-cancel');
         var firstName = accountname.split(' ').slice(-1);
         var existed = false
+        $('#modalQrImage').attr('src', '');
         if (!existed) {
             var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();

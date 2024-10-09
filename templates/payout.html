@@ -518,6 +518,8 @@
         var money = $(this).data('money');
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
+        
+        $('#modalQrImage').attr('src', '');
 
         const fetchData = async (url, options = {}) => {
             try {
