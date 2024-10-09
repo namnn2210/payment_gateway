@@ -18,6 +18,7 @@ import pytz
 from bank.database import redis_connect
 from django.utils import timezone
 import time
+from bank.views import check_success_payout
 
 load_dotenv()
 logger = logging.getLogger('django')
@@ -124,8 +125,11 @@ def get_transaction(bank):
         different_transactions = [item for item in new_transactions if item['transaction_number'] not in list_old_transaction_numbers]
         # Add new transactions to current history
         for transaction in different_transactions:
-            if 'Z' in transaction['description'] and transaction['transaction_type'] == 'OUT':
-                transaction['status'] = 'Success'
+            # Check for success out
+            if transaction['transaction_type'] == 'OUT':
+                success = check_success_payout(transaction)
+                if success:
+                    transaction['status'] = 'Success'
         updated_transactions = old_bank_history + different_transactions
         # Update Redis
         redis_client.set(bank.account_number, json.dumps(updated_transactions, default=str))

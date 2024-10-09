@@ -1,5 +1,7 @@
 from OpenSSL.rand import status
 from django.shortcuts import render, redirect
+
+from settle_payout.models import SettlePayout
 from .models import Bank, BankAccount
 from payout.models import UserTimeline, Payout
 from employee.models import EmployeeDeposit
@@ -330,6 +332,24 @@ def update_amount_by_date(transaction_type, amount):
 
     # Save updated totals back to Redis
     redis_client.set(today_str, json.dumps(current_totals))
+
+def check_success_payout(transaction):
+    latest_payout = Payout.objects.order_by('-created_at')[:10]
+    latest_settle = SettlePayout.objects.order_by('-created_at')[:10]
+
+    for payout in latest_payout:
+        if payout.amount == transaction['amount']:
+            memo = 'Z'+payout.accountname
+            if memo in transaction['transfer_code']:
+                return True
+
+    for settle in latest_settle:
+        if settle.amount == transaction['amount']:
+            memo = 'Z'+settle.accountname
+            if memo in transaction['transfer_code']:
+                return True
+
+    return False
     
 def get_amount_today(request):
     if request.user.is_superuser:
