@@ -43,7 +43,8 @@ class Command(BaseCommand):
             print(total_amount_payout_settle, total_out_today)
 
             alert = (
-
+                f'Cập nhật: {today}\n'
+                f'\n'
                 f'Tổng khối lượng lệnh payout: {total_amount_payout_settle}\n'
                 f'\n'
                 f'Tổng khối lượng lệnh giao dịch out: {total_out_today}\n'
