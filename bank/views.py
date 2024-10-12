@@ -338,13 +338,13 @@ def check_success_payout(transaction):
     latest_settle = SettlePayout.objects.order_by('-created_at')[:10]
 
     for payout in latest_payout:
-        if payout.amount == transaction['amount']:
+        if payout.money == transaction['amount']:
             memo = 'Z'+payout.accountname
             if memo in transaction['transfer_code']:
                 return True
 
     for settle in latest_settle:
-        if settle.amount == transaction['amount']:
+        if settle.money == transaction['amount']:
             memo = 'Z'+settle.accountname
             if memo in transaction['transfer_code']:
                 return True
