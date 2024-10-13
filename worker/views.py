@@ -124,6 +124,7 @@ def get_transaction(bank):
 
         different_transactions = [item for item in new_transactions if item['transaction_number'] not in list_old_transaction_numbers]
         # Add new transactions to current history
+        logger.info(different_transactions)
         for transaction in different_transactions:
             # Check for success out
             if transaction['transaction_type'] == 'OUT':
