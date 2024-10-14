@@ -29,6 +29,7 @@ def update_payout_background(update_body):
         if payout.is_auto:
             if update_status_request(payout=payout, status='S'):
                 payout.status = True
+                payout.save()
                 alert = (
                     f'🟢🟢🟢{payout.orderid}\n'
                     f'\n'
@@ -50,9 +51,10 @@ def update_payout_background(update_body):
                 )
                 send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
                 update_amount_by_date('OUT',payout.money)
-                payout.save()
+
         else:
             payout.status = True
+            payout.save()
             alert = (
                 f'🟢🟢🟢{payout.orderid}\n'
                 f'\n'
@@ -74,9 +76,10 @@ def update_payout_background(update_body):
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
             update_amount_by_date('OUT',payout.money)
-            payout.save()
+
     elif update_type == 'report':
         payout.is_report = True
+        payout.save()
         reason_text = ''
         if reason == 1:
             reason_text = 'Invalid receiving account number!'
@@ -101,12 +104,12 @@ def update_payout_background(update_body):
             f'Reason: {reason_text}'
         )
         send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-        payout.save()
     elif update_type == 'cancel':
         payout.is_cancel = True
         payout.status = None
         if payout.is_auto:
             if update_status_request(payout=payout, status='F'):
+                payout.save()
                 alert = (
                     f'🔴🔴🔴Failed🔴🔴🔴\n'
                     f'\n'
@@ -127,8 +130,8 @@ def update_payout_background(update_body):
                     f'Date: {payout.updated_at}'
                 )
                 send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-                payout.save()
         else:
+            payout.save()
             alert = (
                 f'🔴🔴🔴Failed🔴🔴🔴\n'
                 f'\n'
@@ -149,5 +152,4 @@ def update_payout_background(update_body):
                 f'Date: {payout.updated_at}'
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-            payout.save()
 

@@ -54,6 +54,7 @@ def mb_transactions(username, password, account_number, start=''):
             if json_response['result']['ok']:
                 formatted_transactions = []
                 transactions = json_response['transactionHistoryList']
+                logger.info(transactions)
                 for transaction in transactions:
                     if int(transaction['creditAmount']) != 0:
                         transaction_type = 'IN'
