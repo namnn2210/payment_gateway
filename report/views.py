@@ -1,52 +1,32 @@
 from django.shortcuts import render
-from bank.database import redis_connect
 from payout.models import Payout
 from settle_payout.models import SettlePayout
 from employee.models import EmployeeDeposit
-from bank.views import get_all_transactions, get_start_end_datetime, get_transactions_by_key
+from bank.views import get_all_transactions, get_start_end_datetime
 from bank.models import BankAccount
-from payout.models import Timeline, UserTimeline, BalanceTimeline
-from django.db.models import Sum
 from django.contrib.auth.models import User
-from django.forms.models import model_to_dict
-from datetime import datetime, time
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q, Sum, Count, Min
-from datetime import datetime, timedelta, time
+from django.db.models import Q, Sum, Count
 from bank.views import get_transactions_by_key
 from django.http import JsonResponse
 from employee.models import EmployeeWorkingSession
 from django.utils import timezone
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 import pandas as pd
-import json
-import pytz
 
 # Create your views here.
 
-
+@login_required(login_url='user_login')
 def report(request):
-    start_datetime_str = request.GET.get('start_datetime', '')
-    end_datetime_str = request.GET.get('end_datetime', '')
-    total_payout_results = 0
-    total_payout_amount = 0
-    total_transaction_amount = 0
-    total_transaction_results = 0
-
-    # Get in out data for home
-    redis_client = redis_connect(3)
-    keys = redis_client.keys('*')
-    data = {}
-    for key in keys:
-        data[key.decode('utf-8')] = redis_client.get(key).decode('utf-8')
-    sorted_dates = sorted(data.keys())[-5:]
-    last_5_days_data = {date: json.loads(data[date]) for date in sorted_dates}
-
-    # Get transactions data for home
-
     all_transactions_df = get_all_transactions()
-    start_date, end_date = get_start_end_datetime(start_datetime_str, end_datetime_str)
-    filtered_transactions_df = pd.DataFrame()
+    search_query = request.GET.get('search', '')
+    start_date = request.GET.get('start_datetime', '')
+    end_date = request.GET.get('end_datetime', '')
+
+    start_date, end_date = get_start_end_datetime(start_date, end_date)
+
     if not all_transactions_df.empty:
 
         # Convert the 'transaction_date' column to datetime format if it exists
@@ -61,91 +41,72 @@ def report(request):
             (all_transactions_df['transaction_date'] >= start_date) &
             (all_transactions_df['transaction_date'] <= end_date)
             ]
+        filtered_transactions_df = filtered_transactions_df.fillna('')
 
-        filtered_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] == 'Success']
+        if search_query:
+            filtered_transactions_df = filtered_transactions_df[
+                filtered_transactions_df.apply(
+                    lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1)
+            ]
 
-    if not filtered_transactions_df.empty:
-        total_transaction_amount = int(float(filtered_transactions_df['amount'].sum()))
-        total_transaction_results = filtered_transactions_df.shape[0]
+        # Separate and sort transactions by type
+        in_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] != 'Success'].sort_values(
+            by='transaction_date', ascending=False)
+        # out_transactions_df = filtered_transactions_df[
+        #     filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
 
-    # User info      
-    list_users = User.objects.filter(is_superuser=False)
+        # Calculate total amounts
+        total_in_amount = in_transactions_df['amount'].sum()
+        # total_out_amount = out_transactions_df['amount'].sum()
 
-    user_info_dict = {}
-    for user in list_users:
-        current_payout_info = {}
-        online = False
-        bank_accounts = []
-        user_bank_accounts = BankAccount.objects.filter(user=user, status=True)
+        # Pagination for "IN" transactions
+        in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
+        in_page_number = request.GET.get('in_page')
+        in_page_obj = in_paginator.get_page(in_page_number)
 
-        user_working_session = EmployeeWorkingSession.objects.filter(user=user).order_by('-start_time').first()
-        if user_working_session:
-            user_start_time = user_working_session.start_time
-            user_end_time = user_working_session.end_time
+        # Pagination for "OUT" transactions
+        # out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
+        # out_page_number = request.GET.get('out_page')
+        # out_page_obj = out_paginator.get_page(out_page_number)
 
-            if not user_end_time:
-                online = True
-                user_end_time = timezone.now()
-                
-            start_time = pd.to_datetime(user_start_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
-            end_time = pd.to_datetime(user_end_time, format='%Y-%m-%d %H:%M:%S.%f').tz_localize(None)
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            # Return JSON response for AJAX requests
 
-            time_range_query = Q(created_at__gte=start_time) & Q(created_at__lt=end_time)
-            payouts = Payout.objects.filter(user=user, status=True).filter(time_range_query)
-            
-            settles = SettlePayout.objects.filter(user=user, status=True).filter(time_range_query)
-            
-            total_valid_transactions = 0
-            
-            for accounts in user_bank_accounts:
-                transactions_df = get_transactions_by_key(account_number=accounts.account_number)
+            total_in_amount = int(float(in_transactions_df['amount'].sum()))
+            # total_out_amount = int(float(out_transactions_df['amount'].sum()))
 
-                # Convert 'transaction_date' to datetime64[ns] and ensure no timezone
-                transactions_df['transaction_date'] = pd.to_datetime(transactions_df['transaction_date'], format="%d/%m/%Y %H:%M:%S").dt.tz_localize(None)
+            data = {
+                'in_transactions': list(in_page_obj),
+                # 'out_transactions': list(out_page_obj),
+                'in_page': in_page_obj.number,
+                'in_num_pages': in_page_obj.paginator.num_pages,
+                # 'out_page': out_page_obj.number,
+                # 'out_num_pages': out_page_obj.paginator.num_pages,
+                'total_in_amount': total_in_amount,
+                # 'total_out_amount': total_out_amount,
+            }
 
-                # Filter the DataFrame between start_time and end_time
-                filtered_df = transactions_df[
-                    (transactions_df['transaction_date'] >= start_time) &
-                    (transactions_df['transaction_date'] <= end_time) &
-                    (transactions_df['transaction_type'] == 'OUT') &
-                    (transactions_df['status'] == 'Success')
-                ]
-                
-                total_valid_transactions += len(filtered_df)
-                # total_amount += filtered_df['amount'].sum()
+            return JsonResponse(data)
 
-            current_payout_info['current_total_done_payout'] = len(payouts) + len(settles) or 0
-            current_payout_info['current_total_valid_transaction'] = len(payouts) + len(settles) or 0
+        return render(request, 'report.html', {
+            'in_page_obj': in_page_obj,
+            # 'out_page_obj': out_page_obj,
+            'search_query': search_query,
+            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'),
+            'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
+            'total_in_amount': total_in_amount,
+            # 'total_out_amount': total_out_amount,
+        })
+    return render(request, 'report.html', {
+        'in_page_obj': None,
+        'out_page_obj': None,
+        'search_query': search_query,
+        'start_date': start_date.strftime('%Y-%m-%dT%H:%M'),
+        'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
+        'total_in_amount': 0,
+        'total_out_amount': 0,
+    })
 
-        # Bank accounts data
-        for bank_account in user_bank_accounts:
-            bank_accounts.append({
-                "account_no": bank_account.account_number,
-                "bank_name": bank_account.bank_name.name,
-                "balance": bank_account.balance,
-                "bank_type": bank_account.bank_type
-            })
-
-        user_info_dict[user.username] = {
-            "bank_accounts": bank_accounts,
-            "online": online,
-            "payout": current_payout_info
-        }
-
-    report_data = {
-        "chart": json.dumps(last_5_days_data),
-        "payout": {
-            "total_amount": total_payout_amount,
-            "total_results": total_payout_results
-        },
-        "transactions": {
-            "total_amount": total_transaction_amount,
-            "total_results": total_transaction_results
-        },
-        "users": user_info_dict
-    }
-
-    return render(request=request, template_name='report.html', context={'report_data': report_data})
 
 
 @csrf_exempt

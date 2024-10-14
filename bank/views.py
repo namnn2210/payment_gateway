@@ -1,6 +1,5 @@
 from OpenSSL.rand import status
 from django.shortcuts import render, redirect
-
 from settle_payout.models import SettlePayout
 from .models import Bank, BankAccount
 from payout.models import UserTimeline, Payout
@@ -10,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 from .utils import get_start_end_datetime_by_timeline
 from django.views.decorators.http import require_POST
@@ -45,32 +43,18 @@ def record_book(request):
     search_query = request.GET.get('search', '')
     start_date = request.GET.get('start_datetime', '')
     end_date = request.GET.get('end_datetime', '')
-    
-    # Default start and end date to today if not provided
-    # today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    # today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=999999)
-    
-    # if start_date:
-    #     start_date = parse_datetime(start_date)
-    # else:
-    #     start_date = today_start
 
-    # if end_date:
-    #     end_date = parse_datetime(end_date)
-    # else:
-    #     end_date = today_end
-    
     start_date, end_date = get_start_end_datetime(start_date, end_date)
 
 
     if not all_transactions_df.empty:
-    
+
         # Convert the 'transaction_date' column to datetime format if it exists
         if 'transaction_date' in all_transactions_df.columns:
             all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S')
 
         # Get form inputs
-        
+
         # Filter transactions based on form input
         filtered_transactions_df = all_transactions_df[
             (all_transactions_df['transaction_date'] >= start_date) &
@@ -81,15 +65,15 @@ def record_book(request):
             filtered_transactions_df = filtered_transactions_df[
                 filtered_transactions_df.apply(lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1)
             ]
-        
+
         # Separate and sort transactions by type
         in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
         out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
-        
+
         # Calculate total amounts
         total_in_amount = in_transactions_df['amount'].sum()
         total_out_amount = out_transactions_df['amount'].sum()
-        
+
 
         # Pagination for "IN" transactions
         in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
@@ -103,12 +87,11 @@ def record_book(request):
 
         if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
             # Return JSON response for AJAX requests
-            
+
             total_in_amount = int(float(in_transactions_df['amount'].sum()))
             total_out_amount = int(float(out_transactions_df['amount'].sum()))
-            
-            
-            
+
+
             data = {
                 'in_transactions': list(in_page_obj),
                 'out_transactions': list(out_page_obj),
@@ -121,22 +104,22 @@ def record_book(request):
             }
 
             return JsonResponse(data)
-        
+
 
         return render(request, 'record_book.html', {
-            'in_page_obj': in_page_obj, 
-            'out_page_obj': out_page_obj, 
-            'search_query': search_query, 
-            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
+            'in_page_obj': in_page_obj,
+            'out_page_obj': out_page_obj,
+            'search_query': search_query,
+            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'),
             'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
             'total_in_amount': total_in_amount,
             'total_out_amount': total_out_amount,
         })
     return render(request, 'record_book.html', {
-            'in_page_obj': None, 
-            'out_page_obj': None, 
-            'search_query': search_query, 
-            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'), 
+            'in_page_obj': None,
+            'out_page_obj': None,
+            'search_query': search_query,
+            'start_date': start_date.strftime('%Y-%m-%dT%H:%M'),
             'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
             'total_in_amount': 0,
             'total_out_amount': 0,
