@@ -13,6 +13,7 @@ import pyotp
 import qrcode
 import base64
 from django.utils import timezone
+import pandas as pd
 
 
 TWO_FA_EXPIRATION_TIME = 21600 
