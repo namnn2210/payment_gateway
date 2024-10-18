@@ -30,12 +30,13 @@
                                 class="text-danger small pt-1 fw-bold total-out">-0</span> <span
                                 class="text-muted small pt-2 ps-1">{% trans "Today" %}</span>
                         </div>
-                        {% if user.is_superuser %}
+
+                    </div>
+                    {% if user.is_superuser %}
                         <div>
                             <b>Failed Today: </b><span>{{ number_failed }}</span>
                         </div>
-                        {% endif %}
-                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
