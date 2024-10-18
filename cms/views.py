@@ -1,10 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from bank.views import get_all_transactions, get_start_end_datetime
 from django.contrib.auth import logout
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from bank.models import BankAccount, Bank
 from employee.models import EmployeeDeposit
 from django.core.paginator import Paginator
@@ -14,9 +12,8 @@ from io import BytesIO
 import pyotp
 import qrcode
 import base64
-from PIL import Image
 from django.utils import timezone
-from datetime import datetime
+
 
 TWO_FA_EXPIRATION_TIME = 21600 
 
@@ -27,8 +24,28 @@ def index(request):
     # if user_2fa.is_2fa_enabled:
     #     return render(request, '2fa.html')
     list_bank_option = Bank.objects.filter(status=True)
+    number_failed = 0
     if request.user.is_superuser:
         list_user_bank = BankAccount.objects.all()
+        all_transactions_df = get_all_transactions()
+        start_date, end_date = get_start_end_datetime(None, None)
+        if not all_transactions_df.empty:
+            # Convert the 'transaction_date' column to datetime format if it exists
+            if 'transaction_date' in all_transactions_df.columns:
+                all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'],
+                                                                         format='%d/%m/%Y %H:%M:%S')
+
+            # Get form inputs
+
+            # Filter transactions based on form input
+            filtered_transactions_df = all_transactions_df[
+                (all_transactions_df['transaction_date'] >= start_date) &
+                (all_transactions_df['transaction_date'] <= end_date)
+                ]
+            in_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] != 'Success'].sort_values(
+                by='transaction_date', ascending=False)
+            number_failed = in_transactions_df.shape[0]
+
     else:
         list_user_bank = BankAccount.objects.filter(user=request.user)
     if request.user.is_superuser:
@@ -46,7 +63,7 @@ def index(request):
         is_session = False
     
         
-    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option, 'is_session':is_session})
+    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option, 'is_session':is_session, 'number_failed':number_failed})
 
 def user_login(request):
     if request.method == 'POST':
