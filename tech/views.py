@@ -28,8 +28,6 @@ def tech_balance(username, password, account_number):
     if response:
        for item in response:
            print(item)
-           if type(item) == str:
-            item = json.loads(item)
            if item['BBAN'] == account_number:
                return item['availableBalance']
     return None
