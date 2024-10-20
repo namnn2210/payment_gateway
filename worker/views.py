@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
+from tech.views import tech_login, tech_balance, tech_transactions
 from bank.utils import send_telegram_message, find_substring
 from bank.views import update_amount_by_date, update_transaction_history_status, update_out_transaction_history_status
 from bank.models import BankAccount
@@ -36,6 +37,8 @@ def get_balance(bank):
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
         bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.name == "Techcombank":
+        bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
     else:
         bank_balance = None
     while bank_balance is None:
@@ -51,12 +54,16 @@ def get_balance(bank):
             send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
             return
 
+        bank_logged_in = None
+
         if bank.bank_name.name == 'MB':
             bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'ACB':
             bank_logged_in = acb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'Vietinbank':
             bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
+        elif bank.bank_name.name == 'Techcombank':
+            bank_logged_in = tech_login(bank.username, bank.password, bank.account_number)
 
         if bank_logged_in:
             if bank.bank_name.name == 'MB':
@@ -65,6 +72,8 @@ def get_balance(bank):
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'Vietinbank':
                 bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
+            elif bank.bank_name.name == 'Techcombank':
+                bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
             else:
                 bank_balance = None
 
@@ -103,6 +112,8 @@ def get_transaction(bank):
         new_transactions = acb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
         new_transactions = vietin_transactions(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.name == 'Techcombank':
+        new_transactions = tech_transactions(bank.username, bank.password, bank.account_number)
     else:
         new_transactions = None
 
