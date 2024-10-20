@@ -1,3 +1,5 @@
+import json
+
 from django.shortcuts import render
 import requests
 import os
@@ -24,8 +26,8 @@ def tech_balance(username, password, account_number):
 
     response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=120).json()
     if response:
-       for account in response:
-           print(type(account))
+       for item in response:
+           account = json.loads(item)
            if account['BBAN'] == account_number:
                return account['availableBalance']
     return None
