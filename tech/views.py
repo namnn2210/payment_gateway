@@ -53,7 +53,6 @@ def tech_transactions(username, password, account_number):
 
     response = requests.post(f'{os.environ.get("TECH_URL")}', json=body, timeout=120).json()
     if response['success']:
-        print(response)
         transactions = response['transactions']
         transaction_type = ''
         for transaction in transactions:
@@ -61,6 +60,7 @@ def tech_transactions(username, password, account_number):
                 transaction_type = "OUT"
             elif transaction['category'] == "Income":
                 transaction_type = "IN"
+            print(transaction_type)
             transaction_date = datetime.fromisoformat(transaction['creationTime'])
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')
             new_formatted_transaction = Transaction(
