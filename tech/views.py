@@ -56,6 +56,7 @@ def tech_transactions(username, password, account_number):
         transactions = response['transactions']
         transaction_type = ''
         for transaction in transactions:
+            print(transaction['category'])
             if transaction['category'] == "Spending":
                 transaction_type = "OUT"
             elif transaction['category'] == "Income":
