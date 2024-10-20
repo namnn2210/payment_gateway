@@ -38,6 +38,16 @@
                         </div>
                     {% endif %}
                 </div>
+                <div class="card-body justify-content-center mt-4">
+                    <div class="d-flex align-items-center">
+                        <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        </div>
+                        <div class="ps-3 align-items-center">
+                            <h6 class="failed-total">{{ number_failed }}</h6>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         {% if not user.is_superuser%}
