@@ -53,6 +53,7 @@ def tech_transactions(username, password, account_number):
 
     response = requests.post(f'{os.environ.get("TECH_URL")}', json=body, timeout=120).json()
     if response['success']:
+        print(response)
         transactions = response['transactions']
         transaction_type = ''
         for transaction in transactions:
