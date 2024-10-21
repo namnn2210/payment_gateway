@@ -33,6 +33,7 @@
 
                     </div>
                 </div>
+                {% if user.is_superuser %}
                 <div class="card-body justify-content-center mt-4">
                     <div class="d-flex align-items-center">
                         <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
@@ -43,6 +44,7 @@
                         </div>
                     </div>
                 </div>
+                {% endif %}
             </div>
         </div>
         {% if not user.is_superuser%}
