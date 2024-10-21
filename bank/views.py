@@ -322,15 +322,15 @@ def check_success_payout(transaction):
 
     for payout in latest_payout:
         if payout.money == transaction['amount']:
-            memo = 'Z'+payout.accountname
-            if memo in transaction['transfer_code']:
-                return True
+            # memo = 'Z'+payout.accountname
+            # if memo in transaction['transfer_code']:
+            return True
 
     for settle in latest_settle:
         if settle.money == transaction['amount']:
-            memo = 'Z'+settle.accountname
-            if memo in transaction['transfer_code']:
-                return True
+            # memo = 'Z'+settle.accountname
+            # if memo in transaction['transfer_code']:
+            return True
 
     return False
     
