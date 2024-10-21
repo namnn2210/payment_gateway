@@ -26,11 +26,12 @@ def tech_balance(username, password, account_number):
 
     response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=120).json()
     if response:
-       for item in response:
-           if item == 'success':
-               continue
-           if item['BBAN'] == account_number:
-               return item['availableBalance']
+        for item in response:
+            if type(item) == str:
+                continue
+            print(item)
+            if item['BBAN'] == account_number:
+                return item['availableBalance']
     return None
 
 def tech_transactions(username, password, account_number):
