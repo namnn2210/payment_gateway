@@ -45,7 +45,8 @@ def index(request):
                 ]
             in_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] != 'Success'].sort_values(
                 by='transaction_date', ascending=False)
-            number_failed = in_transactions_df.shape[0]
+            # number_failed = in_transactions_df.shape[0]
+            number_failed = in_transactions_df['amount'].sum()
 
     else:
         list_user_bank = BankAccount.objects.filter(user=request.user)
