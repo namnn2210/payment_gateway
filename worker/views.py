@@ -152,6 +152,9 @@ def get_transaction(bank):
                 if row['transaction_type'] == 'IN':
                     formatted_amount = '{:,.2f}'.format(row['amount'])
                     bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
+                    memo_check = 'D'+bank_account.account_name
+                    if memo_check.lower() in row['description'].lower():
+                        continue
                     success = False
                     reported = False
                     if bank_account:
