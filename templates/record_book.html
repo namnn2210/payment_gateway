@@ -431,7 +431,7 @@ $(document).ready(function() {
             handlePaginationClick.call(this, event, paginationId);
         });
     }
-    
+
     $('#export-excel').on('click', function(event) {
         event.preventDefault();
 
@@ -440,7 +440,7 @@ $(document).ready(function() {
 
         // Add additional data you want to pass
         $.ajax({
-            url: '/export-excel/',  // You need to define this export-excel endpoint
+            url: '/export_to_excel/',  // You need to define this export-excel endpoint
             type: 'GET',
             data: params.toString(),
             xhrFields: {
@@ -451,7 +451,7 @@ $(document).ready(function() {
                 const link = document.createElement('a');
                 const url = window.URL.createObjectURL(blob);
                 link.href = url;
-                
+
                 // Extract file name from the content disposition header (if available)
                 const disposition = xhr.getResponseHeader('Content-Disposition');
                 let fileName = 'record_book.xlsx';
