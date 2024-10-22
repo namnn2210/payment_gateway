@@ -78,10 +78,9 @@
             <div class="col-md-12 col-sm-12 text-right">
                 <input type="hidden" name="in_page" value="{{ in_page_obj.number }}">
                 <input type="hidden" name="out_page" value="{{ out_page_obj.number }}">
-                <a href="{% url 'export_to_excel' %}?search={{ search_query }}&start_datetime={{ start_date }}&end_datetime={{ end_date }}"
-                    class="btn rounded-pill btn-secondary" id="export-excel">
+                <button type="button" class="btn rounded-pill btn-secondary btn-export" id="export-excel">
                     <i class="fa fa-file-excel me-1"></i>{% trans "Export Excel" %}
-                </a>
+                </button>
                 <button type="submit" class="btn rounded-pill btn-primary"><i class="bi bi-search me-1"></i>{% trans "Search" %}</button>
             </div>
         </div>
@@ -432,6 +431,48 @@ $(document).ready(function() {
             handlePaginationClick.call(this, event, paginationId);
         });
     }
+    
+    $('#export-excel').on('click', function(event) {
+        event.preventDefault();
+
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams($('#search-form').serialize());
+
+        // Add additional data you want to pass
+        $.ajax({
+            url: '/export-excel/',  // You need to define this export-excel endpoint
+            type: 'GET',
+            data: params.toString(),
+            xhrFields: {
+                responseType: 'blob' // Important for binary data
+            },
+            success: function(blob, status, xhr) {
+                // Create a link element to download the file
+                const link = document.createElement('a');
+                const url = window.URL.createObjectURL(blob);
+                link.href = url;
+                
+                // Extract file name from the content disposition header (if available)
+                const disposition = xhr.getResponseHeader('Content-Disposition');
+                let fileName = 'record_book.xlsx';
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const fileNameMatch = disposition.match(/filename="?(.+)"?/);
+                    if (fileNameMatch.length === 2) fileName = fileNameMatch[1];
+                }
+
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up and remove the link
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error exporting data:', error);
+            }
+        });
+    });
 
     $('#search-form').on('submit', function(event) {
         event.preventDefault();
