@@ -12,6 +12,19 @@
     .same-height .card {
         flex: 1;
     }
+    
+    .status-dot {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+    .online {
+        background-color: green;
+    }
+    .user-list {
+        margin-top: 20px;
+    }
 </style>
 {% endblock %}
 {% block content %}
@@ -50,14 +63,26 @@
         {% if not user.is_superuser%}
         <div class="col-md-6 col-sm-12 same-height mt-4">
             <div class="card info-card revenue-card">
-                <div class="card-body text-center mt-4 align-items-center">
-                    <button type="button" class="btn btn-primary rounded-pill create-deposit-btn" data-bs-toggle="modal"
-                        data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
-                    {% if is_session %}
-                        <button type="button" class="btn btn-danger rounded-pill start-session-btn">{% trans "End Session" %}</button>
-                    {% else %}
-                        <button type="button" class="btn btn-success rounded-pill start-session-btn">{% trans "Start Session" %}</button>
-                    {% endif %}
+                <div class="card-body">
+                    <div>
+                        <button type="button" class="btn btn-primary rounded-pill create-deposit-btn" data-bs-toggle="modal"
+                            data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
+                        {% if is_session %}
+                            <button type="button" class="btn btn-danger rounded-pill start-session-btn">{% trans "End Session" %}</button>
+                        {% else %}
+                            <button type="button" class="btn btn-success rounded-pill start-session-btn">{% trans "Start Session" %}</button>
+                        {% endif %}
+                    </div>
+                    <div class="user-list">
+                        <ul class="list-group">
+                            {% for user in online_users %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ user.username }}
+                                <span class="status-dot online"></span> {% trans "Online" %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -26,6 +26,7 @@ def index(request):
     #     return render(request, '2fa.html')
     list_bank_option = Bank.objects.filter(status=True)
     number_failed = 0
+    user_online = None
     if request.user.is_superuser:
         list_user_bank = BankAccount.objects.all()
         all_transactions_df = get_all_transactions()
@@ -47,9 +48,9 @@ def index(request):
                 by='transaction_date', ascending=False)
             # number_failed = in_transactions_df.shape[0]
             number_failed = in_transactions_df['amount'].sum()
-
     else:
         list_user_bank = BankAccount.objects.filter(user=request.user)
+        user_online = EmployeeWorkingSession.objects.filter(status=False)
     if request.user.is_superuser:
         list_deposit_requests = EmployeeDeposit.objects.filter(status=False)
         paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
@@ -65,7 +66,7 @@ def index(request):
         is_session = False
     
         
-    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option, 'is_session':is_session, 'number_failed':number_failed})
+    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option, 'is_session':is_session, 'number_failed':number_failed, 'user_online':user_online})
 
 def user_login(request):
     if request.method == 'POST':
