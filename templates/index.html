@@ -75,7 +75,7 @@
                     </div>
                     <div class="user-list">
                         <ul class="list-group">
-                            {% for user in online_users %}
+                            {% for user in user_online %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 {{ user.username }}
                                 <span class="status-dot online"></span> {% trans "Online" %}
