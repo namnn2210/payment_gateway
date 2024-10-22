@@ -23,6 +23,9 @@ from django.db.models import Q, Sum
 from django.core.paginator import Paginator
 from dotenv import load_dotenv
 from django.utils import timezone
+import openpyxl
+from django.http import HttpResponse
+from io import BytesIO
 
 load_dotenv()
 
@@ -458,6 +461,68 @@ def record_book_report(request):
             return JsonResponse(data)
 
     return JsonResponse({'error': 'Invalid request method'})
+
+def export_to_excel(request):
+    # Fetch all transactions as a DataFrame
+    all_transactions_df = get_all_transactions()
+
+    # Get search query and date range from the request
+    search_query = request.GET.get('search', '')
+    start_date = request.GET.get('start_datetime', '')
+    end_date = request.GET.get('end_datetime', '')
+
+    # Convert start_date and end_date to actual datetime objects (utility function)
+    start_date, end_date = get_start_end_datetime(start_date, end_date)
+
+    # Ensure we have transactions to filter
+    if not all_transactions_df.empty:
+
+        # Convert the 'transaction_date' column to datetime format for filtering
+        if 'transaction_date' in all_transactions_df.columns:
+            all_transactions_df['transaction_date'] = pd.to_datetime(
+                all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S'
+            )
+
+        # Filter transactions based on the date range (if start_date and end_date are valid)
+        filtered_transactions_df = all_transactions_df[
+            (all_transactions_df['transaction_date'] >= start_date) &
+            (all_transactions_df['transaction_date'] <= end_date)
+        ]
+
+        # Apply the search query filter if provided
+        if search_query:
+            filtered_transactions_df = filtered_transactions_df[
+                filtered_transactions_df.apply(
+                    lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1
+                )
+            ]
+
+        # Prepare the Excel file for download
+        if not filtered_transactions_df.empty:
+            # Create an in-memory buffer
+            buffer = BytesIO()
+
+            # Use Pandas to write the filtered DataFrame to an Excel file in memory
+            with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+                filtered_transactions_df.to_excel(writer, sheet_name='Transactions', index=False)
+
+            # Set the buffer's file position to the beginning
+            buffer.seek(0)
+
+            # Create an HTTP response with the Excel file
+            response = HttpResponse(buffer, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = 'attachment; filename=filtered_transactions.xlsx'
+
+            return response
+        else:
+            # Return an empty Excel file or an error response
+            return HttpResponse('No transactions found for the specified filters.', content_type='text/plain')
+
+    else:
+        # Handle the case where there are no transactions to export
+        return HttpResponse('No transactions available to export.', content_type='text/plain')
+
+
             
 
 

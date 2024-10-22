@@ -78,6 +78,10 @@
             <div class="col-md-12 col-sm-12 text-right">
                 <input type="hidden" name="in_page" value="{{ in_page_obj.number }}">
                 <input type="hidden" name="out_page" value="{{ out_page_obj.number }}">
+                <a href="{% url 'export_to_excel' %}?search={{ search_query }}&start_datetime={{ start_date }}&end_datetime={{ end_date }}"
+                    class="btn rounded-pill btn-secondary" id="export-excel">
+                    <i class="fa fa-file-excel me-1"></i>{% trans "Export Excel" %}
+                </a>
                 <button type="submit" class="btn rounded-pill btn-primary"><i class="bi bi-search me-1"></i>{% trans "Search" %}</button>
             </div>
         </div>
