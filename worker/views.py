@@ -149,13 +149,15 @@ def get_transaction(bank):
         redis_client.set(bank.account_number, json.dumps(updated_transactions, default=str))
         if different_transactions:
             for row in different_transactions:
+                bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                 if not datetime.strptime(row["transaction_date"], '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
                     continue
                 if row['transaction_type'] == 'IN':
                     formatted_amount = '{:,.2f}'.format(row['amount'])
-                    bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
-                    memo_check = 'D'+bank_account.account_name
-                    if memo_check.lower() in row['description'].lower():
+
+                    memo_transfer_check = 'C'+bank_account.account_name
+                    memo_deposit_check = 'D'+bank_account.account_name
+                    if memo_transfer_check.lower() in row['description'].lower() or memo_deposit_check.lower() in row['description'].lower():
                         continue
                     success = False
                     reported = False
@@ -256,8 +258,15 @@ def get_transaction(bank):
                         f'\n'
                         f'🕒 {row["transaction_date"]}'
                     )
-                    send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                          os.environ.get('TRANSACTION_BOT_API_KEY'))
+                    memo_transfer_check = 'C' + bank_account.account_name
+                    memo_deposit_check = 'D' + bank_account.account_name
+                    if memo_transfer_check.lower() in row['description'].lower() or memo_deposit_check.lower() in row[
+                        'description'].lower():
+                        send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
+                                              os.environ.get('TRANSACTION_BOT_API_KEY'))
+                    else:
+                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                              os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (
             bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
