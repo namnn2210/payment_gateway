@@ -356,7 +356,7 @@ $(document).ready(function() {
                 .attr('id', `details-${item.transaction_number}`)
                 .attr('style', 'display: none;');
 
-            detailsRow.append(`<td colspan="6"><div><strong>{% trans "Transaction Number" %}:</strong> ${item.transaction_number}<br><strong>{% trans "Memo" %}:</strong> ${item.description}</div></td>`);
+            detailsRow.append(`<td colspan="6"><div><strong>{% trans "Transaction Number" %}:</strong> ${item.transaction_number}<br><strong>{% trans "Memo" %}:</strong> ${item.description}<br><strong>{% trans "Order ID" %}:</strong> ${item.orderid}<br><strong>{% trans "CID" %}:</strong> ${item.scode}<br><strong>{% trans "Order Code" %}:</strong> ${item.incomingorderid}</div></td>`);
             tableBody.append(detailsRow);
         });
 
