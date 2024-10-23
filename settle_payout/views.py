@@ -82,7 +82,7 @@ def list_settle_payout(request):
             default=Value(1),
             output_field=IntegerField()
         )
-    ).order_by('status_priority', 'created_at')
+    ).order_by('status_priority', '-created_at')
 
     total_results = len(list_payout)
     total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
