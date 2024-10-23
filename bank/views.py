@@ -363,12 +363,15 @@ def get_amount_today(request):
         
     
 
-def update_transaction_history_status(account_number, transfer_code, status):
+def update_transaction_history_status(account_number, transfer_code, orderid, scode, incomingorderid, status):
     redis_client = redis_connect(1)
     transactions = json.loads(redis_client.get(account_number))
     for transaction in transactions:
         if transaction['transfer_code'] == transfer_code:
             print(transaction)
+            transaction['orderid'] = orderid
+            transaction['scode'] = scode
+            transaction['incomingorderid'] = incomingorderid
             transaction['status'] = status
             break
 

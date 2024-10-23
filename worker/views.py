@@ -193,12 +193,12 @@ def get_transaction(bank):
                                     reported = True
                                     break
 
-                                if result['prc'] == '1' and result['errcode'] == '00':
+                                if result['prc'] == '1' and result['errcode'] == '00' and result['msg'] == "SUCCESS":
                                     if result['orderno'] == '':
                                         continue
                                     else:
                                         update_transaction_history_status(row['account_number'],
-                                                                          row['transfer_code'], 'Success')
+                                                                          row['transfer_code'],row['orderid'],row['scode'], row['incomingorderid'], 'Success')
                                         alert = (
                                             f'🟩🟩🟩 Success! CID: {item.name}\n'
                                             f'\n'

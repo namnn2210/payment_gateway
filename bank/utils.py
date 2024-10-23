@@ -22,6 +22,10 @@ class Transaction:
         self.transfer_code = transfer_code
         self.status = None
         self.amount = amount
+        self.note = ''
+        self.orderid = ''
+        self.scode = ''
+        self.incomingorderid = ''
 
     def __dict__(self) -> dict:
         return {
@@ -32,7 +36,11 @@ class Transaction:
             'description':self.description, 
             'transfer_code':self.transfer_code,
             'status':self.status,
-            'amount':self.amount
+            'amount':self.amount,
+            'note':self.note,
+            'orderid':self.orderid,
+            'scode':self.scode,
+            'incomingorderid':self.incomingorderid
         }
         
         
