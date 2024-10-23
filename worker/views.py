@@ -198,7 +198,7 @@ def get_transaction(bank):
                                         continue
                                     else:
                                         update_transaction_history_status(row['account_number'],
-                                                                          row['transfer_code'],row['orderid'],row['scode'], row['incomingorderid'], 'Success')
+                                                                          row['transfer_code'],result['orderid'],result['scode'], result['incomingorderid'], 'Success')
                                         alert = (
                                             f'🟩🟩🟩 Success! CID: {item.name}\n'
                                             f'\n'
