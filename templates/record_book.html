@@ -324,6 +324,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(data) {
                 callback(data);
+
                 updateTotals(data.total_in_amount, data.total_out_amount);
             },
             error: function(xhr, status, error) {
@@ -336,6 +337,7 @@ $(document).ready(function() {
         const tableBody = $('#' + tableId);
         tableBody.empty();
         data.forEach((item) => {
+
             const row = $('<tr>')
                 .addClass('main-row text-center')
                 .attr('data-transaction-number', item.transaction_number)

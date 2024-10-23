@@ -70,8 +70,8 @@ def record_book(request):
             ]
 
         # Separate and sort transactions by type
-        in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False)
-        out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False)
+        in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False).fillna('')
+        out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False).fillna('')
 
         # Calculate total amounts
         total_in_amount = in_transactions_df['amount'].sum()
@@ -95,6 +95,7 @@ def record_book(request):
             total_out_amount = int(float(out_transactions_df['amount'].sum()))
 
 
+
             data = {
                 'in_transactions': list(in_page_obj),
                 'out_transactions': list(out_page_obj),
@@ -105,6 +106,8 @@ def record_book(request):
                 'total_in_amount': total_in_amount,
                 'total_out_amount': total_out_amount,
             }
+
+            print("=========", data)
 
             return JsonResponse(data)
 
