@@ -12,7 +12,7 @@ class UpdateUserForm(forms.Form):
 @admin.register(SettlePayout)
 class SettlePayoutAdmin(admin.ModelAdmin):
     list_display = ('user','scode','orderno', 'orderid', 'status', 'money', 'bankname', 'accountno','accountname', 'bankcode','process_bank', 'created_at', 'updated_at')
-    list_filter = ('user', 'bankcode', 'status','created_at',)
+    list_filter = ('user', 'status',)
     search_fields = ('orderno', 'orderid','scode', 'did', 'accountno', 'accountname',)
 
     def update_user(self, request, queryset):
