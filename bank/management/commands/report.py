@@ -45,9 +45,9 @@ class Command(BaseCommand):
             alert = (
                 f'Cập nhật: {today}\n'
                 f'\n'
-                f'Tổng khối lượng lệnh payout: {total_amount_payout_settle}\n'
+                f'Tổng khối lượng lệnh payout: {'{:,.2f}'.format(total_amount_payout_settle)}\n'
                 f'\n'
-                f'Tổng khối lượng lệnh giao dịch out: {total_out_today}\n'
+                f'Tổng khối lượng lệnh giao dịch out: {'{:,.2f}'.format(total_out_today)}\n'
                 f'\n'
             )
             send_telegram_message(alert, os.environ.get('REPORT_CHAT_ID'),
