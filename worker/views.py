@@ -96,7 +96,7 @@ def get_balance(bank):
         else:
             pass
             # print('No new data for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
-    else:
+    elif bank_balance is None:
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
             f'Lấy số dư tài khoản {bank.account_number} - {bank.bank_name.name} không thành công\n'

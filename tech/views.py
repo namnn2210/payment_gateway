@@ -29,8 +29,10 @@ def tech_balance(username, password, account_number):
         for item in response:
             if type(item) == str:
                 continue
-            print(item)
+            print("========", item)
             if item['BBAN'] == account_number:
+                print("match account no:", account_number)
+                print("balance:", item['availableBalance'])
                 return item['availableBalance']
     return None
 

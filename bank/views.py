@@ -134,45 +134,42 @@ def record_book(request):
 @method_decorator(csrf_exempt, name='dispatch')
 class AddBankView(View):
     def post(self, request, *args, **kwargs):
-        try:
-            data = json.loads(request.body)
-            bank_number = data.get('bankNumber')
-            bank_accountname = data.get('bankAccountName')
-            bank_username = data.get('bankUsername')
-            bank_password = data.get('bankPassword')
-            bank_type = data.get('bankType')
-            bank_name = data.get('bankName')
-            
-            # Check if any bank_account with the same type is ON
-            existed_bank_account = BankAccount.objects.filter(
-                user=request.user,
-                account_number=bank_number,
-                bank_type=bank_type).first()
-            if existed_bank_account:
-                return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
+        # try:
+        data = json.loads(request.body)
+        bank_number = data.get('bankNumber')
+        bank_accountname = data.get('bankAccountName')
+        bank_username = data.get('bankUsername')
+        bank_password = data.get('bankPassword')
+        bank_type = data.get('bankType')
+        bank_name = data.get('bankName')
+
+        # Check if any bank_account with the same type is ON
+        existed_bank_account = BankAccount.objects.filter(
+            user=request.user,
+            account_number=bank_number,
+            bank_type=bank_type).first()
+        if existed_bank_account:
+            return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
 
 
-            bank = Bank.objects.filter(name=bank_name).first()
+        bank = Bank.objects.filter(name=bank_name).first()
 
-            if bank_name == 'MB':
-                login_logout_mb(bank_username, bank_password, bank_number, 'ON')
-
-            BankAccount.objects.create(
-                user=request.user,
-                bank_name=bank,
-                account_number=bank_number,
-                account_name=bank_accountname,
-                balance=0,
-                bank_type=bank_type,
-                username=bank_username,
-                password=bank_password
-            )
+        BankAccount.objects.create(
+            user=request.user,
+            bank_name=bank,
+            account_number=bank_number,
+            account_name=bank_accountname,
+            balance=0,
+            bank_type=bank_type,
+            username=bank_username,
+            password=bank_password
+        )
 
 
-            return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
-        except Exception as ex:
-            print(str(ex))
-            return JsonResponse({'status': 500, 'message': 'Failed to add bank'})
+        return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
+        # except Exception as ex:
+        #     print(str(ex))
+        #     return JsonResponse({'status': 500, 'message': 'Failed to add bank'})
     
 @csrf_exempt
 def toggle_bank_status(request):
