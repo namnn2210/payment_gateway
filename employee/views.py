@@ -9,6 +9,7 @@ from worker.views import get_balance_by_bank
 from employee.models import EmployeeWorkingSession
 from datetime import datetime
 import pytz
+import random
 import json
 from django.utils import timezone
 
@@ -20,14 +21,18 @@ def employee_deposit(request):
         deposit_amount = int(request.POST.get('deposit', 0))
         bank_id = int(request.POST.get('bank'))
         bank = BankAccount.objects.filter(id=bank_id).first()
-        EmployeeDeposit.objects.create(
-            user = request.user,
-            amount = deposit_amount,
-            bankname = bank.bank_name,
-            accountno = bank.account_number,
-            accountname = bank.account_name,
-            bankcode = bank.bank_name.bankcode
-        )
+
+        split_amounts = split_deposit(deposit_amount)
+
+        for amount in split_amounts:
+            EmployeeDeposit.objects.create(
+                user = request.user,
+                amount = amount,
+                bankname = bank.bank_name,
+                accountno = bank.account_number,
+                accountname = bank.account_name,
+                bankcode = bank.bank_name.bankcode
+            )
         return redirect('index')
     if request.user.is_superuser:
         list_deposit_requests = EmployeeDeposit.objects.all()
@@ -41,6 +46,28 @@ def employee_deposit(request):
         
     return render(request=request, template_name='employee/deposit.html', context={'list_deposit_requests':list_deposit_requests})
 
+def split_deposit(total_amount):
+    max_split_amount = 200000000
+    divisor = 5
+    split_count = random.randint(3, 10)
+
+    # Initial base split calculation
+    base_amount = (total_amount // split_count // divisor) * divisor  # ensures divisibility by 5
+    split_amounts = [base_amount] * split_count
+
+    # Calculate remaining balance to be distributed
+    remaining = total_amount - base_amount * split_count
+
+    # Distribute remaining balance across the splits
+    for i in range(split_count):
+        if remaining <= 0:
+            break
+        if split_amounts[i] < max_split_amount:
+            add_amount = min(divisor * (remaining // divisor), max_split_amount - split_amounts[i])
+            split_amounts[i] += add_amount
+            remaining -= add_amount
+
+    return split_amounts
 
 @csrf_exempt
 @require_POST
