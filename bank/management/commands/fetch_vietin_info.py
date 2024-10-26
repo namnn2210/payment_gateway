@@ -18,15 +18,15 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         while True:
             # Get all active bank accounts
-            try:
-                bank_accounts = BankAccount.objects.filter(bank_name=4,status=True)
-                for bank in bank_accounts:
+            bank_accounts = BankAccount.objects.filter(bank_name=4,status=True)
+            for bank in bank_accounts:
+                try:
                     get_balance(bank=bank)
-                time.sleep(15)
-            except Exception as ex:
-                alert = (
-                    f'🔴 - LỖI HỆ THỐNG\n'
-                    f'Lỗi lấy dữ liệu Vietinbank: {str(ex)}\n'
-                    f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
-                )
-                send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                except Exception as ex:
+                    alert = (
+                        f'🔴 - LỖI HỆ THỐNG\n'
+                        f'Lỗi lấy dữ liệu Vietinbank: {str(ex)}\n'
+                        f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+                    )
+                    send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            time.sleep(15)

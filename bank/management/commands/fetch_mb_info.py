@@ -18,15 +18,16 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         while True:
             # Get all active bank accounts
-            try:
+
                 bank_accounts = BankAccount.objects.filter(bank_name=2,status=True)
                 for bank in bank_accounts:
-                    get_balance(bank=bank)
+                    try:
+                        get_balance(bank=bank)
+                    except Exception as ex:
+                        alert = (
+                            f'🔴 - SYSTEM ALERT\n'
+                            f'Fetch MB bank info error: {str(ex)}\n'
+                            f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+                        )
+                        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
                 time.sleep(15)
-            except Exception as ex:
-                alert = (
-                    f'🔴 - SYSTEM ALERT\n'
-                    f'Fetch MB bank info error: {str(ex)}\n'
-                    f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
-                )
-                send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
