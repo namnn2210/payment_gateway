@@ -156,7 +156,7 @@ def get_transaction(bank):
                     formatted_amount = '{:,.2f}'.format(row['amount'])
                     memo_transfer_check = 'C'+bank_account.account_name
                     memo_deposit_check = 'D'+bank_account.account_name
-                    if memo_transfer_check.lower() in row['description'].lower() or memo_deposit_check.lower() in row['description'].lower():
+                    if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                         continue
                     success = False
                     reported = False
