@@ -154,7 +154,6 @@ def get_transaction(bank):
                     continue
                 if row['transaction_type'] == 'IN':
                     formatted_amount = '{:,.2f}'.format(row['amount'])
-
                     memo_transfer_check = 'C'+bank_account.account_name
                     memo_deposit_check = 'D'+bank_account.account_name
                     if memo_transfer_check.lower() in row['description'].lower() or memo_deposit_check.lower() in row['description'].lower():
@@ -262,8 +261,7 @@ def get_transaction(bank):
                     )
                     memo_transfer_check = 'C' + bank_account.account_name
                     memo_deposit_check = 'D' + bank_account.account_name
-                    if memo_transfer_check.lower() in row['description'].lower() or memo_deposit_check.lower() in row[
-                        'description'].lower():
+                    if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                         send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
                                               os.environ.get('TRANSACTION_BOT_API_KEY'))
                     else:
