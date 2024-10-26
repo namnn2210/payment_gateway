@@ -45,8 +45,6 @@ def get_balance(bank):
         print('Error fetching bank balance, try to login')
         error_count += 1
         print('Retry logging in: ', error_count)
-        if error_count > 1 and bank.bank_name.name == "Techcombank":
-            return
         if error_count > 3:
             alert = (
                 f'🔴 - LỖI HỆ THỐNG\n'
