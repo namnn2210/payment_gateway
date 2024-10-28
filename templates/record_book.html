@@ -61,15 +61,25 @@
     <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
     <form method="get" id="search-form">
         <div class="row">
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-6 col-sm-12">
                 <label for="search_box">{% trans "Search" %}</label>
                 <input type="text" id="search_box" name="search" class="form-control input-sm" placeholder="{% trans 'Search everything here...' %}" value="{{ search_query }}" />
             </div>
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-6 col-sm-12">
+                <label for="status">{% trans "Status" %}</label>
+                <select id="statusFilter" name="status" class="form-select">
+                    <option value="All" {% if request.GET.status == "All" or request.GET.status is None %}selected{% endif %}>{% trans "All" %}</option>
+                    <option value="Success" {% if request.GET.status == "Success" %}selected{% endif %}>{% trans "Success" %}</option>
+                    <option value="Failed" {% if request.GET.status == "Failed" %}selected{% endif %}>{% trans "Failed" %}</option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
                 <label for="start_datetime">{% trans "Start Date" %}</label>
                 <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control input-sm" value="{{ start_date }}" />
             </div>
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-6 col-sm-12">
                 <label for="end_datetime">{% trans "End Date" %}</label>
                 <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control input-sm" value="{{ end_date }}" />
             </div>

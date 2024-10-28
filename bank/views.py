@@ -46,6 +46,7 @@ def record_book(request):
     search_query = request.GET.get('search', '')
     start_date = request.GET.get('start_datetime', '')
     end_date = request.GET.get('end_datetime', '')
+    status = request.GET.get('status', '')
 
     start_date, end_date = get_start_end_datetime(start_date, end_date)
 
@@ -63,6 +64,9 @@ def record_book(request):
             (all_transactions_df['transaction_date'] >= start_date) &
             (all_transactions_df['transaction_date'] <= end_date)
         ]
+
+        if status != 'All':
+            filtered_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] == status]
 
         if search_query:
             filtered_transactions_df = filtered_transactions_df[
