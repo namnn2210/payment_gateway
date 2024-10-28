@@ -25,6 +25,7 @@ def tech_balance(username, password, account_number):
     }
 
     response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=120).json()
+    print('balance response', response)
     if type(response) == list :
         for item in response:
             if item['BBAN'] == account_number:
