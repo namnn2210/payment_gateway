@@ -67,7 +67,7 @@
             </div>
             <div class="col-md-6 col-sm-12">
                 <label for="status">{% trans "Status" %}</label>
-                <select id="statusFilter" name="status" class="form-select">
+                <select id="status" name="status" class="form-select">
                     <option value="All" {% if request.GET.status == "All" or request.GET.status is None %}selected{% endif %}>{% trans "All" %}</option>
                     <option value="Success" {% if request.GET.status == "Success" %}selected{% endif %}>{% trans "Success" %}</option>
                     <option value="Failed" {% if request.GET.status == "Failed" %}selected{% endif %}>{% trans "Failed" %}</option>
