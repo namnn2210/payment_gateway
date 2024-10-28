@@ -140,8 +140,7 @@ def get_transaction(bank):
         for transaction in different_transactions:
             # Check for success out
             if transaction['transaction_type'] == 'OUT':
-                success = check_success_payout(transaction)
-                if success:
+                if 'Z' in transaction['description']:
                     transaction['status'] = 'Success'
         updated_transactions = old_bank_history + different_transactions
         # Update Redis
@@ -261,8 +260,10 @@ def get_transaction(bank):
                         f'\n'
                         f'🕒 {row["transaction_date"]}'
                     )
-                    memo_transfer_check = 'C' + bank_account.account_name
-                    memo_deposit_check = 'D' + bank_account.account_name
+                    account_name = bank_account.account_name
+                    name = account_name.split(' ')[-1]
+                    memo_transfer_check = 'C' + name
+                    memo_deposit_check = 'D' + name
                     if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                         send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
                                               os.environ.get('TRANSACTION_BOT_API_KEY'))

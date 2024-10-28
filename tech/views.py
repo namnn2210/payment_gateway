@@ -25,15 +25,14 @@ def tech_balance(username, password, account_number):
     }
 
     response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=120).json()
-    if response:
+    if type(response) == list :
         for item in response:
-            if type(item) == str:
-                continue
-            print("========", item)
             if item['BBAN'] == account_number:
-                print("match account no:", account_number)
-                print("balance:", item['availableBalance'])
+                print(item['availableBalance'])
                 return item['availableBalance']
+    if type(response) == dict :
+        if not response['success']:
+            return None
     return None
 
 def tech_transactions(username, password, account_number):
@@ -63,14 +62,13 @@ def tech_transactions(username, password, account_number):
         transactions = response['transactions']
         transaction_type = ''
         for transaction in transactions:
-            print(transaction)
             if 'category' not in transaction.keys():
                 continue
             if transaction['category'] == "Spending":
                 transaction_type = "OUT"
             elif transaction['category'] == "Income":
                 transaction_type = "IN"
-            print(transaction_type)
+
             transaction_date = datetime.fromisoformat(transaction['creationTime'])
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')
             new_formatted_transaction = Transaction(
