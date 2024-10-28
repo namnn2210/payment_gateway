@@ -260,13 +260,17 @@ def get_transaction(bank):
                         f'\n'
                         f'🕒 {row["transaction_date"]}'
                     )
-                    account_name = bank_account.account_name
-                    name = account_name.split(' ')[-1]
-                    memo_transfer_check = 'C' + name
-                    memo_deposit_check = 'D' + name
-                    if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
-                        send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
-                                              os.environ.get('TRANSACTION_BOT_API_KEY'))
+
+                    bank_accounts = BankAccount.objects.filter(status=True)
+                    set_name = set([bank_account.account_name for bank_account in bank_accounts])
+                    for name in set_name:
+                        first_name = name.split(' ')[-1]
+                        memo_transfer_check = 'C' + first_name
+                        memo_deposit_check = 'D' + first_name
+                        if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
+                            send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
+                                                  os.environ.get('TRANSACTION_BOT_API_KEY'))
+                            break
                     else:
                         send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                               os.environ.get('TRANSACTION_BOT_API_KEY'))
