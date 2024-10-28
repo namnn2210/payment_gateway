@@ -48,6 +48,8 @@ def record_book(request):
     end_date = request.GET.get('end_datetime', '')
     status = request.GET.get('status', '')
 
+    print("record book status", status)
+
     start_date, end_date = get_start_end_datetime(start_date, end_date)
 
 
