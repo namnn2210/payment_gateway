@@ -83,7 +83,7 @@ def get_balance(bank):
             bank.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
             bank.save()
             print('Update for bank: %s. Updated at %s' % (
-            bank.account_number, timezone.now().strftime('%Y-%m-%d %H:%M:%S')))
+                bank.account_number, timezone.now().strftime('%Y-%m-%d %H:%M:%S')))
 
             # Get transactions
             if bank.bank_name.name == 'MB':
@@ -133,7 +133,8 @@ def get_transaction(bank):
         old_bank_history = json.loads(redis_client.get(bank.account_number))
         list_old_transaction_numbers = [item['transaction_number'] for item in old_bank_history]
 
-        different_transactions = [item for item in new_transactions if item['transaction_number'] not in list_old_transaction_numbers]
+        different_transactions = [item for item in new_transactions if
+                                  item['transaction_number'] not in list_old_transaction_numbers]
         # Add new transactions to current history
         logger.info(different_transactions)
         for transaction in different_transactions:
@@ -152,8 +153,8 @@ def get_transaction(bank):
                     continue
                 if row['transaction_type'] == 'IN':
                     formatted_amount = '{:,.2f}'.format(row['amount'])
-                    memo_transfer_check = 'C'+bank_account.account_name
-                    memo_deposit_check = 'D'+bank_account.account_name
+                    memo_transfer_check = 'C' + bank_account.account_name
+                    memo_deposit_check = 'D' + bank_account.account_name
                     if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                         continue
                     success = False
@@ -166,8 +167,8 @@ def get_transaction(bank):
                             logger.info(result)
                             if result:
                                 if result['msg'] == 'transfercode is null':
-                                    update_transaction_history_status(row['account_number'], row['transfer_code'],
-                                                                      'Failed')
+                                    update_transaction_history_status(row['account_number'], row['transfer_code'], '',
+                                                                      '', '', 'Failed')
                                     alert = (
                                         f'Hi, failed\n'
                                         f'\n'
@@ -195,7 +196,9 @@ def get_transaction(bank):
                                         continue
                                     else:
                                         update_transaction_history_status(row['account_number'],
-                                                                          row['transfer_code'],result['orderid'],result['scode'], result['incomingorderid'], 'Success')
+                                                                          row['transfer_code'], result['orderid'],
+                                                                          result['scode'], result['incomingorderid'],
+                                                                          'Success')
                                         alert = (
                                             f'🟩🟩🟩 Success! CID: {item.name}\n'
                                             f'\n'
@@ -223,7 +226,8 @@ def get_transaction(bank):
                             else:
                                 continue
                         if not success and not reported:
-                            update_transaction_history_status(row['account_number'], row['transfer_code'], 'Failed')
+                            update_transaction_history_status(row['account_number'], row['transfer_code'], '', '', '',
+                                                              'Failed')
                             alert = (
                                 f'Hi, failed\n'
                                 f'\n'
@@ -266,7 +270,7 @@ def get_transaction(bank):
                         send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                               os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (
-            bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+                bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
             pass
             # print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
