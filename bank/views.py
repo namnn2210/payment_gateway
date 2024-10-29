@@ -64,8 +64,10 @@ def record_book(request):
         (all_transactions_df['transaction_date'] <= end_date)
     ]
 
-    if status != 'All':
-        filtered_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] == status]
+    if status == 'Success':
+        filtered_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] == 'Success']
+    if status == 'Failed':
+        filtered_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] == 'Failed' or filtered_transactions_df['status'] == '']
 
     if search_query:
         filtered_transactions_df = filtered_transactions_df[
