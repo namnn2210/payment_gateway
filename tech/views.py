@@ -32,6 +32,7 @@ def tech_balance(username, password, account_number):
                 print(item['availableBalance'])
                 return item['availableBalance']
     if type(response) == dict :
+        print(response)
         if response['message'] == 'Request failed with status code 401':
             return None
         if not response['success']:
