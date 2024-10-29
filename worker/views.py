@@ -265,7 +265,7 @@ def get_transaction(bank):
                     set_name = set([bank_account.account_name for bank_account in bank_accounts])
                     for name in set_name:
                         first_name = name.split(' ')[-1]
-                        memo_transfer_check = 'C' + first_name
+                        memo_transfer_check = 'W' + first_name
                         memo_deposit_check = 'D' + first_name
                         if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                             send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
