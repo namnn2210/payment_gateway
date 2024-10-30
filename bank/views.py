@@ -259,7 +259,7 @@ def update_transaction_history(request):
 
     if len(list_df_in) > 0:
         df_in = pd.concat(list_df_in)
-        df_in = df_in.sort_values(by=['transaction_number', 'status', df_in.index], ascending=[True, False, True])
+        # df_in = df_in.sort_values(by=['transaction_number', 'status', df_in.index], ascending=[True, False, True])
         df_in = df_in.drop_duplicates(subset=['transaction_number'], keep='last')
         df_in['transaction_date'] = pd.to_datetime(df_in['transaction_date'], format='%d/%m/%Y %H:%M:%S')
         sorted_transactions_in = df_in.sort_values(by='transaction_date', ascending=False).head(5)
@@ -271,7 +271,7 @@ def update_transaction_history(request):
 
     if len(list_df_out) > 0:
         df_out = pd.concat(list_df_out)
-        df_out = df_out.sort_values(by=['transaction_number', 'status', df_out.index], ascending=[True, False, True])
+        # df_out = df_out.sort_values(by=['transaction_number', 'status', df_out.index], ascending=[True, False, True])
         df_out = df_out.drop_duplicates(subset=['transaction_number'], keep='last')
         df_out['transaction_date'] = pd.to_datetime(df_out['transaction_date'], format='%d/%m/%Y %H:%M:%S')
         sorted_transactions_out = df_out.sort_values(by='transaction_date', ascending=False).head(5)
