@@ -278,6 +278,7 @@ def get_transaction(bank):
 
                     bank_accounts = BankAccount.objects.filter(status=True)
                     set_name = set([bank_account.account_name for bank_account in bank_accounts])
+                    internal = False
                     for name in set_name:
                         first_name = name.split(' ')[-1]
                         memo_transfer_check = 'W' + first_name
@@ -285,10 +286,11 @@ def get_transaction(bank):
                         if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                             send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
                                                   os.environ.get('TRANSACTION_BOT_API_KEY'))
+                            internal = True
                             break
-                        else:
-                            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                                  os.environ.get('TRANSACTION_BOT_API_KEY'))
+                    if not internal:
+                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                          os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (
                 bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
