@@ -78,6 +78,9 @@ def record_book(request):
     in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(by='transaction_date', ascending=False).fillna('')
     out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(by='transaction_date', ascending=False).fillna('')
 
+    in_transactions_df = in_transactions_df.drop_duplicates(subset=['transaction_number'], keep='last')
+    out_transactions_df = out_transactions_df.drop_duplicates(subset=['transaction_number'], keep='last')
+
     # Calculate total amounts
     total_in_amount = in_transactions_df['amount'].sum()
     total_out_amount = out_transactions_df['amount'].sum()

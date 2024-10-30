@@ -38,6 +38,8 @@ class Command(BaseCommand):
                 (all_transactions_df['status'] == 'Success')  # Assuming 'SUCCESS' indicates successful transactions
                 ]
 
+            out_transactions_today_df = out_transactions_today_df.drop_duplicates(subset=['transaction_number'], keep='last')
+
             total_out_today = out_transactions_today_df['amount'].sum() or 0
 
             print(total_amount_payout_settle, total_out_today)
