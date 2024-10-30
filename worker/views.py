@@ -244,8 +244,19 @@ def get_transaction(bank):
                                 f'\n'
                                 f'Reason of not be credited: Order not found!!!'
                             )
-                            send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
-                                                  os.environ.get('226PAY_BOT'))
+                            bank_accounts = BankAccount.objects.filter(status=True)
+                            set_name = set([bank_account.account_name for bank_account in bank_accounts])
+                            for name in set_name:
+                                first_name = name.split(' ')[-1]
+                                memo_transfer_check = 'W' + first_name
+                                memo_deposit_check = 'D' + first_name
+                                if memo_transfer_check in row['description'] or memo_deposit_check in row[
+                                    'description']:
+                                    break
+                                else:
+                                    send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
+                                                          os.environ.get('226PAY_BOT'))
+
                 else:
                     transaction_type = '-'
                     transaction_color = '🔴'  # Red circle emoji for OUT transactions
