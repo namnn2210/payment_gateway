@@ -17,7 +17,7 @@ pipeline {
                         sshpass -p $SSH_PASS ssh -o StrictHostKeyChecking=no -p ${SSH_PORT} ${SSH_USER}@${REMOTE_SERVER} '
                             cd ${PROJECT_DIR} &&
                             git pull &&
-                            supervisorctl restart all
+                            supervisorctl restart celery fetch_acb_info fetch_mb_info fetch_tech_info fetch_vietin_info payment
                         '
                     """
                 }
