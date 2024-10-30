@@ -2,18 +2,19 @@ pipeline {
     agent any
 
     environment {
-        SSH_CREDENTIALS_ID = 'payment-gateway'  // The ID of your SSH credentials
-        REMOTE_SERVER = '15.235.131.24'     // Replace with the actual username and server address
-        SSH_PORT = '22'
-        PROJECT_DIR = '/root/python/payment_gateway'
+        SSH_CREDENTIALS_ID = 'payment-gateway'  // The ID of your Jenkins Username/Password credentials
+        REMOTE_SERVER = '15.235.131.24'         // The server IP or hostname
+        SSH_PORT = '22'                         // The SSH port
+        PROJECT_DIR = '/root/python/payment_gateway'  // The project directory on the remote server
     }
 
     stages {
         stage('Update Project and Rebuild and Restart Supervisor') {
             steps {
-                sshagent (credentials: [SSH_CREDENTIALS_ID]) {
+                // Use the withCredentials block to securely handle username and password
+                withCredentials([usernamePassword(credentialsId: SSH_CREDENTIALS_ID, usernameVariable: 'SSH_USER', passwordVariable: 'SSH_PASS')]) {
                     sh """
-                        ssh -o StrictHostKeyChecking=no -p ${SSH_PORT} ${REMOTE_SERVER} '
+                        sshpass -p $SSH_PASS ssh -o StrictHostKeyChecking=no -p ${SSH_PORT} ${SSH_USER}@${REMOTE_SERVER} '
                             cd ${PROJECT_DIR} &&
                             git pull origin main &&
                             supervisorctl restart all
