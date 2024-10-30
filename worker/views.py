@@ -152,7 +152,7 @@ def get_transaction(bank):
                     continue
                 if row['transaction_type'] == 'IN':
                     formatted_amount = '{:,.2f}'.format(row['amount'])
-                    memo_transfer_check = 'C' + bank_account.account_name
+                    memo_transfer_check = 'W' + bank_account.account_name
                     memo_deposit_check = 'D' + bank_account.account_name
                     if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                         continue
@@ -246,16 +246,20 @@ def get_transaction(bank):
                             )
                             bank_accounts = BankAccount.objects.filter(status=True)
                             set_name = set([bank_account.account_name for bank_account in bank_accounts])
+                            internal = False
                             for name in set_name:
                                 first_name = name.split(' ')[-1]
                                 memo_transfer_check = 'W' + first_name
                                 memo_deposit_check = 'D' + first_name
                                 if memo_transfer_check in row['description'] or memo_deposit_check in row[
                                     'description']:
+                                    send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
+                                                          os.environ.get('TRANSACTION_BOT_API_KEY'))
+                                    internal = True
                                     break
-                                else:
-                                    send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
-                                                          os.environ.get('226PAY_BOT'))
+                            if not internal:
+                                send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
+                                                  os.environ.get('226PAY_BOT'))
 
                 else:
                     transaction_type = '-'
