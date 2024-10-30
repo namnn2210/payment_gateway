@@ -271,9 +271,9 @@ def get_transaction(bank):
                             send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
                                                   os.environ.get('TRANSACTION_BOT_API_KEY'))
                             break
-                    else:
-                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                              os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        else:
+                            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                                  os.environ.get('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (
                 bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
