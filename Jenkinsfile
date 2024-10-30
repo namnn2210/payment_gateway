@@ -9,7 +9,7 @@ pipeline {
     }
 
     stages {
-        stage('Update Project and Rebuild and Restart Supervisor') {
+        stage('Update Project and Restart Supervisor') {
             steps {
                 // Use the withCredentials block to securely handle username and password
                 withCredentials([usernamePassword(credentialsId: SSH_CREDENTIALS_ID, usernameVariable: 'SSH_USER', passwordVariable: 'SSH_PASS')]) {
