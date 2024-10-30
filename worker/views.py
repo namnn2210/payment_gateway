@@ -253,8 +253,8 @@ def get_transaction(bank):
                                 memo_deposit_check = 'D' + first_name
                                 if memo_transfer_check in row['description'] or memo_deposit_check in row[
                                     'description']:
-                                    send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
-                                                          os.environ.get('TRANSACTION_BOT_API_KEY'))
+                                    # send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
+                                    #                       os.environ.get('TRANSACTION_BOT_API_KEY'))
                                     internal = True
                                     break
                             if not internal:
