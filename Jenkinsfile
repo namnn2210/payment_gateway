@@ -16,7 +16,7 @@ pipeline {
                     sh """
                         sshpass -p $SSH_PASS ssh -o StrictHostKeyChecking=no -p ${SSH_PORT} ${SSH_USER}@${REMOTE_SERVER} '
                             cd ${PROJECT_DIR} &&
-                            git pull origin main &&
+                            git pull &&
                             supervisorctl restart all
                         '
                     """
