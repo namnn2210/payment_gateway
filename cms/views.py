@@ -44,7 +44,7 @@ def index(request):
                 (all_transactions_df['transaction_date'] >= start_date) &
                 (all_transactions_df['transaction_date'] <= end_date)
                 ]
-            in_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] != 'Success' and 'Z' in filtered_transactions_df['description']].sort_values(
+            in_transactions_df = filtered_transactions_df[(filtered_transactions_df['status'] != 'Success') & ('Z' in filtered_transactions_df['description'])].sort_values(
                 by='transaction_date', ascending=False)
             # number_failed = in_transactions_df.shape[0]
             number_failed = in_transactions_df['amount'].sum()
