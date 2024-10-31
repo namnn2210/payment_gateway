@@ -257,7 +257,7 @@ def get_transaction(bank):
                                     #                       os.environ.get('TRANSACTION_BOT_API_KEY'))
                                     internal = True
                                     break
-                            if not internal:
+                            if not internal and bank.bank_type == 'IN':
                                 send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
                                                   os.environ.get('226PAY_BOT'))
 
@@ -283,7 +283,7 @@ def get_transaction(bank):
                         first_name = name.split(' ')[-1]
                         memo_transfer_check = 'W' + first_name
                         memo_deposit_check = 'D' + first_name
-                        if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
+                        if memo_transfer_check in row['description'] or memo_deposit_check in row['description'] and bank.bank_type == 'OUT':
                             send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
                                                   os.environ.get('TRANSACTION_BOT_API_KEY'))
                             internal = True
