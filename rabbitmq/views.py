@@ -65,7 +65,7 @@ def get_notifications(request):
 
     # Close the RabbitMQ connection
     connection.close()
-
+    print('final notifications', recent_notifications)
     # Return the list of recent notifications
     return JsonResponse({"notifications": recent_notifications})
 
