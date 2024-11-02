@@ -47,6 +47,7 @@ def get_notifications(request):
     # Iterate through each bank account's queue
     for account in bank_accounts:
         queue_name = f'noti_{account.account_number}'
+        print(queue_name)
         try:
             method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
         except Exception as e:
@@ -60,7 +61,7 @@ def get_notifications(request):
             transaction_date = timezone.datetime.fromisoformat(transaction.get('transaction_date'))
 
             # Check if the transaction is older than 2 minutes
-            if timezone.now() - transaction_date >= timedelta(minutes=2):
+            if timezone.now() - transaction_date >= timedelta(minutes=10):
                 recent_notifications.append(transaction)
 
     # Close the RabbitMQ connection
