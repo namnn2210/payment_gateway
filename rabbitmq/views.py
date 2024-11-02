@@ -34,40 +34,39 @@ def send_notification(amount, description, account_number, transaction_date):
 @login_required(login_url='user_login')
 def get_notifications(request):
     # Fetch all active bank accounts for the user
-    if request.user.is_superuser:
-        bank_accounts = BankAccount.objects.filter(status=True)
-    else:
+    if not request.user.is_superuser:
+
         bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
 
-    # Connect to RabbitMQ
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    channel = connection.channel()
-    recent_notifications = []
+        # Connect to RabbitMQ
+        connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+        channel = connection.channel()
+        recent_notifications = []
 
-    # Iterate through each bank account's queue
-    for account in bank_accounts:
-        queue_name = f'noti_{account.account_number}'
-        channel.queue_declare(queue=queue_name)
-        try:
-            method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
-        except Exception as e:
-            print('Error getting notification:', str(e))
-            continue
+        # Iterate through each bank account's queue
+        for account in bank_accounts:
+            queue_name = f'noti_{account.account_number}'
+            channel.queue_declare(queue=queue_name)
+            try:
+                method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
+            except Exception as e:
+                print('Error getting notification:', str(e))
+                continue
 
-        # Process the message if it exists
-        if body:
-            transaction = json.loads(body.decode('utf-8'))
+            # Process the message if it exists
+            if body:
+                transaction = json.loads(body.decode('utf-8'))
 
-            transaction_date = datetime.strptime(transaction['transaction_date'], '%d/%m/%Y %H:%M:%S')
-            # Check if the transaction is older than 2 minutes
-            if timezone.now() - transaction_date <= timedelta(minutes=1):
-                recent_notifications.append(transaction)
+                transaction_date = datetime.strptime(transaction['transaction_date'], '%d/%m/%Y %H:%M:%S')
+                # Check if the transaction is older than 2 minutes
+                if timezone.now() - transaction_date <= timedelta(minutes=1):
+                    recent_notifications.append(transaction)
 
-    # Close the RabbitMQ connection
-    connection.close()
+        # Close the RabbitMQ connection
+        connection.close()
 
-    # Return the list of recent notifications
-    return JsonResponse({"notifications": recent_notifications})
+        # Return the list of recent notifications
+        return JsonResponse({"notifications": recent_notifications})
 
 
 
