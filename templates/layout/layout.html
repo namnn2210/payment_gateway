@@ -344,16 +344,11 @@
                                 "showDuration": "300",
                                 "hideDuration": "1000",
                             };
-        
-                            // Display each notification with styled content
-                            toastr.info(`
-                                <div style="font-size: 14px; line-height: 1.5; color: #333;">
-                                    <strong>Transaction Alert</strong><br>
-                                    <span style="color: #4CAF50; font-weight: bold;">Amount:</span> ${notification.amount.toLocaleString()}<br>
-                                    <span style="color: #007BFF; font-weight: bold;">Description:</span> ${notification.description}<br>
-                                    <span style="color: #FFA726; font-weight: bold;">Date:</span> ${notification.transaction_date}
-                                </div>
-                            `);
+
+                            // Display each notification as a Toastr alert
+                            toastr.info(
+                                `Transaction Alert:<br>Amount: ${notification.amount.toLocaleString()}<br>Description: ${notification.description}<br>Date: ${notification.transaction_date}`
+                            );
                         });
                     }
                 })
