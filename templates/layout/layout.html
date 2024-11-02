@@ -325,7 +325,7 @@
             setInterval(fetchLastTransaction, 15000);
         });
     </script>
-    
+
     <script>
         // Function to fetch new transactions and show them with Toastr
         function fetchNotifications() {
@@ -344,7 +344,7 @@
 
                             // Display each notification as a Toastr alert
                             toastr.info(
-                                `Transaction Alert:<br>Amount: ${amount.toLocaleString()}<br>Description: ${description}<br>Date: ${transaction_date}`
+                                `Transaction Alert:<br>Amount: ${notification.amount.toLocaleString()}<br>Description: ${notification.description}<br>Date: ${notification.transaction_date}`
                             );
                         });
                     }

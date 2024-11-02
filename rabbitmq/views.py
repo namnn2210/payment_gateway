@@ -57,7 +57,7 @@ def get_notifications(request):
         # Process the message if it exists
         if body:
             transaction = json.loads(body.decode('utf-8'))
-            print('===========', transaction)
+
             transaction_date = datetime.strptime(transaction['transaction_date'], '%d/%m/%Y %H:%M:%S')
             # Check if the transaction is older than 2 minutes
             if timezone.now() - transaction_date <= timedelta(minutes=20):
@@ -65,7 +65,7 @@ def get_notifications(request):
 
     # Close the RabbitMQ connection
     connection.close()
-    print('final notifications', recent_notifications)
+
     # Return the list of recent notifications
     return JsonResponse({"notifications": recent_notifications})
 
