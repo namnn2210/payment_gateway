@@ -41,6 +41,7 @@ def get_notifications(request):
         # Process the message if it exists
         if body:
             transaction = json.loads(body.decode('utf-8'))
+            print('===========', transaction)
             transaction_date = timezone.datetime.fromisoformat(transaction.get('transaction_date'))
 
             # Check if the transaction is older than 2 minutes
