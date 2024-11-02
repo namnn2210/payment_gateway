@@ -343,7 +343,9 @@
                             };
 
                             // Display each notification as a Toastr alert
-                            toastr.info(`Transaction Alert: ${notification.message}`);
+                            toastr.info(
+                                `Transaction Alert:<br>Amount: ${amount.toLocaleString()}<br>Description: ${description}<br>Date: ${transaction_date}`
+                            );
                         });
                     }
                 })
