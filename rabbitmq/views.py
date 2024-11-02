@@ -60,7 +60,7 @@ def get_notifications(request):
 
             transaction_date = datetime.strptime(transaction['transaction_date'], '%d/%m/%Y %H:%M:%S')
             # Check if the transaction is older than 2 minutes
-            if timezone.now() - transaction_date <= timedelta(minutes=20):
+            if timezone.now() - transaction_date <= timedelta(minutes=1):
                 recent_notifications.append(transaction)
 
     # Close the RabbitMQ connection
