@@ -22,7 +22,7 @@ def connect(user):
 def send_notification(amount, account_number, transaction_date):
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
-    channel.queue_declare(queue=f'noti_{account_number}')
+    channel.queue_declare(queue=f'noti_{account_number}', durable = True)
     channel.basic_publish(
         exchange='',
         routing_key=f'noti_{account_number}',
@@ -48,7 +48,7 @@ def get_notifications(request):
     # Iterate through each bank account's queue
     for account in bank_accounts:
         queue_name = f'noti_{account.account_number}'
-        channel.queue_declare(queue=queue_name)
+        channel.queue_declare(queue=queue_name, durable = True)
         try:
             method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
         except Exception as e:
@@ -61,7 +61,7 @@ def get_notifications(request):
             print('===========', transaction)
             transaction_date = datetime.strptime(transaction['transaction_date'], '%d/%m/%Y %H:%M:%S')
             # Check if the transaction is older than 2 minutes
-            if timezone.now() - transaction_date >= timedelta(minutes=10):
+            if timezone.now() - transaction_date >= timedelta(minutes=20):
                 recent_notifications.append(transaction)
 
     # Close the RabbitMQ connection
