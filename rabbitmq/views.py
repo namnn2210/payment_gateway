@@ -14,15 +14,14 @@ def connect(user):
     bank_accounts = BankAccount.objects.filter(user=user, status=True)
     for bank_account in bank_accounts:
         channel.queue_declare(
-            queue=f'noti_{bank_account.account_number}',
-            durable = True
+            queue=f'noti_{bank_account.account_number}'
         )
     connection.close()
 
 def send_notification(amount, account_number, transaction_date):
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
-    channel.queue_declare(queue=f'noti_{account_number}', durable = True)
+    channel.queue_declare(queue=f'noti_{account_number}')
     channel.basic_publish(
         exchange='',
         routing_key=f'noti_{account_number}',
@@ -48,7 +47,7 @@ def get_notifications(request):
     # Iterate through each bank account's queue
     for account in bank_accounts:
         queue_name = f'noti_{account.account_number}'
-        channel.queue_declare(queue=queue_name, durable = True)
+        channel.queue_declare(queue=queue_name)
         try:
             method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
         except Exception as e:
