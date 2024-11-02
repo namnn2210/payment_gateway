@@ -19,7 +19,10 @@ def send_notification(amount, account_number, transaction_date):
 @login_required(login_url='user_login')
 def get_notifications(request):
     # Fetch all active bank accounts for the user
-    bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
+    if request.user.is_superuser:
+        bank_accounts = BankAccount.objects.filter(status=True)
+    else:
+        bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
 
     # Connect to RabbitMQ
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
