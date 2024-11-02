@@ -349,9 +349,9 @@
                             toastr.info(`
                                 <div style="font-size: 14px; line-height: 1.5; color: #333;">
                                     <strong>Transaction Alert</strong><br>
-                                    <span style="color: #4CAF50; font-weight: bold;">Amount:</span> ${amount.toLocaleString()}<br>
-                                    <span style="color: #007BFF; font-weight: bold;">Description:</span> ${description}<br>
-                                    <span style="color: #FFA726; font-weight: bold;">Date:</span> ${transaction_date}
+                                    <span style="color: #4CAF50; font-weight: bold;">Amount:</span> ${notification.amount.toLocaleString()}<br>
+                                    <span style="color: #007BFF; font-weight: bold;">Description:</span> ${notification.description}<br>
+                                    <span style="color: #FFA726; font-weight: bold;">Date:</span> ${notification.transaction_date}
                                 </div>
                             `);
                         });
