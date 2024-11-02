@@ -279,6 +279,7 @@ def get_transaction(bank):
                             'description'] and bank.bank_type == 'OUT':
                             send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
                                                   os.environ.get('TRANSACTION_BOT_API_KEY'))
+                            send_notification(row['amount'], bank_account.account_name, row["transaction_date"])
                             internal = True
                             break
                     if not internal:
