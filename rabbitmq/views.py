@@ -2,7 +2,8 @@ import pika
 import os
 import json
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
+
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from bank.models import BankAccount
@@ -59,8 +60,7 @@ def get_notifications(request):
         if body:
             transaction = json.loads(body.decode('utf-8'))
             print('===========', transaction)
-            transaction_date = timezone.datetime.fromisoformat(transaction.get('transaction_date'))
-
+            transaction_date = datetime.strptime(transaction['transaction_date'], '%d/%m/%Y %H:%M:%S')
             # Check if the transaction is older than 2 minutes
             if timezone.now() - transaction_date >= timedelta(minutes=10):
                 recent_notifications.append(transaction)
