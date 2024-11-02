@@ -18,14 +18,14 @@ def connect(user):
         )
     connection.close()
 
-def send_notification(amount, account_number, transaction_date):
+def send_notification(amount, description, account_number, transaction_date):
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
     channel.queue_declare(queue=f'noti_{account_number}')
     channel.basic_publish(
         exchange='',
         routing_key=f'noti_{account_number}',
-        body=json.dumps({'amount':amount,'transaction_date':transaction_date}),
+        body=json.dumps({'amount':amount,'description':description,'transaction_date':transaction_date}),
         properties=pika.BasicProperties(delivery_mode=2)
     )
     connection.close()

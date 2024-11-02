@@ -133,6 +133,9 @@ def get_transaction(bank):
 
         different_transactions = [item for item in new_transactions if
                                   item['transaction_number'] not in list_old_transaction_numbers]
+        for transaction in different_transactions:
+            if 'Z' in transaction['description']:
+                transaction['status'] = 'Success'
         # Add new transactions to current history
         updated_transactions = old_bank_history + different_transactions
         # Update Redis
@@ -251,9 +254,6 @@ def get_transaction(bank):
                                 send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
                                                       os.environ.get('226PAY_BOT'))
                 else:
-                    if 'Z' in row['description']:
-                        row['status'] = 'Success'
-
                     transaction_type = '-'
                     transaction_color = '🔴'  # Red circle emoji for OUT transactions
                     formatted_amount = '{:,.2f}'.format(row['amount'])
