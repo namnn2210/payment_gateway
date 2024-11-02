@@ -16,7 +16,9 @@ urlpatterns = i18n_patterns(
     path('notifications/', include('notification.urls')),
     path('employee/', include('employee.urls')),
     path('report/', include('report.urls')),
-    path('i18n/', include('django.conf.urls.i18n')),  
+    path('queue/', include('rabbitmq.urls')),
+    path('i18n/', include('django.conf.urls.i18n')),
+
 )
 
 urlpatterns += [

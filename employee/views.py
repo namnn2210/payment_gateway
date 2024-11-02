@@ -5,7 +5,6 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
-from worker.views import get_balance_by_bank
 from employee.models import EmployeeWorkingSession
 from datetime import datetime
 import pytz
@@ -101,7 +100,7 @@ def delete_deposit(request):
 def calculate_total_balance(bank_accounts):
     total_balance = 0
     for bank_account in bank_accounts:
-        total_balance += get_balance_by_bank(bank=bank_account)
+        total_balance += bank_account.balance
     return total_balance
 
 @csrf_exempt
@@ -133,6 +132,6 @@ def employee_session(request, session_type):
     else:
         return JsonResponse({'status': 504, 'message': 'Trạng thái không hợp lệ','success': False})
     return JsonResponse({'status': 200, 'message': 'Done','success': True})
-    # except Exception as ex:
-    #     print(ex)
-    #     return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+
+
+

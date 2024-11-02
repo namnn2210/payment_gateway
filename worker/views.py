@@ -12,14 +12,13 @@ from bank.models import BankAccount
 from partner.views import create_deposit_order
 from partner.models import CID
 from datetime import datetime
-import pandas as pd
 import json
 import os
 import pytz
 from bank.database import redis_connect
 from django.utils import timezone
+from rabbitmq.views import send_notification
 import time
-from bank.views import check_success_payout
 
 load_dotenv()
 logger = logging.getLogger('django')
@@ -93,7 +92,6 @@ def get_balance(bank):
 
         else:
             pass
-            # print('No new data for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
     elif bank_balance is None:
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
@@ -136,12 +134,6 @@ def get_transaction(bank):
         different_transactions = [item for item in new_transactions if
                                   item['transaction_number'] not in list_old_transaction_numbers]
         # Add new transactions to current history
-        logger.info(different_transactions)
-        for transaction in different_transactions:
-            # Check for success out
-            if transaction['transaction_type'] == 'OUT':
-                if 'Z' in transaction['description']:
-                    transaction['status'] = 'Success'
         updated_transactions = old_bank_history + different_transactions
         # Update Redis
         redis_client.set(bank.account_number, json.dumps(updated_transactions, default=str))
@@ -253,15 +245,15 @@ def get_transaction(bank):
                                 memo_deposit_check = 'D' + first_name
                                 if memo_transfer_check in row['description'] or memo_deposit_check in row[
                                     'description']:
-                                    # send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
-                                    #                       os.environ.get('TRANSACTION_BOT_API_KEY'))
                                     internal = True
                                     break
                             if not internal and bank.bank_type == 'IN':
                                 send_telegram_message(alert, os.environ.get('FAILED_CHAT_ID'),
-                                                  os.environ.get('226PAY_BOT'))
-
+                                                      os.environ.get('226PAY_BOT'))
                 else:
+                    if 'Z' in row['description']:
+                        row['status'] = 'Success'
+
                     transaction_type = '-'
                     transaction_color = '🔴'  # Red circle emoji for OUT transactions
                     formatted_amount = '{:,.2f}'.format(row['amount'])
@@ -283,62 +275,15 @@ def get_transaction(bank):
                         first_name = name.split(' ')[-1]
                         memo_transfer_check = 'W' + first_name
                         memo_deposit_check = 'D' + first_name
-                        if memo_transfer_check in row['description'] or memo_deposit_check in row['description'] and bank.bank_type == 'OUT':
+                        if memo_transfer_check in row['description'] or memo_deposit_check in row[
+                            'description'] and bank.bank_type == 'OUT':
                             send_telegram_message(alert, os.environ.get('INTERNAL_CHAT_ID'),
                                                   os.environ.get('TRANSACTION_BOT_API_KEY'))
                             internal = True
                             break
                     if not internal:
-                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                          os.environ.get('TRANSACTION_BOT_API_KEY'))
-            print('Update transactions for bank: %s. Updated at %s' % (
-                bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                        send_notification(row['amount'], bank_account.account_name, row["transaction_date"])
+            print('Update transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
             pass
-            # print('No new transactions for bank: %s. Updated at %s' % (bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
-
-
-def get_balance_by_bank(bank):
-    bank_balance = 0
-    error_count = 0
-    print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username,
-          bank.password)
-    # Get balance
-    if bank.bank_name.name == 'MB':
-        bank_balance = bank.balance
-    elif bank.bank_name.name == 'ACB':
-        bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
-    elif bank.bank_name.name == 'Vietinbank':
-        bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
-    else:
-        bank_balance = 0
-    while bank_balance is None:
-        print('Error fetching bank balance, try to login')
-        error_count += 1
-        bank_logged_in = None
-        print('Retry logging in: ', error_count)
-        if error_count > 3:
-            alert = (
-                f'🔴 - LỖI HỆ THỐNG\n'
-                f'Dữ liệu tài khoản: {bank.account_number} trống\n'
-                f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
-            )
-            send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
-            return 0
-
-        if bank.bank_name.name == 'MB':
-            bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
-        elif bank.bank_name.name == 'ACB':
-            bank_logged_in = acb_login(bank.username, bank.password, bank.account_number)
-        elif bank.bank_name.name == 'Vietinbank':
-            bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
-
-        if bank_logged_in:
-            if bank.bank_name.name == 'ACB':
-                bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
-            elif bank.bank_name.name == 'Vietinbank':
-                bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
-            else:
-                bank_balance = 0
-
-    return bank_balance

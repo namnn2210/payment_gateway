@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'employee',
     'report',
     'two_factor_auth',
+    'rabbitmq'
 ]
 
 MIDDLEWARE = [

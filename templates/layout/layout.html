@@ -325,65 +325,37 @@
             setInterval(fetchLastTransaction, 15000);
         });
     </script>
-    <!-- <script>
-        // Toastr configuration
-        toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": true,
-            "progressBar": false,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": true,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
+    
+    <script>
+        // Function to fetch new transactions and show them with Toastr
+        function fetchNotifications() {
+            fetch('{% url "get_notifications" %}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.notifications && data.notifications.length > 0) {
+                        data.notifications.forEach(notification => {
+                            // Customize your Toastr options here if needed
+                            toastr.options = {
+                                "closeButton": true,
+                                "progressBar": true,
+                                "positionClass": "toast-top-right",
+                                "timeOut": "5000",
+                            };
+
+                            // Display each notification as a Toastr alert
+                            toastr.info(`Transaction Alert: ${notification.message}`);
+                        });
+                    }
+                })
+                .catch(error => console.error("Error fetching notifications:", error));
         }
 
-        const showNotification = (message) => {
-            toastr.success(message, 'New Notification', {
-                iconClass: 'toast-success custom-toast',
-            });
-        };
+        // Call fetchNotifications every 15 seconds
+        setInterval(fetchNotifications, 15000);
 
-        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-        const socket = new WebSocket(protocol + window.location.host + '/ws/');
-
-        socket.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            const message = data.message;
-            showNotification(message);
-        };
-
-        socket.onopen = function () {
-            console.log('WebSocket connection established');
-        };
-
-        socket.onclose = function () {
-            console.log('WebSocket connection closed');
-        };
-
-        socket.onerror = function (error) {
-            console.error('WebSocket error:', error);
-        };
-    </script> -->
-    <!-- <style>
-        #toast-container>.toast-success {
-            background-color: #51a351 !important;
-            color: white !important;
-            border: 1px solid #4cae4c;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        #toast-container>.toast-success .toast-message {
-            color: #ffffff !important;
-        }
-    </style> -->
+        // Initial call to load notifications right away
+        fetchNotifications();
+    </script>
     {% block script %}
     
     {% endblock %}
