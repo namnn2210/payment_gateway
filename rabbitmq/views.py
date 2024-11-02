@@ -7,12 +7,27 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from bank.models import BankAccount
 
+def connect(user):
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    channel = connection.channel()
+    bank_accounts = BankAccount.objects.filter(user=user, status=True)
+    for bank_account in bank_accounts:
+        channel.queue_declare(
+            queue=f'noti_{bank_account.account_number}',
+            durable = True
+        )
+    connection.close()
 
 def send_notification(amount, account_number, transaction_date):
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
     channel.queue_declare(queue=f'noti_{account_number}')
-    channel.basic_publish(exchange='', routing_key='notifications', body=json.dumps({'amount':amount,'transaction_date':transaction_date}))
+    channel.basic_publish(
+        exchange='',
+        routing_key=f'noti_{account_number}',
+        body=json.dumps({'amount':amount,'transaction_date':transaction_date}),
+        properties=pika.BasicProperties(delivery_mode=2)
+    )
     connection.close()
 
 
