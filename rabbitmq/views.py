@@ -9,7 +9,6 @@ from bank.models import BankAccount
 
 
 def send_notification(amount, account_number, transaction_date):
-    print(amount, account_number, transaction_date)
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
     channel.queue_declare(queue=f'noti_{account_number}')
@@ -29,10 +28,12 @@ def get_notifications(request):
 
     # Iterate through each bank account's queue
     for account in bank_accounts:
-        queue_name = f'noti_{account.account_number}'  # Queue name for each account
-
-        # Attempt to get a message from the queue
-        method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
+        queue_name = f'noti_{account.account_number}'
+        try:
+            method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
+        except Exception as e:
+            print('Error sending notification:', str(e))
+            continue
 
         # Process the message if it exists
         if body:
