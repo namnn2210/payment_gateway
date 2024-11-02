@@ -9,6 +9,7 @@ from django.core.paginator import Paginator
 from employee.models import EmployeeWorkingSession
 from cms.models import User2Fa
 from io import BytesIO
+from rabbitmq.views import connect
 import pyotp
 import qrcode
 import base64
@@ -21,9 +22,8 @@ TWO_FA_EXPIRATION_TIME = 21600
 # Create your views here.
 @login_required(login_url='user_login')
 def index(request):
-    user_2fa = User2Fa.objects.filter(user=request.user).first()
-    # if user_2fa.is_2fa_enabled:
-    #     return render(request, '2fa.html')
+    connect(request.user)
+
     list_bank_option = Bank.objects.filter(status=True)
     number_failed = 0
     user_online = None
