@@ -9,7 +9,7 @@ from bank.models import BankAccount
 
 
 def send_notification(amount, account_number, transaction_date):
-    connection = pika.BlockingConnection(pika.ConnectionParameters(os.environ.get("RABBITMQ_HOST")))
+    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
     channel.queue_declare(queue=f'noti_{account_number}')
     channel.basic_publish(exchange='', routing_key='notifications', body=json.dumps({'amount':amount,'transaction_date':transaction_date}))
