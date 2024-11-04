@@ -11,6 +11,48 @@
         transition: filter 0.3s ease-in-out;
     }
 </style>
+<script src="{% static 'assets/js/main.js' %}"></script>
+<script>
+  // Step 1: Define Ad Units
+  var adUnits = [{
+      code: 'div-gpt-ad-1460505748561-0',
+      mediaTypes: {
+          banner: {
+              sizes: [[300, 250]]
+          }
+      },
+      bids: [
+          {
+              bidder: 'appnexus',
+              params: {
+                  placementId: '13144370'  // Test placement ID for demo
+              }
+          }
+      ]
+  }];
+
+  // Step 2: Initialize Prebid and Request Bids
+  pbjs.que = pbjs.que || [];
+  pbjs.que.push(function() {
+      pbjs.addAdUnits(adUnits);
+      pbjs.requestBids({
+          bidsBackHandler: function() {
+              pbjs.setTargetingForGPTAsync();
+          }
+      });
+  });
+</script>
+
+<!-- Google Publisher Tag (GPT) Setup -->
+<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
+<script>
+  window.googletag = window.googletag || { cmd: [] };
+  googletag.cmd.push(function() {
+      googletag.defineSlot('/6355419/Travel', [300, 250], 'div-gpt-ad-1460505748561-0')
+          .addService(googletag.pubads());
+      googletag.enableServices();
+  });
+</script>
 {% endblock %}
 {% block prehead %}
     <div class="w-100 text-center text-white" style="background-color: green;">
@@ -26,6 +68,11 @@
         <div class="col-md-6 col-sm-12 text-right mt-4">
             <button class="btn btn-primary rounded-pill btn-add" data-toggle="modal" data-target="#addPayoutModal"><i class="bi bi-plus me-1"></i>{% trans "Add Payout" %}</button>
         </div>
+    </div>
+    <div id="div-gpt-ad-1460505748561-0" style="width: 300px; height: 250px;">
+        <script>
+          googletag.cmd.push(function() { googletag.display('div-gpt-ad-1460505748561-0'); });
+        </script>
     </div>
     <form id="searchForm" method="get" action="{% url 'list_payout' %}">
         <div class="row">
