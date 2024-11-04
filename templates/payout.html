@@ -13,7 +13,7 @@
 </style>
 {% endblock %}
 {% block prehead %}
-    <div class="w-100 text-center text-white" style="background-color: green;position: fixed">
+    <div class="w-100 text-center text-white" style="background-color: green;position: fixed;z-index: 999999999">
         <span class="lastTransaction">Loading...</span>
     </div>
 {% endblock %}
@@ -751,5 +751,5 @@
         fetchLastTransaction();
         setInterval(fetchLastTransaction, 15000);
     });
-</script>    
+</script>
 {% endblock %}
