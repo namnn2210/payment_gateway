@@ -41,6 +41,7 @@ def get_notifications(request):
         # Connect to RabbitMQ
         connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
         channel = connection.channel()
+
         recent_notifications = []
 
         # Iterate through each bank account's queue
@@ -70,5 +71,6 @@ def get_notifications(request):
         # Return the list of recent notifications
         return JsonResponse({"notifications": recent_notifications})
 
-
+    else:
+        return JsonResponse({"notifications": []})
 
