@@ -47,11 +47,11 @@ def get_notifications(request):
         # Iterate through each bank account's queue
         for account in bank_accounts:
             queue_name = f'noti_{account.account_number}'
-            print('+++++++++', queue_name)
+
             channel.queue_declare(queue=queue_name)
             try:
                 method_frame, header_frame, body = channel.basic_get(queue=queue_name, auto_ack=True)
-                print('=========', body)
+
             except Exception as e:
                 print('Error getting notification:', str(e))
                 continue
