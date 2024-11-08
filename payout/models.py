@@ -9,7 +9,7 @@ class Payout(models.Model):
     scode = models.CharField(max_length=255, null=False)
     orderno = models.CharField(max_length=255, default='', null=False)
     orderid = models.CharField(max_length=255, null=False)
-    money = models.BigIntegerField(null=False)
+    money = models.DecimalField(decimal_places=2, max_digits=12, null=False)
     bankname = models.CharField(max_length=255, default='', null=True)
     accountno = models.CharField(max_length=255, null=False)
     accountname = models.CharField(max_length=255, null=False)
