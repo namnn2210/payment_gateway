@@ -159,8 +159,8 @@ class AddPayoutView(View):
         except Exception as ex:
             return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
         
-        # if '.00' not in money:
-        #     return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
+        if '.00' not in money:
+            return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
         
         # Check if any bank_account with the same type is ON
         existed_bank_account = Payout.objects.filter(
@@ -381,7 +381,7 @@ def webhook(request):
                     scode=scode,
                     orderno=orderno,
                     orderid=orderid,
-                    money=float(money),
+                    money=int(float(money)),
                     accountno=accountno,
                     accountname=accountname,
                     bankname=payeebankname,
