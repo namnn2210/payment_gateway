@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
 from bank.database import redis_connect
+from requests.exceptions import ConnectionError, HTTPError, Timeout, RequestException
 import time
 from dotenv import load_dotenv
 from worker.views import get_balance
@@ -22,6 +23,14 @@ class Command(BaseCommand):
             for bank in bank_accounts:
                 try:
                     get_balance(bank=bank)
+                except ConnectionError:
+                   pass
+                except HTTPError as http_err:
+                    pass
+                except Timeout:
+                    pass
+                except RequestException as req_err:
+                    pass
                 except Exception as ex:
                     alert = (
                         f'🔴 - SYSTEM ALERT\n'
