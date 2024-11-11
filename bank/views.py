@@ -242,16 +242,13 @@ def update_transaction_history(request):
             json_data = json.loads(bank_redis)
             df = pd.DataFrame(json_data)
             if request.user.is_superuser:
-                if bank_account.bank_type == 'IN':
-                    if not df.empty:
-                        in_transaction_df = df[df['transaction_type'] == 'IN']
-                        if not in_transaction_df.empty:
-                            list_df_in.append(in_transaction_df)
-                else:
-                    if not df.empty:
-                        out_transaction_df = df[df['transaction_type'] == 'OUT']
-                        if not out_transaction_df.empty:
-                            list_df_out.append(out_transaction_df)
+                if not df.empty:
+                    in_transaction_df = df[df['transaction_type'] == 'IN']
+                    if not in_transaction_df.empty:
+                        list_df_in.append(in_transaction_df)
+                    out_transaction_df = df[df['transaction_type'] == 'OUT']
+                    if not out_transaction_df.empty:
+                        list_df_out.append(out_transaction_df)
             else:
                 if not df.empty:
                     in_transaction_df = df[df['transaction_type'] == 'IN']
