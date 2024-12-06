@@ -32,6 +32,7 @@ def mb_login(username, password, account_number):
     }
     print('start login: ', datetime.now())
     response = requests.post(os.environ.get("MB_URL"), json=body, timeout=120)
+    print(response)
     if '"ok":true' in response.text:
         print('end login: ', datetime.now())
         return True
