@@ -1,11 +1,8 @@
-import json
-
-from django.shortcuts import render
 import requests
 import os
 from datetime import datetime, timedelta
 from bank.utils import Transaction, find_substring
-# Create your views here.
+
 def tech_login(username, password, account_number):
     body = {
         "username": username,

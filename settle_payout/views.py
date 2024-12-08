@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from .models import SettlePayout
 from django.core.paginator import Paginator
-from django.forms.models import model_to_dict
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import get_object_or_404
 from django.views import View
@@ -12,16 +11,13 @@ from django.http import JsonResponse
 from bank.utils import send_telegram_message
 from bank.views import update_amount_by_date
 from bank.models import Bank
-from notification.views import send_notification
-from dotenv import load_dotenv
 from datetime import datetime
-from django.db.models import Q, BooleanField, Case, Value, When, IntegerField, Sum
-import pytz
-import os
-import json
+from django.db.models import Q, Case, Value, When, IntegerField, Sum
 from django.utils import timezone
 
-load_dotenv()
+import pytz
+import json
+
 # Create your views here.
 @login_required(login_url='user_login')
 def list_settle_payout(request):
@@ -156,12 +152,11 @@ class AddSettlePayoutView(View):
             created_at=timezone.now()
         )
         payout.save()
-        send_notification('New payout added. Please check and process')
         alert = (
             f'🔴 - THÔNG BÁO PAYOUT\n'
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
-        send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 @csrf_exempt
@@ -230,7 +225,7 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Date: {payout.updated_at}'
             )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
             update_amount_by_date('OUT',payout.money)
         elif update_type == 'report':
             payout.is_report = True
@@ -258,7 +253,7 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Reason: {reason_text}'
             )
-            send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('SUPPORT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
         elif update_type == 'cancel':
             payout.is_cancel = True
             payout.status = False
@@ -281,7 +276,7 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Date: {payout.updated_at}'
             )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done','success': False})
         payout.save()

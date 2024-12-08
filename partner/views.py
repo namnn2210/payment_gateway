@@ -1,11 +1,8 @@
-from dotenv import load_dotenv
+from config.views import get_env
 from partner.models import CID
 import hashlib
-import os
 import requests
 import logging
-
-load_dotenv()
 
 logger = logging.getLogger('django')
 
@@ -13,19 +10,19 @@ logger = logging.getLogger('django')
 def create_deposit_order(transaction,cid):
     try:
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        # key_df = pd.read_csv(os.environ.get('MID_KEY'))
+
         scode = cid.name
         cardtype = cid.cardtype
         key = cid.key
         
-        payeeaccountno = str(transaction['account_number'])
-        amount = f'{str(transaction['amount'])}.00'
+        payeeaccountno = str(transaction.account_number)
+        amount = f'{str(transaction.amount)}.00'
         
-        transfercode = transaction['transfer_code']
+        transfercode = transaction.transfer_code
         payername = 'NA'
-        payeraccountno = str(transaction['account_number'])[-4:]
+        payeraccountno = str(transaction.account_number)[-4:]
         
-        hashid = str(transaction['transaction_number'])
+        hashid = str(transaction.transaction_number)
         
         # Create the sign string
         sign_string = f"{scode}|{payeeaccountno}|{amount}|{transfercode}|{payername}|{payeraccountno}|{hashid}|{cardtype}:{key}"
@@ -46,7 +43,7 @@ def create_deposit_order(transaction,cid):
 
         print(payload)
         
-        response = requests.post(os.environ.get('DEPOSIT_URL'), data=payload, headers=headers)
+        response = requests.post(get_env('DEPOSIT_URL'), data=payload, headers=headers)
 
         print(response)
         

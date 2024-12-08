@@ -12,24 +12,18 @@ from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponse
 from bank.utils import send_telegram_message
 from bank.models import Bank
-from notification.views import send_notification
-from dotenv import load_dotenv
+from config.views import get_env
 from datetime import datetime, time
 from django.db.models import Q, Case, Value, When, IntegerField, Sum
 from partner.models import CID
-from django.db.models.functions import TruncDate
 from .tasks import update_payout_background
-from django.utils.dateparse import parse_date
 from employee.models import EmployeeWorkingSession
 from django.utils import timezone
 
-import pytz
-import os
 import json
 import random
 import hashlib
 
-load_dotenv()
 
 BANK_CODE_MAPPING = {
     'VTB':'ICB',
@@ -187,12 +181,11 @@ class AddPayoutView(View):
             created_at=timezone.now()
         )
         payout.save()
-        send_notification('New payout added. Please check and process')
         alert = (
             f'🔴 - THÔNG BÁO PAYOUT\n'
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
-        send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
@@ -212,9 +205,11 @@ def update_payout(request, update_type):
             'update_type':update_type,
             'reason': int(reason)
         }
-        update_payout_background.delay(update_body)
-        
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        update_success = update_payout_background(update_body)
+        if update_success:
+            return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        else:
+            return JsonResponse({'status': 410, 'message': 'Update payout failed', 'success': False})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
     
@@ -394,12 +389,11 @@ def webhook(request):
                     created_at=timezone.now()
                 )
             settle_payout.save()
-            send_notification('New settle payout added. Please check and process')
             alert = (
                 f'🔴 - THÔNG BÁO SETTLE PAYOUT\n'
                 f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
-            send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
 
         else:
             system_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
@@ -432,12 +426,11 @@ def webhook(request):
                     created_at=timezone.now()
                 )
             payout.save()
-            send_notification('New payout added. Please check and process')
             alert = (
                 f'🔴 - THÔNG BÁO PAYOUT\n'
                 f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
-            send_telegram_message(alert, os.environ.get('PENDING_PAYOUT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
         return HttpResponse('success')
     
     

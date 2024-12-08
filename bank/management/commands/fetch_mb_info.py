@@ -1,15 +1,12 @@
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.database import redis_connect
-import time
-from dotenv import load_dotenv
 from worker.views import get_balance
 from bank.utils import send_telegram_message
 from datetime import datetime
+from config.views import get_env
+import time
 import pytz
-import os
 
-load_dotenv()
 
 
 class Command(BaseCommand):
@@ -29,5 +26,5 @@ class Command(BaseCommand):
                             f'Fetch MB bank info error: {str(ex)}\n'
                             f'Date: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
                         )
-                        send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
                 time.sleep(15)

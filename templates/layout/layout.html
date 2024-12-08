@@ -69,14 +69,14 @@
                     </a>
                 </li><!-- End Dashboard Nav -->
 
-                {% if user.is_superuser%}
-                <li class="nav-item mr-2">
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'report' %}">
-                        <i class="bi bi-clock-history"></i>
-                        <span class="d-none d-md-block ps-2">{% trans "History" %}</span>
-                    </a>
-                </li>
-                {% endif %}
+{#                {% if user.is_superuser%}#}
+{#                <li class="nav-item mr-2">#}
+{#                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'report' %}">#}
+{#                        <i class="bi bi-clock-history"></i>#}
+{#                        <span class="d-none d-md-block ps-2">{% trans "History" %}</span>#}
+{#                    </a>#}
+{#                </li>#}
+{#                {% endif %}#}
 
                 <!-- <li class="nav-item mr-2">
                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="{% url 'list_bank' %}">
@@ -299,41 +299,7 @@
         });
     </script>
 
-    <script>
-        // Function to fetch new transactions and show them with Toastr
-        function fetchNotifications() {
-            fetch('{% url "get_notifications" %}')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.notifications && data.notifications.length > 0) {
-                        data.notifications.forEach(notification => {
-                            // Customize your Toastr options here if needed
-                            toastr.options = {
-                                "closeButton": true,
-                                "progressBar": true,
-                                "positionClass": "toast-top-right",
-                                "timeOut": "7000",
-                                "extendedTimeOut": "3000",
-                                "showDuration": "300",
-                                "hideDuration": "1000",
-                            };
-
-                            // Display each notification as a Toastr alert
-                            toastr.info(
-                                `Transaction Alert:<br>Amount: ${notification.amount.toLocaleString()}<br>Description: ${notification.description}<br>Date: ${notification.transaction_date}`
-                            );
-                        });
-                    }
-                })
-                .catch(error => console.error("Error fetching notifications:", error));
-        }
-
-        // Call fetchNotifications every 15 seconds
-        setInterval(fetchNotifications, 15000);
-
-        // Initial call to load notifications right away
-        fetchNotifications();
-    </script>
+    
     {% block script %}
     
     {% endblock %}

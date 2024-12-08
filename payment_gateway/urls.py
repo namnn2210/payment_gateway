@@ -13,10 +13,7 @@ urlpatterns = i18n_patterns(
     path('settle/', include('settle_payout.urls')),
     path('acb/', include('acb.urls')),
     path('partner/', include('partner.urls')),
-    path('notifications/', include('notification.urls')),
     path('employee/', include('employee.urls')),
-    path('report/', include('report.urls')),
-    path('queue/', include('rabbitmq.urls')),
     path('i18n/', include('django.conf.urls.i18n')),
 
 )

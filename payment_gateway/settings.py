@@ -11,15 +11,12 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv
+from config.views import get_env
 from django.utils.translation import gettext_lazy as _
-
-load_dotenv()
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -32,7 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['gateway.226pay.com', 'www.gateway.226pay.com', 'localhost']
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -44,21 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'corsheaders',
-    'channels',
     'cms',
     'bank',
     'acb',
     'mb',
     'vietin',
-    'notification',
     'payout',
     'settle_payout',
     'worker',
     'partner',
     'employee',
-    'report',
     'two_factor_auth',
-    'rabbitmq'
 ]
 
 MIDDLEWARE = [
@@ -96,25 +88,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'payment_gateway.wsgi.application'
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [(f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/0")],
-        },
-    },
-}
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.environ.get('MYSQL_DATABASE'),
-        'USER': os.environ.get('MYSQL_USERNAME'),
-        'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
-        'HOST': os.environ.get('MYSQL_HOST'),  # Change this if your MySQL server is on a different host
-        'PORT': os.environ.get('MYSQL_PORT'),
+        'NAME': get_env('MYSQL_DATABASE'),
+        'USER': get_env('MYSQL_USERNAME'),
+        'PASSWORD': get_env('MYSQL_PASSWORD'),
+        'HOST': get_env('MYSQL_HOST'),  # Change this if your MySQL server is on a different host
+        'PORT': get_env('MYSQL_PORT'),
     }
 }
 
@@ -191,14 +174,13 @@ SESSION_COOKIE_AGE = 21600  # 6 hours
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = True
 
-
-CELERY_BROKER_URL = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/0"
-CELERY_RESULT_BACKEND = f"redis://:{os.environ.get('REDIS_PASSWORD')}@{os.environ.get('REDIS_HOST')}:{os.environ.get('REDIS_PORT')}/0"
+CELERY_BROKER_URL = f"redis://:{get_env('REDIS_PASSWORD')}@{get_env('REDIS_HOST')}:{get_env('REDIS_PORT')}/0"
+CELERY_RESULT_BACKEND = f"redis://:{get_env('REDIS_PASSWORD')}@{get_env('REDIS_HOST')}:{get_env('REDIS_PORT')}/0"
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Bangkok'
-CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True 
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 
@@ -219,4 +201,3 @@ LOGGING = {
         },
     }
 }
-

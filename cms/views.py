@@ -9,45 +9,43 @@ from django.core.paginator import Paginator
 from employee.models import EmployeeWorkingSession
 from cms.models import User2Fa
 from io import BytesIO
-from rabbitmq.views import connect
 import pyotp
 import qrcode
 import base64
 from django.utils import timezone
 import pandas as pd
 
+TWO_FA_EXPIRATION_TIME = 21600
 
-TWO_FA_EXPIRATION_TIME = 21600 
 
 # Create your views here.
 @login_required(login_url='user_login')
 def index(request):
-    connect(request.user)
-
     list_bank_option = Bank.objects.filter(status=True)
     number_failed = 0
     user_online = None
     if request.user.is_superuser:
         list_user_bank = BankAccount.objects.all()
-        all_transactions_df = get_all_transactions()
-        start_date, end_date = get_start_end_datetime(None, None)
-        if not all_transactions_df.empty:
-            # Convert the 'transaction_date' column to datetime format if it exists
-            if 'transaction_date' in all_transactions_df.columns:
-                all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'],
-                                                                         format='%d/%m/%Y %H:%M:%S')
-
-            # Get form inputs
-
-            # Filter transactions based on form input
-            filtered_transactions_df = all_transactions_df[
-                (all_transactions_df['transaction_date'] >= start_date) &
-                (all_transactions_df['transaction_date'] <= end_date)
-                ]
-            in_transactions_df = filtered_transactions_df[(filtered_transactions_df['status'] != 'Success') & ('Z' in filtered_transactions_df['description'])].sort_values(
-                by='transaction_date', ascending=False)
+        # all_transactions_df = get_all_transactions()
+        # start_date, end_date = get_start_end_datetime(None, None)
+        # if not all_transactions_df.empty:
+        #     # Convert the 'transaction_date' column to datetime format if it exists
+        #     if 'transaction_date' in all_transactions_df.columns:
+        #         all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'],
+        #                                                                  format='%d/%m/%Y %H:%M:%S')
+        #
+        #     # Get form inputs
+        #
+        #     # Filter transactions based on form input
+        #     filtered_transactions_df = all_transactions_df[
+        #         (all_transactions_df['transaction_date'] >= start_date) &
+        #         (all_transactions_df['transaction_date'] <= end_date)
+        #         ]
+        #     in_transactions_df = filtered_transactions_df[(filtered_transactions_df['status'] != 'Success') & (
+        #                 'Z' in filtered_transactions_df['description'])].sort_values(
+        #         by='transaction_date', ascending=False)
             # number_failed = in_transactions_df.shape[0]
-            number_failed = in_transactions_df['amount'].sum()
+            # number_failed = 0
     else:
         list_user_bank = BankAccount.objects.filter(user=request.user)
         user_online = EmployeeWorkingSession.objects.filter(status=False)
@@ -64,9 +62,12 @@ def index(request):
         is_session = True
     else:
         is_session = False
-    
-        
-    return render(request=request, template_name='index.html', context={'list_user_bank':list_user_bank,'list_deposit_requests':list_deposit_requests,'list_bank_option':list_bank_option, 'is_session':is_session, 'number_failed':number_failed, 'user_online':user_online})
+
+    return render(request=request, template_name='index.html',
+                  context={'list_user_bank': list_user_bank, 'list_deposit_requests': list_deposit_requests,
+                           'list_bank_option': list_bank_option, 'is_session': is_session,
+                           'number_failed': number_failed, 'user_online': user_online})
+
 
 def user_login(request):
     if request.method == 'POST':
@@ -80,11 +81,12 @@ def user_login(request):
                 return redirect('verify_otp')
             return redirect('setup_2fa')
         else:
-            return render(request=request, template_name='login.html', context={'error': 'Invalid username or password. Contact admin for support'})
+            return render(request=request, template_name='login.html',
+                          context={'error': 'Invalid username or password. Contact admin for support'})
     return render(request=request, template_name='login.html')
 
-def profile(request):
 
+def profile(request):
     if request.method == 'POST':
         current_password = request.POST.get('password')
         new_password = request.POST.get('newpassword')
@@ -94,12 +96,15 @@ def profile(request):
         if new_password != new_password2:
             return render(request=request, template_name='profile.html', context={'error': 'Passwords do not match'})
         if not request.user.check_password(current_password):
-            return render(request=request, template_name='profile.html', context={'error': 'Current password is incorrect'})
+            return render(request=request, template_name='profile.html',
+                          context={'error': 'Current password is incorrect'})
         request.user.set_password(new_password)
         request.user.save()
-        return render(request=request, template_name='profile.html', context={'success': 'Password changed successfully'})
-    
+        return render(request=request, template_name='profile.html',
+                      context={'success': 'Password changed successfully'})
+
     return render(request=request, template_name='profile.html', context={'error': None})
+
 
 @login_required(login_url='user_login')
 def setup_2fa(request):
@@ -126,8 +131,10 @@ def setup_2fa(request):
             request.session['2fa_verified_at'] = timezone.now().timestamp()
             return redirect('index')
         else:
-            return render(request, 'setup_2fa.html', {"error": "Invalid OTP", "qr_code": qr_code_base64, "totp_secret": user_2fa.otp_secret})
+            return render(request, 'setup_2fa.html',
+                          {"error": "Invalid OTP", "qr_code": qr_code_base64, "totp_secret": user_2fa.otp_secret})
     return render(request, 'setup_2fa.html', {"qr_code": qr_code_base64, "totp_secret": user_2fa.otp_secret})
+
 
 @login_required(login_url='user_login')
 def verify_otp(request):
@@ -145,7 +152,8 @@ def verify_otp(request):
             else:
                 return render(request, 'verify_otp.html', {"error": "Invalid OTP"})
     return render(request, 'verify_otp.html')
-        
+
+
 @login_required(login_url='user_login')
 def submit_otp(request):
     if request.method == "POST":
@@ -159,6 +167,7 @@ def submit_otp(request):
             return redirect('index')
         else:
             return render(request, '2fa.html', {"error": "Invalid OTP"})
+
 
 def user_logout(request):
     logout(request)

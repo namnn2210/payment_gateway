@@ -1,16 +1,9 @@
-from django.shortcuts import render
-from django.http import JsonResponse
 from bank.utils import Transaction, find_substring
-import requests
-from django.views.decorators.csrf import csrf_exempt
-import os
 from datetime import datetime
-from django.utils.timezone import make_aware
+from config.views import get_env
+import requests
 import json
-from dotenv import load_dotenv
 
-
-load_dotenv()
 
 # Create your views here.
 def vietin_login(username, password, account_number):
@@ -19,25 +12,25 @@ def vietin_login(username, password, account_number):
         "username": username,
         "password": password,
         "accountNo": account_number,
-        "action":"login"
+        "action": "login"
     }
-    response = requests.post(os.environ.get("VIETIN_URL"), json=body, timeout=120)
+    response = requests.post(get_env("VIETIN_URL"), json=body, timeout=120)
     if '"message":"success"' in response.text:
         return True
     return False
-    
-    
+
+
 def vietin_balance(username, password, account_number):
     body = {
         "rows": 10,
         "username": username,
         "password": password,
         "accountNo": account_number,
-        "action":"balance"
+        "action": "balance"
     }
-    response = requests.post(os.environ.get("VIETIN_URL"), json=body , timeout=120).json()
+    response = requests.post(get_env("VIETIN_URL"), json=body, timeout=120).json()
     if response:
-        if 'error' in response.keys(): 
+        if 'error' in response.keys():
             if not response['error']:
                 acc_list = response['accounts']
                 for account in acc_list:
@@ -45,7 +38,8 @@ def vietin_balance(username, password, account_number):
                         return account['accountState']['availableBalance']
     return None
 
-def vietin_transactions(username,password,account_number):
+
+def vietin_transactions(username, password, account_number):
     try:
         page = 0
         fetch_transactions = []
@@ -62,17 +56,17 @@ def vietin_transactions(username,password,account_number):
                 "page": page,
                 "action": "transactions"
             })
-            response = requests.post(os.environ.get("VIETIN_URL"), headers=headers, data=body, timeout=120).json()
+            response = requests.post(get_env("VIETIN_URL"), headers=headers, data=body, timeout=120).json()
             transactions = response['transactions']
             if transactions:
                 fetch_transactions += transactions
-                page += 1 
+                page += 1
             else:
                 break
-            
+
         for item in fetch_transactions:
             if item['dorC'] == 'C':
-                transaction_type='IN'
+                transaction_type = 'IN'
             else:
                 transaction_type = 'OUT'
             transaction_date = datetime.strptime(item['processDate'], '%d-%m-%Y %H:%M:%S')
@@ -90,4 +84,3 @@ def vietin_transactions(username,password,account_number):
         return formatted_transactions
     except Exception as ex:
         return None
-    

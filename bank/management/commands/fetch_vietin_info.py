@@ -1,15 +1,12 @@
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from bank.database import redis_connect
-import time
-from dotenv import load_dotenv
+from config.views import get_env
 from worker.views import get_balance
 from bank.utils import send_telegram_message
 from datetime import datetime
 import pytz
-import os
+import time
 
-load_dotenv()
 
 
 class Command(BaseCommand):
@@ -28,5 +25,5 @@ class Command(BaseCommand):
                         f'Lỗi lấy dữ liệu Vietinbank: {str(ex)}\n'
                         f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
                     )
-                    send_telegram_message(alert, os.environ.get('MONITORING_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+                    send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
             time.sleep(15)

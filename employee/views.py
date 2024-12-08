@@ -1,16 +1,15 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import EmployeeDeposit
+from django.shortcuts import render, redirect
 from bank.models import BankAccount
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
-from employee.models import EmployeeWorkingSession
-from datetime import datetime
+from employee.models import EmployeeWorkingSession, EmployeeDeposit
+from django.utils import timezone
+
 import pytz
 import random
 import json
-from django.utils import timezone
 
 tz = pytz.timezone('Asia/Bangkok')
 

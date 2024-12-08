@@ -1,8 +1,6 @@
-from celery import shared_task
 from datetime import datetime
 from bank.utils import send_telegram_message
 from django.shortcuts import get_object_or_404
-from bank.views import update_amount_by_date
 from bank.models import Bank
 from partner.views import update_status_request
 from django.contrib.auth.models import User
@@ -10,18 +8,16 @@ from payout.models import Payout
 import pytz
 import os
 
-@shared_task
+
 def update_payout_background(update_body):
     payout_id = update_body['payout_id']
     bank_id = update_body['bank_id']
     update_type = update_body['update_type']
     reason = update_body['reason']
     payout = get_object_or_404(Payout, id=payout_id)
-    formatted_amount = '{:,.2f}'.format(payout.money)
     request_user = User.objects.filter(username=update_body['request_user_username']).first()
     payout.updated_by = request_user
     payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
-    # payout.status = True
     bank = Bank.objects.filter(id=bank_id).first()
     payout.process_bank = bank
     formatted_amount = '{:,.2f}'.format(payout.money)
@@ -50,9 +46,10 @@ def update_payout_background(update_body):
                         f'\n'
                         f'Date: {payout.updated_at}'
                     )
-                    send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-                    update_amount_by_date('OUT',payout.money)
-
+                    send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                          os.environ.get('TRANSACTION_BOT_API_KEY'))
+                    # update_amount_by_date('OUT',payout.money)
+                    return True
         else:
             if not payout.status:
                 payout.status = True
@@ -76,9 +73,11 @@ def update_payout_background(update_body):
                     f'\n'
                     f'Date: {payout.updated_at}'
                 )
-                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-                update_amount_by_date('OUT',payout.money)
-
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                      os.environ.get('TRANSACTION_BOT_API_KEY'))
+                # update_amount_by_date('OUT',payout.money)
+                return True
+        return False
     elif update_type == 'report':
         payout.is_report = True
         payout.save()
@@ -106,6 +105,7 @@ def update_payout_background(update_body):
             f'Reason: {reason_text}'
         )
         send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
+        return True
     elif update_type == 'cancel':
         payout.is_cancel = True
         payout.status = None
@@ -131,7 +131,9 @@ def update_payout_background(update_body):
                     f'\n'
                     f'Date: {payout.updated_at}'
                 )
-                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                      os.environ.get('TRANSACTION_BOT_API_KEY'))
+                return True
         else:
             payout.save()
             alert = (
@@ -154,4 +156,4 @@ def update_payout_background(update_body):
                 f'Date: {payout.updated_at}'
             )
             send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_API_KEY'))
-
+        return False
