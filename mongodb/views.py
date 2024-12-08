@@ -60,7 +60,7 @@ def insert_all(transaction_list):
 
 def find_missing_transactions(transactions):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    transaction_numbers = [txn.transaction_number for txn in transactions]
+    transaction_numbers = [txn['transaction_number'] for txn in transactions]
     existing_transactions = collection.find(
         {"transaction_number": {"$in": transaction_numbers}},
         {"transaction_number": 1, "_id": 0}
@@ -70,7 +70,7 @@ def find_missing_transactions(transactions):
     # Find missing transactions
     missing_transactions = [
         txn for txn in transactions
-        if txn.transaction_number not in existing_transaction_numbers
+        if txn['transaction_number'] not in existing_transaction_numbers
     ]
     return missing_transactions
 
