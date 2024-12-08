@@ -39,64 +39,46 @@ def list_bank(request):
 
 @login_required(login_url='user_login')
 def record_book(request):
-    all_transactions_df = get_all_transactions()
     search_query = request.GET.get('search', '')
-    start_date = request.GET.get('start_datetime', '')
-    end_date = request.GET.get('end_datetime', '')
-    status = request.GET.get('status', '')
+    start_date = request.GET.get('start_datetime', None)
+    end_date = request.GET.get('end_datetime', None)
+    status = request.GET.get('status', None)
 
-    start_date, end_date = get_start_end_datetime(start_date, end_date)
+    if not start_date or not end_date:
+        today = datetime.now()
+        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0).strftime("%d/%m/%Y %H:%M:%S")
+        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999).strftime("%d/%m/%Y %H:%M:%S")
 
-    # Convert the 'transaction_date' column to datetime format if it exists
-    if 'transaction_date' in all_transactions_df.columns:
-        all_transactions_df['transaction_date'] = pd.to_datetime(all_transactions_df['transaction_date'],
-                                                                 format='%d/%m/%Y %H:%M:%S')
-    # Filter transactions based on form input
-    filtered_transactions_df = all_transactions_df[
-        (all_transactions_df['transaction_date'] >= start_date) &
-        (all_transactions_df['transaction_date'] <= end_date)
-        ]
-
-    if status == 'Success':
-        filtered_transactions_df = filtered_transactions_df[filtered_transactions_df['status'] == 'Success']
-    if status == 'Failed':
-        filtered_transactions_df = filtered_transactions_df[
-            filtered_transactions_df['status'] == 'Failed' or filtered_transactions_df['status'] == '']
+    bank_accounts = BankAccount.objects.all()
+    account_number = [item.account_number for item in bank_accounts]
+    order_by = ("transaction_date", -1)
+    list_transactions_in = get_transactions_by_account_number(account_number, transaction_type='IN', status=status,
+                                                    date_start=start_date, date_end=end_date, order_by=order_by)
+    list_transactions_out = get_transactions_by_account_number(account_number, transaction_type='OUT', status=status,
+                                                     date_start=start_date, date_end=end_date, order_by=order_by)
 
     if search_query:
-        filtered_transactions_df = filtered_transactions_df[
-            filtered_transactions_df.apply(lambda row: search_query.lower() in row.astype(str).str.lower().to_string(),
-                                           axis=1)
-        ]
-
-    # Separate and sort transactions by type
-    in_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'IN'].sort_values(
-        by='transaction_date', ascending=False).fillna('')
-    out_transactions_df = filtered_transactions_df[filtered_transactions_df['transaction_type'] == 'OUT'].sort_values(
-        by='transaction_date', ascending=False).fillna('')
-
-    in_transactions_df = in_transactions_df.drop_duplicates(subset=['transaction_number'], keep='last')
-    out_transactions_df = out_transactions_df.drop_duplicates(subset=['transaction_number'], keep='last')
+        pass
 
     # Calculate total amounts
-    total_in_amount = in_transactions_df['amount'].sum()
-    total_out_amount = out_transactions_df['amount'].sum()
+    total_in_amount = 0
+    total_out_amount = 0
 
     # Pagination for "IN" transactions
-    in_paginator = Paginator(in_transactions_df.to_dict(orient='records'), 6)
+    in_paginator = Paginator(list_transactions_in, 6)
     in_page_number = request.GET.get('in_page')
     in_page_obj = in_paginator.get_page(in_page_number)
 
     # Pagination for "OUT" transactions
-    out_paginator = Paginator(out_transactions_df.to_dict(orient='records'), 6)
+    out_paginator = Paginator(list_transactions_out, 6)
     out_page_number = request.GET.get('out_page')
     out_page_obj = out_paginator.get_page(out_page_number)
 
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
         # Return JSON response for AJAX requests
 
-        total_in_amount = int(float(in_transactions_df['amount'].sum()))
-        total_out_amount = int(float(out_transactions_df['amount'].sum()))
+        total_in_amount = 0
+        total_out_amount = 0
 
         data = {
             'in_transactions': list(in_page_obj),
@@ -108,8 +90,6 @@ def record_book(request):
             'total_in_amount': total_in_amount,
             'total_out_amount': total_out_amount,
         }
-
-        print("=========", data)
 
         return JsonResponse(data)
 
@@ -192,8 +172,6 @@ def update_transaction_history(request):
                                                     limit_number=5)
     list_df_out = get_transactions_by_account_number(account_number, transaction_type='OUT',
                                                      order_by=order_by, limit_number=5)
-    print(list_df_in)
-    print(list_df_out)
     return JsonResponse(
         {'status': 200, 'message': 'Done', 'data': {'in': list_df_in, 'out': list_df_out}})
 

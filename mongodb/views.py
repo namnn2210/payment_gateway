@@ -2,6 +2,7 @@ from config.views import get_env
 from pymongo import MongoClient, errors
 from datetime import datetime
 
+
 def mongo_connect():
     try:
         client = MongoClient(get_env("MONGODB_URL"))  # Replace with your MongoDB connection string
@@ -12,11 +13,14 @@ def mongo_connect():
         print(f"Error connecting to MongoDB: {e}")
         return None
 
+
 def mongo_get_collection(collection_name):
     mongo_db = mongo_connect()
     return mongo_db[collection_name]
 
-def get_transactions_by_account_number(account_number, transaction_type=None, date_start=None, date_end=None, order_by=None, limit_number=None):
+
+def get_transactions_by_account_number(account_number, transaction_type=None, status=None, date_start=None,
+                                       date_end=None, order_by=None, limit_number=None):
     query_fields = {}
     exclude = {"_id": 0}
     if isinstance(account_number, str):
@@ -25,14 +29,16 @@ def get_transactions_by_account_number(account_number, transaction_type=None, da
         query_fields["account_number"] = {"$in": account_number}
     if date_start is not None and date_end is not None:
         query_fields['transaction_date'] = {
-            "$gte": datetime.strptime(date_start, "%Y-%m-%d"),
-            "$lte": datetime.strptime(date_end, "%Y-%m-%d")
+            "$gte": datetime.strptime(date_start, "%d/%m/%Y %H:%M:%S"),
+            "$lte": datetime.strptime(date_end, "%d/%m/%Y %H:%M:%S")
         }
     if transaction_type is not None:
         query_fields["transaction_type"] = transaction_type
+    if status is not None:
+        query_fields["status"] = status
     print(query_fields)
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    transactions = collection.find(query_fields,exclude)
+    transactions = collection.find(query_fields, exclude)
     if order_by is not None:
         transactions = transactions.sort([order_by])
     if limit_number is not None and limit_number > 0:
@@ -40,13 +46,16 @@ def get_transactions_by_account_number(account_number, transaction_type=None, da
     transaction_list = [txn for txn in transactions]
     return transaction_list
 
+
 def get_transaction_by_transaction_number(transaction_number):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     return collection.find_one({'transaction_number': transaction_number})
 
+
 def insert_all(transaction_list):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     collection.insert_many(transaction_list)
+
 
 def find_missing_transactions(transactions):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
@@ -64,6 +73,7 @@ def find_missing_transactions(transactions):
     ]
     return missing_transactions
 
+
 def update_transaction_status(account_number, transfer_code, orderid, scode, incomingorderid, status):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     update_fields = {
@@ -73,7 +83,6 @@ def update_transaction_status(account_number, transfer_code, orderid, scode, inc
         "status": status,
     }
     collection.update_one(
-        {"transfer_code": transfer_code, "account_number":account_number},
+        {"transfer_code": transfer_code, "account_number": account_number},
         {"$set": update_fields}
     )
-
