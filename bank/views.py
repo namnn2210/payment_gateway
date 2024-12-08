@@ -44,10 +44,17 @@ def record_book(request):
     end_date = request.GET.get('end_datetime', None)
     status = request.GET.get('status', None)
 
+    start_date_str = None
+    end_date_str = None
+
     if not start_date or not end_date:
         today = datetime.now()
         start_date = today.replace(hour=0, minute=0, second=0, microsecond=0).strftime("%d/%m/%Y %H:%M:%S")
         end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999).strftime("%d/%m/%Y %H:%M:%S")
+
+        start_date_str = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date_str = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+
 
     bank_accounts = BankAccount.objects.all()
     account_number = [item.account_number for item in bank_accounts]
@@ -97,8 +104,8 @@ def record_book(request):
         'in_page_obj': in_page_obj,
         'out_page_obj': out_page_obj,
         'search_query': search_query,
-        'start_date': start_date,
-        'end_date': end_date,
+        'start_date': start_date_str.strftime('%Y-%m-%dT%H:%M'),
+        'end_date': end_date_str.strftime('%Y-%m-%dT%H:%M'),
         'total_in_amount': total_in_amount,
         'total_out_amount': total_out_amount,
     })
