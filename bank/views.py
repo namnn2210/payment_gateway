@@ -92,6 +92,8 @@ def record_book(request):
 
         return JsonResponse(data)
 
+    print(start_date_str, end_date_str)
+
     return render(request, 'record_book.html', {
         'in_page_obj': in_page_obj,
         'out_page_obj': out_page_obj,
