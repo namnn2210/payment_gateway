@@ -186,8 +186,7 @@ def update_transaction_history(request):
     else:
         bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
 
-    account_number = ','.join([item.account_number for item in bank_accounts])
-    print(account_number)
+    account_number = [item.account_number for item in bank_accounts]
     list_df_in = get_transactions_by_account_number(account_number, transaction_type='IN', order_by='transaction_date',
                                                     limit_number=5)
     list_df_out = get_transactions_by_account_number(account_number, transaction_type='OUT',
