@@ -97,8 +97,8 @@ def record_book(request):
         'in_page_obj': in_page_obj,
         'out_page_obj': out_page_obj,
         'search_query': search_query,
-        'start_date': start_date.strftime('%Y-%m-%dT%H:%M'),
-        'end_date': end_date.strftime('%Y-%m-%dT%H:%M'),
+        'start_date': start_date,
+        'end_date': end_date,
         'total_in_amount': total_in_amount,
         'total_out_amount': total_out_amount,
     })
