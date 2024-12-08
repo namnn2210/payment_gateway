@@ -192,7 +192,8 @@ def update_transaction_history(request):
                                                     limit_number=5)
     list_df_out = get_transactions_by_account_number(account_number, transaction_type='OUT',
                                                      order_by='transaction_date', limit_number=5)
-
+    print(list_df_in)
+    print(list_df_out)
     return JsonResponse(
         {'status': 200, 'message': 'Done', 'data': {'in': list_df_in, 'out': list_df_out}})
 
