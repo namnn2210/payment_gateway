@@ -13,8 +13,7 @@ def mongo_connect():
         return None
 
 def mongo_get_collection(collection_name):
-    app_config = apps.get_app_config('mongodb')
-    mongo_db = app_config.mongo_db
+    mongo_db = mongo_connect()
     return mongo_db[collection_name]
 
 def get_transactions_by_account_number(account_number, date_start=None, date_end=None):
