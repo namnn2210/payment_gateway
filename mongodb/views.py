@@ -1,6 +1,6 @@
 from config.views import get_env
 from pymongo import MongoClient, errors
-from django.apps import apps
+from datetime import datetime
 
 def mongo_connect():
     try:
@@ -25,15 +25,16 @@ def get_transactions_by_account_number(account_number, transaction_type=None, da
         query_fields["account_number"] = {"$in": account_number}
     if date_start is not None and date_end is not None:
         query_fields['transaction_date'] = {
-                "$gte": date_start,
-                "$lte": date_end
-            }
+            "$gte": datetime.strptime(date_start, "%Y-%m-%d"),
+            "$lte": datetime.strptime(date_end, "%Y-%m-%d")
+        }
     if transaction_type is not None:
         query_fields["transaction_type"] = transaction_type
+    print(query_fields)
     transactions = collection.find(query_fields)
     if order_by is not None:
-        transactions = transactions.sort(order_by)
-    if limit_number is not None:
+        transactions = transactions.sort([order_by])
+    if limit_number is not None and limit_number > 0:
         transactions = transactions.limit(limit_number)
     transaction_list = [txn for txn in transactions]
     return transaction_list
