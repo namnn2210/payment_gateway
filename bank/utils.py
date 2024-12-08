@@ -8,13 +8,13 @@ import pytz
 class Transaction:
     def __init__(self, transaction_number, transaction_date, transaction_type, account_number, description,
                  transfer_code, amount) -> None:
-        self.transaction_number = transaction_number
+        self.transaction_number = str(transaction_number)
         if transaction_date:
             self.transaction_date = datetime.strptime(transaction_date, '%d/%m/%Y %H:%M:%S')
         self.transaction_type = transaction_type
-        self.account_number = account_number
+        self.account_number = str(account_number)
         self.description = description
-        self.transfer_code = transfer_code
+        self.transfer_code = str(transfer_code)
         self.status = None
         self.amount = amount
         self.note = ''

@@ -32,6 +32,7 @@ def get_transactions_by_account_number(account_number, transaction_type=None, da
         query_fields["transaction_type"] = transaction_type
     print(query_fields)
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
+    print(collection)
     print(collection.find(query_fields).explain())
     transactions = collection.find(query_fields)
     if order_by is not None:
