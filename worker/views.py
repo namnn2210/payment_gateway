@@ -122,14 +122,14 @@ def get_transaction(bank):
         if different_transactions:
             print("=======", different_transactions)
             for row in different_transactions:
-                bank_account = BankAccount.objects.filter(account_number=str(row.account_number)).first()
-                if not datetime.strptime(row.transaction_date, '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
+                bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
+                if not datetime.strptime(row['transaction_date'], '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
                     continue
-                if row.transaction_type == 'IN':
+                if row['transaction_type'] == 'IN':
                     formatted_amount = '{:,.2f}'.format(row['amount'])
                     memo_transfer_check = 'W' + bank_account.account_name
                     memo_deposit_check = 'D' + bank_account.account_name
-                    if memo_transfer_check in row.description or memo_deposit_check in row.description:
+                    if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                         continue
                     success = False
                     reported = False
@@ -141,22 +141,22 @@ def get_transaction(bank):
                             logger.info(result)
                             if result:
                                 if result['msg'] == 'transfercode is null':
-                                    update_transaction_history_status(row.account_number, row.transfer_code, '',
+                                    update_transaction_history_status(row['account_number'], row['transfer_code'], '',
                                                                       '', '', 'Failed')
                                     alert = (
                                         f'Hi, failed\n'
                                         f'\n'
-                                        f'Account: {row.account_number}'
+                                        f'Account: {row['account_number']}'
                                         f'\n'
                                         f'Confirmed by order: \n'
                                         f'\n'
                                         f'Received amount💲: {formatted_amount} \n'
                                         f'\n'
-                                        f'Memo: {row.description}\n'
+                                        f'Memo: {row['description']}\n'
                                         f'\n'
-                                        f'Code: {find_substring(row.description)}\n'
+                                        f'Code: {find_substring(row['description'])}\n'
                                         f'\n'
-                                        f'Time: {row.transaction_date}\n'
+                                        f'Time: {row['transaction_date']}\n'
                                         f'\n'
                                         f'Reason of not be credited: No transfer code!!!'
                                     )
@@ -169,30 +169,30 @@ def get_transaction(bank):
                                     if result['orderno'] == '':
                                         continue
                                     else:
-                                        update_transaction_history_status(row.account_number,
-                                                                          row.transfer_code, result['orderid'],
+                                        update_transaction_history_status(row['account_number'],
+                                                                          row['transfer_code'], result['orderid'],
                                                                           result['scode'], result['incomingorderid'],
                                                                           'Success')
                                         alert = (
                                             f'🟩🟩🟩 Success! CID: {item.name}\n'
                                             f'\n'
-                                            f'Account: {row.account_number}'
+                                            f'Account: {row['account_number']}'
                                             f'\n'
                                             f'Confirmed by order: {result['incomingorderid']}\n'
                                             f'\n'
                                             f'Received amount💲: {formatted_amount} \n'
                                             f'\n'
-                                            f'Memo: {row.description}\n'
+                                            f'Memo: {row['description']}\n'
                                             f'\n'
                                             f'Order ID: {result['orderid']}\n'
                                             f'\n'
-                                            f'Code: {find_substring(row.description)}\n'
+                                            f'Code: {find_substring(row['description'])}\n'
                                             f'\n'
-                                            f'Time: {row.transaction_date}\n'
+                                            f'Time: {row['transaction_date']}\n'
                                         )
                                         send_telegram_message(alert, get_env('TRANSACTION_CHAT_ID'),
                                                               get_env('TRANSACTION_BOT_API_KEY'))
-                                        update_amount_by_date('IN', row['amount'])
+                                        # update_amount_by_date('IN', row['amount'])
                                         success = True
                                         break
                                 else:
@@ -200,22 +200,22 @@ def get_transaction(bank):
                             else:
                                 continue
                         if not success and not reported:
-                            update_transaction_history_status(row.account_number, row.transfer_code, '', '', '',
+                            update_transaction_history_status(row['account_number'], row['transfer_code'], '', '', '',
                                                               'Failed')
                             alert = (
                                 f'Hi, failed\n'
                                 f'\n'
-                                f'Account: {row.account_number}'
+                                f'Account: {row['account_number']}'
                                 f'\n'
                                 f'Confirmed by order: \n'
                                 f'\n'
                                 f'Received amount💲: {formatted_amount} \n'
                                 f'\n'
-                                f'Memo: {row.description}\n'
+                                f'Memo: {row['description']}\n'
                                 f'\n'
-                                f'Code: {find_substring(row.description)}\n'
+                                f'Code: {find_substring(row['description'])}\n'
                                 f'\n'
-                                f'Time: {row.transaction_date}\n'
+                                f'Time: {row['transaction_date']}\n'
                                 f'\n'
                                 f'Reason of not be credited: Order not found!!!'
                             )
@@ -226,7 +226,7 @@ def get_transaction(bank):
                                 first_name = name.split(' ')[-1]
                                 memo_transfer_check = 'W' + first_name
                                 memo_deposit_check = 'D' + first_name
-                                if memo_transfer_check in row.description or memo_deposit_check in row.description:
+                                if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                                     internal = True
                                     break
                             if not internal and bank.bank_type == 'IN':
@@ -235,16 +235,16 @@ def get_transaction(bank):
                 else:
                     transaction_type = '-'
                     transaction_color = '🔴'  # Red circle emoji for OUT transactions
-                    formatted_amount = '{:,.2f}'.format(row.amount)
+                    formatted_amount = '{:,.2f}'.format(row['amount'])
 
                     alert = (
                         f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
                         f'\n'
-                        f'Nội dung: {row.description}\n'
+                        f'Nội dung: {row['description']}\n'
                         f'\n'
                         f'🏦 {bank.account_number} - {bank.account_name}\n'
                         f'\n'
-                        f'🕒 {row.transaction_date}'
+                        f'🕒 {row['transaction_date']}'
                     )
 
                     bank_accounts = BankAccount.objects.filter(status=True)
@@ -254,7 +254,7 @@ def get_transaction(bank):
                         first_name = name.split(' ')[-1]
                         memo_transfer_check = 'W' + first_name
                         memo_deposit_check = 'D' + first_name
-                        if memo_transfer_check in row.description or memo_deposit_check in row.description and bank.bank_type == 'OUT':
+                        if memo_transfer_check in row['description'] or memo_deposit_check in row['description'] and bank.bank_type == 'OUT':
                             send_telegram_message(alert, get_env('INTERNAL_CHAT_ID'),
                                                   get_env('TRANSACTION_BOT_API_KEY'))
                             internal = True
