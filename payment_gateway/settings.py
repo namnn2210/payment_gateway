@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'partner',
     'employee',
     'two_factor_auth',
+    'mongodb',
+    'config'
 ]
 
 MIDDLEWARE = [
