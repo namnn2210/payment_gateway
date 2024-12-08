@@ -52,11 +52,11 @@ def record_book(request):
         start_date_str = today.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date_str = today.replace(hour=23, minute=59, second=59, microsecond=999999)
     else:
-        start_date_str = start_date
-        end_date_str = end_date
-
         start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M')
         end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M')
+
+        start_date_str = start_date
+        end_date_str = end_date
 
     bank_accounts = BankAccount.objects.all()
     account_number = [item.account_number for item in bank_accounts]
