@@ -16,18 +16,23 @@ def mongo_get_collection(collection_name):
     mongo_db = mongo_connect()
     return mongo_db[collection_name]
 
-def get_transactions_by_account_number(account_number, date_start=None, date_end=None):
+def get_transactions_by_account_number(account_number, transaction_type=None, date_start=None, date_end=None, order_by=None, limit_number=None):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    if date_start and date_end:
-        transactions = collection.find({'account_number': account_number})
-    else:
-        transactions = collection.find({
-            'account_number': account_number,
-            'transaction_date': {
+    query_fields = {}
+    list_account_number = [item.strip() for item in account_number.split(",")]
+    query_fields["account_number"] = {"$in": list_account_number}
+    if date_start is not None and date_end is not None:
+        query_fields['transaction_date'] = {
                 "$gte": date_start,
                 "$lte": date_end
             }
-        })
+    if transaction_type is not None:
+        query_fields["transaction_type"] = transaction_type
+    transactions = collection.find(query_fields)
+    if order_by is not None:
+        transactions = transactions.sort(order_by)
+    if limit_number is not None:
+        transactions = transactions.limit(limit_number)
     transaction_list = [txn for txn in transactions]
     return transaction_list
 

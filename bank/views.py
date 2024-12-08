@@ -19,7 +19,7 @@ from django.core.paginator import Paginator
 from django.utils import timezone
 from django.http import HttpResponse
 from io import BytesIO
-from mongodb.views import update_transaction_status
+from mongodb.views import update_transaction_status, get_transactions_by_account_number
 
 import json
 import pandas as pd
@@ -181,68 +181,20 @@ def toggle_bank_status(request):
 
 
 def update_transaction_history(request):
-    # all_transactions = get_all_transactions(request)
-    redis_client = redis_connect(1)
     if request.user.is_superuser:
         bank_accounts = BankAccount.objects.filter(status=True)
     else:
         bank_accounts = BankAccount.objects.filter(user=request.user, status=True)
 
-    list_df_in = []
-    list_df_out = []
+    account_number = ','.join([item.account_number for item in bank_accounts])
 
-    for bank_account in bank_accounts:
-        bank_redis = redis_client.get(bank_account.account_number)
-        if bank_redis:
-            json_data = json.loads(bank_redis)
-            df = pd.DataFrame(json_data)
-            if request.user.is_superuser:
-                if not df.empty:
-                    in_transaction_df = df[df['transaction_type'] == 'IN']
-                    if not in_transaction_df.empty:
-                        list_df_in.append(in_transaction_df)
-                    out_transaction_df = df[df['transaction_type'] == 'OUT']
-                    if not out_transaction_df.empty:
-                        list_df_out.append(out_transaction_df)
-            else:
-                if not df.empty:
-                    in_transaction_df = df[df['transaction_type'] == 'IN']
-                    out_transaction_df = df[df['transaction_type'] == 'OUT']
-                    if not in_transaction_df.empty:
-                        list_df_in.append(in_transaction_df)
-                        list_df_out.append(out_transaction_df)
-
-    if len(list_df_in) > 0:
-        df_in = pd.concat(list_df_in)
-        # df_in = df_in.sort_values(by=['transaction_number', 'status', df_in.index], ascending=[True, False, True])
-        df_in = df_in.drop_duplicates(subset=['transaction_number'], keep='last')
-        df_in['transaction_date'] = pd.to_datetime(df_in['transaction_date'], format='%d/%m/%Y %H:%M:%S')
-        sorted_transactions_in = df_in.sort_values(by='transaction_date', ascending=False).head(5)
-        sorted_transactions_in['transaction_date'] = sorted_transactions_in['transaction_date'].dt.strftime(
-            '%d/%m/%Y %H:%M:%S')
-        top_transactions_json_in = sorted_transactions_in.to_json(orient='records', date_format='iso')
-        top_transactions_json_in = json.loads(top_transactions_json_in)
-    else:
-        top_transactions_json_in = {}
-
-    if len(list_df_out) > 0:
-        df_out = pd.concat(list_df_out)
-        # df_out = df_out.sort_values(by=['transaction_number', 'status', df_out.index], ascending=[True, False, True])
-        df_out = df_out.drop_duplicates(subset=['transaction_number'], keep='last')
-        df_out['transaction_date'] = pd.to_datetime(df_out['transaction_date'], format='%d/%m/%Y %H:%M:%S')
-        sorted_transactions_out = df_out.sort_values(by='transaction_date', ascending=False).head(5)
-        sorted_transactions_out['transaction_date'] = sorted_transactions_out['transaction_date'].dt.strftime(
-            '%d/%m/%Y %H:%M:%S')
-        top_transactions_json_out = sorted_transactions_out.to_json(orient='records', date_format='iso')
-        top_transactions_json_out = json.loads(top_transactions_json_out)
-    else:
-        top_transactions_json_out = {}
-
-    # Close the Redis connection
-    redis_client.close()
+    list_df_in = get_transactions_by_account_number(account_number, transaction_type='IN', order_by='transaction_date',
+                                                    limit_number=5)
+    list_df_out = get_transactions_by_account_number(account_number, transaction_type='OUT',
+                                                     order_by='transaction_date', limit_number=5)
 
     return JsonResponse(
-        {'status': 200, 'message': 'Done', 'data': {'in': top_transactions_json_in, 'out': top_transactions_json_out}})
+        {'status': 200, 'message': 'Done', 'data': {'in': list_df_in, 'out': list_df_out}})
 
 
 def update_balance(request):
