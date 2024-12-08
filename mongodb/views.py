@@ -34,7 +34,7 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
         }
     if transaction_type is not None:
         query_fields["transaction_type"] = transaction_type
-    if status is not None:
+    if status is not None and status != 'All':
         query_fields["status"] = status
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     print('TRANSACTION QUERY: ', query_fields)
