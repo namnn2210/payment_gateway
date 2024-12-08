@@ -10,7 +10,7 @@ class Transaction:
                  transfer_code, amount) -> None:
         self.transaction_number = transaction_number
         if transaction_date:
-            self.transaction_date = datetime.strptime(transaction_date, '%d-%m-%Y %H:%M:%S')
+            self.transaction_date = datetime.strptime(transaction_date, '%d/%m/%Y %H:%M:%S')
         self.transaction_type = transaction_type
         self.account_number = account_number
         self.description = description
