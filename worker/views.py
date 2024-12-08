@@ -113,11 +113,11 @@ def get_transaction(bank):
         send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
 
     if not current_transactions:
-        transaction_dicts = [txn.__dict__() for txn in new_transactions]
+        transaction_dicts = [txn for txn in new_transactions]
         insert_all(transaction_list=transaction_dicts)
     else:
         different_transactions = find_missing_transactions(new_transactions)
-        transaction_dicts = [txn.__dict__() for txn in different_transactions]
+        transaction_dicts = [txn for txn in different_transactions]
         insert_all(transaction_list=transaction_dicts)
         if different_transactions:
             for row in different_transactions:
