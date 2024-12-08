@@ -120,6 +120,7 @@ def get_transaction(bank):
         transaction_dicts = [txn for txn in different_transactions]
         insert_all(transaction_list=transaction_dicts)
         if different_transactions:
+            print("=======", different_transactions)
             for row in different_transactions:
                 bank_account = BankAccount.objects.filter(account_number=str(row.account_number)).first()
                 if not datetime.strptime(row.transaction_date, '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():

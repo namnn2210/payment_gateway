@@ -57,7 +57,6 @@ def acb_transactions(username, password, account_number):
     if response['codeStatus'] == 200:
         transactions = response['data']
         formatted_transactions = []
-        logger.info(transactions)
         for transaction in transactions:
             new_formatted_transaction = Transaction(
                 transaction_number=transaction['transactionNumber'],
