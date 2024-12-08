@@ -20,6 +20,7 @@ def get_transactions_by_account_number(account_number, transaction_type=None, da
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     query_fields = {}
     list_account_number = [item.strip() for item in account_number.split(",")]
+    print('list_account_number', list_account_number)
     query_fields["account_number"] = {"$in": list_account_number}
     if date_start is not None and date_end is not None:
         query_fields['transaction_date'] = {
