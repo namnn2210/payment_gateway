@@ -218,7 +218,8 @@ def get_amount_today(request):
 def update_transaction_history_status(account_number, transfer_code, orderid, scode, incomingorderid, status):
     update_transaction_status(account_number, transfer_code, orderid, scode, incomingorderid, status)
 
-# def export_to_excel(request):
+def export_to_excel(request):
+    pass
 #     # Fetch all transactions as a DataFrame
 #     all_transactions_df = get_all_transactions()
 #
