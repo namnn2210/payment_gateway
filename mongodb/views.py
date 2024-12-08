@@ -62,12 +62,7 @@ def get_transaction_by_transaction_number(transaction_number):
     return collection.find_one({'transaction_number': transaction_number})
 
 
-def insert_all(transaction_list):
-    collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    collection.insert_many(transaction_list)
-
-
-def find_missing_transactions(transactions):
+def get_new_transactions(transactions):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     transaction_numbers = [txn['transaction_number'] for txn in transactions]
     existing_transactions = collection.find(
@@ -96,3 +91,36 @@ def update_transaction_status(account_number, transfer_code, orderid, scode, inc
         {"transfer_code": transfer_code, "account_number": account_number},
         {"$set": update_fields}
     )
+
+def insert_all(transaction_list):
+    collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
+    collection.insert_many(transaction_list)
+
+def get_total_amount(date_start, date_end, transaction_type):
+    collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
+    pipeline = [
+        {
+            "$match": {
+                "transaction_date": {
+                    "$gte": date_start,
+                    "$lte": date_end
+                },
+                "transaction_type": transaction_type,
+                "status":"Success"
+            }
+        },
+        {
+            "$group": {
+                "_id": None,  # Group all matching documents together
+                "total_amount": {"$sum": "$amount"}  # Sum the `amount` field
+            }
+        }
+    ]
+
+    result = list(collection.aggregate(pipeline))
+
+    # Return the total amount, or 0 if no results
+    if result:
+        return result[0]["total_amount"]
+    else:
+        return 0

@@ -191,13 +191,9 @@ def edit_settle_payout(request):
 def update_settle_payout(request, update_type):
     try:
         data = json.loads(request.body)
-        print(data)
         payout_id = data.get('id')
-        print(payout_id)
         bank_id = data.get('bank_id', 0)
-        print(bank_id)
         reason = data.get('reason', 0)
-        print(reason)
         payout = SettlePayout.objects.filter(id=payout_id).first()
 
         formatted_amount = '{:,.2f}'.format(payout.money)

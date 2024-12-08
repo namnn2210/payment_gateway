@@ -1,6 +1,8 @@
+from io import BytesIO
+
 from django.shortcuts import render
 from .models import Bank, BankAccount
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -8,10 +10,10 @@ from django.views import View
 from django.forms.models import model_to_dict
 from datetime import datetime
 from django.core.paginator import Paginator
-from django.utils import timezone
-from mongodb.views import update_transaction_status, get_transactions_by_account_number
+from mongodb.views import update_transaction_status, get_transactions_by_account_number, get_total_amount
 
 import json
+import pandas as pd
 
 
 # Create your views here.
@@ -28,7 +30,7 @@ def list_bank(request):
 
 @login_required(login_url='user_login')
 def record_book(request):
-    search_query = request.GET.get('search', None)
+    search_query = request.GET.get('search', '')
     start_date = request.GET.get('start_datetime', None)
     end_date = request.GET.get('end_datetime', None)
     status = request.GET.get('status', None)
@@ -56,8 +58,6 @@ def record_book(request):
     list_transactions_out = get_transactions_by_account_number(account_number, transaction_type='OUT', status=status,
                                                                date_start=start_date, date_end=end_date,
                                                                order_by=order_by,search_text=search_query)
-
-
 
     # Calculate total amounts
     total_in_amount = 0
@@ -190,14 +190,13 @@ def update_balance(request):
 def get_amount_today(request):
     total_in = 0
     total_out = 0
-    # if request.user.is_superuser:
-    #     redis_client = redis_connect(3)
-    #     today_str = timezone.now().strftime('%Y-%m-%d')
-    #     if redis_client.exists(today_str):
-    #         current_totals = json.loads(redis_client.get(today_str))
-    #         return JsonResponse({'status': 200, 'message': 'Done', 'data': current_totals})
-    #     else:
-    #         return JsonResponse({'status': 500, 'message': 'Invalid request'})
+    if request.user.is_superuser:
+        today = datetime.now()
+        date_start = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        date_end = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        total_in = get_total_amount(date_start, date_end, "IN")
+        total_out = get_total_amount(date_start, date_end, "OUT")
     # else:
     #     try:
     #         user_timeline = UserTimeline.objects.filter(user=request.user).first()
@@ -219,63 +218,47 @@ def update_transaction_history_status(account_number, transfer_code, orderid, sc
     update_transaction_status(account_number, transfer_code, orderid, scode, incomingorderid, status)
 
 def export_to_excel(request):
-    pass
-#     # Fetch all transactions as a DataFrame
-#     all_transactions_df = get_all_transactions()
-#
-#     # Get search query and date range from the request
-#     search_query = request.GET.get('search', '')
-#     start_date = request.GET.get('start_datetime', '')
-#     end_date = request.GET.get('end_datetime', '')
-#
-#     # Convert start_date and end_date to actual datetime objects (utility function)
-#     start_date, end_date = get_start_end_datetime(start_date, end_date)
-#
-#     # Ensure we have transactions to filter
-#     if not all_transactions_df.empty:
-#
-#         # Convert the 'transaction_date' column to datetime format for filtering
-#         if 'transaction_date' in all_transactions_df.columns:
-#             all_transactions_df['transaction_date'] = pd.to_datetime(
-#                 all_transactions_df['transaction_date'], format='%d/%m/%Y %H:%M:%S'
-#             )
-#
-#         # Filter transactions based on the date range (if start_date and end_date are valid)
-#         filtered_transactions_df = all_transactions_df[
-#             (all_transactions_df['transaction_date'] >= start_date) &
-#             (all_transactions_df['transaction_date'] <= end_date)
-#             ]
-#
-#         # Apply the search query filter if provided
-#         if search_query:
-#             filtered_transactions_df = filtered_transactions_df[
-#                 filtered_transactions_df.apply(
-#                     lambda row: search_query.lower() in row.astype(str).str.lower().to_string(), axis=1
-#                 )
-#             ]
-#
-#         # Prepare the Excel file for download
-#         if not filtered_transactions_df.empty:
-#             # Create an in-memory buffer
-#             buffer = BytesIO()
-#
-#             # Use Pandas to write the filtered DataFrame to an Excel file in memory
-#             with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
-#                 filtered_transactions_df.to_excel(writer, sheet_name='Transactions', index=False)
-#
-#             # Set the buffer's file position to the beginning
-#             buffer.seek(0)
-#
-#             # Create an HTTP response with the Excel file
-#             response = HttpResponse(buffer,
-#                                     content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-#             response['Content-Disposition'] = 'attachment; filename=filtered_transactions.xlsx'
-#
-#             return response
-#         else:
-#             # Return an empty Excel file or an error response
-#             return HttpResponse('No transactions found for the specified filters.', content_type='text/plain')
-#
-#     else:
-#         # Handle the case where there are no transactions to export
-#         return HttpResponse('No transactions available to export.', content_type='text/plain')
+    search_query = request.GET.get('search', '')
+    start_date = request.GET.get('start_datetime', None)
+    end_date = request.GET.get('end_datetime', None)
+    status = request.GET.get('status', None)
+
+    if not start_date or not end_date:
+        today = datetime.now()
+        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+    else:
+        start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M')
+        end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M')
+
+    bank_accounts = BankAccount.objects.all()
+    account_number = [item.account_number for item in bank_accounts]
+    order_by = ("transaction_date", -1)
+    list_transactions = get_transactions_by_account_number(account_number, status=status,
+                                                              date_start=start_date, date_end=end_date,
+                                                              order_by=order_by, search_text=search_query)
+
+    filtered_transactions_df = pd.DataFrame(list_transactions)
+
+    # Prepare the Excel file for download
+    if not filtered_transactions_df.empty:
+        # Create an in-memory buffer
+        buffer = BytesIO()
+
+        # Use Pandas to write the filtered DataFrame to an Excel file in memory
+        with pd.ExcelWriter(buffer, engine='openpyxl') as writer:
+            filtered_transactions_df.to_excel(writer, sheet_name='Transactions', index=False)
+
+        # Set the buffer's file position to the beginning
+        buffer.seek(0)
+
+        # Create an HTTP response with the Excel file
+        response = HttpResponse(buffer,
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=filtered_transactions.xlsx'
+
+        return response
+    else:
+        # Return an empty Excel file or an error response
+        return HttpResponse('No transactions found for the specified filters.', content_type='text/plain')
+

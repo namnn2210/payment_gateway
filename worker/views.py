@@ -11,7 +11,7 @@ from partner.models import CID
 from datetime import datetime
 from django.utils import timezone
 from config.views import get_env
-from mongodb.views import get_transactions_by_account_number, insert_all, find_missing_transactions
+from mongodb.views import get_transactions_by_account_number, insert_all, get_new_transactions
 import pytz
 
 logger = logging.getLogger('django')
@@ -116,11 +116,10 @@ def get_transaction(bank):
         transaction_dicts = [txn for txn in new_transactions]
         insert_all(transaction_list=transaction_dicts)
     else:
-        different_transactions = find_missing_transactions(new_transactions)
+        different_transactions = get_new_transactions(new_transactions)
         transaction_dicts = [txn for txn in different_transactions]
         insert_all(transaction_list=transaction_dicts)
         if different_transactions:
-            print("=======", different_transactions)
             for row in different_transactions:
                 bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                 if not row['transaction_date'].date() >= timezone.now().date():
