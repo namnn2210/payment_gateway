@@ -14,13 +14,13 @@ class Transaction:
         self.transaction_type = transaction_type
         self.account_number = str(account_number)
         self.description = description
-        self.transfer_code = str(transfer_code)
+        self.transfer_code = transfer_code
         self.status = None
         self.amount = amount
-        self.note = ''
-        self.orderid = ''
-        self.scode = ''
-        self.incomingorderid = ''
+        self.note = None
+        self.orderid = None
+        self.scode = None
+        self.incomingorderid = None
 
     def __dict__(self) -> dict:
         return {

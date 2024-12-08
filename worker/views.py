@@ -198,7 +198,7 @@ def get_transaction(bank):
                             else:
                                 continue
                         if not success and not reported:
-                            update_transaction_history_status(row['account_number'], row['transfer_code'], '', '', '',
+                            update_transaction_history_status(row['account_number'], row['transfer_code'], None, None, None,
                                                               'Failed')
                             alert = (
                                 f'Hi, failed\n'
