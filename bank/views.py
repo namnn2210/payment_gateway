@@ -233,28 +233,31 @@ def update_amount_by_date(transaction_type, amount):
 
 
 def get_amount_today(request):
-    if request.user.is_superuser:
-        redis_client = redis_connect(3)
-        today_str = timezone.now().strftime('%Y-%m-%d')
-        if redis_client.exists(today_str):
-            current_totals = json.loads(redis_client.get(today_str))
-            return JsonResponse({'status': 200, 'message': 'Done', 'data': current_totals})
-        else:
-            return JsonResponse({'status': 500, 'message': 'Invalid request'})
-    else:
-        try:
-            user_timeline = UserTimeline.objects.filter(user=request.user).first()
-            start_at = user_timeline.timeline.start_at
-            end_at = user_timeline.timeline.end_at
-            start_datetime, end_datetime = get_start_end_datetime_by_timeline(start_at, end_at)
-            time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
-            payouts = Payout.objects.filter(user=request.user, status=True).filter(time_range_query)
-            total_out = payouts.aggregate(total_money=Sum('money'))['total_money'] or 0
-            deposit = EmployeeDeposit.objects.filter(user=request.user, status=True).filter(time_range_query)
-            total_in = deposit.aggregate(total_money=Sum('amount'))['total_money'] or 0
-            return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in': total_in, 'out': total_out}})
-        except Exception as ex:
-            return JsonResponse({'status': 500, 'message': 'Invalid request'})
+    total_in = 0
+    total_out = 0
+    # if request.user.is_superuser:
+    #     redis_client = redis_connect(3)
+    #     today_str = timezone.now().strftime('%Y-%m-%d')
+    #     if redis_client.exists(today_str):
+    #         current_totals = json.loads(redis_client.get(today_str))
+    #         return JsonResponse({'status': 200, 'message': 'Done', 'data': current_totals})
+    #     else:
+    #         return JsonResponse({'status': 500, 'message': 'Invalid request'})
+    # else:
+    #     try:
+    #         user_timeline = UserTimeline.objects.filter(user=request.user).first()
+    #         start_at = user_timeline.timeline.start_at
+    #         end_at = user_timeline.timeline.end_at
+    #         start_datetime, end_datetime = get_start_end_datetime_by_timeline(start_at, end_at)
+    #         time_range_query = Q(created_at__gte=start_datetime) & Q(created_at__lt=end_datetime)
+    #         payouts = Payout.objects.filter(user=request.user, status=True).filter(time_range_query)
+    #         total_out = payouts.aggregate(total_money=Sum('money'))['total_money'] or 0
+    #         deposit = EmployeeDeposit.objects.filter(user=request.user, status=True).filter(time_range_query)
+    #         total_in = deposit.aggregate(total_money=Sum('amount'))['total_money'] or 0
+    #         return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in': total_in, 'out': total_out}})
+    #     except Exception as ex:
+    #         return JsonResponse({'status': 500, 'message': 'Invalid request'})
+    return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in': total_in, 'out': total_out}})
 
 
 def update_transaction_history_status(account_number, transfer_code, orderid, scode, incomingorderid, status):
