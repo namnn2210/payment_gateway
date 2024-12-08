@@ -4,7 +4,7 @@ from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from tech.views import tech_login, tech_balance, tech_transactions
 from bank.utils import send_telegram_message, find_substring
-from bank.views import update_amount_by_date, update_transaction_history_status
+from bank.views import update_transaction_history_status
 from bank.models import BankAccount
 from partner.views import create_deposit_order
 from partner.models import CID
@@ -192,7 +192,6 @@ def get_transaction(bank):
                                         )
                                         send_telegram_message(alert, get_env('TRANSACTION_CHAT_ID'),
                                                               get_env('TRANSACTION_BOT_API_KEY'))
-                                        # update_amount_by_date('IN', row['amount'])
                                         success = True
                                         break
                                 else:

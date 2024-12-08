@@ -48,7 +48,6 @@ def update_payout_background(update_body):
                     )
                     send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                           os.environ.get('TRANSACTION_BOT_API_KEY'))
-                    # update_amount_by_date('OUT',payout.money)
                     return True
         else:
             if not payout.status:
@@ -75,7 +74,6 @@ def update_payout_background(update_body):
                 )
                 send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                       os.environ.get('TRANSACTION_BOT_API_KEY'))
-                # update_amount_by_date('OUT',payout.money)
                 return True
         return False
     elif update_type == 'report':

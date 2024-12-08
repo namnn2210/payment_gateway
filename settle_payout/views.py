@@ -14,14 +14,15 @@ from bank.models import Bank
 from datetime import datetime
 from django.db.models import Q, Case, Value, When, IntegerField, Sum
 from django.utils import timezone
+from config.views import get_env
 
 import pytz
 import json
 
+
 # Create your views here.
 @login_required(login_url='user_login')
 def list_settle_payout(request):
-    
     bank_data = json.load(open('bank.json', encoding='utf-8'))
     banks = Bank.objects.filter(status=True)
     list_payout = SettlePayout.objects.all()
@@ -104,8 +105,6 @@ def list_settle_payout(request):
         'total_amount': total_amount
     })
 
-def search_payout(request):
-    return render(request=request, template_name='payout_history.html')
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddSettlePayoutView(View):
@@ -118,26 +117,26 @@ class AddSettlePayoutView(View):
         accountno = data.get('accountno').strip()
         accountname = data.get('accountname')
         bankcode = data.get('bankcode')
-        
+
         try:
             float(money)
         except Exception as ex:
             return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
-        
+
         if '.00' not in money:
             return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
-        
+
         # Check if any bank_account with the same type is ON
         existed_bank_account = SettlePayout.objects.filter(
             orderid=orderid).first()
         if existed_bank_account:
             return JsonResponse({'status': 505, 'message': 'Lệnh rút đã tồn tại. Vui lòng kiểm tra mã đơn hàng'})
 
-        #Process the data and save to the database
-    
+        # Process the data and save to the database
+
         payout = SettlePayout.objects.create(
             user=request.user,
-            scode='CID1630'+scode,
+            scode='CID1630' + scode,
             orderno=orderid,
             orderid=orderid,
             money=int(float(money)),
@@ -159,6 +158,7 @@ class AddSettlePayoutView(View):
         send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
+
 @csrf_exempt
 @require_POST
 def delete_settle_payout(request):
@@ -167,9 +167,10 @@ def delete_settle_payout(request):
         settle_payout_id = data.get('id')
         settle_payout = get_object_or_404(SettlePayout, id=settle_payout_id)
         settle_payout.delete()
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
     except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+        return JsonResponse({'status': 500, 'message': str(ex), 'success': False})
+
 
 @csrf_exempt
 @require_POST
@@ -181,9 +182,10 @@ def edit_settle_payout(request):
         settle_payout = get_object_or_404(SettlePayout, id=settle_payout_id)
         settle_payout.bankcode = bank_code
         settle_payout.save()
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
     except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+        return JsonResponse({'status': 500, 'message': str(ex), 'success': False})
+
 
 @csrf_exempt
 @require_POST
@@ -193,9 +195,9 @@ def update_settle_payout(request, update_type):
         print(data)
         payout_id = data.get('id')
         print(payout_id)
-        bank_id = data.get('bank_id',0)
+        bank_id = data.get('bank_id', 0)
         print(bank_id)
-        reason = data.get('reason',0)
+        reason = data.get('reason', 0)
         print(reason)
         payout = SettlePayout.objects.filter(id=payout_id).first()
 
@@ -226,7 +228,6 @@ def update_settle_payout(request, update_type):
                 f'Date: {payout.updated_at}'
             )
             send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
-            update_amount_by_date('OUT',payout.money)
         elif update_type == 'report':
             payout.is_report = True
             reason_text = ''
@@ -236,7 +237,6 @@ def update_settle_payout(request, update_type):
                 reason_text = 'Invalid receiving bank!'
             elif reason == 3:
                 reason_text = 'Invalid receiving account name!'
-            # payout.status = False
             alert = (
                 f'Hi team !\n'
                 f'Please check this payout :\n'
@@ -278,9 +278,9 @@ def update_settle_payout(request, update_type):
             )
             send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
         else:
-            return JsonResponse({'status': 422, 'message': 'Done','success': False})
+            return JsonResponse({'status': 422, 'message': 'Done', 'success': False})
         payout.save()
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
     except Exception as ex:
         print(str(ex))
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+        return JsonResponse({'status': 500, 'message': str(ex), 'success': False})

@@ -1,6 +1,5 @@
 from config.views import get_env
 from pymongo import MongoClient, errors
-from datetime import datetime
 
 
 def mongo_connect():
@@ -20,7 +19,7 @@ def mongo_get_collection(collection_name):
 
 
 def get_transactions_by_account_number(account_number, transaction_type=None, status=None, date_start=None,
-                                       date_end=None, order_by=None, limit_number=None):
+                                       date_end=None, order_by=None, limit_number=None, search_text=None):
     query_fields = {}
     exclude = {"_id": 0}
     if isinstance(account_number, str):
@@ -37,6 +36,16 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
     if status is not None:
         if status != 'All':
             query_fields["status"] = status
+
+    if search_text is not None:
+        if search_text != '':
+            search_text = search_text.strip()
+            query_fields["$or"] = [
+                {"transaction_number": {"$regex": search_text, "$options": "i"}},
+                {"description": {"$regex": search_text, "$options": "i"}},
+                {"account_number": {"$regex": search_text, "$options": "i"}},
+                {"transfer_code": {"$regex": search_text, "$options": "i"}}
+            ]
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     print('TRANSACTION QUERY: ', query_fields)
     transactions = collection.find(query_fields, exclude)
