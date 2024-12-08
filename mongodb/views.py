@@ -73,11 +73,16 @@ def get_new_transactions(transactions):
     existing_transaction_numbers = {txn['transaction_number'] for txn in existing_transactions}
 
     # Find missing transactions
-    missing_transactions = [
+    new_transactions = [
         txn for txn in transactions
         if txn['transaction_number'] not in existing_transaction_numbers
     ]
-    return missing_transactions
+
+    # Check if transaction is OUT and contain Z -> success
+    for txn in new_transactions:
+        if txn['transaction_type'] == 'OUT' and 'Z' in txn['description']:
+            txn['status'] = 'Success'
+    return new_transactions
 
 
 def update_transaction_status(account_number, transfer_code, orderid, scode, incomingorderid, status):
