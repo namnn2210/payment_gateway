@@ -9,7 +9,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from bank.utils import send_telegram_message
-from bank.views import update_amount_by_date
 from bank.models import Bank
 from datetime import datetime
 from django.db.models import Q, Case, Value, When, IntegerField, Sum
