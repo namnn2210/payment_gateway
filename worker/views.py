@@ -123,7 +123,7 @@ def get_transaction(bank):
             print("=======", different_transactions)
             for row in different_transactions:
                 bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
-                if not datetime.strptime(row['transaction_date'], '%d/%m/%Y %H:%M:%S').date() >= timezone.now().date():
+                if not row['transaction_date'].date() >= timezone.now().date():
                     continue
                 if row['transaction_type'] == 'IN':
                     formatted_amount = '{:,.2f}'.format(row['amount'])
