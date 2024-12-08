@@ -44,25 +44,29 @@ def record_book(request):
     end_date = request.GET.get('end_datetime', None)
     status = request.GET.get('status', None)
 
-    start_date_str = None
-    end_date_str = None
-
     if not start_date or not end_date:
         today = datetime.now()
-        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0).strftime("%d/%m/%Y %H:%M:%S")
-        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999).strftime("%d/%m/%Y %H:%M:%S")
+        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
 
         start_date_str = today.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date_str = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+    else:
+        start_date_str = start_date
+        end_date_str = end_date
 
+        start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M')
+        end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M')
 
     bank_accounts = BankAccount.objects.all()
     account_number = [item.account_number for item in bank_accounts]
     order_by = ("transaction_date", -1)
     list_transactions_in = get_transactions_by_account_number(account_number, transaction_type='IN', status=status,
-                                                    date_start=start_date, date_end=end_date, order_by=order_by)
+                                                              date_start=start_date, date_end=end_date,
+                                                              order_by=order_by)
     list_transactions_out = get_transactions_by_account_number(account_number, transaction_type='OUT', status=status,
-                                                     date_start=start_date, date_end=end_date, order_by=order_by)
+                                                               date_start=start_date, date_end=end_date,
+                                                               order_by=order_by)
 
     if search_query:
         pass

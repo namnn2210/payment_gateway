@@ -29,8 +29,8 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
         query_fields["account_number"] = {"$in": account_number}
     if date_start is not None and date_end is not None:
         query_fields['transaction_date'] = {
-            "$gte": datetime.strptime(date_start, "%d/%m/%Y %H:%M:%S"),
-            "$lte": datetime.strptime(date_end, "%d/%m/%Y %H:%M:%S")
+            "$gte": date_start,
+            "$lte": date_end
         }
     if transaction_type is not None:
         query_fields["transaction_type"] = transaction_type
