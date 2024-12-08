@@ -68,6 +68,7 @@ def record_book(request):
                                                                date_start=start_date, date_end=end_date,
                                                                order_by=order_by)
 
+    print(list_transactions_in, list_transactions_out)
     if search_query:
         pass
 
