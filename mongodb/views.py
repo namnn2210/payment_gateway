@@ -1,6 +1,6 @@
 from config.views import get_env
 from pymongo import MongoClient, errors
-
+from bank.utils import format_transaction_list
 
 def mongo_connect():
     try:
@@ -54,6 +54,7 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
     if limit_number is not None and limit_number > 0:
         transactions = transactions.limit(limit_number)
     transaction_list = [txn for txn in transactions]
+    transaction_list = format_transaction_list(transaction_list)
     return transaction_list
 
 

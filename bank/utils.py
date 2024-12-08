@@ -93,17 +93,9 @@ def unix_to_datetime(unix_time):
     formatted_dt = dt_gmt_plus_7.strftime('%d/%m/%Y %H:%M:%S')
     return formatted_dt
 
-
-def get_start_end_datetime_by_timeline(start_at, end_at):
-    timezone = pytz.timezone('Asia/Bangkok')
-    now = datetime.now(timezone)
-    current_day = now.date()
-
-    if start_at < end_at:
-        start_datetime = datetime.combine(current_day, start_at).replace(tzinfo=timezone)
-        end_datetime = datetime.combine(current_day, end_at).replace(tzinfo=timezone)
-    else:  # Over midnight scenario
-        start_datetime = datetime.combine(current_day - timedelta(days=1), start_at).replace(tzinfo=timezone)
-        end_datetime = datetime.combine(current_day, end_at).replace(tzinfo=timezone)
-
-    return start_datetime, end_datetime
+def format_transaction_list(transaction_list):
+    for transaction in transaction_list:
+        for key, value in transaction.items():
+            if value is None:
+                transaction[key] = ''
+    return transaction_list
