@@ -18,7 +18,6 @@ def mongo_get_collection(collection_name):
 
 def get_transactions_by_account_number(account_number, transaction_type=None, date_start=None, date_end=None, order_by=None, limit_number=None):
     query_fields = {}
-    print(account_number)
     if isinstance(account_number, str):
         query_fields["account_number"] = account_number
     if isinstance(account_number, list):
@@ -32,8 +31,6 @@ def get_transactions_by_account_number(account_number, transaction_type=None, da
         query_fields["transaction_type"] = transaction_type
     print(query_fields)
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    print(collection)
-    print(collection.find(query_fields).explain())
     transactions = collection.find(query_fields)
     if order_by is not None:
         transactions = transactions.sort([order_by])
