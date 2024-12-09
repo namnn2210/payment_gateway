@@ -49,21 +49,19 @@ def record_book(request):
         start_date_str = start_date
         end_date_str = end_date
 
-    print("===========", start_date_str.strftime('%Y-%m-%dT%H:%M'), end_date_str.strftime('%Y-%m-%dT%H:%M'))
-
     bank_accounts = BankAccount.objects.all()
     account_number = [item.account_number for item in bank_accounts]
     order_by = ("transaction_date", -1)
     list_transactions_in = get_transactions_by_account_number(account_number, transaction_type='IN', status=status,
                                                               date_start=start_date, date_end=end_date,
-                                                              order_by=order_by,search_text=search_query)
+                                                              order_by=order_by, search_text=search_query)
     list_transactions_out = get_transactions_by_account_number(account_number, transaction_type='OUT', status=status,
                                                                date_start=start_date, date_end=end_date,
-                                                               order_by=order_by,search_text=search_query)
+                                                               order_by=order_by, search_text=search_query)
 
     # Calculate total amounts
-    total_in_amount = 0
-    total_out_amount = 0
+    total_in_amount = sum(txn.get('amount', 0) for txn in list_transactions_in)
+    total_out_amount = sum(txn.get('amount', 0) for txn in list_transactions_out)
 
     # Pagination for "IN" transactions
     in_paginator = Paginator(list_transactions_in, 6)
@@ -76,10 +74,6 @@ def record_book(request):
     out_page_obj = out_paginator.get_page(out_page_number)
 
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        # Return JSON response for AJAX requests
-
-        total_in_amount = 0
-        total_out_amount = 0
 
         data = {
             'in_transactions': list(in_page_obj),
@@ -93,8 +87,6 @@ def record_book(request):
         }
 
         return JsonResponse(data)
-
-
 
     return render(request, 'record_book.html', {
         'in_page_obj': in_page_obj,
@@ -218,8 +210,11 @@ def get_amount_today(request):
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in': total_in, 'out': total_out}})
 
 
-def update_transaction_history_status(account_number, transaction_number, transfer_code, orderid, scode, incomingorderid, status):
-    update_transaction_status(account_number,transaction_number, transfer_code, orderid, scode, incomingorderid, status)
+def update_transaction_history_status(account_number, transaction_number, transfer_code, orderid, scode,
+                                      incomingorderid, status):
+    update_transaction_status(account_number, transaction_number, transfer_code, orderid, scode, incomingorderid,
+                              status)
+
 
 def export_to_excel(request):
     search_query = request.GET.get('search', '')
@@ -239,8 +234,8 @@ def export_to_excel(request):
     account_number = [item.account_number for item in bank_accounts]
     order_by = ("transaction_date", -1)
     list_transactions = get_transactions_by_account_number(account_number, status=status,
-                                                              date_start=start_date, date_end=end_date,
-                                                              order_by=order_by, search_text=search_query)
+                                                           date_start=start_date, date_end=end_date,
+                                                           order_by=order_by, search_text=search_query)
 
     filtered_transactions_df = pd.DataFrame(list_transactions)
 
@@ -265,4 +260,3 @@ def export_to_excel(request):
     else:
         # Return an empty Excel file or an error response
         return HttpResponse('No transactions found for the specified filters.', content_type='text/plain')
-
