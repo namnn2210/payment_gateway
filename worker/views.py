@@ -155,8 +155,7 @@ def get_transaction(bank):
                         send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
                                               get_env('226PAY_BOT'))
                         continue
-
-                    if bank_account:
+                    if bank_account and bank_account.bank_type == 'IN':
                         cids = CID.objects.filter(status=True)
                         for item in cids:
                             logger.info(item.name)
