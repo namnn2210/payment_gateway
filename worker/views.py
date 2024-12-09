@@ -116,7 +116,7 @@ def get_transaction(bank):
         if len(transaction_dicts) > 0:
             insert_all(transaction_list=transaction_dicts)
     else:
-        different_transactions = get_new_transactions(new_transactions)
+        different_transactions = get_new_transactions(new_transactions, bank.account_number)
         transaction_dicts = [txn for txn in different_transactions]
         if len(transaction_dicts) > 0:
             insert_all(transaction_list=transaction_dicts)

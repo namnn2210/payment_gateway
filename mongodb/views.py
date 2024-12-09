@@ -64,16 +64,14 @@ def get_transaction_by_transaction_number(transaction_number):
     return collection.find_one({'transaction_number': transaction_number})
 
 
-def get_new_transactions(transactions):
+def get_new_transactions(transactions, account_number):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    transaction_numbers = [txn['transaction_number'] for txn in transactions]
     existing_transactions = collection.find(
-        {"transaction_number": {"$in": transaction_numbers}},
+        {"account_number": str(account_number)},
         {"transaction_number": 1, "_id": 0}
     )
-    existing_transaction_numbers = {txn['transaction_number'] for txn in existing_transactions}
+    existing_transaction_numbers = [txn['transaction_number'] for txn in existing_transactions]
 
-    # Find missing transactions
     new_transactions = [
         txn for txn in transactions
         if txn['transaction_number'] not in existing_transaction_numbers
