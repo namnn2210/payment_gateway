@@ -113,11 +113,13 @@ def get_transaction(bank):
 
     if not current_transactions:
         transaction_dicts = [txn for txn in new_transactions]
-        insert_all(transaction_list=transaction_dicts)
+        if len(transaction_dicts) > 0:
+            insert_all(transaction_list=transaction_dicts)
     else:
         different_transactions = get_new_transactions(new_transactions)
         transaction_dicts = [txn for txn in different_transactions]
-        insert_all(transaction_list=transaction_dicts)
+        if len(transaction_dicts) > 0:
+            insert_all(transaction_list=transaction_dicts)
         if different_transactions:
             for row in different_transactions:
                 bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
