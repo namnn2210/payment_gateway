@@ -130,7 +130,32 @@ def get_transaction(bank):
                     if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                         continue
                     success = False
-                    reported = False
+
+                    if row['transfer_code'] is None:
+                        update_transaction_history_status(row['account_number'], row['transaction_number'],
+                                                          row['transfer_code'], None,
+                                                          None, None, 'Failed')
+                        alert = (
+                            f'Hi, failed\n'
+                            f'\n'
+                            f'Account: {row['account_number']}'
+                            f'\n'
+                            f'Confirmed by order: \n'
+                            f'\n'
+                            f'Received amount💲: {formatted_amount} \n'
+                            f'\n'
+                            f'Memo: {row['description']}\n'
+                            f'\n'
+                            f'Code: {find_substring(row['description'])}\n'
+                            f'\n'
+                            f'Time: {row['transaction_date']}\n'
+                            f'\n'
+                            f'Reason of not be credited: No transfer code!!!'
+                        )
+                        send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
+                                              get_env('226PAY_BOT'))
+                        continue
+
                     if bank_account:
                         cids = CID.objects.filter(status=True)
                         for item in cids:
@@ -138,32 +163,6 @@ def get_transaction(bank):
                             result = create_deposit_order(row, item)
                             logger.info(result)
                             if result:
-                                if result['msg'] == 'transfercode is null':
-                                    update_transaction_history_status(row['account_number'], row['transaction_number'],
-                                                                      row['transfer_code'], '',
-                                                                      '', '', 'Failed')
-                                    alert = (
-                                        f'Hi, failed\n'
-                                        f'\n'
-                                        f'Account: {row['account_number']}'
-                                        f'\n'
-                                        f'Confirmed by order: \n'
-                                        f'\n'
-                                        f'Received amount💲: {formatted_amount} \n'
-                                        f'\n'
-                                        f'Memo: {row['description']}\n'
-                                        f'\n'
-                                        f'Code: {find_substring(row['description'])}\n'
-                                        f'\n'
-                                        f'Time: {row['transaction_date']}\n'
-                                        f'\n'
-                                        f'Reason of not be credited: No transfer code!!!'
-                                    )
-                                    send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
-                                                          get_env('226PAY_BOT'))
-                                    reported = True
-                                    break
-
                                 if result['prc'] == '1' and result['errcode'] == '00' and result['msg'] == "SUCCESS":
                                     if result['orderno'] == '':
                                         continue
@@ -198,7 +197,7 @@ def get_transaction(bank):
                                     continue
                             else:
                                 continue
-                        if not success and not reported:
+                        if not success:
                             update_transaction_history_status(row['account_number'], row['transaction_number'],
                                                               row['transfer_code'], None, None, None,
                                                               'Failed')

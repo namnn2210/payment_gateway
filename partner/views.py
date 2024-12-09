@@ -45,8 +45,6 @@ def create_deposit_order(transaction, cid):
 
         response = requests.post(get_env('DEPOSIT_URL'), data=payload, headers=headers)
 
-        print(response)
-
         if response.status_code == 200:
             response_data = response.json()
             logger.info(response_data)
