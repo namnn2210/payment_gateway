@@ -131,7 +131,7 @@ def get_transaction(bank):
                         continue
                     success = False
 
-                    if row['transfer_code'] is None:
+                    if row['transfer_code'] is None and bank_account.bank_type == 'IN':
                         update_transaction_history_status(row['account_number'], row['transaction_number'],
                                                           row['transfer_code'], None,
                                                           None, None, 'Failed')
