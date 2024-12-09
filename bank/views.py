@@ -216,8 +216,8 @@ def get_amount_today(request):
     return JsonResponse({'status': 200, 'message': 'Done', 'data': {'in': total_in, 'out': total_out}})
 
 
-def update_transaction_history_status(account_number, transfer_code, orderid, scode, incomingorderid, status):
-    update_transaction_status(account_number, transfer_code, orderid, scode, incomingorderid, status)
+def update_transaction_history_status(account_number, transaction_number, transfer_code, orderid, scode, incomingorderid, status):
+    update_transaction_status(account_number,transaction_number, transfer_code, orderid, scode, incomingorderid, status)
 
 def export_to_excel(request):
     search_query = request.GET.get('search', '')

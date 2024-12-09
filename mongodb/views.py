@@ -2,6 +2,7 @@ from config.views import get_env
 from pymongo import MongoClient, errors
 from bank.utils import format_transaction_list
 
+
 def mongo_connect():
     try:
         client = MongoClient(get_env("MONGODB_URL"))  # Replace with your MongoDB connection string
@@ -85,7 +86,8 @@ def get_new_transactions(transactions):
     return new_transactions
 
 
-def update_transaction_status(account_number, transfer_code, orderid, scode, incomingorderid, status):
+def update_transaction_status(account_number, transaction_number, transfer_code, orderid, scode, incomingorderid,
+                              status):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     update_fields = {
         "orderid": orderid,
@@ -94,13 +96,15 @@ def update_transaction_status(account_number, transfer_code, orderid, scode, inc
         "status": status,
     }
     collection.update_one(
-        {"transfer_code": transfer_code, "account_number": account_number},
+        {"transaction_number": transaction_number, "account_number": account_number},
         {"$set": update_fields}
     )
+
 
 def insert_all(transaction_list):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     collection.insert_many(transaction_list)
+
 
 def get_total_amount(date_start, date_end, transaction_type):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
@@ -112,7 +116,7 @@ def get_total_amount(date_start, date_end, transaction_type):
                     "$lte": date_end
                 },
                 "transaction_type": transaction_type,
-                "status":"Success"
+                "status": "Success"
             }
         },
         {

@@ -77,7 +77,6 @@ def get_balance(bank):
             print('Update for bank: %s. Updated at %s' % (
                 bank.account_number, timezone.now().strftime('%Y-%m-%d %H:%M:%S')))
 
-
             get_transaction(bank)
 
         else:
@@ -140,7 +139,8 @@ def get_transaction(bank):
                             logger.info(result)
                             if result:
                                 if result['msg'] == 'transfercode is null':
-                                    update_transaction_history_status(row['account_number'], row['transfer_code'], '',
+                                    update_transaction_history_status(row['account_number'], row['transaction_number'],
+                                                                      row['transfer_code'], '',
                                                                       '', '', 'Failed')
                                     alert = (
                                         f'Hi, failed\n'
@@ -169,6 +169,7 @@ def get_transaction(bank):
                                         continue
                                     else:
                                         update_transaction_history_status(row['account_number'],
+                                                                          row['transaction_number'],
                                                                           row['transfer_code'], result['orderid'],
                                                                           result['scode'], result['incomingorderid'],
                                                                           'Success')
@@ -198,7 +199,8 @@ def get_transaction(bank):
                             else:
                                 continue
                         if not success and not reported:
-                            update_transaction_history_status(row['account_number'], row['transfer_code'], None, None, None,
+                            update_transaction_history_status(row['account_number'], row['transaction_number'],
+                                                              row['transfer_code'], None, None, None,
                                                               'Failed')
                             alert = (
                                 f'Hi, failed\n'
@@ -224,7 +226,8 @@ def get_transaction(bank):
                                 first_name = name.split(' ')[-1]
                                 memo_transfer_check = 'W' + first_name
                                 memo_deposit_check = 'D' + first_name
-                                if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
+                                if memo_transfer_check in row['description'] or memo_deposit_check in row[
+                                    'description']:
                                     internal = True
                                     break
                             if not internal and bank.bank_type == 'IN':
@@ -252,7 +255,8 @@ def get_transaction(bank):
                         first_name = name.split(' ')[-1]
                         memo_transfer_check = 'W' + first_name
                         memo_deposit_check = 'D' + first_name
-                        if memo_transfer_check in row['description'] or memo_deposit_check in row['description'] and bank.bank_type == 'OUT':
+                        if memo_transfer_check in row['description'] or memo_deposit_check in row[
+                            'description'] and bank.bank_type == 'OUT':
                             send_telegram_message(alert, get_env('INTERNAL_CHAT_ID'),
                                                   get_env('TRANSACTION_BOT_API_KEY'))
                             internal = True
@@ -260,6 +264,6 @@ def get_transaction(bank):
                     if not internal:
                         send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
             print('Update transactions for bank: %s. Updated at %s' % (
-            bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+                bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
         else:
             pass
