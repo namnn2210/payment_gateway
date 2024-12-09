@@ -14,7 +14,10 @@ class Transaction:
         self.transaction_type = transaction_type
         self.account_number = str(account_number)
         self.description = description
-        self.transfer_code = transfer_code
+        if transaction_type == 'IN':
+            self.transfer_code = transfer_code
+        else:
+            self.transfer_code = None
         self.status = None
         self.amount = amount
         self.note = None
