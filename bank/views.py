@@ -49,6 +49,8 @@ def record_book(request):
         start_date_str = start_date
         end_date_str = end_date
 
+    print("===========", start_date_str.strftime('%Y-%m-%dT%H:%M'), end_date_str.strftime('%Y-%m-%dT%H:%M'))
+
     bank_accounts = BankAccount.objects.all()
     account_number = [item.account_number for item in bank_accounts]
     order_by = ("transaction_date", -1)
@@ -92,13 +94,13 @@ def record_book(request):
 
         return JsonResponse(data)
 
-    print(start_date_str, end_date_str)
+
 
     return render(request, 'record_book.html', {
         'in_page_obj': in_page_obj,
         'out_page_obj': out_page_obj,
         'search_query': search_query,
-        'start_date': start_date_str.strftime('%Y-%m-%T%H:%M'),
+        'start_date': start_date_str.strftime('%Y-%m-%dT%H:%M'),
         'end_date': end_date_str.strftime('%Y-%m-%dT%H:%M'),
         'total_in_amount': total_in_amount,
         'total_out_amount': total_out_amount,
