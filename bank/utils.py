@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
-import requests
-import json
+from telegram import Bot
 import re
 import pytz
 
@@ -43,23 +42,17 @@ class Transaction:
 
 
 def send_telegram_message(message: str, chat_id, api_key):
-    data_dict = {'chat_id': chat_id,
-                 'text': message,
-                 'parse_mode': 'HTML',
-                 'disable_notification': False}
-    headers = {'Content-Type': 'application/json',
-               'Proxy-Authorization': 'Basic base64'}
-    data = json.dumps(data_dict)
-    params = {
-        'parse_mode': 'Markdown'
-    }
-    url = f'https://api.telegram.org/bot{api_key}/sendMessage'
-    response = requests.post(url,
-                             data=data,
-                             headers=headers,
-                             params=params,
-                             verify=False)
-    return response
+    try:
+        bot = Bot(token=api_key)
+        bot.send_message(
+            chat_id=chat_id,
+            text=message,
+            parse_mode='Markdown',  # Use 'Markdown' or 'HTML' depending on your message format
+            disable_notification=False  # Set True to send silently
+        )
+        print("Message sent successfully!")
+    except Exception as e:
+        print(f"Failed to send message: {e}")
 
 
 def get_dates(start_date=''):
