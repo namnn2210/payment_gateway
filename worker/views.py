@@ -125,14 +125,15 @@ def get_transaction(bank):
         if len(transaction_dicts) > 0:
             insert_all(transaction_list=transaction_dicts)
 
-        # Get unprocessed transactions
-        unprocessed_transactions = get_unprocessed_transactions(bank.account_number)
-        print('Unprocessed transactions: ', len(unprocessed_transactions))
 
         if len(different_transactions) > 0:
             process_transactions(different_transactions, bank)
             print('Update transactions for bank: %s. Updated at %s' % (
                 bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+
+        # Get unprocessed transactions
+        unprocessed_transactions = get_unprocessed_transactions(bank.account_number)
+        print('Unprocessed transactions: ', len(unprocessed_transactions))
 
         if len(unprocessed_transactions) > 0:
             process_transactions(unprocessed_transactions, bank)
