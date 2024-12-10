@@ -42,7 +42,7 @@ class Timeline(models.Model):
         db_table = 'timeline'
         
 class UserTimeline(models.Model):
-    user = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     timeline = models.ForeignKey(Timeline, on_delete=models.CASCADE, null=False)
     status = models.BooleanField(default=False,null=True)
     created_at = models.DateTimeField(auto_now_add=True)
