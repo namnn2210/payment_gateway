@@ -235,7 +235,7 @@
                             </thead>
                             <tbody id="bankList" style="font-size: 12px">
                                 {% for bank_account in list_user_bank %}
-                                {% if bank_account.bank_type == 'IN'%}
+                                {% if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL'%}
                                 <tr>
                                     <td>
                                         <p>{{bank_account.account_number}}</p>
@@ -288,7 +288,7 @@
                             </thead>
                             <tbody id="bankList" style="font-size: 12px">
                                 {% for bank_account in list_user_bank %}
-                                {% if bank_account.bank_type == 'OUT'%}
+                                {% if bank_account.bank_type == 'OUT' or bank_account.bank_type == 'ALL'%}
                                 <tr>
                                     <td>
                                         <p>{{bank_account.account_number}}</p>
@@ -513,13 +513,19 @@
 
         const updateBalanceCells = (balances) => {
             let totalBalance = 0;
+            let totalAll = 0
             let totalIn = 0;
             let totalOut = 0;
 
             balances.forEach(balance => {
                 const balanceCell = document.getElementById(`balance-${balance.id}`);
                 if (balanceCell) {
-                    totalBalance += balance.balance;
+                    if (balance.bank_type !== 'ALL') {
+                        totalBalance += balance.balance;
+                    } else {
+                        totalAll += balance.balance
+                    }
+                    
                     const balanceClass = balance.bank_type === 'IN' ? 'text-success' : 'text-danger';
                     balanceCell.innerHTML = `<span class="${balanceClass}">${balance.balance.toLocaleString()}.00</span>`;
 
@@ -530,6 +536,8 @@
                     }
                 }
             });
+            
+            totalBalance += totalAll / 2
 
             const balanceTotalElem = document.querySelector('.balance-total');
             if (balanceTotalElem) {

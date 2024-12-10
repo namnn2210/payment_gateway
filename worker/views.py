@@ -154,75 +154,11 @@ def process_transactions(transactions, bank):
                 continue
             success = False
 
-            if row['transfer_code'] is None and bank_account.bank_type == 'IN':
-                update_transaction_history_status(row['account_number'], row['transaction_number'],
-                                                  row['transfer_code'], None,
-                                                  None, None, 'Failed')
-                alert = (
-                    f'Hi, failed\n'
-                    f'\n'
-                    f'Account: {row['account_number']}'
-                    f'\n'
-                    f'Confirmed by order: \n'
-                    f'\n'
-                    f'Received amount💲: {formatted_amount} \n'
-                    f'\n'
-                    f'Memo: {row['description']}\n'
-                    f'\n'
-                    f'Code: {find_substring(row['description'])}\n'
-                    f'\n'
-                    f'Time: {row['transaction_date']}\n'
-                    f'\n'
-                    f'Reason of not be credited: No transfer code!!!'
-                )
-                send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
-                                      get_env('226PAY_BOT'))
-                continue
-            if bank_account and bank_account.bank_type == 'IN':
-                cids = CID.objects.filter(status=True)
-                for item in cids:
-                    logger.info(item.name)
-                    result = create_deposit_order(row, item)
-                    logger.info(result)
-                    if result:
-                        if result['prc'] == '1' and result['errcode'] == '00' and result['msg'] == "SUCCESS":
-                            if result['orderno'] == '':
-                                continue
-                            else:
-                                update_transaction_history_status(row['account_number'],
-                                                                  row['transaction_number'],
-                                                                  row['transfer_code'], result['orderid'],
-                                                                  result['scode'], result['incomingorderid'],
-                                                                  'Success')
-                                alert = (
-                                    f'🟩🟩🟩 Success! CID: {item.name}\n'
-                                    f'\n'
-                                    f'Account: {row['account_number']}'
-                                    f'\n'
-                                    f'Confirmed by order: {result['incomingorderid']}\n'
-                                    f'\n'
-                                    f'Received amount💲: {formatted_amount} \n'
-                                    f'\n'
-                                    f'Memo: {row['description']}\n'
-                                    f'\n'
-                                    f'Order ID: {result['orderid']}\n'
-                                    f'\n'
-                                    f'Code: {find_substring(row['description'])}\n'
-                                    f'\n'
-                                    f'Time: {row['transaction_date']}\n'
-                                )
-                                send_telegram_message(alert, get_env('TRANSACTION_CHAT_ID'),
-                                                      get_env('TRANSACTION_BOT_API_KEY'))
-                                success = True
-                                break
-                        else:
-                            continue
-                    else:
-                        continue
-                if not success:
+            if row['transfer_code'] is None:
+                if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL':
                     update_transaction_history_status(row['account_number'], row['transaction_number'],
-                                                      row['transfer_code'], None, None, None,
-                                                      'Failed')
+                                                      row['transfer_code'], None,
+                                                      None, None, 'Failed')
                     alert = (
                         f'Hi, failed\n'
                         f'\n'
@@ -238,22 +174,88 @@ def process_transactions(transactions, bank):
                         f'\n'
                         f'Time: {row['transaction_date']}\n'
                         f'\n'
-                        f'Reason of not be credited: Order not found!!!'
+                        f'Reason of not be credited: No transfer code!!!'
                     )
-                    bank_accounts = BankAccount.objects.filter(status=True)
-                    set_name = set([bank_account.account_name for bank_account in bank_accounts])
-                    internal = False
-                    for name in set_name:
-                        first_name = name.split(' ')[-1]
-                        memo_transfer_check = 'W' + first_name
-                        memo_deposit_check = 'D' + first_name
-                        if memo_transfer_check in row['description'] or memo_deposit_check in row[
-                            'description']:
-                            internal = True
-                            break
-                    if not internal and bank.bank_type == 'IN':
-                        send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
-                                              get_env('226PAY_BOT'))
+                    send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
+                                          get_env('226PAY_BOT'))
+                    continue
+            if bank_account :
+                if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL':
+                    cids = CID.objects.filter(status=True)
+                    for item in cids:
+                        logger.info(item.name)
+                        result = create_deposit_order(row, item)
+                        logger.info(result)
+                        if result:
+                            if result['prc'] == '1' and result['errcode'] == '00' and result['msg'] == "SUCCESS":
+                                if result['orderno'] == '':
+                                    continue
+                                else:
+                                    update_transaction_history_status(row['account_number'],
+                                                                      row['transaction_number'],
+                                                                      row['transfer_code'], result['orderid'],
+                                                                      result['scode'], result['incomingorderid'],
+                                                                      'Success')
+                                    alert = (
+                                        f'🟩🟩🟩 Success! CID: {item.name}\n'
+                                        f'\n'
+                                        f'Account: {row['account_number']}'
+                                        f'\n'
+                                        f'Confirmed by order: {result['incomingorderid']}\n'
+                                        f'\n'
+                                        f'Received amount💲: {formatted_amount} \n'
+                                        f'\n'
+                                        f'Memo: {row['description']}\n'
+                                        f'\n'
+                                        f'Order ID: {result['orderid']}\n'
+                                        f'\n'
+                                        f'Code: {find_substring(row['description'])}\n'
+                                        f'\n'
+                                        f'Time: {row['transaction_date']}\n'
+                                    )
+                                    send_telegram_message(alert, get_env('TRANSACTION_CHAT_ID'),
+                                                          get_env('TRANSACTION_BOT_API_KEY'))
+                                    success = True
+                                    break
+                            else:
+                                continue
+                        else:
+                            continue
+                    if not success:
+                        update_transaction_history_status(row['account_number'], row['transaction_number'],
+                                                          row['transfer_code'], None, None, None,
+                                                          'Failed')
+                        alert = (
+                            f'Hi, failed\n'
+                            f'\n'
+                            f'Account: {row['account_number']}'
+                            f'\n'
+                            f'Confirmed by order: \n'
+                            f'\n'
+                            f'Received amount💲: {formatted_amount} \n'
+                            f'\n'
+                            f'Memo: {row['description']}\n'
+                            f'\n'
+                            f'Code: {find_substring(row['description'])}\n'
+                            f'\n'
+                            f'Time: {row['transaction_date']}\n'
+                            f'\n'
+                            f'Reason of not be credited: Order not found!!!'
+                        )
+                        bank_accounts = BankAccount.objects.filter(status=True)
+                        set_name = set([bank_account.account_name for bank_account in bank_accounts])
+                        internal = False
+                        for name in set_name:
+                            first_name = name.split(' ')[-1]
+                            memo_transfer_check = 'W' + first_name
+                            memo_deposit_check = 'D' + first_name
+                            if memo_transfer_check in row['description'] or memo_deposit_check in row[
+                                'description']:
+                                internal = True
+                                break
+                        if not internal and bank.bank_type == 'IN':
+                            send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
+                                                  get_env('226PAY_BOT'))
         else:
             transaction_type = '-'
             transaction_color = '🔴'  # Red circle emoji for OUT transactions

@@ -13,6 +13,7 @@ class BankAccountForm(forms.ModelForm):
     TYPE_CHOICES = [
         ('IN', 'IN'),
         ('OUT', 'OUT'),
+        ('ALL', 'ALL'),
     ]
 
     bank_type = forms.ChoiceField(choices=TYPE_CHOICES)
