@@ -94,9 +94,12 @@ def get_unprocessed_transactions(account_number):
 
 def update_transaction_status(account_number, transaction_number, update_fields):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-
+    print(account_number)
+    print(transaction_number)
+    print(update_fields)
+    print(collection.find_one({"transaction_number": str(transaction_number), "account_number": str(account_number)}, {'_id': 0}))
     collection.update_one(
-        {"transaction_number": transaction_number, "account_number": account_number},
+        {"transaction_number": str(transaction_number), "account_number": str(account_number)},
         {"$set": update_fields}
     )
 
