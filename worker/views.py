@@ -125,8 +125,8 @@ def get_transaction(bank):
             insert_all(transaction_list=transaction_dicts)
 
         # Get unprocessed transactions
-        unprocessed_transactions = get_unprocessed_transactions(bank.account_number)
-        print('Unprocessed transactions: ', len(unprocessed_transactions))
+        # unprocessed_transactions = get_unprocessed_transactions(bank.account_number)
+        # print('Unprocessed transactions: ', len(unprocessed_transactions))
 
         final_transactions = different_transactions + unprocessed_transactions
         if final_transactions:
