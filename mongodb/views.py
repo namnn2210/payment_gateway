@@ -90,7 +90,7 @@ def get_unprocessed_transactions(account_number):
     unprocessed_transactions = []
     query_transactions = get_transactions_by_account_number(account_number=account_number, transaction_type='IN', date_start=start_date, date_end=end_date)
     for txn in query_transactions:
-        if txn['status'] != 'Success' and txn['transfer_code'] != '':
+        if txn['status'] == '' and txn['transfer_code'] != '':
             unprocessed_transactions.append(txn)
     return unprocessed_transactions
 
