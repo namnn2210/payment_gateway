@@ -128,7 +128,7 @@ def get_transaction(bank):
         # unprocessed_transactions = get_unprocessed_transactions(bank.account_number)
         # print('Unprocessed transactions: ', len(unprocessed_transactions))
 
-        final_transactions = different_transactions + unprocessed_transactions
+        final_transactions = different_transactions
         if final_transactions:
             for row in final_transactions:
                 bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
