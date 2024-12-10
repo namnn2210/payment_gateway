@@ -1,7 +1,7 @@
 from config.views import get_env
 from pymongo import MongoClient, errors
 from bank.utils import format_transaction_list
-
+from datetime import datetime
 
 def mongo_connect():
     try:
@@ -82,6 +82,17 @@ def get_new_transactions(transactions, account_number):
         if txn['transaction_type'] == 'OUT' and 'Z' in txn['description']:
             txn['status'] = 'Success'
     return new_transactions
+
+def get_unprocessed_transactions(account_number):
+    today = datetime.now()
+    start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+    unprocessed_transactions = []
+    query_transactions = get_transactions_by_account_number(account_number=account_number, transaction_type='IN', date_start=start_date, date_end=end_date)
+    for txn in query_transactions:
+        if txn['status'] != 'Success' and txn['transfer_code'] != '':
+            unprocessed_transactions.append(txn)
+    return unprocessed_transactions
 
 
 def update_transaction_status(account_number, transaction_number, transfer_code, orderid, scode, incomingorderid,

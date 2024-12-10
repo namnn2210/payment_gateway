@@ -11,7 +11,7 @@ from partner.models import CID
 from datetime import datetime
 from django.utils import timezone
 from config.views import get_env
-from mongodb.views import get_transactions_by_account_number, insert_all, get_new_transactions
+from mongodb.views import get_transactions_by_account_number, insert_all, get_new_transactions, get_unprocessed_transactions
 import pytz
 
 logger = logging.getLogger('django')
@@ -116,12 +116,21 @@ def get_transaction(bank):
         if len(transaction_dicts) > 0:
             insert_all(transaction_list=transaction_dicts)
     else:
+        # Get new transactions
         different_transactions = get_new_transactions(new_transactions, bank.account_number)
+
+        # Insert to MongoDB
         transaction_dicts = [txn for txn in different_transactions]
         if len(transaction_dicts) > 0:
             insert_all(transaction_list=transaction_dicts)
-        if different_transactions:
-            for row in different_transactions:
+
+        # Get unprocessed transactions
+        unprocessed_transactions = get_unprocessed_transactions(bank.account_number)
+        print('Unprocessed transactions: ', len(unprocessed_transactions))
+
+        final_transactions = different_transactions + unprocessed_transactions
+        if final_transactions:
+            for row in final_transactions:
                 bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
                 if not row['transaction_date'].date() >= timezone.now().date():
                     continue
