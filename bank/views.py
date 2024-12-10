@@ -174,9 +174,9 @@ def update_transaction_history(request):
 
     account_number = [item.account_number for item in bank_accounts]
     order_by = ("transaction_date", -1)
-    list_df_in = get_transactions_by_account_number(account_number, transaction_type='IN', order_by=order_by,
+    list_df_in = get_transactions_by_account_number(account_number, transaction_type=['IN','ALL'], order_by=order_by,
                                                     limit_number=5)
-    list_df_out = get_transactions_by_account_number(account_number, transaction_type='OUT',
+    list_df_out = get_transactions_by_account_number(account_number, transaction_type=['OUT','ALL'],
                                                      order_by=order_by, limit_number=5)
     return JsonResponse(
         {'status': 200, 'message': 'Done', 'data': {'in': list_df_in, 'out': list_df_out}})
@@ -200,8 +200,8 @@ def get_amount_today(request):
     if request.user.is_superuser:
         start_date, end_date = get_today_date()
 
-        total_in = get_total_amount(start_date, end_date, "IN")
-        total_out = get_total_amount(start_date, end_date, "OUT")
+        total_in = get_total_amount(start_date, end_date, ["IN","ALL"])
+        total_out = get_total_amount(start_date, end_date, ["OUT","ALL"])
     # else:
     #     try:
     #         user_timeline = UserTimeline.objects.filter(user=request.user).first()
