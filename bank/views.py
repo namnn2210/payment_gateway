@@ -150,6 +150,21 @@ def toggle_bank_status(request):
             return JsonResponse({'status': 404, 'message': 'Bank account not found'})
     return JsonResponse({'status': 400, 'message': 'Invalid request'})
 
+@csrf_exempt
+def toggle_transaction_status(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            update_fields = {
+                "status": 'Success',
+            }
+            update_transaction_status(data['accountNumber'], data['transactionNumber'], update_fields)
+
+            return JsonResponse({'status': 200, 'message': 'Status updated successfully'})
+        except BankAccount.DoesNotExist:
+            return JsonResponse({'status': 404, 'message': 'Transaction not found'})
+    return JsonResponse({'status': 400, 'message': 'Invalid request'})
+
 
 def update_transaction_history(request):
     if request.user.is_superuser:
@@ -206,9 +221,13 @@ def get_amount_today(request):
 
 def update_transaction_history_status(account_number, transaction_number, transfer_code, orderid, scode,
                                       incomingorderid, status):
-    update_transaction_status(account_number, transaction_number, transfer_code, orderid, scode, incomingorderid,
-                              status)
-
+    update_fields = {
+        "orderid": orderid,
+        "scode": scode,
+        "incomingorderid": incomingorderid,
+        "status": status,
+    }
+    update_transaction_status(account_number, transaction_number, update_fields)
 
 def export_to_excel(request):
     search_query = request.GET.get('search', '')
