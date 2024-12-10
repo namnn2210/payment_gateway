@@ -11,7 +11,7 @@ from django.forms.models import model_to_dict
 from datetime import datetime
 from django.core.paginator import Paginator
 from mongodb.views import update_transaction_status, get_transactions_by_account_number, get_total_amount
-
+from bank.utils import get_today_date
 import json
 import pandas as pd
 
@@ -36,12 +36,8 @@ def record_book(request):
     status = request.GET.get('status', None)
 
     if not start_date or not end_date:
-        today = datetime.now()
-        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
-
-        start_date_str = today.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date_str = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+        start_date, end_date = get_today_date()
+        start_date_str, end_date_str = get_today_date()
     else:
         start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M')
         end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M')
@@ -187,12 +183,10 @@ def get_amount_today(request):
     total_in = 0
     total_out = 0
     if request.user.is_superuser:
-        today = datetime.now()
-        date_start = today.replace(hour=0, minute=0, second=0, microsecond=0)
-        date_end = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+        start_date, end_date = get_today_date()
 
-        total_in = get_total_amount(date_start, date_end, "IN")
-        total_out = get_total_amount(date_start, date_end, "OUT")
+        total_in = get_total_amount(start_date, end_date, "IN")
+        total_out = get_total_amount(start_date, end_date, "OUT")
     # else:
     #     try:
     #         user_timeline = UserTimeline.objects.filter(user=request.user).first()
@@ -223,9 +217,7 @@ def export_to_excel(request):
     status = request.GET.get('status', None)
 
     if not start_date or not end_date:
-        today = datetime.now()
-        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
-        end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+        start_date, end_date = get_today_date()
     else:
         start_date = datetime.strptime(start_date, '%Y-%m-%dT%H:%M')
         end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M')

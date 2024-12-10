@@ -102,3 +102,9 @@ def format_transaction_list(transaction_list):
             if value is None:
                 transaction[key] = ''
     return transaction_list
+
+def get_today_date():
+    today = datetime.now()
+    start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+    return start_date, end_date

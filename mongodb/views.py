@@ -1,7 +1,6 @@
 from config.views import get_env
 from pymongo import MongoClient, errors
-from bank.utils import format_transaction_list
-from datetime import datetime
+from bank.utils import format_transaction_list, get_today_date
 
 def mongo_connect():
     try:
@@ -84,9 +83,7 @@ def get_new_transactions(transactions, account_number):
     return new_transactions
 
 def get_unprocessed_transactions(account_number):
-    today = datetime.now()
-    start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
+    start_date, end_date = get_today_date()
     unprocessed_transactions = []
     query_transactions = get_transactions_by_account_number(account_number=account_number, transaction_type='IN', date_start=start_date, date_end=end_date)
     for txn in query_transactions:
