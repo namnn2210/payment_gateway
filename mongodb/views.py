@@ -37,7 +37,7 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
         query_fields["transaction_type"] = {"$in": transaction_type}
 
     if status is not None:
-        if status == 'Empty':
+        if status == 'Blank':
             query_fields["status"] = {"$exists": True, "$type": "null"}
         elif status != 'All':
             query_fields["status"] = status
