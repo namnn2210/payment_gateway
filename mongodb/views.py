@@ -36,8 +36,9 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
     if transaction_type is not None and isinstance(transaction_type, list):
         query_fields["transaction_type"] = {"$in": transaction_type}
 
-    if status != 'All':
-        query_fields["status"] = status
+    if status is not None:
+        if status != 'All':
+            query_fields["status"] = status
 
     if search_text is not None:
         if search_text != '':
