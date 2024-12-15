@@ -35,6 +35,17 @@ def tech_balance(username, password, account_number):
             return None
     return None
 
+def tech_refresh_token(username):
+    body = {
+        "username": username,
+    }
+    response = requests.post(f'{os.environ.get("TECH_URL")}refresh-token', json=body, timeout=300).json()
+    print(response)
+    if response['success']:
+        return True
+    else:
+        return False
+
 def tech_transactions(username, password, account_number):
     formatted_transactions = []
     # Get today's date

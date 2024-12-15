@@ -2,7 +2,7 @@ import logging
 from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
-from tech.views import tech_login, tech_balance, tech_transactions
+from tech.views import tech_login, tech_balance, tech_transactions, tech_refresh_token
 from bank.utils import send_telegram_message, find_substring
 from bank.views import update_transaction_history_status
 from bank.models import BankAccount
@@ -14,6 +14,7 @@ from config.views import get_env
 from mongodb.views import get_transactions_by_account_number, insert_all, get_new_transactions, \
     get_unprocessed_transactions
 import pytz
+import time
 
 logger = logging.getLogger('django')
 
@@ -36,8 +37,6 @@ def get_balance(bank):
         bank_balance = None
 
     max_error_count = 3
-    if bank.bank_name.name == 'Techcombank':
-        max_error_count = 1
     while bank_balance is None:
         print('Error fetching bank balance, try to login')
         error_count += 1
@@ -60,7 +59,17 @@ def get_balance(bank):
         elif bank.bank_name.name == 'Vietinbank':
             bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'Techcombank':
+            max_count = 1
+            while max_count <= 3:
+                time.sleep(60)
+                bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
+                if bank_balance is not None:
+                    bank_logged_in = False
+                    break
+                max_count += 1
+        if not bank_logged_in:
             bank_logged_in = tech_login(bank.username, bank.password)
+
 
         if bank_logged_in:
             if bank.bank_name.name == 'MB':
@@ -69,8 +78,8 @@ def get_balance(bank):
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'Vietinbank':
                 bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
-            elif bank.bank_name.name == 'Techcombank':
-                bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
+            # elif bank.bank_name.name == 'Techcombank':
+            #     bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
             else:
                 bank_balance = None
 
