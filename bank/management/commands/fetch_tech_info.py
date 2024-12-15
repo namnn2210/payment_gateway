@@ -27,4 +27,4 @@ class Command(BaseCommand):
                     )
                     send_telegram_message(alert, get_env('MONITORING_CHAT_ID'),
                                           get_env('MONITORING_BOT_API_KEY'))
-            time.sleep(15)
+            time.sleep(60)
