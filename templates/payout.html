@@ -11,48 +11,6 @@
         transition: filter 0.3s ease-in-out;
     }
 </style>
-<script src="{% static 'assets/js/prebid.js' %}"></script>
-<script>
-  // Step 1: Define Ad Units
-  var adUnits = [{
-      code: 'div-gpt-ad-1460505748561-0',
-      mediaTypes: {
-          banner: {
-              sizes: [[300, 250]]
-          }
-      },
-      bids: [
-          {
-              bidder: 'appnexus',
-              params: {
-                  placementId: '13144370'  // Test placement ID for demo
-              }
-          }
-      ]
-  }];
-
-  // Step 2: Initialize Prebid and Request Bids
-  pbjs.que = pbjs.que || [];
-  pbjs.que.push(function() {
-      pbjs.addAdUnits(adUnits);
-      pbjs.requestBids({
-          bidsBackHandler: function() {
-              pbjs.setTargetingForGPTAsync();
-          }
-      });
-  });
-</script>
-
-<!-- Google Publisher Tag (GPT) Setup -->
-<script async src="https://securepubads.g.doubleclick.net/tag/js/gpt.js"></script>
-<script>
-  window.googletag = window.googletag || { cmd: [] };
-  googletag.cmd.push(function() {
-      googletag.defineSlot('/6355419/Travel', [300, 250], 'div-gpt-ad-1460505748561-0')
-          .addService(googletag.pubads());
-      googletag.enableServices();
-  });
-</script>
 {% endblock %}
 {% block prehead %}
     <div class="w-100 text-center text-white " style="background-color: green;position: fixed; top: 0; z-index: 99999;">

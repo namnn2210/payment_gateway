@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand
 from bank.models import BankAccount
-from requests.exceptions import ConnectionError, HTTPError, Timeout, RequestException
 import time
 from config.views import get_env
 from worker.views import get_balance
@@ -20,14 +19,6 @@ class Command(BaseCommand):
             for bank in bank_accounts:
                 try:
                     get_balance(bank=bank)
-                except ConnectionError:
-                   pass
-                except HTTPError as http_err:
-                    pass
-                except Timeout:
-                    pass
-                except RequestException as req_err:
-                    pass
                 except Exception as ex:
                     alert = (
                         f'🔴 - SYSTEM ALERT\n'

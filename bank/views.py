@@ -12,6 +12,7 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from mongodb.views import update_transaction_status, get_transactions_by_account_number, get_total_amount
 from bank.utils import get_today_date
+from tech.views import tech_login
 import json
 import pandas as pd
 
@@ -116,17 +117,30 @@ class AddBankView(View):
                 return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
 
             bank = Bank.objects.filter(name=bank_name).first()
-
-            BankAccount.objects.create(
-                user=request.user,
-                bank_name=bank,
-                account_number=bank_number,
-                account_name=bank_accountname,
-                balance=0,
-                bank_type=bank_type,
-                username=bank_username,
-                password=bank_password
-            )
+            if bank_type == 'Techcombank':
+                tech_success = tech_login(bank_username,bank_password)
+                if tech_success:
+                    BankAccount.objects.create(
+                        user=request.user,
+                        bank_name=bank,
+                        account_number=bank_number,
+                        account_name=bank_accountname,
+                        balance=0,
+                        bank_type=bank_type,
+                        username=bank_username,
+                        password=bank_password
+                    )
+            else:
+                BankAccount.objects.create(
+                    user=request.user,
+                    bank_name=bank,
+                    account_number=bank_number,
+                    account_name=bank_accountname,
+                    balance=0,
+                    bank_type=bank_type,
+                    username=bank_username,
+                    password=bank_password
+                )
 
             return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         except Exception as ex:

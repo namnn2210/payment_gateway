@@ -34,11 +34,15 @@ def get_balance(bank):
         bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
     else:
         bank_balance = None
+
+    max_error_count = 3
+    if bank.bank_name.name == 'Techcombank':
+        max_error_count = 1
     while bank_balance is None:
         print('Error fetching bank balance, try to login')
         error_count += 1
         print('Retry logging in: ', error_count)
-        if error_count > 3:
+        if error_count > max_error_count:
             alert = (
                 f'🔴 - LỖI HỆ THỐNG\n'
                 f'Dữ liệu tài khoản: {bank.account_number} trống\n'
@@ -56,7 +60,7 @@ def get_balance(bank):
         elif bank.bank_name.name == 'Vietinbank':
             bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'Techcombank':
-            bank_logged_in = tech_login(bank.username, bank.password, bank.account_number)
+            bank_logged_in = tech_login(bank.username, bank.password)
 
         if bank_logged_in:
             if bank.bank_name.name == 'MB':

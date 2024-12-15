@@ -3,13 +3,12 @@ import os
 from datetime import datetime, timedelta
 from bank.utils import Transaction, find_substring
 
-def tech_login(username, password, account_number):
+def tech_login(username, password):
     body = {
         "username": username,
         "password": password,
-        "accountNumber": account_number,
     }
-    response = requests.post(f'{os.environ.get("TECH_URL")}login', json=body, timeout=120).json()
+    response = requests.post(f'{os.environ.get("TECH_URL")}login', json=body, timeout=300).json()
     if response['success']:
         return True
     return False
@@ -21,7 +20,7 @@ def tech_balance(username, password, account_number):
         "accountNumber": account_number,
     }
 
-    response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=120).json()
+    response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=300).json()
     print('balance response', response)
     if type(response) == list :
         for item in response:
@@ -55,10 +54,10 @@ def tech_transactions(username, password, account_number):
         "username": username,
         "password": password,
         "accountNumber": account_number,
-        "size": "500"
+        "size": 100
     }
 
-    response = requests.post(f'{os.environ.get("TECH_URL")}', json=body, timeout=120).json()
+    response = requests.post(f'{os.environ.get("TECH_URL")}', json=body, timeout=300).json()
     if response['success']:
         transactions = response['transactions']
         transaction_type = ''
