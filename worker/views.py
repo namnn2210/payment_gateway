@@ -67,8 +67,8 @@ def get_balance(bank):
                     bank_logged_in = False
                     break
                 max_count += 1
-        if not bank_logged_in:
-            bank_logged_in = tech_login(bank.username, bank.password)
+        # if not bank_logged_in:
+        #     bank_logged_in = tech_login(bank.username, bank.password)
 
 
         if bank_logged_in:
@@ -96,6 +96,8 @@ def get_balance(bank):
         else:
             pass
     elif bank_balance is None:
+        if bank.bank_name.name == 'Techcombank':
+            print('No balance techcombank')
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
             f'Lấy số dư tài khoản {bank.account_number} - {bank.bank_name.name} không thành công\n'
