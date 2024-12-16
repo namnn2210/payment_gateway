@@ -52,6 +52,7 @@ def get_balance(bank):
 
         bank_logged_in = None
 
+        tech_count = 1
         if bank.bank_name.name == 'MB':
             bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'ACB':
@@ -59,14 +60,15 @@ def get_balance(bank):
         elif bank.bank_name.name == 'Vietinbank':
             bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
         elif bank.bank_name.name == 'Techcombank':
-            max_count = 1
-            while max_count <= 3:
-                time.sleep(60)
+            while tech_count <= 3:
+                time.sleep(5)
                 bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
                 if bank_balance is not None:
                     bank_logged_in = False
                     break
-                max_count += 1
+                tech_count += 1
+        if tech_count == 3:
+            break
         # if not bank_logged_in:
         #     bank_logged_in = tech_login(bank.username, bank.password)
 
