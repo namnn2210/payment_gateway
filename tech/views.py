@@ -75,11 +75,10 @@ def tech_transactions(username, password, account_number):
         for transaction in transactions:
             if 'category' not in transaction.keys():
                 continue
-            if transaction['category'] == "Spending":
+            if transaction['category'] == "Spending" and transaction['additions']['debitAcctNo'] == account_number:
                 transaction_type = "OUT"
-            elif transaction['category'] == "Income":
+            elif transaction['category'] == "Income" and transaction['additions']['creditAcctNo'] == account_number:
                 transaction_type = "IN"
-
             transaction_date = datetime.fromisoformat(transaction['creationTime'])
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')
             new_formatted_transaction = Transaction(
