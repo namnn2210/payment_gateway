@@ -32,6 +32,7 @@ class BankAccount(models.Model):
     balance = models.BigIntegerField(default=0)
     bank_type = models.CharField(max_length=255, default='IN')
     status = models.BooleanField(default=True)
+    last_logged_in = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

@@ -8,7 +8,7 @@ from bank.views import update_transaction_history_status
 from bank.models import BankAccount
 from partner.views import create_deposit_order
 from partner.models import CID
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from config.views import get_env
 from mongodb.views import get_transactions_by_account_number, insert_all, get_new_transactions, \
@@ -24,6 +24,14 @@ def get_balance(bank):
 
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username,
           bank.password)
+
+    if bank.bank_name.name == "Techcombank":
+        six_hours_ago = datetime.now(pytz.timezone('Asia/Bangkok')) - timedelta(hours=6)
+        if bank.last_logged_in >= six_hours_ago:
+            tech_success = tech_login(bank.username, bank.password)
+            if tech_success:
+                print('Logged in as Techcombank successfully')
+
     # Get balance
     if bank.bank_name.name == 'MB':
         bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
@@ -37,7 +45,7 @@ def get_balance(bank):
         bank_balance = None
 
     max_error_count = 3
-    
+
     while bank_balance is None:
         print('Error fetching bank balance, try to login')
         error_count += 1
@@ -72,7 +80,6 @@ def get_balance(bank):
             break
         # if not bank_logged_in:
         #     bank_logged_in = tech_login(bank.username, bank.password)
-
 
         if bank_logged_in:
             if bank.bank_name.name == 'MB':
@@ -145,7 +152,6 @@ def get_transaction(bank):
         if len(transaction_dicts) > 0:
             insert_all(transaction_list=transaction_dicts)
 
-
         if len(different_transactions) > 0:
             process_transactions(different_transactions, bank)
             print('Update transactions for bank: %s. Updated at %s' % (
@@ -199,7 +205,7 @@ def process_transactions(transactions, bank):
                     send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
                                           get_env('226PAY_BOT'))
                     continue
-            if bank_account :
+            if bank_account:
                 if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL':
                     cids = CID.objects.filter(status=True)
                     for item in cids:

@@ -15,6 +15,7 @@ from bank.utils import get_today_date
 from tech.views import tech_login
 import json
 import pandas as pd
+import pytz
 
 
 # Create your views here.
@@ -141,7 +142,6 @@ class AddBankView(View):
                     username=bank_username,
                     password=bank_password
                 )
-
             return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         except Exception as ex:
             print(str(ex))
@@ -156,11 +156,13 @@ def toggle_bank_status(request):
             bank_account = BankAccount.objects.get(id=data['id'])
             new_status = False
             if data['status'] == 'ON':
+                if bank_account.bank_name.name == 'Techcombank':
+                    login_success = tech_login(bank_account.username, bank_account.password)
+                    if login_success:
+                        bank_account.last_logged_in = datetime.now(pytz.timezone('Asia/Bangkok'))
                 new_status = True
             bank_account.status = new_status
             bank_account.save()
-            if bank_account.bank_name.name == 'Techcombank':
-                tech_login(bank_account.username, bank_account.password)
             return JsonResponse({'status': 200, 'message': 'Status updated successfully'})
         except BankAccount.DoesNotExist:
             return JsonResponse({'status': 404, 'message': 'Bank account not found'})
