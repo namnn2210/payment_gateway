@@ -771,7 +771,7 @@
         $('.btn-toggle-status').on('click', function () {
             var button = $(this);
             var accountId = button.data('account-id');
-            var newStatus = button.data('status') === 'ON' ? 'OFF' : 'ON';
+            var newStatus = button.data('status') === 'ON' ? {% trans "OFF"%} : {% trans "ON"%};
             $.ajax({
                 type: 'POST',
                 url: '{% url "toggle_bank_status" %}',  // Ensure this URL name matches your urls.py
@@ -782,7 +782,7 @@
                         showAlert(response.message, 'success', $('#modalAlertContainer'));
                         button.data('status', newStatus);
                         button.toggleClass('btn-success btn-danger');
-                        button.text(newStatus === 'ON' ? 'OFF' : 'ON');
+                        button.text(newStatus === 'ON' ? {% trans "OFF"%} : {% trans "ON"%});
                     } else {
                         showAlert('Failed to update status.', 'danger', $('#modalAlertContainer'));
                     }
