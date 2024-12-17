@@ -25,13 +25,6 @@ def get_balance(bank):
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username,
           bank.password)
 
-    if bank.bank_name.name == "Techcombank":
-        six_hours_ago = datetime.now(pytz.timezone('Asia/Bangkok')) - timedelta(hours=6)
-        if bank.last_logged_in >= six_hours_ago:
-            tech_success = tech_login(bank.username, bank.password)
-            if tech_success:
-                print('Logged in as Techcombank successfully')
-
     # Get balance
     if bank.bank_name.name == 'MB':
         bank_balance = mb_balance(bank.username, bank.password, bank.account_number)

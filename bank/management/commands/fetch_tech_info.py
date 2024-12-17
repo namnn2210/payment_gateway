@@ -4,7 +4,8 @@ import time
 from config.views import get_env
 from worker.views import get_balance
 from bank.utils import send_telegram_message
-from datetime import datetime
+from datetime import datetime, timedelta
+from tech.views import tech_login
 import pytz
 
 
@@ -18,6 +19,14 @@ class Command(BaseCommand):
             bank_accounts = BankAccount.objects.filter(bank_name=3,status=True)
             for bank in bank_accounts:
                 try:
+                    if bank.bank_name.name == "Techcombank":
+                        six_hours_ago = datetime.now(pytz.timezone('Asia/Bangkok')) - timedelta(hours=6)
+                        if bank.last_logged_in >= six_hours_ago:
+                            tech_success = tech_login(bank.username, bank.password)
+                            if tech_success:
+                                print('Logged in as Techcombank successfully')
+                                bank.updated_at = datetime.now(pytz.timezone('Asia/Bangkok'))
+                                bank.save()
                     get_balance(bank=bank)
                 except Exception as ex:
                     alert = (

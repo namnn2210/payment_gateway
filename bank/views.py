@@ -118,30 +118,17 @@ class AddBankView(View):
                 return JsonResponse({'status': 505, 'message': 'Existed bank. Please try again'})
 
             bank = Bank.objects.filter(name=bank_name).first()
-            if bank_type == 'Techcombank':
-                tech_success = tech_login(bank_username,bank_password)
-                if tech_success:
-                    BankAccount.objects.create(
-                        user=request.user,
-                        bank_name=bank,
-                        account_number=bank_number,
-                        account_name=bank_accountname,
-                        balance=0,
-                        bank_type=bank_type,
-                        username=bank_username,
-                        password=bank_password
-                    )
-            else:
-                BankAccount.objects.create(
-                    user=request.user,
-                    bank_name=bank,
-                    account_number=bank_number,
-                    account_name=bank_accountname,
-                    balance=0,
-                    bank_type=bank_type,
-                    username=bank_username,
-                    password=bank_password
-                )
+
+            BankAccount.objects.create(
+                user=request.user,
+                bank_name=bank,
+                account_number=bank_number,
+                account_name=bank_accountname,
+                balance=0,
+                bank_type=bank_type,
+                username=bank_username,
+                password=bank_password
+            )
             return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
         except Exception as ex:
             print(str(ex))
@@ -156,10 +143,6 @@ def toggle_bank_status(request):
             bank_account = BankAccount.objects.get(id=data['id'])
             new_status = False
             if data['status'] == 'ON':
-                if bank_account.bank_name.name == 'Techcombank':
-                    login_success = tech_login(bank_account.username, bank_account.password)
-                    if login_success:
-                        bank_account.last_logged_in = datetime.now(pytz.timezone('Asia/Bangkok'))
                 new_status = True
             bank_account.status = new_status
             bank_account.save()
