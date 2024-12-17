@@ -2,16 +2,23 @@ import requests
 import os
 from datetime import datetime, timedelta
 from bank.utils import Transaction, find_substring
+import httpx
 
-def tech_login(username, password):
+async def tech_login(username, password):
     body = {
         "username": username,
         "password": password,
     }
-    response = requests.post(f'{os.environ.get("TECH_URL")}login', json=body, timeout=300).json()
-    if response['success']:
-        return True
-    return False
+    try:
+        async with httpx.AsyncClient(timeout=300) as client:
+            response = await client.post(f"{os.environ.get('TECH_URL')}login", json=body)
+            response_data = response.json()
+            if response_data.get('success'):
+                return True
+            return False
+    except httpx.HTTPError as e:
+        print(f"HTTP Error occurred: {e}")
+        return False
 
 def tech_balance(username, password, account_number):
     body = {
