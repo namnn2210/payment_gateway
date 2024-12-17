@@ -21,7 +21,7 @@ class Command(BaseCommand):
                 try:
                     if bank.bank_name.name == "Techcombank":
                         six_hours_ago = datetime.now(pytz.timezone('Asia/Bangkok')) - timedelta(hours=6)
-                        if bank.last_logged_in >= six_hours_ago:
+                        if bank.last_logged_in >= six_hours_ago or bank.last_logged_in is None:
                             tech_success = tech_login(bank.username, bank.password)
                             if tech_success:
                                 print('Logged in as Techcombank successfully')
