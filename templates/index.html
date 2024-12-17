@@ -771,7 +771,7 @@
         $('.btn-toggle-status').on('click', function () {
             var button = $(this);
             var accountId = button.data('account-id');
-            var newStatus = button.data('status') === 'ON' ? {% trans "OFF"%} : {% trans "ON"%};
+            var newStatus = button.data('status') === 'ON' ? 'OFF' : 'ON';
             $.ajax({
                 type: 'POST',
                 url: '{% url "toggle_bank_status" %}',  // Ensure this URL name matches your urls.py
