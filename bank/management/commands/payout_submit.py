@@ -15,7 +15,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         while True:
             self.stdout.write(self.style.NOTICE('Fetching pending payouts...'))
-            pending_payouts = Payout.objects.filter(status=False)
+            pending_payouts = Payout.objects.filter(status=False, partner_status=False)
             for payout in pending_payouts:
                 try:
                     sleep_time = random.randint(1,10)
