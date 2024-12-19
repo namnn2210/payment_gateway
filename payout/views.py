@@ -195,6 +195,7 @@ def update_payout(request, update_type):
     try:
         data = json.loads(request.body)
         payout_id = data.get('id')
+
         bank_id = data.get('bank_id')
         request_user_username = model_to_dict(request.user)['username']
         reason = data.get('reason',1)

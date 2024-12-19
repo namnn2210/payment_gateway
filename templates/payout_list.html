@@ -22,6 +22,7 @@
                             <th scope="col">{% trans "Order ID" %}</th>
                             <th scope="col">{% trans "CID" %}</th>
                             <th scope="col">{% trans "User" %}</th>
+                            <th scope="col">{% trans "Partner Status" %}</th>
                             <th scope="col">{% trans "Status" %}</th>
                         </tr>
                     </thead>
@@ -36,6 +37,13 @@
                                 <td>{{ item.orderid }}</td>
                                 <td>{{ item.scode }}</td>
                                 <td><span class="badge rounded-pill bg-primary">{{ item.user }}</span></td>
+                                <td>
+                                    {% if item.partner_status %}
+                                        <span class="btn btn-sm rounded-pill bg-success text-center"><i class="bi bi-emoji-heart-eyes me-1"></i>{% trans "Done" %}</span>
+                                    {% else %}
+                                        <span class="btn btn-sm rounded-pill bg-danger"><i class="bi bi-emoji-dizzy me-1"></i>{% trans "Failed" %}</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     {% if item.status %}
                                         <span class="btn btn-sm rounded-pill bg-success text-center"><i class="bi bi-emoji-heart-eyes me-1"></i>{% trans "Done" %}</span>
