@@ -21,8 +21,9 @@ class Command(BaseCommand):
                     sleep_time = random.randint(1,7)
                     time.sleep(sleep_time)
                     if update_status_request(payout=payout, status='S'):
-                        payout.partner_status = True
-                        payout.save()
+                        current_state_payout = Payout.objects.get(id=payout.id)
+                        current_state_payout.partner_status = True
+                        current_state_payout.save()
                 except Exception as ex:
                     alert = (
                         f'🔴 - SYSTEM ALERT\n'
