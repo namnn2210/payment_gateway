@@ -22,6 +22,7 @@ class Command(BaseCommand):
                     time.sleep(sleep_time)
                     if update_status_request(payout=payout, status='S'):
                         current_state_payout = Payout.objects.get(id=payout.id)
+                        print(current_state_payout.orderid)
                         current_state_payout.partner_status = True
                         current_state_payout.save()
                 except Exception as ex:
