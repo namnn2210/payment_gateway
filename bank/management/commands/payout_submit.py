@@ -19,7 +19,7 @@ class Command(BaseCommand):
             for payout in pending_payouts:
                 try:
                     sleep_time = random.randint(1,7)
-                    time.sleep(sleep_time*60)
+                    time.sleep(sleep_time)
                     if update_status_request(payout=payout, status='S'):
                         current_state_payout = Payout.objects.get(id=payout.id)
                         current_state_payout.partner_status = True
