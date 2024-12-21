@@ -20,7 +20,7 @@ class Command(BaseCommand):
             print(len(pending_payouts))
             for payout in pending_payouts:
                 try:
-                    sleep_time = random.randint(1,7)
+                    sleep_time = random.randint(15,30)
                     time.sleep(sleep_time)
                     if update_status_request(payout=payout, status='S'):
                         current_state_payout = Payout.objects.get(id=payout.id)
