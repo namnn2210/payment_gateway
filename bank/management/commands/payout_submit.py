@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from payout.models import Payout
 from partner.views import update_status_request
 from bank.utils import send_telegram_message
-from datetime import datetime
+from datetime import datetime, time as datetime_time
 from config.views import get_env
 import pytz
 import time
@@ -15,12 +15,13 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         while True:
             self.stdout.write(self.style.NOTICE('Fetching pending payouts...'))
-            start_date = datetime.strptime(f'20/12/2024 00:00', '%d/%m/%Y %H:%M')
+            start_date = datetime.combine(datetime.now().date(), datetime_time.min)
             pending_payouts = Payout.objects.filter(partner_status=False,created_at__gte=start_date)
+            print(len(pending_payouts))
             for payout in pending_payouts:
                 try:
                     sleep_time = random.randint(1,7)
-                    time.sleep(sleep_time*60)
+                    time.sleep(sleep_time)
                     if update_status_request(payout=payout, status='S'):
                         current_state_payout = Payout.objects.get(id=payout.id)
                         print(current_state_payout.orderid)
