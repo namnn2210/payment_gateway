@@ -98,7 +98,8 @@ def update_payout_background(update_body):
             f'\n'
             f'Account number: {payout.accountno}\n'
             f'\n'
-            f'Reason: {reason_text}'
+            f'Reason: {reason_text}\n'
+            f'Please update status to failed !'
         )
         send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_API_KEY'))
         return True
