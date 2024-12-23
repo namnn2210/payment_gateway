@@ -782,7 +782,8 @@
                         showAlert(response.message, 'success', $('#modalAlertContainer'));
                         button.data('status', newStatus);
                         button.toggleClass('btn-success btn-danger');
-                        button.text(newStatus === 'ON' ? {% trans "OFF"%} : {% trans "ON"%});
+                        console.log(newStatus)
+                        button.text(newStatus === '{% trans "ON"%}' ? '{% trans "OFF"%}' : '{% trans "ON"%}');
                     } else {
                         showAlert('Failed to update status.', 'danger', $('#modalAlertContainer'));
                     }

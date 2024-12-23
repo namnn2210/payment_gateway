@@ -149,10 +149,6 @@
                                                 <strong>{% trans "Order ID" %}:</strong> {{ item.orderid }}<br>
                                                 <strong>{% trans "CID" %}:</strong> {{ item.scode }}<br>
                                                 <strong>{% trans "Order code" %}:</strong> {{ item.incomingorderid }}<br>
-                                                {% if item.status == 'Failed' %}
-                                                <strong>{% trans "Actions" %}:</strong> <button class="btn btn-sm rounded-pill btn-primary btn-toggle-status"
-                                                    data-transaction-number="{{ item.transaction_number }}" data-account-number="{{ item.account_number }}">{% trans "Update" %}</button>
-                                                {% endif %}
                                             </div>
                                         </td>
                                     </tr>
@@ -437,10 +433,6 @@
                             <strong>{% trans "CID" %}:</strong> ${item.scode}<br>
                             <strong>{% trans "Order Code" %}:</strong> ${item.incomingorderid}<br>
                     `);
-                    if (item.status === 'Failed') {
-                        detailsRow.append(`<strong>{% trans "Actions" %}:</strong> <button class="btn btn-sm rounded-pill btn-primary btn-toggle-status"
-                                                    data-transaction-number="${item.transaction_number}" data-account-number="${item.account_number}">{% trans "Update" %}</button>`);
-                    }
                     detailsRow.append(`</div></td>`);
                     tableBody.append(detailsRow);
                 });
