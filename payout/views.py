@@ -298,6 +298,7 @@ def webhook(request):
         system_bank_data = json.load(open('bank.json', encoding='utf-8'))
         
         decoded_str = request.body.decode('utf-8')
+
         data = json.loads(decoded_str)
         
         print('webhook request data: ', data)

@@ -47,13 +47,13 @@ def record_book(request):
         start_date_str = start_date
         end_date_str = end_date
 
-    bank_accounts = BankAccount.objects.all()
-    account_number = [item.account_number for item in bank_accounts]
+    # bank_accounts = BankAccount.objects.all()
+    # account_number = [item.account_number for item in bank_accounts]
     order_by = ("transaction_date", -1)
-    list_transactions_in = get_transactions_by_account_number(account_number, transaction_type='IN', status=status,
+    list_transactions_in = get_transactions_by_account_number(None, transaction_type='IN', status=status,
                                                               date_start=start_date, date_end=end_date,
                                                               order_by=order_by, search_text=search_query)
-    list_transactions_out = get_transactions_by_account_number(account_number, transaction_type='OUT', status=status,
+    list_transactions_out = get_transactions_by_account_number(None, transaction_type='OUT', status=status,
                                                                date_start=start_date, date_end=end_date,
                                                                order_by=order_by, search_text=search_query)
 
