@@ -29,6 +29,7 @@ class BankAccount(models.Model):
     account_name = models.CharField(max_length=255, default='')
     username = models.CharField(max_length=255, default='')
     password = models.CharField(max_length=255, default='')
+    corp_id = models.CharField(max_length=255, default='')
     balance = models.BigIntegerField(default=0)
     bank_type = models.CharField(max_length=255, default='IN')
     status = models.BooleanField(default=True)
@@ -47,6 +48,7 @@ class BankAccount(models.Model):
             "account_name": self.account_name,
             "username": self.username,
             "password": self.password,
+            "corp_id": self.corp_id,
             "balance": self.balance,
             "bank_type": self.bank_type,
             "status": self.status,

@@ -3,6 +3,7 @@ from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from tech.views import tech_login, tech_balance, tech_transactions, tech_refresh_token
+from mbdn.views import mbdn_balance, mbdn_transactions
 from bank.utils import send_telegram_message, find_substring
 from bank.views import update_transaction_history_status
 from bank.models import BankAccount
@@ -21,6 +22,7 @@ logger = logging.getLogger('django')
 
 def get_balance(bank):
     error_count = 0
+    mbdn_transactions = None
 
     print('Fetching bank balance: ', bank.account_name, bank.account_number, bank.bank_name, bank.username,
           bank.password)
@@ -28,6 +30,8 @@ def get_balance(bank):
     # Get balance
     if bank.bank_name.name == 'MB':
         bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.bankcode == 'MB_CORP':
+        bank_balance, mbdn_transactions = mbdn_balance(bank.username, bank.password, bank.account_number, bank.corp_id)
     elif bank.bank_name.name == 'ACB':
         bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
@@ -71,8 +75,6 @@ def get_balance(bank):
                 tech_count += 1
         if tech_count == 3:
             break
-        # if not bank_logged_in:
-        #     bank_logged_in = tech_login(bank.username, bank.password)
 
         if bank_logged_in:
             if bank.bank_name.name == 'MB':
@@ -81,8 +83,6 @@ def get_balance(bank):
                 bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'Vietinbank':
                 bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
-            # elif bank.bank_name.name == 'Techcombank':
-            #     bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
             else:
                 bank_balance = None
 
@@ -93,8 +93,10 @@ def get_balance(bank):
             print('Update for bank: %s. Updated at %s' % (
                 bank.account_number, timezone.now().strftime('%Y-%m-%d %H:%M:%S')))
 
-            get_transaction(bank)
-
+            if bank.bank_name.name == 'MB_CORP':
+                get_transaction(bank, transactions=mbdn_transactions)
+            else:
+                get_transaction(bank)
         else:
             pass
     elif bank_balance is None:
@@ -111,10 +113,12 @@ def get_balance(bank):
     bank.save()
 
 
-def get_transaction(bank):
+def get_transaction(bank, transactions=None):
     current_transactions = get_transactions_by_account_number(bank.account_number)
     if bank.bank_name.name == 'MB':
         new_transactions = mb_transactions(bank.username, bank.password, bank.account_number)
+    elif bank.bank_name.bankcode == 'MB_CORP':
+        new_transactions = mbdn_transactions(transactions=transactions)
     elif bank.bank_name.name == 'ACB':
         new_transactions = acb_transactions(bank.username, bank.password, bank.account_number)
     elif bank.bank_name.name == 'Vietinbank':
