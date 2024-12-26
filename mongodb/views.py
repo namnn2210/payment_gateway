@@ -1,7 +1,7 @@
 from config.views import get_env
 from pymongo import MongoClient, errors
 from bank.utils import format_transaction_list, get_today_date
-from payout.models import Payout
+# from payout.models import Payouts
 
 def mongo_connect():
     try:
