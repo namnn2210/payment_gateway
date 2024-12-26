@@ -4,690 +4,408 @@
 {% load i18n %}
 {% block title %}{% trans "List Payout" %}{% endblock %}
 {% block head %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<style>
-    .blur {
-        filter: blur(10px); /* Adjust the blur strength as needed */
-        transition: filter 0.3s ease-in-out;
-    }
-</style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .blur {
+            filter: blur(10px); /* Adjust the blur strength as needed */
+            transition: filter 0.3s ease-in-out;
+        }
+    </style>
 {% endblock %}
 {% block content %}
-<div class="container-fluid">
-    <h3>{% trans 'Payout' %}</h3>
-    <div class="row">
-        <div class="col-md-6 col-sm-12 text-right mt-4">
-        </div>
-        <div class="col-md-6 col-sm-12 text-right mt-4">
-            <button class="btn btn-primary rounded-pill btn-add" data-toggle="modal" data-target="#addPayoutModal"><i class="bi bi-plus me-1"></i>{% trans "Add Payout" %}</button>
-        </div>
-    </div>
-    <form id="searchForm" method="get" action="{% url 'list_payout' %}">
+    <div class="container-fluid">
+        <h3>{% trans 'Payout' %}</h3>
         <div class="row">
-            <div class="col-md-6 col-sm-12 mt-4">
-                <input type="text" id="customSearchBox" name="search" class="form-control" placeholder="{% trans "Search" %}" value="{{ request.GET.search|default_if_none:'' }}">
+            <div class="col-md-6 col-sm-12 text-right mt-4">
             </div>
-            <div class="col-md-6 col-sm-12 mt-4">
-                <select id="statusFilter" name="status" class="form-select">
-                    <option value="All" {% if request.GET.status == "All" %}selected{% endif %}>{% trans "All" %}</option>
-                    <option value="Pending" {% if request.GET.status == "Pending" or request.GET.status is None %}selected{% endif %}>{% trans "Pending" %}</option>
-                    <option value="Done" {% if request.GET.status == "Done" %}selected{% endif %}>{% trans "Done" %}</option>
-                    <option value="Canceled" {% if request.GET.status == "Canceled" %}selected{% endif %}>{% trans "Canceled" %}</option>
-                    <option value="Reported" {% if request.GET.status == "Reported" %}selected{% endif %}>{% trans "Reported" %}</option>
-                </select>
+            <div class="col-md-6 col-sm-12 text-right mt-4">
+                <button class="btn btn-primary rounded-pill btn-add" data-toggle="modal" data-target="#addPayoutModal">
+                    <i class="bi bi-plus me-1"></i>{% trans "Add Payout" %}</button>
             </div>
         </div>
-        <div class="row mt-4">
-            <div class="col-md-6 col-sm-12">
-                <label for="start_datetime">{% trans "Start Date" %}</label>
-                <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control" value="{{ request.GET.start_datetime|default_if_none:'' }}">
+        <form id="searchForm" method="get" action="{% url 'list_payout' %}">
+            <div class="row">
+                <div class="col-md-6 col-sm-12 mt-4">
+                    <input type="text" id="customSearchBox" name="search" class="form-control"
+                           placeholder="{% trans "Search" %}" value="{{ request.GET.search|default_if_none:'' }}">
+                </div>
+                <div class="col-md-6 col-sm-12 mt-4">
+                    <select id="statusFilter" name="status" class="form-select">
+                        <option value="All"
+                                {% if request.GET.status == "All" %}selected{% endif %}>{% trans "All" %}</option>
+                        <option value="Pending"
+                                {% if request.GET.status == "Pending" or request.GET.status is None %}selected{% endif %}>{% trans "Pending" %}</option>
+                        <option value="Done"
+                                {% if request.GET.status == "Done" %}selected{% endif %}>{% trans "Done" %}</option>
+                        <option value="Canceled"
+                                {% if request.GET.status == "Canceled" %}selected{% endif %}>{% trans "Canceled" %}</option>
+                        <option value="Reported"
+                                {% if request.GET.status == "Reported" %}selected{% endif %}>{% trans "Reported" %}</option>
+                    </select>
+                </div>
             </div>
-            <div class="col-md-6 col-sm-12">
-                <label for="end_datetime">{% trans "End Date" %}</label>
-                <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control" value="{{ request.GET.end_datetime|default_if_none:'' }}">
+            <div class="row mt-4">
+                <div class="col-md-6 col-sm-12">
+                    <label for="start_datetime">{% trans "Start Date" %}</label>
+                    <input type="datetime-local" id="start_datetime" name="start_datetime" class="form-control"
+                           value="{{ request.GET.start_datetime|default_if_none:'' }}">
+                </div>
+                <div class="col-md-6 col-sm-12">
+                    <label for="end_datetime">{% trans "End Date" %}</label>
+                    <input type="datetime-local" id="end_datetime" name="end_datetime" class="form-control"
+                           value="{{ request.GET.end_datetime|default_if_none:'' }}">
+                </div>
             </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-md-6 col-sm-12">
-                {% if user.is_superuser %}
-                <select id="employeeFilter" name="employee" class="form-select">
-                    <option value="All" {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
-                    {% for user in users%}
-                    <option value="{{ user.username  }}" {% if request.GET.employee == user.username %}selected{% endif %}>{{ user }}</option>
-                    {% endfor %}
-                </select>
-                {% else %}
-                <select id="employeeFilter" name="employee" class="form-select">
-                    <option value="All" {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
-                    {% for item_user in users%}
-                    <option value={{item_user}} {% if item_user.username == user.username %}selected{% endif %}>{{item_user.username}}</option>
-                    {% endfor %}
-                </select>
-                {% endif %}
-            </div>
-            <div class="col-md-6 col-sm-12 text-right">
-                <button type="submit" class="btn rounded-pill btn-primary"><i class="bi bi-search me-1"></i>{% trans "Search" %}</button>
-            </div>
-        </div>
-    </form>
-    
-    <div id="payoutList">
-        {% include 'payout_list.html' %}
-    </div>
-</div>
-<div class="modal fade" id="addPayoutModal"  aria-labelledby="addPayoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addPayoutModalLabel">{% trans "Add Payout" %}</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div id="modalAlertContainer"></div>
-                <form id="addPayoutForm">
-                    <div class="form-group">
-                        <label for="scode">{% trans "CID" %}</label>
-                        <select class="form-select" id="scode" name="scode" required>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="orderid">{% trans "Order ID" %}</label>
-                        <input type="text" class="form-control" id="orderid" name="orderid" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="amount">{% trans "Amount" %}</label>
-                        <input type="text" class="form-control" id="money" name="money" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="accountno">{% trans "Account Number" %}</label>
-                        <input type="text" class="form-control" id="accountno" name="accountno" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="accountname">{% trans "Account Name" %}</label>
-                        <input type="text" class="form-control" id="accountname" name="accountname" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="bankcode">{% trans "Bank" %}</label>
-                        <select class="form-select" id="bankcode" name="bankcode" required>
-                            {% for bank in bank_data %}
-                            <option value="{{ bank.code }}" data-bank-name="{{ bank.short_name }}">{{ bank.short_name }}</option>
+            <div class="row mt-4">
+                <div class="col-md-6 col-sm-12">
+                    {% if user.is_superuser %}
+                        <select id="employeeFilter" name="employee" class="form-select">
+                            <option value="All"
+                                    {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
+                            {% for user in users %}
+                                <option value="{{ user.username }}"
+                                        {% if request.GET.employee == user.username %}selected{% endif %}>{{ user }}</option>
                             {% endfor %}
                         </select>
-                    </div>
-                    <button type="submit" class="btn rounded-pill btn-primary">{% trans "Add" %}</button>
-                </form>
+                    {% else %}
+                        <select id="employeeFilter" name="employee" class="form-select">
+                            <option value="All"
+                                    {% if request.GET.employee == "All" %}selected{% endif %}>{% trans "All" %}</option>
+                            {% for item_user in users %}
+                                <option value={{ item_user }} {% if item_user.username == user.username %}selected{% endif %}>{{ item_user.username }}</option>
+                            {% endfor %}
+                        </select>
+                    {% endif %}
+                </div>
+                <div class="col-md-6 col-sm-12 text-right">
+                    <button type="submit" class="btn rounded-pill btn-primary"><i
+                            class="bi bi-search me-1"></i>{% trans "Search" %}</button>
+                </div>
+            </div>
+        </form>
+
+        <div id="payoutList">
+            {% include 'payout_list.html' %}
+        </div>
+    </div>
+    <div class="modal fade" id="addPayoutModal" aria-labelledby="addPayoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addPayoutModalLabel">{% trans "Add Payout" %}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="modalAlertContainer"></div>
+                    <form id="addPayoutForm">
+                        <div class="form-group">
+                            <label for="scode">{% trans "CID" %}</label>
+                            <select class="form-select" id="scode" name="scode" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderid">{% trans "Order ID" %}</label>
+                            <input type="text" class="form-control" id="orderid" name="orderid" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">{% trans "Amount" %}</label>
+                            <input type="text" class="form-control" id="money" name="money" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="accountno">{% trans "Account Number" %}</label>
+                            <input type="text" class="form-control" id="accountno" name="accountno" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="accountname">{% trans "Account Name" %}</label>
+                            <input type="text" class="form-control" id="accountname" name="accountname" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bankcode">{% trans "Bank" %}</label>
+                            <select class="form-select" id="bankcode" name="bankcode" required>
+                                {% for bank in bank_data %}
+                                    <option value="{{ bank.code }}"
+                                            data-bank-name="{{ bank.short_name }}">{{ bank.short_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn rounded-pill btn-primary">{% trans "Add" %}</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
-<!-- Payout Modal -->
-<div class="modal fade" id="payModal" aria-labelledby="payModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="payModalLabel">{% trans "Payout Details" %}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-5 col-sm-12">
-                        <div class="row">
-                            <div class="col-md-12 col-sm-12">
-                                <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
-                            </div>
-                            <div class="col-md-12 col-sm-12 mt-2">
-                                <div class="qr-info text-center ">
-                                    <p>Mã ngân hàng: <span class="font-weight-bold bankcode"></span></p>
-                                    <p>Số tài khoản: <span class="font-weight-bold accountno"></span></p>
-                                    <p>Chủ tài khoản: <span class="font-weight-bold accountname"></span></p>
-                                    <p>Nội dung: <span class="font-weight-bold memo"></span></p>
-                                    <p>Số tiền: <span class="font-weight-bold money"></span></p>
+    <!-- Payout Modal -->
+    <div class="modal fade" id="payModal" aria-labelledby="payModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="payModalLabel">{% trans "Payout Details" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-5 col-sm-12">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12">
+                                    <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
                                 </div>
                             </div>
                         </div>
-
-                    </div>
-                    <div class="col-md-7 col-sm-12">
-                        <label for="processBank">{% trans "Process Bank" %}</label>
-                            <select class="form-select" id="processBank" name="processBank" required>
-                                {% for bank in banks %}
-                                <option value="{{ bank.id }}">{{ bank.name }}</option>
-                                {% endfor %}
-                            </select>
+                        <div class="col-md-7 col-sm-12">
+                            <div class="row">
+                                <div class="col-md-12 col-sm-12">
+                                    <div class="col-md-12 col-sm-12 mt-2">
+                                        <div class="qr-info text-center ">
+                                            <p>Mã ngân hàng: <span class="font-weight-bold bankcode"></span></p>
+                                            <p>Số tài khoản: <span class="font-weight-bold accountno"></span></p>
+                                            <p>Chủ tài khoản: <span class="font-weight-bold accountname"></span></p>
+                                            <p>Nội dung: <span class="font-weight-bold memo"></span></p>
+                                            <p>Số tiền: <span class="font-weight-bold money"></span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-sm-12">
+                                    <label for="processBank">{% trans "Process Bank" %}</label>
+                                    <select class="form-select" id="processBank" name="processBank" required>
+                                        {% for bank in banks %}
+                                            <option value="{{ bank.id }}">{{ bank.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" data-bs-toggle="modal" data-bs-target="#selectReportModal" class="btn btn-danger rounded-pill report-btn" data-item-id=""><i class="bi bi-exclamation-triangle me-1"></i>{% trans "Report" %}</button>
-                <button type="button" class="btn btn-warning rounded-pill cancel-btn" data-item-id=""><i class="bi bi-exclamation-octagon me-1"></i>{% trans "Cancel" %}</button>
-                <button type="button" class="btn btn-success rounded-pill done-btn-modal" data-item-id=""><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="editModal" aria-labelledby="editModalLabel" aria-hidden="true">
-    
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">{% trans "Edit Bank" %}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <select class="form-select" id="editBankCode" name="editBankCode" required>
-                    {% for bank in bank_data %}
-                    <option value="{{ bank.code }}" data-bank-name="{{ bank.short_name }}">{{ bank.short_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success rounded-pill edit-done-btn-modal"><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+                <div class="modal-footer">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#selectReportModal"
+                            class="btn btn-danger rounded-pill report-btn" data-item-id=""><i
+                            class="bi bi-exclamation-triangle me-1"></i>{% trans "Report" %}</button>
+                    <button type="button" class="btn btn-warning rounded-pill cancel-btn" data-item-id=""><i
+                            class="bi bi-exclamation-octagon me-1"></i>{% trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-success rounded-pill done-btn-modal" data-item-id=""><i
+                            class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Select Payout Bank Modal -->
-<div class="modal fade" id="selectPayoutBankModal" aria-labelledby="selectPayoutBankModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="selectPayoutBankModalLabel">{% trans "Select Payout Bank" %}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
+    <div class="modal fade" id="editModal" aria-labelledby="editModalLabel" aria-hidden="true">
 
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success rounded-pill done-btn-modal" data-item-id=""><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">{% trans "Edit Bank" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <select class="form-select" id="editBankCode" name="editBankCode" required>
+                        {% for bank in bank_data %}
+                            <option value="{{ bank.code }}"
+                                    data-bank-name="{{ bank.short_name }}">{{ bank.short_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success rounded-pill edit-done-btn-modal"><i
+                            class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Select Payout Bank Modal -->
+    <div class="modal fade" id="selectPayoutBankModal" aria-labelledby="selectPayoutBankModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="selectPayoutBankModalLabel">{% trans "Select Payout Bank" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success rounded-pill done-btn-modal" data-item-id=""><i
+                            class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="selectReportModal" aria-labelledby="selectReportBankModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="selectReportBankModalLabel">{% trans "Select Report Reason" %}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <label for="processBank">{% trans "Reason" %}</label>
-                <select class="form-select" id="reason" name="reason" required>
-                    <option value=1>{% trans 'Invalid Account Number' %}
-                    <option value=2>{% trans 'Invalid Bank' %}
-                    <option value=3>{% trans 'Invalid Account Name' %}
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success rounded-pill done-report-btn" data-item-id=""><i class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="selectReportBankModalLabel">{% trans "Select Report Reason" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="processBank">{% trans "Reason" %}</label>
+                    <select class="form-select" id="reason" name="reason" required>
+                        <option value=1>{% trans 'Invalid Account Number' %}
+                        <option value=2>{% trans 'Invalid Bank' %}
+                        <option value=3>{% trans 'Invalid Account Name' %}
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success rounded-pill done-report-btn" data-item-id=""><i
+                            class="bi bi-check-circle me-1"></i>{% trans "Done" %}</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 {% endblock %}
 {% block script %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- Toastr CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-<!-- Toastr JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script>
-    $(document).ready(function() {
-        // Handle row click to toggle hidden row and change icon
-        $('.main-row').on('click', function() {
-            var id = $(this).data('id');
-            var hiddenRow = $('#details-' + id);
-            var icon = $('#icon-' + id + ' i');
-            
-            hiddenRow.toggle();
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Toastr CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- Toastr JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Handle row click to toggle hidden row and change icon
+            $('.main-row').on('click', function () {
+                var id = $(this).data('id');
+                var hiddenRow = $('#details-' + id);
+                var icon = $('#icon-' + id + ' i');
 
-            if (hiddenRow.is(':visible')) {
-                icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
-            } else {
-                icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
+                hiddenRow.toggle();
+
+                if (hiddenRow.is(':visible')) {
+                    icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
+                } else {
+                    icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
+                }
+            });
+
+            $('#searchForm').on('submit', function (event) {
+                event.preventDefault();
+                fetchPayouts();
+            });
+
+            $(document).on('click', '.pagination a', function (event) {
+                event.preventDefault();
+                fetchPayouts($(this).attr('href'));
+            });
+
+            function fetchPayouts(url) {
+                url = url || $('#searchForm').attr('action');
+                var formData = $('#searchForm').serialize();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: formData,
+                    success: function (response) {
+                        $('#payoutList').html(response);
+                        // Rebind the click event after updating the list
+                        $('.main-row').on('click', function () {
+                            var id = $(this).data('id');
+                            var hiddenRow = $('#details-' + id);
+                            var icon = $('#icon-' + id + ' i');
+
+                            hiddenRow.toggle();
+
+                            if (hiddenRow.is(':visible')) {
+                                icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
+                            } else {
+                                icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
+                            }
+                        });
+                    },
+                    error: function () {
+                        toastr.error('An error occurred while fetching the payouts.');
+                    }
+                });
             }
         });
 
-        $('#searchForm').on('submit', function(event) {
-            event.preventDefault();
-            fetchPayouts();
-        });
 
-        $(document).on('click', '.pagination a', function(event) {
-            event.preventDefault();
-            fetchPayouts($(this).attr('href'));
-        });
+        function formatDateToYYYYMMDD(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
 
-        function fetchPayouts(url) {
-            url = url || $('#searchForm').attr('action');
-            var formData = $('#searchForm').serialize();
+        function setDateTimeInputs() {
+            const startInput = document.getElementById('start_datetime');
+            const endInput = document.getElementById('end_datetime');
+
+            // Get the current date and time
+            const currentDate = new Date();
+            const today = formatDateToYYYYMMDD(currentDate);
+            const startDateTime = `${today}T00:00`;
+            const endDateTime = `${today}T23:59`;
+
+            if (!startInput.value) {
+                startInput.value = startDateTime;
+            }
+            if (!endInput.value) {
+                endInput.value = endDateTime;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', setDateTimeInputs);
+    </script>
+    <script>
+        function formatDateToYYYYMMDD(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        $('#addPayoutForm').on('submit', function (e) {
+            e.preventDefault();
+            var formData = {
+                scode: $('#scode').val(),
+                orderid: $('#orderid').val(),
+                money: $('#money').val(),
+                accountno: $('#accountno').val(),
+                accountname: $('#accountname').val(),
+                bankcode: $('#bankcode').val()
+            };
+
             $.ajax({
-                url: url,
-                type: 'GET',
-                data: formData,
-                success: function(response) {
-                    $('#payoutList').html(response);
-                    // Rebind the click event after updating the list
-                    $('.main-row').on('click', function() {
-                        var id = $(this).data('id');
-                        var hiddenRow = $('#details-' + id);
-                        var icon = $('#icon-' + id + ' i');
-
-                        hiddenRow.toggle();
-
-                        if (hiddenRow.is(':visible')) {
-                            icon.removeClass('fa-plus-circle').addClass('fa-minus-circle').css('color', 'red');
-                        } else {
-                            icon.removeClass('fa-minus-circle').addClass('fa-plus-circle').css('color', 'green');
-                        }
-                    });
+                type: 'POST',
+                url: '{% url "add_payout" %}',  // Ensure this URL name matches your urls.py
+                data: JSON.stringify(formData),
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.status === 200) {
+                        $('#addPayoutModal').modal('hide');
+                        toastr.success('Payout added successfully' || 'Done add');
+                        setTimeout(function () {
+                            location.reload();
+                        }, 3000);
+                    } else {
+                        toastr.error(response.message || 'An error occurred while adding the payout.');
+                    }
                 },
-                error: function() {
-                    toastr.error('An error occurred while fetching the payouts.');
-                }
-            });
-        }
-    });
-
-
-    function formatDateToYYYYMMDD(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function setDateTimeInputs() {
-        const startInput = document.getElementById('start_datetime');
-        const endInput = document.getElementById('end_datetime');
-
-        // Get the current date and time
-        const currentDate = new Date();
-        const today = formatDateToYYYYMMDD(currentDate);
-        const startDateTime = `${today}T00:00`;
-        const endDateTime = `${today}T23:59`;
-
-        if (!startInput.value) {
-            startInput.value = startDateTime;
-        }
-        if (!endInput.value) {
-            endInput.value = endDateTime;
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', setDateTimeInputs);
-</script>
-<script>
-    function formatDateToYYYYMMDD(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed, so add 1
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    $('#addPayoutForm').on('submit', function (e) {
-        e.preventDefault();
-        var formData = {
-            scode: $('#scode').val(),
-            orderid: $('#orderid').val(),
-            money: $('#money').val(),
-            accountno: $('#accountno').val(),
-            accountname: $('#accountname').val(),
-            bankcode: $('#bankcode').val()
-        };
-
-        $.ajax({
-            type: 'POST',
-            url: '{% url "add_payout" %}',  // Ensure this URL name matches your urls.py
-            data: JSON.stringify(formData),
-            contentType: 'application/json',
-            success: function (response) {
-                if (response.status === 200) {
-                    $('#addPayoutModal').modal('hide');
-                    toastr.success('Payout added successfully' || 'Done add');
-                    setTimeout(function(){
-                        location.reload();
-                    }, 3000);
-                } else {
+                error: function (response) {
                     toastr.error(response.message || 'An error occurred while adding the payout.');
                 }
-            },
-            error: function (response) {
-                toastr.error(response.message || 'An error occurred while adding the payout.');
-            }
-        });
-    });
-
-    $(document).on('click', '.delete-btn', function () {
-        var itemId = $(this).data('item-id');
-        const csrftoken = getCookie('csrftoken');
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to delete this payout as done?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "{% url 'delete_payout' %}",
-                    type: 'POST',
-                    data: JSON.stringify({ id: itemId }),
-                    contentType: 'application/json',
-                    headers: {
-                        'X-CSRFToken': csrftoken
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            Swal.fire(
-                                'Marked!',
-                                'The payout has been deleted.',
-                                'success'
-                            ).then(() => {
-                                location.reload();  // Reload the page to reflect the changes
-                            });
-                        } else {
-                            console.log(data.message)
-                            Swal.fire(
-                                'Error!',
-                                'An error occurred.',
-                                'error'
-                            );
-                        }
-                    }
-                });
-            }
-        });
-    })
-
-    $(document).on('click', '.edit-btn', function () {
-        var itemId = $(this).data('item-id');
-
-        $('.edit-done-btn-modal').click(function () {
-            // var itemId = $(this).data('item-id');
-            var bankCode = $('#editBankCode').val();
-            const csrftoken = getCookie('csrftoken');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to edit this payout?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{% url 'edit_payout'%}",
-                        type: 'POST',
-                        data: JSON.stringify({ id: itemId, bankCode: bankCode }),
-                        contentType: 'application/json',
-                        headers: {
-                            'X-CSRFToken': csrftoken
-                        },
-                        success: function (data) {
-                            if (data.success) {
-                                Swal.fire(
-                                    'Marked!',
-                                    'The payout has been edited.',
-                                    'success'
-                                ).then(() => {
-                                    location.reload();  // Reload the page to reflect the changes
-                                });
-                            } else {
-                                console.log(data.message)
-                                Swal.fire(
-                                    'Error!',
-                                    'An error occurred.',
-                                    'error'
-                                );
-                            }
-                        }
-                    });
-                }
-            });
-        });
-    });
-
-    $(document).on('click', '.move-btn', function () {
-        var itemId = $(this).data('item-id');
-        const csrftoken = getCookie('csrftoken');
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "Do you want to move this payout to settle?",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: "{% url 'move_payout' %}",
-                    type: 'POST',
-                    data: JSON.stringify({ id: itemId }),
-                    contentType: 'application/json',
-                    headers: {
-                        'X-CSRFToken': csrftoken
-                    },
-                    success: function (data) {
-                        if (data.success) {
-                            Swal.fire(
-                                'Marked!',
-                                'The payout has been moved.',
-                                'success'
-                            ).then(() => {
-                                location.reload();  // Reload the page to reflect the changes
-                            });
-                        } else {
-                            console.log(data.message)
-                            Swal.fire(
-                                'Error!',
-                                'An error occurred.',
-                                'error'
-                            );
-                        }
-                    }
-                });
-            }
-        });
-    })
-
-    $(document).on('click', '.pay-btn', async function () {
-        var itemId = $(this).data('item-id');
-        var orderNo = $(this).data('orderno')
-        var bankcode = $(this).data('bankcode');
-        var accountno = $(this).data('accountno');
-        var accountname = $(this).data('accountname');
-        var money = $(this).data('money');
-        var isReport = $(this).data('is-report');
-        var isCancel = $(this).data('is-cancel');
-
-        var memo = accountname + ' ' + orderNo;
-        
-        $('#modalQrImage').attr('src', '');
-
-        const fetchData = async (url, options = {}) => {
-            try {
-                const response = await fetch(url, options);
-                if (!response.ok) throw new Error(`Network response was not ok ${response.statusText}`);
-                return await response.json();
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
-
-
-        const data = await fetchData('{% url "update_transaction_history" %}');
-        const dataIn = data.data.in
-        var existed = false
-        // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
-        dataIn.map(transaction => {
-            if (transaction.description.includes(`Z${accountname}`) && transaction.amount === money) {
-                existed = true
-            }
-        })
-
-        if (!existed) {
-            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
-            $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
-            $('.bankcode').html(bankcode);
-            $('.accountno').html(accountno);
-            $('.accountname').html(accountname);
-            $('.memo').html(memo);
-            $('.money').html(money.toLocaleString());
-            setTimeout(function() {
-                $('#modalQrImage').addClass('blur');
-            }, 5000);
-        }
-        else {
-            toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
-        }
-        
-        $('#modalQrImage').on('click', function() {
-            $(this).removeClass('blur');
-            
-            // Hide it again after 5 seconds when clicked
-            setTimeout(function() {
-                $('#modalQrImage').addClass('blur');
-            }, 5000);
-        });
-        
-        
-        $('.done-btn-modal').data('item-id', itemId);
-        $('.done-report-btn').data('item-id', itemId);
-
-        // Show/hide Report button
-        if (isReport === 'False') {
-            $('.report-btn').css('display', 'block').data('item-id', itemId);
-        } else {
-            $('.report-btn').css('display', 'none');
-        }
-
-        // Show/hide Cancel button
-        if (isCancel === 'False') {
-            $('.cancel-btn').css('display', 'block').data('item-id', itemId);
-        } else {
-            $('.cancel-btn').css('display', 'none');
-        }
-
-        $('#payModal').modal('show');
-
-
-        $('.done-btn-modal').click(function () {
-            var itemId = $(this).data('item-id');
-            var bankId = $('#processBank').val();
-            const csrftoken = getCookie('csrftoken');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to mark this payout as done?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{% url 'update_payout' 'done' %}",
-                        type: 'POST',
-                        data: JSON.stringify({id: itemId, bank_id: bankId}),
-                        contentType: 'application/json',
-                        headers: {
-                            'X-CSRFToken': csrftoken
-                        },
-                        success: function (data) {
-                            if (data.success) {
-                                Swal.fire(
-                                    'Marked!',
-                                    'The payout has been marked as done.',
-                                    'success'
-                                ).then(() => {
-                                    location.reload();  // Reload the page to reflect the changes
-                                });
-                            } else {
-                                console.log(data.message)
-                                Swal.fire(
-                                    'Error!',
-                                    'An error occurred.',
-                                    'error'
-                                );
-                            }
-                        }
-                    });
-                }
             });
         });
 
-        $('.done-report-btn').off('click').on('click', function () {
-            var itemId = $(this).data('item-id');
-            var reason = $('#reason').val();
-            const csrftoken = getCookie('csrftoken');
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you want to report this payout?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: "{% url 'update_payout' 'report' %}",
-                        type: 'POST',
-                        data: JSON.stringify({id: itemId, reason: reason}),
-                        contentType: 'application/json',
-                        headers: {
-                            'X-CSRFToken': csrftoken
-                        },
-                        success: function (data) {
-                            if (data.success) {
-                                Swal.fire(
-                                    'Reported!',
-                                    'The payout has been reported.',
-                                    'success'
-                                ).then(() => {
-                                    location.reload();  // Reload the page to reflect the changes
-                                });
-                            } else {
-                                Swal.fire(
-                                    'Error!',
-                                    'An error occurred.',
-                                    'error'
-                                );
-                            }
-                        }
-                    });
-                }
-            });
-        });
-
-        // Cancel button click handler
-        $('.cancel-btn').off('click').on('click', function () {
+        $(document).on('click', '.delete-btn', function () {
             var itemId = $(this).data('item-id');
             const csrftoken = getCookie('csrftoken');
             Swal.fire({
                 title: 'Are you sure?',
-                text: "Do you want to cancel this payout?",
+                text: "Do you want to delete this payout as done?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
@@ -696,7 +414,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{% url 'update_payout' 'cancel' %}",
+                        url: "{% url 'delete_payout' %}",
                         type: 'POST',
                         data: JSON.stringify({id: itemId}),
                         contentType: 'application/json',
@@ -706,13 +424,14 @@
                         success: function (data) {
                             if (data.success) {
                                 Swal.fire(
-                                    'Cancelled!',
-                                    'The payout has been cancelled.',
+                                    'Marked!',
+                                    'The payout has been deleted.',
                                     'success'
                                 ).then(() => {
                                     location.reload();  // Reload the page to reflect the changes
                                 });
                             } else {
+                                console.log(data.message)
                                 Swal.fire(
                                     'Error!',
                                     'An error occurred.',
@@ -723,7 +442,313 @@
                     });
                 }
             });
+        })
+
+        $(document).on('click', '.edit-btn', function () {
+            var itemId = $(this).data('item-id');
+
+            $('.edit-done-btn-modal').click(function () {
+                // var itemId = $(this).data('item-id');
+                var bankCode = $('#editBankCode').val();
+                const csrftoken = getCookie('csrftoken');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to edit this payout?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{% url 'edit_payout'%}",
+                            type: 'POST',
+                            data: JSON.stringify({id: itemId, bankCode: bankCode}),
+                            contentType: 'application/json',
+                            headers: {
+                                'X-CSRFToken': csrftoken
+                            },
+                            success: function (data) {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Marked!',
+                                        'The payout has been edited.',
+                                        'success'
+                                    ).then(() => {
+                                        location.reload();  // Reload the page to reflect the changes
+                                    });
+                                } else {
+                                    console.log(data.message)
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                });
+            });
         });
-    });
-</script>
+
+        $(document).on('click', '.move-btn', function () {
+            var itemId = $(this).data('item-id');
+            const csrftoken = getCookie('csrftoken');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want to move this payout to settle?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: "{% url 'move_payout' %}",
+                        type: 'POST',
+                        data: JSON.stringify({id: itemId}),
+                        contentType: 'application/json',
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire(
+                                    'Marked!',
+                                    'The payout has been moved.',
+                                    'success'
+                                ).then(() => {
+                                    location.reload();  // Reload the page to reflect the changes
+                                });
+                            } else {
+                                console.log(data.message)
+                                Swal.fire(
+                                    'Error!',
+                                    'An error occurred.',
+                                    'error'
+                                );
+                            }
+                        }
+                    });
+                }
+            });
+        })
+
+        $(document).on('click', '.pay-btn', async function () {
+            var itemId = $(this).data('item-id');
+            var orderNo = $(this).data('orderno')
+            var bankcode = $(this).data('bankcode');
+            var accountno = $(this).data('accountno');
+            var accountname = $(this).data('accountname');
+            var money = $(this).data('money');
+            var isReport = $(this).data('is-report');
+            var isCancel = $(this).data('is-cancel');
+
+            var memo = accountname + ' ' + orderNo;
+
+            $('#modalQrImage').attr('src', '');
+
+            const fetchData = async (url, options = {}) => {
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) throw new Error(`Network response was not ok ${response.statusText}`);
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                }
+            };
+
+
+            const data = await fetchData('{% url "update_transaction_history" %}');
+            const dataIn = data.data.in
+            var existed = false
+            // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
+            dataIn.map(transaction => {
+                if (transaction.description.includes(`Z${accountname}`) && transaction.amount === money) {
+                    existed = true
+                }
+            })
+
+            if (!existed) {
+                var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
+                $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
+                $('.bankcode').html(bankcode);
+                $('.accountno').html(accountno);
+                $('.accountname').html(accountname);
+                $('.memo').html(memo);
+                $('.money').html(money.toLocaleString());
+                setTimeout(function () {
+                    $('#modalQrImage').addClass('blur');
+                }, 5000);
+            } else {
+                toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
+            }
+
+            $('#modalQrImage').on('click', function () {
+                $(this).removeClass('blur');
+
+                // Hide it again after 5 seconds when clicked
+                setTimeout(function () {
+                    $('#modalQrImage').addClass('blur');
+                }, 5000);
+            });
+
+
+            $('.done-btn-modal').data('item-id', itemId);
+            $('.done-report-btn').data('item-id', itemId);
+
+            // Show/hide Report button
+            if (isReport === 'False') {
+                $('.report-btn').css('display', 'block').data('item-id', itemId);
+            } else {
+                $('.report-btn').css('display', 'none');
+            }
+
+            // Show/hide Cancel button
+            if (isCancel === 'False') {
+                $('.cancel-btn').css('display', 'block').data('item-id', itemId);
+            } else {
+                $('.cancel-btn').css('display', 'none');
+            }
+
+            $('#payModal').modal('show');
+
+
+            $('.done-btn-modal').click(function () {
+                var itemId = $(this).data('item-id');
+                var bankId = $('#processBank').val();
+                const csrftoken = getCookie('csrftoken');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to mark this payout as done?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{% url 'update_payout' 'done' %}",
+                            type: 'POST',
+                            data: JSON.stringify({id: itemId, bank_id: bankId}),
+                            contentType: 'application/json',
+                            headers: {
+                                'X-CSRFToken': csrftoken
+                            },
+                            success: function (data) {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Marked!',
+                                        'The payout has been marked as done.',
+                                        'success'
+                                    ).then(() => {
+                                        location.reload();  // Reload the page to reflect the changes
+                                    });
+                                } else {
+                                    console.log(data.message)
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            $('.done-report-btn').off('click').on('click', function () {
+                var itemId = $(this).data('item-id');
+                var reason = $('#reason').val();
+                const csrftoken = getCookie('csrftoken');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to report this payout?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{% url 'update_payout' 'report' %}",
+                            type: 'POST',
+                            data: JSON.stringify({id: itemId, reason: reason}),
+                            contentType: 'application/json',
+                            headers: {
+                                'X-CSRFToken': csrftoken
+                            },
+                            success: function (data) {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Reported!',
+                                        'The payout has been reported.',
+                                        'success'
+                                    ).then(() => {
+                                        location.reload();  // Reload the page to reflect the changes
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Cancel button click handler
+            $('.cancel-btn').off('click').on('click', function () {
+                var itemId = $(this).data('item-id');
+                const csrftoken = getCookie('csrftoken');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you want to cancel this payout?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{% url 'update_payout' 'cancel' %}",
+                            type: 'POST',
+                            data: JSON.stringify({id: itemId}),
+                            contentType: 'application/json',
+                            headers: {
+                                'X-CSRFToken': csrftoken
+                            },
+                            success: function (data) {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Cancelled!',
+                                        'The payout has been cancelled.',
+                                        'success'
+                                    ).then(() => {
+                                        location.reload();  // Reload the page to reflect the changes
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'An error occurred.',
+                                        'error'
+                                    );
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
 {% endblock %}
