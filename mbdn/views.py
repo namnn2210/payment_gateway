@@ -43,11 +43,13 @@ def mbdn_balance(username, password, account_number, corp_id, start=''):
         "accountNo": account_number,
         "corp_id": corp_id
     }
+    print(body)
     response = requests.post(get_env("MBDN_URL"), json=body, timeout=120)
     if response.status_code == 200:
         if '"ok":true' in response.text:
             json_response = json.loads(response.text)
-            if json_response['result']['ok']:
-                transactions = json_response['transactionHistoryList']
+            print(json_response)
+            if json_response['data']['result']['ok']:
+                transactions = json_response['data']['transactionHistoryList']
                 return transactions[0]['availableBalance'], transactions
     return None, None

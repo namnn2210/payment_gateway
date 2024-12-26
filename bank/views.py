@@ -108,7 +108,7 @@ class AddBankView(View):
             bank_password = data.get('bankPassword')
             bank_type = data.get('bankType')
             bank_name = data.get('bankName')
-            corp_id = data.get('corpId')
+            corp_id = data.get('corpId','')
 
             # Check if any bank_account with the same type is ON
             existed_bank_account = BankAccount.objects.filter(
