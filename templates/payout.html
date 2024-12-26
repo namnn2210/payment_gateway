@@ -149,6 +149,7 @@
                                     <p>Mã ngân hàng: <span class="font-weight-bold bankcode"></span></p>
                                     <p>Số tài khoản: <span class="font-weight-bold accountno"></span></p>
                                     <p>Chủ tài khoản: <span class="font-weight-bold accountname"></span></p>
+                                    <p>Nội dung: <span class="font-weight-bold memo"></span></p>
                                     <p>Số tiền: <span class="font-weight-bold money"></span></p>
                                 </div>
                             </div>
@@ -551,6 +552,7 @@
             $('.bankcode').html(bankcode);
             $('.accountno').html(accountno);
             $('.accountname').html(accountname);
+            $('.memo').html(memo);
             $('.money').html(money.toLocaleString());
             setTimeout(function() {
                 $('#modalQrImage').addClass('blur');
