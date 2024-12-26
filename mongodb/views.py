@@ -90,6 +90,7 @@ def get_new_transactions(transactions, account_number):
             match = re.search(r'\s\d{19}', description)
             if match:
                 orderno = match.group()
+                print("Order No: ", orderno)
                 payout = apps.get_model('payout', 'Payout')
                 existed_payout = payout.objects.filter(orderno=orderno).first()
                 print("Existed payout by orderno: ", existed_payout)
