@@ -512,12 +512,15 @@
 
     $(document).on('click', '.pay-btn', async function () {
         var itemId = $(this).data('item-id');
+        var orderNo = $(this).data('orderno')
         var bankcode = $(this).data('bankcode');
         var accountno = $(this).data('accountno');
         var accountname = $(this).data('accountname');
         var money = $(this).data('money');
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
+
+        var memo = accountname + ' ' + orderNo;
         
         $('#modalQrImage').attr('src', '');
 
@@ -543,7 +546,7 @@
         })
 
         if (!existed) {
-            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
             $('.bankcode').html(bankcode);
             $('.accountno').html(accountno);
