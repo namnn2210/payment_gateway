@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 # Create your models here.
 class Bank(models.Model):
     name = models.CharField(max_length=255)
@@ -29,17 +30,17 @@ class BankAccount(models.Model):
     account_name = models.CharField(max_length=255, default='')
     username = models.CharField(max_length=255, default='')
     password = models.CharField(max_length=255, default='')
-    corp_id = models.CharField(max_length=255, default='')
+    corp_id = models.CharField(max_length=255, null=True, blank=True, default='')
     balance = models.BigIntegerField(default=0)
     bank_type = models.CharField(max_length=255, default='IN')
     status = models.BooleanField(default=True)
-    last_logged_in = models.DateTimeField(null=True)
+    last_logged_in = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return self.account_number
-    
+
     def as_dict(self):
         return {
             "user": self.user.id,
@@ -58,6 +59,3 @@ class BankAccount(models.Model):
 
     class Meta:
         db_table = 'bank_account'
-        
-    
-
