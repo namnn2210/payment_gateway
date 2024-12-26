@@ -1,7 +1,8 @@
 from config.views import get_env
 from pymongo import MongoClient, errors
 from bank.utils import format_transaction_list, get_today_date
-# from payout.models import Payouts
+from payout.models import Payout
+import re
 
 def mongo_connect():
     try:
@@ -84,13 +85,13 @@ def get_new_transactions(transactions, account_number):
 
     # Check if transaction is OUT and contain Z -> success
     for txn in new_transactions:
-        if txn['transaction_type'] == 'OUT' and 'Z' in txn['description']:
-            # description = txn.get('description', '')
-            # match = re.search(r'\s\d{19}', description)
-            # if match:
-            #     orderno = match.group()
-            #     existed_payout = Payout.objects.filter(orderno=orderno).first()
-            #     if existed_payout:
+        if txn['transaction_type'] == 'OUT':
+            description = txn.get('description', '')
+            match = re.search(r'\s\d{19}', description)
+            if match:
+                orderno = match.group()
+                existed_payout = Payout.objects.filter(orderno=orderno).first()
+                if existed_payout:
                     txn['status'] = 'Success'
 
     return new_transactions
