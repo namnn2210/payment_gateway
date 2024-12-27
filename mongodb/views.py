@@ -2,6 +2,7 @@ from config.views import get_env
 from pymongo import MongoClient, errors
 from bank.utils import format_transaction_list, get_today_date
 from django.apps import apps
+from bank.utils import send_telegram_message
 import re
 
 def mongo_connect():
@@ -92,14 +93,31 @@ def get_new_transactions(transactions, account_number):
                 orderno = match.group()
                 print("Order No: ", orderno)
                 payout = apps.get_model('payout', 'Payout')
-                existed_payout = payout.objects.filter(orderno=orderno.strip(), money=txn['amount']).first()
+                existed_payout = payout.objects.filter(orderno=orderno.strip(), money=txn['amount'], status=False, staging_status=True).first()
                 print("Existed payout by orderno: ", existed_payout)
                 if existed_payout:
                     txn['status'] = 'Success'
-
-    # for txn in new_transactions:
-    #     if txn['transaction_type'] == 'OUT' and 'Z' in txn['description']:
-    #         txn['status'] = 'Success'
+                    existed_payout.status = True
+                    existed_payout.staging_status = False
+                    existed_payout.save()
+                else:
+                    formatted_amount = '{:,.2f}'.format(txn['amount'])
+                    alert = (
+                        f'Hi, failed\n'
+                        f'\n'
+                        f'Account: {txn['account_number']}'
+                        f'\n'
+                        f'Amount💲: {formatted_amount} \n'
+                        f'\n'
+                        f'Memo: {txn['description']}\n'
+                        f'\n'
+                        f'Order No: {orderno}\n'
+                        f'\n'
+                        f'Time: {txn['transaction_date']}\n'
+                        f'\n'
+                        f'Please check the transaction again'
+                    )
+                    send_telegram_message(alert, get_env('FAILED_CHAT_ID'), get_env('226PAY_BOT'))
 
     return new_transactions
 

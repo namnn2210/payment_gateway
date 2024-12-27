@@ -546,6 +546,8 @@
             var money = $(this).data('money');
             var isReport = $(this).data('is-report');
             var isCancel = $(this).data('is-cancel');
+            var staging = $(this).data('staging');
+            
 
             var memo = accountname + ' ' + orderNo;
 
@@ -573,7 +575,11 @@
             })
 
             if (!existed) {
-                var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
+                if (staging === 'False') {
+                    var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
+                } else {
+                    var qrUrl = ``;
+                }
                 $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
                 $('.bankcode').html(bankcode);
                 $('.accountno').html(accountno);

@@ -21,6 +21,7 @@ class Payout(models.Model):
     process_bank = models.ForeignKey(Bank, on_delete=models.CASCADE, null=True)
     status = models.BooleanField(default=False,null=True)
     partner_status = models.BooleanField(default=False,null=True)
+    staging_status = models.BooleanField(default=False,null=True)
     updated_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payout_created_by', null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
