@@ -576,21 +576,40 @@
 
             if (!existed) {
                 var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
-                $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
+                $('#modalQrImage').attr('src', qrUrl).addClass('blur');
                 $('.bankcode').html(bankcode);
                 $('.accountno').html(accountno);
                 $('.accountname').html(accountname);
                 $('.memo').html(memo);
                 $('.money').html(money.toLocaleString());
-                setTimeout(function () {
-                    $('#modalQrImage').addClass('blur');
-                }, 5000);
             } else {
                 toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
             }
 
             $('#modalQrImage').on('click', function () {
-                $(this).removeClass('blur');
+                const csrftoken = getCookie('csrftoken');
+                $.ajax({
+                    url: "{% url 'check_success_payout' %}",
+                    type: 'POST',
+                    data: JSON.stringify({id: itemId}),
+                    contentType: 'application/json',
+                    headers: {
+                        'X-CSRFToken': csrftoken
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            Swal.fire(
+                                'Marked!',
+                                'The payout has been marked as done. The page will be reloaded',
+                                'success'
+                            ).then(() => {
+                                location.reload();  // Reload the page to reflect the changes
+                            });
+                        } else {
+                            $('#modalQrImage').removeClass('blur');
+                        }
+                    }
+                });
 
                 // Hide it again after 5 seconds when clicked
                 setTimeout(function () {

@@ -289,7 +289,18 @@ def move_payout(request):
         return JsonResponse({'status': 200, 'message': 'Done','success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex),'success': False})
-    
+
+@csrf_exempt
+@require_POST
+def check_success_payout(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        payout_id = data.get('id')
+        payout = get_object_or_404(Payout, id=payout_id)
+        if payout.status:
+            return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
+        else:
+            return JsonResponse({'status': 500, 'message': 'Failed', 'success': False})
 @csrf_exempt 
 def webhook(request):
     if request.method == 'POST':
