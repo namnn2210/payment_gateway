@@ -93,13 +93,13 @@ def get_new_transactions(transactions, account_number):
                 orderno = match.group()
                 print("Order No: ", orderno)
                 payout = apps.get_model('payout', 'Payout')
-                existed_payout = payout.objects.filter(orderno=orderno.strip(), money=txn['amount'], status=False).first()
+                existed_payout = payout.objects.filter(orderno=orderno.strip(), money=txn['amount'], status=True).first()
                 print("Existed payout by orderno: ", existed_payout)
                 if existed_payout:
                     txn['status'] = 'Success'
-                    existed_payout.status = True
+                    # existed_payout.status = True
                     # existed_payout.staging_status = True
-                    existed_payout.save()
+                    # existed_payout.save()
                 else:
                     formatted_amount = '{:,.2f}'.format(txn['amount'])
                     alert = (
