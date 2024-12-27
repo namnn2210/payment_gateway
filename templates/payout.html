@@ -575,11 +575,7 @@
             })
 
             if (!existed) {
-                if (staging === 'False') {
-                    var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
-                } else {
-                    var qrUrl = ``;
-                }
+                var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
                 $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
                 $('.bankcode').html(bankcode);
                 $('.accountno').html(accountno);
