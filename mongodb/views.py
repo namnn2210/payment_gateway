@@ -95,7 +95,7 @@ def get_new_transactions(transactions, account_number):
                 print("Order No: ", orderno)
                 time.sleep(15)
                 payout = apps.get_model('payout', 'Payout')
-                existed_payout = payout.objects.filter(orderno=orderno.strip(), money=txn['amount'], status=True).first()
+                existed_payout = payout.objects.filter(orderno=orderno.strip(), money=txn['amount']).first()
                 print("Existed payout by orderno: ", existed_payout)
                 if existed_payout:
                     txn['status'] = 'Success'
