@@ -57,6 +57,12 @@ def record_book(request):
                                                                date_start=start_date, date_end=end_date,
                                                                order_by=order_by, search_text=search_query)
 
+    for item in list_transactions_in:
+        item['transaction_number'] = item['transaction_number'].replace('\\BNK', '')
+
+    for item in list_transactions_out:
+        item['transaction_number'] = item['transaction_number'].replace('\\BNK', '')
+
     # Calculate total amounts
     total_in_amount = sum(txn.get('amount', 0) for txn in list_transactions_in)
     total_out_amount = sum(txn.get('amount', 0) for txn in list_transactions_out)

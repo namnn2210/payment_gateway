@@ -185,11 +185,7 @@
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="?page=
-                                                
-                                                
-                                                
-                                                {{ list_payout.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}"
+                                        <a class="page-link" href="?page={{ list_payout.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}"
                                            aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
@@ -199,32 +195,19 @@
                                     {% if list_payout.number == num %}
                                         <li class="page-item active"><span class="page-link">{{ num }}</span></li>
                                     {% elif num > list_payout.number|add:-3 and num < list_payout.number|add:3 %}
-                                        <li class="page-item"><a class="page-link" href="?page=
-                                                
-                                                
-                                                
-                                                {{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}">{{ num }}</a>
+                                        <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}">{{ num }}</a>
                                         </li>
                                     {% endif %}
                                 {% endfor %}
                                 {% if list_payout.has_next %}
                                     <li class="page-item">
-                                        <a class="page-link" href="?page=
-                                                
-                                                
-                                                
-                                                {{ list_payout.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}"
+                                        <a class="page-link" href="?page={{ list_payout.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}"
                                            aria-label="Next">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="?page=
-                                                
-                                                
-                                                
-                                                {{ list_payout.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}"
-                                           aria-label="Last">
+                                        <a class="page-link" href="?page={{ list_payout.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Last">
                                             <span aria-hidden="true">&raquo;&raquo;</span>
                                         </a>
                                     </li>
