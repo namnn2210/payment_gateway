@@ -43,48 +43,51 @@ def get_balance(bank):
 
     max_error_count = 3
 
-    while bank_balance is None:
-        print('Error fetching bank balance, try to login')
-        error_count += 1
-        print('Retry logging in: ', error_count)
-        if error_count > max_error_count:
-            alert = (
-                f'🔴 - LỖI HỆ THỐNG\n'
-                f'Dữ liệu tài khoản: {bank.account_number} trống\n'
-                f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
-            )
-            send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
-            return
+    if bank.bank_name.bankcode == 'MB_CORP':
+        pass
+    else:
+        while bank_balance is None:
+            print('Error fetching bank balance, try to login')
+            error_count += 1
+            print('Retry logging in: ', error_count)
+            if error_count > max_error_count:
+                alert = (
+                    f'🔴 - LỖI HỆ THỐNG\n'
+                    f'Dữ liệu tài khoản: {bank.account_number} trống\n'
+                    f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
+                )
+                send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+                return
 
-        bank_logged_in = None
+            bank_logged_in = None
 
-        tech_count = 1
-        if bank.bank_name.name == 'MB':
-            bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
-        elif bank.bank_name.name == 'ACB':
-            bank_logged_in = acb_login(bank.username, bank.password, bank.account_number)
-        elif bank.bank_name.name == 'Vietinbank':
-            bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
-        elif bank.bank_name.name == 'Techcombank':
-            while tech_count <= 3:
-                time.sleep(5)
-                bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
-                if bank_balance is not None:
-                    bank_logged_in = False
-                    break
-                tech_count += 1
-        if tech_count == 3:
-            break
-
-        if bank_logged_in:
+            tech_count = 1
             if bank.bank_name.name == 'MB':
-                bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+                bank_logged_in = mb_login(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'ACB':
-                bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+                bank_logged_in = acb_login(bank.username, bank.password, bank.account_number)
             elif bank.bank_name.name == 'Vietinbank':
-                bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
-            else:
-                bank_balance = None
+                bank_logged_in = vietin_login(bank.username, bank.password, bank.account_number)
+            elif bank.bank_name.name == 'Techcombank':
+                while tech_count <= 3:
+                    time.sleep(5)
+                    bank_balance = tech_balance(bank.username, bank.password, bank.account_number)
+                    if bank_balance is not None:
+                        bank_logged_in = False
+                        break
+                    tech_count += 1
+            if tech_count == 3:
+                break
+
+            if bank_logged_in:
+                if bank.bank_name.name == 'MB':
+                    bank_balance = mb_balance(bank.username, bank.password, bank.account_number)
+                elif bank.bank_name.name == 'ACB':
+                    bank_balance = acb_balance(bank.username, bank.password, bank.account_number)
+                elif bank.bank_name.name == 'Vietinbank':
+                    bank_balance = vietin_balance(bank.username, bank.password, bank.account_number)
+                else:
+                    bank_balance = None
 
     if bank_balance:
         if int(bank_balance) != int(bank.balance):
