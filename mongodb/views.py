@@ -103,23 +103,24 @@ def get_new_transactions(transactions, account_number):
                     # existed_payout.staging_status = True
                     # existed_payout.save()
                 else:
-                    formatted_amount = '{:,.2f}'.format(txn['amount'])
-                    alert = (
-                        f'Hi, failed\n'
-                        f'\n'
-                        f'Account: {txn['account_number']}'
-                        f'\n'
-                        f'Amount💲: {formatted_amount} \n'
-                        f'\n'
-                        f'Memo: {txn['description']}\n'
-                        f'\n'
-                        f'Order No: {orderno}\n'
-                        f'\n'
-                        f'Time: {txn['transaction_date']}\n'
-                        f'\n'
-                        f'Please check the transaction again'
-                    )
-                    send_telegram_message(alert, get_env('FAILED_CHAT_ID'), get_env('226PAY_BOT'))
+                    pass
+                    # formatted_amount = '{:,.2f}'.format(txn['amount'])
+                    # alert = (
+                    #     f'Hi, failed\n'
+                    #     f'\n'
+                    #     f'Account: {txn['account_number']}'
+                    #     f'\n'
+                    #     f'Amount💲: {formatted_amount} \n'
+                    #     f'\n'
+                    #     f'Memo: {txn['description']}\n'
+                    #     f'\n'
+                    #     f'Order No: {orderno}\n'
+                    #     f'\n'
+                    #     f'Time: {txn['transaction_date']}\n'
+                    #     f'\n'
+                    #     f'Please check the transaction again'
+                    # )
+                    # send_telegram_message(alert, get_env('FAILED_CHAT_ID'), get_env('226PAY_BOT'))
 
     return new_transactions
 
