@@ -95,19 +95,19 @@ def get_new_transactions(transactions, account_number):
                 print("Order No: ", orderno)
                 time.sleep(15)
                 payout = apps.get_model('payout', 'Payout')
-                existed_payout = payout.objects.filter(orderno=orderno.strip(), money=txn['amount'], status=True).first()
+                existed_payout = payout.objects.filter(orderno__conta=orderno.strip(), money=txn['amount'], status=True).first()
                 print("Existed payout by orderno: ", existed_payout)
                 if existed_payout:
                     txn['status'] = 'Success'
-                    # existed_payout.status = True
-                    # existed_payout.staging_status = True
-                    # existed_payout.save()
                 else:
                     pass
+                    # formatted_description = txn.get('description', '').replace(' ', '')
+                    # match = re.search(r'\d{19}', description)
                     # formatted_amount = '{:,.2f}'.format(txn['amount'])
                     # alert = (
                     #     f'Hi, failed\n'
                     #     f'\n'
+
                     #     f'Account: {txn['account_number']}'
                     #     f'\n'
                     #     f'Amount💲: {formatted_amount} \n'
