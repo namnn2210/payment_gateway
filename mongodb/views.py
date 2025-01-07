@@ -90,19 +90,21 @@ def get_new_transactions(transactions, account_number):
         if txn['transaction_type'] == 'OUT':
             description = txn.get('description', '')
             match = re.search(r'\d{19}', description)
+            payout = apps.get_model('payout', 'Payout')
             if match:
                 orderno = match.group()
                 print("Order No: ", orderno)
                 time.sleep(15)
-                payout = apps.get_model('payout', 'Payout')
-                existed_payout = payout.objects.filter(orderno__conta=orderno.strip(), money=txn['amount'], status=True).first()
+                existed_payout = payout.objects.filter(orderno__contains=orderno.strip(), money=txn['amount'], status=True).first()
                 print("Existed payout by orderno: ", existed_payout)
                 if existed_payout:
                     txn['status'] = 'Success'
                 else:
-                    pass
-                    # formatted_description = txn.get('description', '').replace(' ', '')
-                    # match = re.search(r'\d{19}', description)
+                    # pass
+                    formatted_description = txn.get('description', '').replace(' ', '')
+                    match = re.search(r'\d{19}', description)
+                    if match:
+                        orderno = match.group()
                     # formatted_amount = '{:,.2f}'.format(txn['amount'])
                     # alert = (
                     #     f'Hi, failed\n'
