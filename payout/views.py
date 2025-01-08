@@ -297,7 +297,7 @@ def check_success_payout(request):
         data = json.loads(request.body)
         payout_id = data.get('id')
         payout = get_object_or_404(Payout, id=payout_id)
-        if payout.status:
+        if payout.staging_status:
             return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
         else:
             return JsonResponse({'status': 500, 'message': 'Failed', 'success': False})

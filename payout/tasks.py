@@ -24,6 +24,7 @@ def update_payout_background(update_body):
         if payout.is_auto:
             if not payout.status:
                 payout.status = True
+                payout.staging_status = True
                 payout.save()
                 alert = (
                     f'🟢🟢🟢{payout.orderid}\n'
@@ -50,6 +51,7 @@ def update_payout_background(update_body):
         else:
             if not payout.status:
                 payout.status = True
+                payout.staging_status = True
                 payout.save()
                 alert = (
                     f'🟢🟢🟢{payout.orderid}\n'
