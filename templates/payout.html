@@ -549,7 +549,7 @@
             var staging = $(this).data('staging');
             
             var lastName = accountname.split(' ').slice(-1)[0];
-            var memo = lastName + ' ' + orderNo.toString().replace(" ", "");
+            var memo = lastName + ' ' + 'Z' + orderNo.slice(-11).toString();
 
             $('#modalQrImage').attr('src', '');
 
