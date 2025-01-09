@@ -190,9 +190,9 @@ def get_new_transactions(transactions, account_number):
                                 break
                             continue
                         elif len(existed_settles) > 0:
-                            for payout in existed_settles:
-                                payout.status = True
-                                payout.save()
+                            for settle in existed_settles:
+                                settle.status = True
+                                settle.save()
                                 txn['status'] = 'Success'
                                 alert = (
                                     f'🟢🟢🟢{settle.orderid}\n'
