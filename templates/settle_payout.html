@@ -456,16 +456,21 @@
     $(document).on('click', '.pay-btn', function () {
         var itemId = $(this).data('item-id');
         var bankcode = $(this).data('bankcode');
+        var orderNo = $(this).data('orderno')
         var accountno = $(this).data('accountno');
         var accountname = $(this).data('accountname');
         var money = $(this).data('money');
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
         var firstName = accountname.split(' ').slice(-1);
+
+        var lastName = accountname.split(' ').slice(-1)[0];
+        var memo = lastName + ' ' + 'Z' + orderNo.toString().slice(-11);
+
         var existed = false
         $('#modalQrImage').attr('src', '');
         if (!existed) {
-            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=Z${accountname}&accountName=${accountname}`;
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl).removeClass('blur').show();
             $('.bankcode').html(bankcode);
             $('.accountno').html(accountno);
@@ -479,11 +484,33 @@
             toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
         }
 
-        $('#modalQrImage').on('click', function() {
-            $(this).removeClass('blur');
+        $('#modalQrImage').on('click', function () {
+            const csrftoken = getCookie('csrftoken');
+            $.ajax({
+                url: "{% url 'check_success_settle' %}",
+                type: 'POST',
+                data: JSON.stringify({id: itemId}),
+                contentType: 'application/json',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                success: function (data) {
+                    if (data.success) {
+                        Swal.fire(
+                            'Marked!',
+                            'The payout has been marked as done. The page will be reloaded',
+                            'success'
+                        ).then(() => {
+                            location.reload();  // Reload the page to reflect the changes
+                        });
+                    } else {
+                        $('#modalQrImage').removeClass('blur');
+                    }
+                }
+            });
 
             // Hide it again after 5 seconds when clicked
-            setTimeout(function() {
+            setTimeout(function () {
                 $('#modalQrImage').addClass('blur');
             }, 5000);
         });

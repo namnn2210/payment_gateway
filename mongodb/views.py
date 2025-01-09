@@ -91,28 +91,49 @@ def get_new_transactions(transactions, account_number):
             description = txn.get('description', '')
             match = re.search(r'Z\d{11}', description)
             payout = apps.get_model('payout', 'Payout')
+            settle_payout = apps.get_model('settle_payout', 'SettlePayout')
             if match:
                 orderno = match.group().replace('Z','')
                 print("Order No: ", orderno)
                 existed_payouts = payout.objects.filter(orderno__contains=orderno, money=txn['amount'])
+                existed_settles = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount'])
                 if len(existed_payouts) > 0:
                     for payout in existed_payouts:
                         payout.status = True
                         payout.staging_status = True
                         payout.save()
                         txn['status'] = 'Success'
+                        break
+                    break
+                if len(existed_settles) > 0:
+                    for payout in existed_settles:
+                        payout.status = True
+                        payout.save()
+                        txn['status'] = 'Success'
+                        break
+                    break
                 else:
                     formatted_description = txn.get('description', '').replace(' ', '')
                     match = re.search(r'Z\d{11}', formatted_description)
                     if match:
                         orderno = match.group().replace('Z','')
                         existed_payouts = payout.objects.filter(orderno__contains=orderno, money=txn['amount'])
+                        existed_settles = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount'])
                         if len(existed_payouts) > 0:
                             for payout in existed_payouts:
                                 payout.status = True
                                 payout.staging_status = True
                                 payout.save()
                                 txn['status'] = 'Success'
+                                break
+                            break
+                        elif len(existed_settles) > 0:
+                            for payout in existed_settles:
+                                payout.status = True
+                                payout.save()
+                                txn['status'] = 'Success'
+                                break
+                            break
                         else:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (

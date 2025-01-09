@@ -24,14 +24,14 @@ import json
 import random
 import hashlib
 
-
 BANK_CODE_MAPPING = {
-    'VTB':'ICB',
-    'SCM':'STB',
-    'VBARD':'VBA',
-    'DAB':'DOB',
-    'EXIM':'EIB'
+    'VTB': 'ICB',
+    'SCM': 'STB',
+    'VBARD': 'VBA',
+    'DAB': 'DOB',
+    'EXIM': 'EIB'
 }
+
 
 # Create your views here.
 @login_required(login_url='user_login')
@@ -45,7 +45,7 @@ def list_payout(request):
     # Get search parameters
     search_query = request.GET.get('search', '')
     status_filter = request.GET.get('status', 'Pending')
-    
+
     employee_filter = request.GET.get('employee')
 
     if search_query:
@@ -71,8 +71,6 @@ def list_payout(request):
         list_payout = list_payout.filter(is_cancel=True)
     elif status_filter == 'Reported':
         list_payout = list_payout.filter(is_report=True)
-        
-    
 
     today = timezone.now().date().strftime('%d/%m/%Y')
 
@@ -90,8 +88,7 @@ def list_payout(request):
         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
 
     list_payout = list_payout.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
-    
-    
+
     if not employee_filter:
         list_payout = list_payout.filter(user=request.user)
     else:
@@ -109,7 +106,6 @@ def list_payout(request):
 
     total_results = len(list_payout)
     total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
-
 
     paginator = Paginator(list_payout, 10)  # Show 10 items per page
     page_number = request.GET.get('page')
@@ -130,11 +126,13 @@ def list_payout(request):
         'banks': banks,
         'total_results': total_results,
         'total_amount': total_amount,
-        'users':users
+        'users': users
     })
+
 
 def search_payout(request):
     return render(request=request, template_name='payout_history.html')
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class AddPayoutView(View):
@@ -147,26 +145,26 @@ class AddPayoutView(View):
         accountno = data.get('accountno').strip()
         accountname = data.get('accountname')
         bankcode = data.get('bankcode')
-        
+
         try:
             float(money)
         except Exception as ex:
             return JsonResponse({'status': 504, 'message': 'Định dạng tiền không hợp lệ'})
-        
+
         if '.00' not in money:
             return JsonResponse({'status': 503, 'message': 'Số tiền phải có đuôi .00'})
-        
+
         # Check if any bank_account with the same type is ON
         existed_bank_account = Payout.objects.filter(
             orderid=orderid).first()
         if existed_bank_account:
             return JsonResponse({'status': 505, 'message': 'Lệnh rút đã tồn tại. Vui lòng kiểm tra mã đơn hàng'})
 
-        #Process the data and save to the database
-    
+        # Process the data and save to the database
+
         payout = Payout.objects.create(
             user=request.user,
-            scode='CID1630'+scode,
+            scode='CID1630' + scode,
             orderno=orderid,
             orderid=orderid,
             money=int(float(money)),
@@ -198,22 +196,23 @@ def update_payout(request, update_type):
 
         bank_id = data.get('bank_id')
         request_user_username = model_to_dict(request.user)['username']
-        reason = data.get('reason',1)
+        reason = data.get('reason', 1)
         update_body = {
-            'payout_id':payout_id,
-            'bank_id':bank_id,
-            'request_user_username':request_user_username,
-            'update_type':update_type,
+            'payout_id': payout_id,
+            'bank_id': bank_id,
+            'request_user_username': request_user_username,
+            'update_type': update_type,
             'reason': int(reason)
         }
         update_success = update_payout_background(update_body)
         if update_success:
-            return JsonResponse({'status': 200, 'message': 'Done','success': True})
+            return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
         else:
             return JsonResponse({'status': 410, 'message': 'Update payout failed', 'success': False})
     except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
-    
+        return JsonResponse({'status': 500, 'message': str(ex), 'success': False})
+
+
 @csrf_exempt
 @require_POST
 def delete_payout(request):
@@ -222,10 +221,11 @@ def delete_payout(request):
         payout_id = data.get('id')
         payout = get_object_or_404(Payout, id=payout_id)
         payout.delete()
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
     except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
-    
+        return JsonResponse({'status': 500, 'message': str(ex), 'success': False})
+
+
 @csrf_exempt
 @require_POST
 def edit_payout(request):
@@ -235,7 +235,7 @@ def edit_payout(request):
         payout_id = data.get('id')
         bank_code = data.get('bankCode')
         payout = get_object_or_404(Payout, id=payout_id)
-        system_bankcode = BANK_CODE_MAPPING.get(bank_code,'')
+        system_bankcode = BANK_CODE_MAPPING.get(bank_code, '')
         partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         if not system_bankcode:
             for bank in partner_bank_data:
@@ -250,10 +250,11 @@ def edit_payout(request):
         payout.bankcode = bank_code
         payout.partner_bankcode = partner_bankcode
         payout.save()
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
     except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
-    
+        return JsonResponse({'status': 500, 'message': str(ex), 'success': False})
+
+
 @csrf_exempt
 @require_POST
 def move_payout(request):
@@ -261,7 +262,7 @@ def move_payout(request):
         data = json.loads(request.body)
         payout_id = data.get('id')
         payout = get_object_or_404(Payout, id=payout_id)
-        
+
         # Create settle payout from payout
         SettlePayout.objects.create(
             user=payout.user,
@@ -283,12 +284,13 @@ def move_payout(request):
             created_at=payout.created_at,
             updated_at=payout.updated_at,
         )
-        
+
         # Delete payout
         payout.delete()
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
+        return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
     except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+        return JsonResponse({'status': 500, 'message': str(ex), 'success': False})
+
 
 @csrf_exempt
 @require_POST
@@ -301,64 +303,62 @@ def check_success_payout(request):
             return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
         else:
             return JsonResponse({'status': 500, 'message': 'Failed', 'success': False})
-@csrf_exempt 
+
+
+@csrf_exempt
 def webhook(request):
     if request.method == 'POST':
-        
+
         partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         system_bank_data = json.load(open('bank.json', encoding='utf-8'))
-        
+
         decoded_str = request.body.decode('utf-8')
 
         data = json.loads(decoded_str)
-        
+
         print('webhook request data: ', data)
-        
+
         scode = data.get('scode')
         orderno = data.get('orderno')
         orderid = data.get('orderid')
         money = data.get('data').get('amount')
         accountno = data.get('data').get('payeeaccountno')
         accountname = data.get('data').get('payeeaccountname')
-        bankcode = data.get('data').get('payeebankbranchcode','')
-        payeebankname = data.get('data').get('payeebankname','')
-        payeebankbranch = data.get('data').get('payeebankbranch','')
+        bankcode = data.get('data').get('payeebankbranchcode', '')
+        payeebankname = data.get('data').get('payeebankname', '')
+        payeebankbranch = data.get('data').get('payeebankbranch', '')
         body_sign = data.get('sign')
-        
+
         cid = CID.objects.filter(name=scode).first()
 
-        
         key = cid.key
-        
-        
+
         sign_string = f"{scode}|{orderno}|{orderid}|{payeebankname}|{payeebankbranch}|{bankcode}|{accountno}|{accountname}|{money}:{key}"
         sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
-        
+
         if sign != body_sign:
             print('not match sign')
             return JsonResponse({'status': 403, 'message': 'Forbidden'})
-        
+
         try:
             float(money)
         except Exception as ex:
             return JsonResponse({'status': 504, 'message': 'Invalid amount'})
 
-        
         existed_payout = Payout.objects.filter(
-        orderid=orderid).first()
+            orderid=orderid).first()
         if existed_payout:
             return JsonResponse({'status': 505, 'message': 'Payout existed'})
-        
+
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
         current_working_user = []
-        if len(current_sessions) != 0 :
+        if len(current_sessions) != 0:
             for session in current_sessions:
                 current_working_user.append(session.user)
         else:
             admin_user = User.objects.filter(username='admin-huong').first()
             current_working_user.append(admin_user)
-        
-                
+
         system_bankcode = ''
         partner_bankcode = ''
         settle = False
@@ -385,22 +385,22 @@ def webhook(request):
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
             settle_payout = SettlePayout.objects.create(
-                    user=random.choice(current_working_user),
-                    scode=scode,
-                    orderno=orderno,
-                    orderid=orderid,
-                    money=int(float(money)),
-                    accountno=accountno,
-                    accountname=accountname,
-                    bankname=payeebankname,
-                    bankcode=system_bankcode,
-                    # partner_bankcode=partner_bankcode,
-                    updated_by=None,
-                    is_auto=True,
-                    is_cancel=False,
-                    is_report=False,
-                    created_at=timezone.now()
-                )
+                user=random.choice(current_working_user),
+                scode=scode,
+                orderno=orderno,
+                orderid=orderid,
+                money=int(float(money)),
+                accountno=accountno,
+                accountname=accountname,
+                bankname=payeebankname,
+                bankcode=system_bankcode,
+                # partner_bankcode=partner_bankcode,
+                updated_by=None,
+                is_auto=True,
+                is_cancel=False,
+                is_report=False,
+                created_at=timezone.now()
+            )
             settle_payout.save()
             alert = (
                 f'🔴 - THÔNG BÁO SETTLE PAYOUT\n'
@@ -409,7 +409,7 @@ def webhook(request):
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
 
         else:
-            system_bankcode = BANK_CODE_MAPPING.get(bankcode,'')
+            system_bankcode = BANK_CODE_MAPPING.get(bankcode, '')
             if not system_bankcode:
                 for bank in partner_bank_data:
                     if bank['bankname'] == payeebankname:
@@ -420,24 +420,24 @@ def webhook(request):
                     system_bankcode = bankcode
             else:
                 partner_bankcode = bankcode
-        
+
             payout = Payout.objects.create(
-                    user=random.choice(current_working_user),
-                    scode=scode,
-                    orderno=orderno,
-                    orderid=orderid,
-                    money=int(float(money)),
-                    accountno=accountno,
-                    accountname=accountname,
-                    bankname=payeebankname,
-                    bankcode=system_bankcode,
-                    partner_bankcode=partner_bankcode,
-                    updated_by=None,
-                    is_auto=True,
-                    is_cancel=False,
-                    is_report=False,
-                    created_at=timezone.now()
-                )
+                user=random.choice(current_working_user),
+                scode=scode,
+                orderno=orderno,
+                orderid=orderid,
+                money=int(float(money)),
+                accountno=accountno,
+                accountname=accountname,
+                bankname=payeebankname,
+                bankcode=system_bankcode,
+                partner_bankcode=partner_bankcode,
+                updated_by=None,
+                is_auto=True,
+                is_cancel=False,
+                is_report=False,
+                created_at=timezone.now()
+            )
             payout.save()
             alert = (
                 f'🔴 - THÔNG BÁO PAYOUT\n'
@@ -446,5 +446,3 @@ def webhook(request):
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
                                   get_env('MONITORING_BOT_API_KEY'))
         return HttpResponse('success')
-    
-    
