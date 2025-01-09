@@ -94,21 +94,25 @@ def get_new_transactions(transactions, account_number):
             if match:
                 orderno = match.group().replace('Z','')
                 print("Order No: ", orderno)
-                time.sleep(15)
-                existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn['amount'], status=True).first()
-                print("Existed payout by orderno: ", existed_payout)
-                if existed_payout:
-                    txn['status'] = 'Success'
+                existed_payouts = payout.objects.filter(orderno__contains=orderno, money=txn['amount'])
+                if len(existed_payouts) > 0:
+                    for payout in existed_payouts:
+                        payout.status = True
+                        payout.staging_status = True
+                        payout.save()
+                        txn['status'] = 'Success'
                 else:
                     formatted_description = txn.get('description', '').replace(' ', '')
                     match = re.search(r'Z\d{11}', formatted_description)
                     if match:
                         orderno = match.group().replace('Z','')
-                        existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn['amount'],
-                                                               status=True).first()
-                        print("Existed payout by orderno: ", existed_payout)
-                        if existed_payout:
-                            txn['status'] = 'Success'
+                        existed_payouts = payout.objects.filter(orderno__contains=orderno, money=txn['amount'])
+                        if len(existed_payouts) > 0:
+                            for payout in existed_payouts:
+                                payout.status = True
+                                payout.staging_status = True
+                                payout.save()
+                                txn['status'] = 'Success'
                         else:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (
