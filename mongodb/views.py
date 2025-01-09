@@ -104,14 +104,14 @@ def get_new_transactions(transactions, account_number):
                         payout.save()
                         txn['status'] = 'Success'
                         break
-                    break
+                    continue
                 if len(existed_settles) > 0:
                     for payout in existed_settles:
                         payout.status = True
                         payout.save()
                         txn['status'] = 'Success'
                         break
-                    break
+                    continue
                 else:
                     formatted_description = txn.get('description', '').replace(' ', '')
                     match = re.search(r'Z\d{11}', formatted_description)
@@ -126,14 +126,14 @@ def get_new_transactions(transactions, account_number):
                                 payout.save()
                                 txn['status'] = 'Success'
                                 break
-                            break
+                            continue
                         elif len(existed_settles) > 0:
                             for payout in existed_settles:
                                 payout.status = True
                                 payout.save()
                                 txn['status'] = 'Success'
                                 break
-                            break
+                            continue
                         else:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (
