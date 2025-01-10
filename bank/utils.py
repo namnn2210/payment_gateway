@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import requests
 import json
 import re
@@ -65,7 +65,7 @@ def send_telegram_message(message: str, chat_id, api_key):
 def get_dates(start_date=''):
     # If start_date is empty, use the current date
     if start_date == '':
-        start_date = datetime.now()
+        start_date = datetime.now(timezone(timedelta(hours=7)))
     else:
         # Parse the provided start date
         start_date = datetime.strptime(start_date, '%d/%m/%Y')
@@ -104,7 +104,7 @@ def format_transaction_list(transaction_list):
     return transaction_list
 
 def get_today_date():
-    today = datetime.now()
+    today = datetime.now(timezone(timedelta(hours=8)))
     start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
     end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
     return start_date, end_date

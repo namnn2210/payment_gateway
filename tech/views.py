@@ -1,6 +1,6 @@
 import requests
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from bank.utils import Transaction, find_substring
 import httpx
 
@@ -56,7 +56,7 @@ def tech_refresh_token(username):
 def tech_transactions(username, password, account_number):
     formatted_transactions = []
     # Get today's date
-    end_date = datetime.now()
+    end_date = datetime.now(timezone(timedelta(hours=7)))
 
     # Calculate the date 30 days ago
     begin_date = end_date - timedelta(days=30)
@@ -87,6 +87,7 @@ def tech_transactions(username, password, account_number):
             elif transaction['category'] == "Income" and transaction['additions']['creditAcctNo'] == account_number:
                 transaction_type = "IN"
             transaction_date = datetime.fromisoformat(transaction['creationTime'])
+            transaction_date = transaction_date.astimezone(timezone(timedelta(hours=8)))
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')
             new_formatted_transaction = Transaction(
                 transaction_number=transaction['reference'],

@@ -1,5 +1,5 @@
 from bank.utils import Transaction, find_substring
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from config.views import get_env
 import requests
 import json
@@ -70,6 +70,7 @@ def vietin_transactions(username, password, account_number):
             else:
                 transaction_type = 'OUT'
             transaction_date = datetime.strptime(item['processDate'], '%d-%m-%Y %H:%M:%S')
+            transaction_date = transaction_date.astimezone(timezone(timedelta(hours=8)))
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')  # Ensure timezone aware datetime
             new_formatted_transaction = Transaction(
                 transaction_number=item['trxId'],
