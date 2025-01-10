@@ -91,7 +91,7 @@ def unix_to_datetime(unix_time):
     # Convert Unix time to datetime with UTC timezone
     dt_utc = datetime.utcfromtimestamp(unix_time / 1000).replace(tzinfo=pytz.utc)
     # Convert to GMT+7
-    dt_gmt_plus_7 = dt_utc.astimezone(pytz.timezone('Asia/Bangkok'))
+    dt_gmt_plus_7 = dt_utc.astimezone(pytz.timezone('Asia/Singapore'))
     # Format the datetime
     formatted_dt = dt_gmt_plus_7.strftime('%d/%m/%Y %H:%M:%S')
     return formatted_dt

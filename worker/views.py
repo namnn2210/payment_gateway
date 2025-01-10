@@ -54,7 +54,7 @@ def get_balance(bank):
                 alert = (
                     f'🔴 - LỖI HỆ THỐNG\n'
                     f'Dữ liệu tài khoản: {bank.account_number} trống\n'
-                    f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
+                    f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')}'
                 )
                 send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
                 return
@@ -108,11 +108,11 @@ def get_balance(bank):
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
             f'Lấy số dư tài khoản {bank.account_number} - {bank.bank_name.name} không thành công\n'
-            f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
+            f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
 
-    bank.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
+    bank.updated_at = datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')
     bank.save()
 
 
@@ -135,7 +135,7 @@ def get_transaction(bank, transactions=None):
         alert = (
             f'🔴 - LỖI HỆ THỐNG\n'
             f'Lỗi lấy lịch sử giao dịch từ {bank.account_number} - {bank.bank_name.name} empty\n'
-            f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')}'
+            f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
         send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
 
@@ -155,7 +155,7 @@ def get_transaction(bank, transactions=None):
         if len(different_transactions) > 0:
             process_transactions(different_transactions, bank)
             print('Update transactions for bank: %s. Updated at %s' % (
-                bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+                bank.account_number, datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')))
 
         # Get unprocessed transactions
         unprocessed_transactions = get_unprocessed_transactions(bank.account_number)
@@ -164,7 +164,7 @@ def get_transaction(bank, transactions=None):
         if len(unprocessed_transactions) > 0:
             process_transactions(unprocessed_transactions, bank)
             print('Update missed transactions for bank: %s. Updated at %s' % (
-                bank.account_number, datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')))
+                bank.account_number, datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')))
 
 
 def process_transactions(transactions, bank):

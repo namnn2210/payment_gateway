@@ -11,7 +11,7 @@ import pytz
 import random
 import json
 
-tz = pytz.timezone('Asia/Bangkok')
+tz = pytz.timezone('Asia/Singapore')
 
 # Create your views here.
 def employee_deposit(request):

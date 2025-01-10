@@ -144,7 +144,7 @@ USE_L10N = True
 # Enable timezone support
 USE_TZ = False
 
-TIME_ZONE = 'Asia/Bangkok'
+TIME_ZONE = 'Asia/Singapore'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

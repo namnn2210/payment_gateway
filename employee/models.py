@@ -4,7 +4,7 @@ from datetime import datetime
 import pytz
 from django.utils import timezone
 
-tz = pytz.timezone('Asia/Bangkok')
+tz = pytz.timezone('Asia/Singapore')
 
 # Create your models here.
 class EmployeeDeposit(models.Model):

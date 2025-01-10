@@ -23,7 +23,7 @@ class Command(BaseCommand):
                     alert = (
                         f'🔴 - LỖI HỆ THỐNG\n'
                         f'Lỗi lấy dữ liệu Vietinbank: {str(ex)}\n'
-                        f'Thời gian: {datetime.now(pytz.timezone('Asia/Bangkok'))}'
+                        f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore'))}'
                     )
                     send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
             time.sleep(15)

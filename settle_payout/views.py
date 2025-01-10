@@ -211,7 +211,7 @@ def update_settle_payout(request, update_type):
 
         formatted_amount = '{:,.2f}'.format(payout.money)
         payout.updated_by = request.user
-        payout.updated_at = datetime.now(pytz.timezone('Asia/Bangkok')).strftime('%Y-%m-%d %H:%M:%S')
+        payout.updated_at = datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')
         if update_type == 'done':
             payout.status = True
             bank = Bank.objects.filter(id=bank_id).first()
