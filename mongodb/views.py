@@ -92,6 +92,7 @@ def get_new_transactions(transactions, account_number):
             match = re.search(r'Z\d{11}', description)
             payout = apps.get_model('payout', 'Payout')
             settle_payout = apps.get_model('settle_payout', 'SettlePayout')
+            bank_account = apps.get_model('bank', 'BankAccount')
             if match:
                 orderno = match.group().replace('Z','')
                 print("Order No: ", orderno)
@@ -100,57 +101,62 @@ def get_new_transactions(transactions, account_number):
                 formatted_amount = '{:,.2f}'.format(txn['amount'])
                 if len(existed_payouts) > 0:
                     for payout in existed_payouts:
-                        payout.status = True
-                        payout.staging_status = True
-                        payout.save()
+                        if not payout.status:
+                            payout.status = True
+                            payout.staging_status = True
+                            payout.save()
+                            process_bank = bank_account.objects.filter(account_number=account_number).first()
+                            alert = (
+                                f'🟢🟢🟢{payout.orderid}\n'
+                                f'\n'
+                                f'Amount: {formatted_amount} \n'
+                                f'\n'
+                                f'Bank name: {payout.bankcode}\n'
+                                f'\n'
+                                f'Account name: {payout.accountname}\n'
+                                f'\n'
+                                f'Account number: {payout.accountno}\n'
+                                f'\n'
+                                f'Process bank: {process_bank.name}\n'
+                                f'\n'
+                                f'Created by: {payout.user}\n'
+                                f'\n'
+                                f'Done by: {payout.user}\n'
+                                f'\n'
+                                f'Date: {payout.updated_at}'
+                            )
+                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
                         txn['status'] = 'Success'
-                        alert = (
-                            f'🟢🟢🟢{payout.orderid}\n'
-                            f'\n'
-                            f'Amount: {formatted_amount} \n'
-                            f'\n'
-                            f'Bank name: {payout.bankcode}\n'
-                            f'\n'
-                            f'Account name: {payout.accountname}\n'
-                            f'\n'
-                            f'Account number: {payout.accountno}\n'
-                            f'\n'
-                            f'Process bank: {payout.process_bank.name}\n'
-                            f'\n'
-                            f'Created by: {payout.user}\n'
-                            f'\n'
-                            f'Done by: {payout.user}\n'
-                            f'\n'
-                            f'Date: {payout.updated_at}'
-                        )
-                        send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
                         break
                     continue
                 if len(existed_settles) > 0:
                     for settle in existed_settles:
-                        settle.status = True
-                        settle.save()
+                        if not settle.status:
+                            settle.status = True
+                            settle.save()
+                            process_bank = bank_account.objects.filter(account_number=account_number).first()
+                            alert = (
+                                f'🟢🟢🟢{settle.orderid}\n'
+                                f'\n'
+                                f'Amount: {formatted_amount} \n'
+                                f'\n'
+                                f'Bank name: {settle.bankcode}\n'
+                                f'\n'
+                                f'Account name: {settle.accountname}\n'
+                                f'\n'
+                                f'Account number: {settle.accountno}\n'
+                                f'\n'
+                                f'Process bank: {process_bank.name}\n'
+                                f'\n'
+                                f'Created by: {settle.user}\n'
+                                f'\n'
+                                f'Done by: {settle.user}\n'
+                                f'\n'
+                                f'Date: {settle.updated_at}'
+                            )
+                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
                         txn['status'] = 'Success'
-                        alert = (
-                            f'🟢🟢🟢{settle.orderid}\n'
-                            f'\n'
-                            f'Amount: {formatted_amount} \n'
-                            f'\n'
-                            f'Bank name: {settle.bankcode}\n'
-                            f'\n'
-                            f'Account name: {settle.accountname}\n'
-                            f'\n'
-                            f'Account number: {settle.accountno}\n'
-                            f'\n'
-                            f'Process bank: {settle.process_bank.name}\n'
-                            f'\n'
-                            f'Created by: {settle.user}\n'
-                            f'\n'
-                            f'Done by: {settle.user}\n'
-                            f'\n'
-                            f'Date: {settle.updated_at}'
-                        )
-                        send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
+
                         break
                     continue
                 else:
@@ -162,67 +168,70 @@ def get_new_transactions(transactions, account_number):
                         existed_settles = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount'])
                         if len(existed_payouts) > 0:
                             for payout in existed_payouts:
-                                payout.status = True
-                                payout.staging_status = True
-                                payout.save()
+                                if not payout.status:
+                                    payout.status = True
+                                    payout.staging_status = True
+                                    payout.save()
+                                    process_bank = bank_account.objects.filter(account_number=account_number).first()
+                                    alert = (
+                                        f'🟢🟢🟢{payout.orderid}\n'
+                                        f'\n'
+                                        f'Amount: {formatted_amount} \n'
+                                        f'\n'
+                                        f'Bank name: {payout.bankcode}\n'
+                                        f'\n'
+                                        f'Account name: {payout.accountname}\n'
+                                        f'\n'
+                                        f'Account number: {payout.accountno}\n'
+                                        f'\n'
+                                        f'Process bank: {process_bank.name}\n'
+                                        f'\n'
+                                        f'Created by: {payout.user}\n'
+                                        f'\n'
+                                        f'Done by: {payout.user}\n'
+                                        f'\n'
+                                        f'Date: {payout.updated_at}'
+                                    )
+                                    send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'),
+                                                          get_env('TRANSACTION_BOT_API_KEY'))
                                 txn['status'] = 'Success'
-                                alert = (
-                                    f'🟢🟢🟢{payout.orderid}\n'
-                                    f'\n'
-                                    f'Amount: {formatted_amount} \n'
-                                    f'\n'
-                                    f'Bank name: {payout.bankcode}\n'
-                                    f'\n'
-                                    f'Account name: {payout.accountname}\n'
-                                    f'\n'
-                                    f'Account number: {payout.accountno}\n'
-                                    f'\n'
-                                    f'Process bank: {payout.process_bank.name}\n'
-                                    f'\n'
-                                    f'Created by: {payout.user}\n'
-                                    f'\n'
-                                    f'Done by: {payout.user}\n'
-                                    f'\n'
-                                    f'Date: {payout.updated_at}'
-                                )
-                                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'),
-                                                      get_env('TRANSACTION_BOT_API_KEY'))
                                 break
                             continue
                         elif len(existed_settles) > 0:
                             for settle in existed_settles:
-                                settle.status = True
-                                settle.save()
+                                if not settle.status:
+                                    settle.status = True
+                                    settle.save()
+                                    process_bank = bank_account.objects.filter(account_number=account_number).first()
+                                    alert = (
+                                        f'🟢🟢🟢{settle.orderid}\n'
+                                        f'\n'
+                                        f'Amount: {formatted_amount} \n'
+                                        f'\n'
+                                        f'Bank name: {settle.bankcode}\n'
+                                        f'\n'
+                                        f'Account name: {settle.accountname}\n'
+                                        f'\n'
+                                        f'Account number: {settle.accountno}\n'
+                                        f'\n'
+                                        f'Process bank: {process_bank.name}\n'
+                                        f'\n'
+                                        f'Created by: {settle.user}\n'
+                                        f'\n'
+                                        f'Done by: {settle.user}\n'
+                                        f'\n'
+                                        f'Date: {settle.updated_at}'
+                                    )
+                                    send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'),
+                                                          get_env('TRANSACTION_BOT_API_KEY'))
+                                    break
                                 txn['status'] = 'Success'
-                                alert = (
-                                    f'🟢🟢🟢{settle.orderid}\n'
-                                    f'\n'
-                                    f'Amount: {formatted_amount} \n'
-                                    f'\n'
-                                    f'Bank name: {settle.bankcode}\n'
-                                    f'\n'
-                                    f'Account name: {settle.accountname}\n'
-                                    f'\n'
-                                    f'Account number: {settle.accountno}\n'
-                                    f'\n'
-                                    f'Process bank: {settle.process_bank.name}\n'
-                                    f'\n'
-                                    f'Created by: {settle.user}\n'
-                                    f'\n'
-                                    f'Done by: {settle.user}\n'
-                                    f'\n'
-                                    f'Date: {settle.updated_at}'
-                                )
-                                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'),
-                                                      get_env('TRANSACTION_BOT_API_KEY'))
-                                break
                             continue
                         else:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (
                                 f'Hi, failed\n'
                                 f'\n'
-
                                 f'Account: {txn['account_number']}'
                                 f'\n'
                                 f'Amount💲: {formatted_amount} \n'
