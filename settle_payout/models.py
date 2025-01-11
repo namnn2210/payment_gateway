@@ -14,6 +14,7 @@ class SettlePayout(models.Model):
     accountno = models.CharField(max_length=255)
     accountname = models.CharField(max_length=255)
     bankcode = models.CharField(max_length=255)
+    memo = models.CharField(max_length=255, default='', null=True)
     is_auto = models.BooleanField(default=False)
     is_cancel = models.BooleanField(default=False)
     is_report = models.BooleanField(default=False)

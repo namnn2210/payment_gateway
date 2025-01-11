@@ -104,6 +104,9 @@ def list_payout(request):
         )
     ).order_by('status_priority', 'created_at')
 
+    for payout in list_payout:
+        payout.memo = payout.accountname.split(' ')[-1] + ' ' + 'Z' + payout.orderno[-11:]
+
     total_results = len(list_payout)
     total_amount = list_payout.aggregate(Sum('money'))['money__sum'] or 0
 
@@ -273,6 +276,7 @@ def move_payout(request):
             money=payout.money,
             bankname=payout.bankname,
             accountno=payout.accountno,
+            memo=payout.memo,
             accountname=payout.accountname,
             bankcode=payout.bankcode,
             is_auto=payout.is_auto,
@@ -384,6 +388,7 @@ def webhook(request):
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
+            memo = accountname.split(' ')[-1] + ' ' + 'Z' + orderno[-11:]
             settle_payout = SettlePayout.objects.create(
                 user=random.choice(current_working_user),
                 scode=scode,
@@ -394,6 +399,7 @@ def webhook(request):
                 accountname=accountname,
                 bankname=payeebankname,
                 bankcode=system_bankcode,
+                memo=memo,
                 # partner_bankcode=partner_bankcode,
                 updated_by=None,
                 is_auto=True,
@@ -421,6 +427,8 @@ def webhook(request):
             else:
                 partner_bankcode = bankcode
 
+            memo = accountname.split(' ')[-1] + ' ' + 'Z' + orderno[-11:]
+
             payout = Payout.objects.create(
                 user=random.choice(current_working_user),
                 scode=scode,
@@ -430,6 +438,7 @@ def webhook(request):
                 accountno=accountno,
                 accountname=accountname,
                 bankname=payeebankname,
+                memo=memo,
                 bankcode=system_bankcode,
                 partner_bankcode=partner_bankcode,
                 updated_by=None,

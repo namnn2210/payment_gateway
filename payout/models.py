@@ -14,6 +14,7 @@ class Payout(models.Model):
     accountno = models.CharField(max_length=255, null=False)
     accountname = models.CharField(max_length=255, null=False)
     bankcode = models.CharField(max_length=255, default='', null=False)
+    memo = models.CharField(max_length=255, default='', null=True)
     partner_bankcode = models.CharField(max_length=10, default='', null=False)
     is_auto = models.BooleanField(default=False)
     is_cancel = models.BooleanField(default=False)
