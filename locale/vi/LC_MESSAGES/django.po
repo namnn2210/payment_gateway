@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-26 14:03+0700\n"
+"POT-Creation-Date: 2025-01-11 21:06+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,131 +18,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: payment_gateway/settings.py:142
+#: payment_gateway/settings.py:128
 msgid "English"
 msgstr "Tiếng Anh"
 
-#: payment_gateway/settings.py:143
+#: payment_gateway/settings.py:129
 msgid "Vietnamese"
 msgstr "Tiếng Việt"
 
-#: templates/_payout_modal.html:22
-#, fuzzy
-#| msgid "Start Date"
-msgid "Start At"
-msgstr "Ngày bắt đầu"
-
-#: templates/_payout_modal.html:23
-#, fuzzy
-#| msgid "End Date"
-msgid "End At"
-msgstr "Ngày kết thúc"
-
-#: templates/_payout_modal.html:24
-#, fuzzy
-#| msgid "Balance"
-msgid "Start Balance"
-msgstr "Số dư"
-
-#: templates/_payout_modal.html:25
-#, fuzzy
-#| msgid "Deposit List"
-msgid "Deposit"
-msgstr "Danh sách lệnh nạp"
-
-#: templates/_payout_modal.html:26 templates/report_home.html:23
-msgid "Total Payout Amount"
-msgstr "Tổng tiền lệnh rút thường"
-
-#: templates/_payout_modal.html:27 templates/report_home.html:22
-msgid "Total Payouts"
-msgstr "Tổng lệnh rút thường"
-
-#: templates/_payout_modal.html:28
-#, fuzzy
-#| msgid "Total Settled Payout"
-msgid "Total Settle Amount"
-msgstr "Tổng tiền lệnh rút có bill"
-
-#: templates/_payout_modal.html:29
-#, fuzzy
-#| msgid "Total Settled Payout"
-msgid "Total Settles"
-msgstr "Tổng tiền lệnh rút có bill"
-
-#: templates/_payout_modal.html:30
-#, fuzzy
-#| msgid "Total Payout Amount"
-msgid "Total Valid Payout Amount"
-msgstr "Tổng tiền lệnh rút thường"
-
-#: templates/_payout_modal.html:31
-#, fuzzy
-#| msgid "Total Payout"
-msgid "Total Valid Payout"
-msgstr "Tổng tiền lệnh rút thường"
-
-#: templates/_payout_modal.html:32
-#, fuzzy
-#| msgid "Balance"
-msgid "End Balance"
-msgstr "Số dư"
-
-#: templates/_payout_modal.html:33
-#, fuzzy
-#| msgid "Timeline Amount"
-msgid "Estimate Total End Timeline Amount"
-msgstr "Khối lượng payout theo ca gần nhất"
-
-#: templates/_transaction_history_modal.html:22 templates/record_book.html:121
-#: templates/record_book.html:211 templates/record_book.html:353
-msgid "Transaction Number"
-msgstr "Mã giao dịch"
-
-#: templates/_transaction_history_modal.html:23
-#: templates/employee/deposit.html:53 templates/index.html:105
-#: templates/index.html:224 templates/index.html:270 templates/index.html:371
-#: templates/index.html:403 templates/payout.html:105
-#: templates/payout_list.html:58 templates/record_book.html:96
-#: templates/record_book.html:188 templates/settle_payout.html:88
-#: templates/settle_payout_list.html:58
-msgid "Account Number"
-msgstr "Số tài khoản"
-
-#: templates/_transaction_history_modal.html:24
-#: templates/employee/deposit.html:22 templates/index.html:66
-#: templates/index.html:373 templates/index.html:405 templates/index.html:442
-#: templates/payout.html:101 templates/payout_list.html:57
-#: templates/record_book.html:97 templates/record_book.html:189
-#: templates/settle_payout.html:84 templates/settle_payout_list.html:57
-msgid "Amount"
-msgstr "Số tiền"
-
-#: templates/_transaction_history_modal.html:25 templates/index.html:374
-#: templates/index.html:406 templates/record_book.html:98
-#: templates/record_book.html:190
-msgid "Date"
-msgstr "Thời gian"
-
-#: templates/_transaction_history_modal.html:26 templates/record_book.html:99
-msgid "Transfer Code"
-msgstr "Mã code giao dịch"
-
-#: templates/_transaction_history_modal.html:27
-#: templates/employee/deposit.html:23 templates/index.html:67
-#: templates/index.html:376 templates/index.html:408
-#: templates/payout_list.html:24 templates/record_book.html:100
-#: templates/record_book.html:191 templates/settle_payout_list.html:24
-msgid "Status"
-msgstr "Trạng thái"
-
-#: templates/bank.html:4 templates/index.html:446
-#: templates/layout/layout.html:83
+#: templates/bank.html:4 templates/index.html:462
+#: templates/layout/layout.html:84
 msgid "Bank Account"
 msgstr "Tài khoản ngân hàng"
 
-#: templates/employee/deposit.html:4 templates/layout/layout.html:121
-#: templates/report.html:4
+#: templates/employee/deposit.html:4 templates/layout/layout.html:122
 msgid "Employee Deposit"
 msgstr "Lệnh nạp"
 
@@ -150,82 +39,106 @@ msgstr "Lệnh nạp"
 msgid "Deposit List"
 msgstr "Danh sách lệnh nạp"
 
-#: templates/employee/deposit.html:21 templates/index.html:65
+#: templates/employee/deposit.html:21 templates/index.html:98
 msgid "Request User"
 msgstr "Nhân viên yêu cầu"
 
-#: templates/employee/deposit.html:24 templates/index.html:68
-#: templates/payout_list.html:64 templates/settle_payout_list.html:64
+#: templates/employee/deposit.html:22 templates/index.html:99
+#: templates/index.html:393 templates/index.html:423 templates/index.html:458
+#: templates/payout.html:120 templates/payout_list.html:98
+#: templates/record_book.html:121 templates/record_book.html:223
+#: templates/settle_payout.html:95 templates/settle_payout_list.html:59
+msgid "Amount"
+msgstr "Số tiền"
+
+#: templates/employee/deposit.html:23 templates/index.html:100
+#: templates/index.html:396 templates/index.html:426
+#: templates/payout_list.html:28 templates/record_book.html:71
+#: templates/record_book.html:124 templates/record_book.html:225
+#: templates/settle_payout_list.html:25
+msgid "Status"
+msgstr "Trạng thái"
+
+#: templates/employee/deposit.html:24 templates/index.html:101
+#: templates/payout_list.html:109 templates/settle_payout_list.html:68
 msgid "Created At"
 msgstr "Thời gian khởi tạo"
 
 #: templates/employee/deposit.html:39 templates/employee/deposit.html:134
-#: templates/index.html:84 templates/index.html:459 templates/index.html:476
-#: templates/payout.html:28 templates/payout.html:140 templates/payout.html:162
-#: templates/payout.html:187 templates/payout.html:209
-#: templates/payout_list.html:39 templates/settle_payout.html:28
-#: templates/settle_payout.html:122 templates/settle_payout.html:142
-#: templates/settle_payout.html:165 templates/settle_payout.html:187
-#: templates/settle_payout_list.html:39
+#: templates/index.html:116 templates/index.html:474 templates/index.html:490
+#: templates/payout.html:39 templates/payout.html:195 templates/payout.html:219
+#: templates/payout.html:238 templates/payout.html:261
+#: templates/settle_payout.html:39 templates/settle_payout.html:158
+#: templates/settle_payout.html:178 templates/settle_payout.html:201
+#: templates/settle_payout.html:223 templates/settle_payout_list.html:41
 msgid "Done"
 msgstr "Hoàn thành"
 
-#: templates/employee/deposit.html:41 templates/index.html:86
-#: templates/payout.html:27 templates/payout_list.html:41
-#: templates/settle_payout.html:27 templates/settle_payout_list.html:41
+#: templates/employee/deposit.html:41 templates/index.html:118
+#: templates/payout.html:37 templates/settle_payout.html:38
+#: templates/settle_payout_list.html:43
 msgid "Pending"
 msgstr "Chờ xử lí"
 
-#: templates/employee/deposit.html:50 templates/index.html:96
+#: templates/employee/deposit.html:50 templates/index.html:128
 msgid "Note"
 msgstr "Ghi chú"
 
-#: templates/employee/deposit.html:51 templates/index.html:99
-#: templates/index.html:225 templates/index.html:271 templates/index.html:345
-#: templates/payout_list.html:60 templates/settle_payout_list.html:60
+#: templates/employee/deposit.html:51 templates/index.html:129
+#: templates/index.html:228 templates/index.html:281 templates/index.html:366
+#: templates/payout_list.html:103 templates/settle_payout_list.html:63
 msgid "Bank Name"
 msgstr "Tên ngân hàng"
 
-#: templates/employee/deposit.html:52 templates/index.html:102
-#: templates/payout_list.html:61 templates/settle_payout_list.html:61
+#: templates/employee/deposit.html:52 templates/index.html:130
+#: templates/payout_list.html:104 templates/settle_payout_list.html:64
 msgid "Bank Code"
 msgstr "Mã ngân hàng"
 
-#: templates/employee/deposit.html:54 templates/index.html:108
-#: templates/index.html:324 templates/payout.html:109
-#: templates/payout_list.html:59 templates/settle_payout.html:92
-#: templates/settle_payout_list.html:59
+#: templates/employee/deposit.html:53 templates/index.html:131
+#: templates/index.html:227 templates/index.html:280 templates/index.html:391
+#: templates/index.html:421 templates/payout.html:124
+#: templates/payout_list.html:100 templates/record_book.html:120
+#: templates/record_book.html:222 templates/settle_payout.html:99
+#: templates/settle_payout_list.html:60
+msgid "Account Number"
+msgstr "Số tài khoản"
+
+#: templates/employee/deposit.html:54 templates/index.html:132
+#: templates/index.html:343 templates/payout.html:128
+#: templates/payout_list.html:101 templates/settle_payout.html:103
+#: templates/settle_payout_list.html:61
 msgid "Account Name"
 msgstr "Tên tài khoản"
 
-#: templates/employee/deposit.html:57 templates/index.html:114
-#: templates/payout_list.html:67 templates/settle_payout_list.html:67
+#: templates/employee/deposit.html:57 templates/index.html:135
+#: templates/payout_list.html:113 templates/settle_payout_list.html:71
 msgid "Updated By"
 msgstr "Người cập nhật"
 
-#: templates/employee/deposit.html:58 templates/index.html:117
-#: templates/payout_list.html:66 templates/settle_payout_list.html:66
+#: templates/employee/deposit.html:58 templates/index.html:137
+#: templates/payout_list.html:112 templates/settle_payout_list.html:70
 msgid "Updated At"
 msgstr "Thời gian cập nhật"
 
-#: templates/employee/deposit.html:62 templates/index.html:123
-#: templates/payout_list.html:76 templates/settle_payout_list.html:76
+#: templates/employee/deposit.html:62 templates/index.html:141
+#: templates/payout_list.html:122 templates/settle_payout_list.html:80
 msgid "Action"
 msgstr "Hoạt động"
 
-#: templates/employee/deposit.html:64 templates/index.html:132
-#: templates/payout_list.html:84 templates/payout_list.html:98
-#: templates/settle_payout_list.html:84 templates/settle_payout_list.html:95
+#: templates/employee/deposit.html:64 templates/index.html:149
+#: templates/payout_list.html:135 templates/payout_list.html:159
+#: templates/settle_payout_list.html:88 templates/settle_payout_list.html:99
 msgid "Pay"
 msgstr "Thanh toán"
 
-#: templates/employee/deposit.html:67 templates/index.html:136
-#: templates/payout_list.html:86 templates/settle_payout_list.html:86
+#: templates/employee/deposit.html:67 templates/index.html:153
+#: templates/payout_list.html:139 templates/settle_payout_list.html:90
 msgid "Delete"
 msgstr "Xóa"
 
-#: templates/employee/deposit.html:127 templates/index.html:434
-#: templates/index.html:468
+#: templates/employee/deposit.html:127 templates/index.html:450
+#: templates/index.html:483
 #, fuzzy
 #| msgid "Payout Details"
 msgid "Deposit Details"
@@ -235,100 +148,106 @@ msgstr "Chi tiết rút tiền"
 msgid "Dashboard"
 msgstr "Bảng điều khiển"
 
-#: templates/index.html:34
+#: templates/index.html:44
 msgid "Today"
 msgstr "Hôm nay"
 
-#: templates/index.html:45
+#: templates/index.html:69
 msgid "Create Deposit Request"
 msgstr "Tạo lệnh nạp tiền"
 
-#: templates/index.html:48 templates/index.html:788
+#: templates/index.html:71 templates/index.html:812
 msgid "End Session"
 msgstr "Kết thúc"
 
-#: templates/index.html:51 templates/index.html:806
+#: templates/index.html:73 templates/index.html:830
 msgid "Start Session"
 msgstr "Bắt đầu"
 
-#: templates/index.html:213 templates/index.html:352
+#: templates/index.html:80
+msgid "Online"
+msgstr ""
+
+#: templates/index.html:218 templates/index.html:373
 msgid "Add Bank"
 msgstr "Thêm ngân hàng"
 
-#: templates/index.html:216 templates/index.html:262
+#: templates/index.html:221 templates/index.html:274
 msgid "Bank List"
 msgstr "Danh sách ngân hàng"
 
-#: templates/index.html:217 templates/index.html:366
+#: templates/index.html:221 templates/index.html:386
 msgid "IN"
 msgstr "VÀO"
 
-#: templates/index.html:226 templates/index.html:272
+#: templates/index.html:229 templates/index.html:282
 msgid "Balance"
 msgstr "Số dư"
 
-#: templates/index.html:227 templates/index.html:273
-#: templates/report_user.html:26 templates/user_payout_statistic.html:95
+#: templates/index.html:230 templates/index.html:283
+#: templates/payout_list.html:26 templates/settle_payout_list.html:24
 msgid "User"
 msgstr "Nhân viên"
 
-#: templates/index.html:228 templates/index.html:274
+#: templates/index.html:231 templates/index.html:284
 msgid "Last Update"
 msgstr "Cập nhật gần nhất"
 
-#: templates/index.html:230 templates/index.html:276
+#: templates/index.html:233 templates/index.html:286
 msgid "Actions"
 msgstr "Hoạt động"
 
-#: templates/index.html:246 templates/index.html:292
-msgid "OFF"
-msgstr "TẮT"
-
-#: templates/index.html:248 templates/index.html:294
-msgid "ON"
-msgstr "BẬT"
-
-#: templates/index.html:263 templates/index.html:398
+#: templates/index.html:274 templates/index.html:416
 msgid "OUT"
 msgstr "RA"
 
-#: templates/index.html:311
+#: templates/index.html:330
 msgid "Add New Bank"
 msgstr "Thêm ngân hàng mới"
 
-#: templates/index.html:320
+#: templates/index.html:339
 #, fuzzy
 #| msgid "Account Number"
 msgid "Bank Number"
 msgstr "Số tài khoản"
 
-#: templates/index.html:329
+#: templates/index.html:347
 msgid "Bank Username"
 msgstr "Tên đăng nhập ngân hàng"
 
-#: templates/index.html:333
+#: templates/index.html:351
 msgid "Bank Password"
 msgstr "Mật khẩu ngân hàng"
 
-#: templates/index.html:338
+#: templates/index.html:355
+msgid "Corp ID"
+msgstr ""
+
+#: templates/index.html:359
 msgid "Bank TYPE"
 msgstr "Loại ngân hàng"
 
-#: templates/index.html:365 templates/index.html:397
+#: templates/index.html:386 templates/index.html:416
 msgid "Latest transaction"
 msgstr "Giao dịch gần nhất"
 
-#: templates/index.html:366 templates/index.html:398
+#: templates/index.html:386 templates/index.html:416
 msgid "history"
 msgstr "lịch sử"
 
-#: templates/index.html:372 templates/index.html:404
+#: templates/index.html:392 templates/index.html:422
 msgid "Reference Number"
 msgstr "Mã giao dịch"
 
-#: templates/index.html:375 templates/index.html:407
-#: templates/record_book.html:122 templates/record_book.html:212
-#: templates/record_book.html:353
+#: templates/index.html:394 templates/index.html:424
+#: templates/record_book.html:122 templates/record_book.html:224
+msgid "Date"
+msgstr "Thời gian"
+
+#: templates/index.html:395 templates/index.html:425
+#: templates/payout_list.html:105 templates/record_book.html:148
+#: templates/record_book.html:248 templates/record_book.html:422
+#: templates/settle_payout_list.html:65
 msgid "Memo"
 msgstr "Nội dung"
 
@@ -336,67 +255,62 @@ msgstr "Nội dung"
 msgid "Title"
 msgstr "Tiêu đề"
 
-#: templates/layout/layout.html:57
+#: templates/layout/layout.html:58
 msgid "226Pay"
 msgstr ""
 
-#: templates/layout/layout.html:67 templates/report.html:22
+#: templates/layout/layout.html:68
 msgid "Home"
 msgstr "Thông tin chung"
 
-#: templates/layout/layout.html:75 templates/payout.html:138
-#: templates/settle_payout.html:120
-msgid "Report"
-msgstr "Báo cáo"
-
-#: templates/layout/layout.html:90 templates/record_book.html:4
-#: templates/record_book.html:61
+#: templates/layout/layout.html:91 templates/record_book.html:4
+#: templates/record_book.html:62
 msgid "Record Book"
 msgstr "Quản lí giao dịch"
 
-#: templates/layout/layout.html:97 templates/payout.html:11
-#: templates/report_user.html:28 templates/settle_payout.html:11
+#: templates/layout/layout.html:98 templates/payout.html:17
+#: templates/settle_payout.html:22
 msgid "Payout"
 msgstr "Rút tiền"
 
-#: templates/layout/layout.html:102
+#: templates/layout/layout.html:103
 msgid "Withdrawal"
 msgstr "Rút tiền thường"
 
-#: templates/layout/layout.html:107
+#: templates/layout/layout.html:108
 msgid "Settle"
 msgstr "Rút tiền có bill"
 
-#: templates/layout/layout.html:116
+#: templates/layout/layout.html:117
 msgid "Employee"
 msgstr "Nhân viên"
 
-#: templates/layout/layout.html:126
+#: templates/layout/layout.html:127
 msgid "Coming Soon"
 msgstr ""
 
-#: templates/layout/layout.html:136 templates/login.html:94
+#: templates/layout/layout.html:137 templates/login.html:94
 msgid "Language"
 msgstr "Ngôn ngữ"
 
-#: templates/layout/layout.html:140
+#: templates/layout/layout.html:141
 msgid "Select Language"
 msgstr "Lựa chọn ngôn ngữ"
 
-#: templates/layout/layout.html:179
+#: templates/layout/layout.html:180
 msgid "Dev"
 msgstr ""
 
-#: templates/layout/layout.html:188 templates/profile.html:5
+#: templates/layout/layout.html:189 templates/profile.html:5
 #: templates/profile.html:8
 msgid "Profile"
 msgstr "Tài khoản"
 
-#: templates/layout/layout.html:200
+#: templates/layout/layout.html:201
 msgid "Go to Admin"
 msgstr "Truy cập Admin"
 
-#: templates/layout/layout.html:212
+#: templates/layout/layout.html:213
 msgid "Sign Out"
 msgstr "Đăng xuất"
 
@@ -429,111 +343,116 @@ msgstr "Mật khẩu"
 msgid "Please enter your password!"
 msgstr "Vui lòng nhập mật khẩu!"
 
-#: templates/payout.html:5 templates/payout_list.html:16
+#: templates/payout.html:5 templates/payout_list.html:18
 msgid "List Payout"
 msgstr "Danh sách lệnh rút tiền"
 
-#: templates/payout.html:16 templates/payout.html:76
+#: templates/payout.html:23 templates/payout.html:95
 msgid "Add Payout"
 msgstr "Thêm lệnh rút tiền"
 
-#: templates/payout.html:22 templates/payout.html:63
-#: templates/record_book.html:65 templates/record_book.html:81
-#: templates/report_home.html:17 templates/settle_payout.html:22
-#: templates/settle_payout.html:46 templates/user_payout_statistic.html:87
+#: templates/payout.html:30 templates/payout.html:82
+#: templates/record_book.html:66 templates/record_book.html:104
+#: templates/settle_payout.html:33 templates/settle_payout.html:57
 msgid "Search"
 msgstr "Tìm kiếm"
 
-#: templates/payout.html:26 templates/payout.html:48 templates/payout.html:55
-#: templates/settle_payout.html:26
+#: templates/payout.html:35 templates/payout.html:64 templates/payout.html:73
+#: templates/record_book.html:74 templates/settle_payout.html:37
 msgid "All"
 msgstr "Tất cả"
 
-#: templates/payout.html:29 templates/payout_list.html:45
-#: templates/payout_list.html:47 templates/settle_payout.html:29
-#: templates/settle_payout_list.html:45 templates/settle_payout_list.html:47
+#: templates/payout.html:41 templates/settle_payout.html:40
+#: templates/settle_payout_list.html:47 templates/settle_payout_list.html:49
 msgid "Canceled"
 msgstr "Đã hủy"
 
-#: templates/payout.html:30 templates/payout_list.html:43
-#: templates/settle_payout.html:30 templates/settle_payout_list.html:43
+#: templates/payout.html:43 templates/settle_payout.html:41
+#: templates/settle_payout_list.html:45
 msgid "Reported"
 msgstr "Đã báo cáo"
 
-#: templates/payout.html:36 templates/record_book.html:69
-#: templates/settle_payout.html:36 templates/user_payout_statistic.html:79
+#: templates/payout.html:49 templates/record_book.html:86
+#: templates/settle_payout.html:47
 msgid "Start Date"
 msgstr "Ngày bắt đầu"
 
-#: templates/payout.html:40 templates/record_book.html:73
-#: templates/settle_payout.html:40 templates/user_payout_statistic.html:83
+#: templates/payout.html:54 templates/record_book.html:91
+#: templates/settle_payout.html:51
 msgid "End Date"
 msgstr "Ngày kết thúc"
 
-#: templates/payout.html:85 templates/payout_list.html:23
-#: templates/settle_payout.html:68 templates/settle_payout_list.html:23
+#: templates/payout.html:104 templates/payout_list.html:25
+#: templates/record_book.html:150 templates/record_book.html:424
+#: templates/settle_payout.html:79 templates/settle_payout_list.html:23
 msgid "CID"
 msgstr ""
 
-#: templates/payout.html:97 templates/payout_list.html:22
-#: templates/settle_payout.html:80 templates/settle_payout_list.html:22
+#: templates/payout.html:116 templates/payout_list.html:24
+#: templates/record_book.html:149 templates/record_book.html:423
+#: templates/settle_payout.html:91 templates/settle_payout_list.html:22
 msgid "Order ID"
 msgstr "Mã đơn hàng"
 
-#: templates/payout.html:113 templates/settle_payout.html:96
+#: templates/payout.html:132 templates/settle_payout.html:107
 msgid "Bank"
 msgstr "Ngân hàng"
 
-#: templates/payout.html:120 templates/settle_payout.html:103
+#: templates/payout.html:140 templates/settle_payout.html:114
 msgid "Add"
 msgstr "Thêm"
 
-#: templates/payout.html:131 templates/settle_payout.html:113
+#: templates/payout.html:151 templates/settle_payout.html:124
 msgid "Payout Details"
 msgstr "Chi tiết rút tiền"
 
-#: templates/payout.html:139 templates/settle_payout.html:121
+#: templates/payout.html:177 templates/payout_list.html:114
+#: templates/settle_payout.html:146 templates/settle_payout.html:193
+#: templates/settle_payout_list.html:72
+msgid "Process Bank"
+msgstr "Ngân hàng xử lí"
+
+#: templates/payout.html:191 templates/settle_payout.html:156
+msgid "Report"
+msgstr "Báo cáo"
+
+#: templates/payout.html:193 templates/settle_payout.html:157
 msgid "Cancel"
 msgstr "Hủy"
 
-#: templates/payout.html:151 templates/settle_payout.html:131
+#: templates/payout.html:206 templates/settle_payout.html:167
 #, fuzzy
 #| msgid "Add Bank"
 msgid "Edit Bank"
 msgstr "Thêm ngân hàng"
 
-#: templates/payout.html:173 templates/settle_payout.html:153
+#: templates/payout.html:230 templates/settle_payout.html:189
 msgid "Select Payout Bank"
 msgstr "Lựa ngân hàng rút tiền"
 
-#: templates/payout.html:177 templates/payout_list.html:68
-#: templates/settle_payout.html:157 templates/settle_payout_list.html:68
-msgid "Process Bank"
-msgstr "Ngân hàng xử lí"
-
-#: templates/payout.html:197 templates/settle_payout.html:175
+#: templates/payout.html:248 templates/settle_payout.html:211
 #, fuzzy
 #| msgid "Select Payout Bank"
 msgid "Select Report Reason"
 msgstr "Lựa ngân hàng rút tiền"
 
-#: templates/payout.html:201 templates/settle_payout.html:179
+#: templates/payout.html:252 templates/settle_payout.html:215
 msgid "Reason"
 msgstr "Lý do"
 
-#: templates/payout.html:203 templates/settle_payout.html:181
+#: templates/payout.html:254 templates/settle_payout.html:217
 #, fuzzy
 #| msgid "Account Number"
 msgid "Invalid Account Number"
 msgstr "Số tài khoản"
 
-#: templates/payout.html:204 templates/settle_payout.html:182
+#: templates/payout.html:255 templates/settle_payout.html:218
 #, fuzzy
 #| msgid "Add Bank"
 msgid "Invalid Bank"
 msgstr "Thêm ngân hàng"
 
-#: templates/payout.html:205 templates/settle_payout.html:183
+#: templates/payout.html:256 templates/settle_payout.html:219
 #, fuzzy
 #| msgid "Account Name"
 msgid "Invalid Account Name"
@@ -543,32 +462,44 @@ msgstr "Tên tài khoản"
 msgid "Total Results"
 msgstr "Số lượng kết quả"
 
-#: templates/payout_list.html:11 templates/settle_payout_list.html:11
+#: templates/payout_list.html:12 templates/settle_payout_list.html:11
 msgid "Total Amount"
 msgstr "Tổng tiền"
 
-#: templates/payout_list.html:65 templates/settle_payout_list.html:65
+#: templates/payout_list.html:27
+#, fuzzy
+#| msgid "Status"
+msgid "Partner Status"
+msgstr "Trạng thái"
+
+#: templates/payout_list.html:102 templates/settle_payout_list.html:62
+#, fuzzy
+#| msgid "Order ID"
+msgid "Order No"
+msgstr "Mã đơn hàng"
+
+#: templates/payout_list.html:111 templates/settle_payout_list.html:69
 msgid "Created By"
 msgstr "Người khởi tạo"
 
-#: templates/payout_list.html:72 templates/payout_list.html:74
-#: templates/settle_payout_list.html:72 templates/settle_payout_list.html:74
+#: templates/payout_list.html:118 templates/payout_list.html:120
+#: templates/settle_payout_list.html:76 templates/settle_payout_list.html:78
 msgid "Auto/Manual"
 msgstr "Tự động/Thủ công"
 
-#: templates/payout_list.html:72 templates/settle_payout_list.html:72
+#: templates/payout_list.html:118 templates/settle_payout_list.html:76
 msgid "Auto"
 msgstr "Tự động"
 
-#: templates/payout_list.html:74 templates/settle_payout_list.html:74
+#: templates/payout_list.html:120 templates/settle_payout_list.html:78
 msgid "Manual"
 msgstr "Thủ công"
 
-#: templates/payout_list.html:88
+#: templates/payout_list.html:143
 msgid "Move"
 msgstr "Chuyển"
 
-#: templates/payout_list.html:103 templates/settle_payout_list.html:99
+#: templates/payout_list.html:167 templates/settle_payout_list.html:103
 msgid "Edit"
 msgstr "Chỉnh sửa"
 
@@ -596,57 +527,60 @@ msgstr "Nhập mã OTP"
 msgid "Verify"
 msgstr "Xác nhận"
 
-#: templates/record_book.html:66
+#: templates/record_book.html:68
 msgid "Search everything here..."
 msgstr "Tìm kiếm mọi thứ ở đây..."
 
-#: templates/record_book.html:89
+#: templates/record_book.html:76
+msgid "Success"
+msgstr "Thành công"
+
+#: templates/record_book.html:78
+msgid "Failed"
+msgstr "Thất bại"
+
+#: templates/record_book.html:80
+msgid "Blank"
+msgstr "Trống"
+
+#: templates/record_book.html:101
+msgid "Export Excel"
+msgstr "Xuất Excel"
+
+#: templates/record_book.html:112
 msgid "Total IN Amount:"
 msgstr "Tổng tiền VÀO"
 
-#: templates/record_book.html:181
+#: templates/record_book.html:123
+msgid "Transfer Code"
+msgstr "Mã code giao dịch"
+
+#: templates/record_book.html:147 templates/record_book.html:247
+#: templates/record_book.html:421
+msgid "Transaction Number"
+msgstr "Mã giao dịch"
+
+#: templates/record_book.html:151
+#, fuzzy
+#| msgid "Order ID"
+msgid "Order code"
+msgstr "Mã đơn hàng"
+
+#: templates/record_book.html:214
 msgid "Total OUT Amount:"
 msgstr "Tổng tiền RA"
 
-#: templates/report.html:25
-msgid "User Statistic"
-msgstr "Thống kê nhân viên"
-
-#: templates/report_home.html:24
-msgid "Total Success Transations"
-msgstr "Tổng số giao dịch vào"
-
-#: templates/report_home.html:25
-msgid "Total Success Transations Amount"
-msgstr "Tổng khối lượng vào"
-
-#: templates/report_home.html:77
-msgid "Total Amount In and Out for the last 5 days"
-msgstr "Tổng khối lượng vào ra 5 ngày gần nhất"
-
-#: templates/report_user.html:27
+#: templates/record_book.html:425
 #, fuzzy
-#| msgid "Bank Account"
-msgid "Bank Accounts"
-msgstr "Tài khoản ngân hàng"
-
-#: templates/report_user.html:55
-#, fuzzy
-#| msgid "Total Payout"
-msgid "Current Total Payout"
-msgstr "Tổng tiền lệnh rút thường"
-
-#: templates/report_user.html:56
-#, fuzzy
-#| msgid "Total Success Transations"
-msgid "Current Total Valid Transactions"
-msgstr "Tổng số giao dịch vào"
+#| msgid "Transfer Code"
+msgid "Order Code"
+msgstr "Mã code giao dịch"
 
 #: templates/settle_payout.html:5 templates/settle_payout_list.html:16
 msgid "List Settle Payout"
 msgstr "Danh sách lệnh rút tiền có bill"
 
-#: templates/settle_payout.html:16 templates/settle_payout.html:59
+#: templates/settle_payout.html:27 templates/settle_payout.html:70
 msgid "Add Settle Payout"
 msgstr "Thêm lệnh rút tiền có bill"
 
@@ -662,44 +596,6 @@ msgstr "OTP"
 msgid "Please enter your OTP"
 msgstr "Vui lòng nhập mã OTP của bạn"
 
-#: templates/user_payout_statistic.html:6
-msgid "User Payout Statistic"
-msgstr "Thống kê lệnh rút tiền"
-
-#: templates/user_payout_statistic.html:49
-msgid "Payout Statistics"
-msgstr "Thống kê lệnh rút tiền"
-
-#: templates/user_payout_statistic.html:53
-msgid "Search User"
-msgstr "Tìm kiếm nhân viên"
-
-#: templates/user_payout_statistic.html:60
-msgid "Select a username and press enter to add it to the list."
-msgstr "Tìm kiếm tên nhân viên và ấn enter để thêm vào danh sách"
-
-#: templates/user_payout_statistic.html:63
-msgid "Selected User"
-msgstr "Nhân viên được chọn"
-
-#: templates/user_payout_statistic.html:96
-msgid "Total Payout"
-msgstr "Tổng tiền lệnh rút thường"
-
-#: templates/user_payout_statistic.html:97
-msgid "Total Settled Payout"
-msgstr "Tổng tiền lệnh rút có bill"
-
-#: templates/user_payout_statistic.html:98
-#: templates/user_payout_statistic.html:113
-msgid "Total"
-msgstr "Tổng"
-
-#: templates/user_payout_statistic.html:121
-#: templates/user_payout_statistic.html:228
-msgid "No info found for the selected criteria."
-msgstr "Không có kết quả"
-
 #: templates/verify_otp.html:59
 msgid "Verify OTP"
 msgstr "Xác thực OTP"
@@ -707,6 +603,122 @@ msgstr "Xác thực OTP"
 #: templates/verify_otp.html:75
 msgid "Submit"
 msgstr "Xác nhận"
+
+#, fuzzy
+#~| msgid "Start Date"
+#~ msgid "Start At"
+#~ msgstr "Ngày bắt đầu"
+
+#, fuzzy
+#~| msgid "End Date"
+#~ msgid "End At"
+#~ msgstr "Ngày kết thúc"
+
+#, fuzzy
+#~| msgid "Balance"
+#~ msgid "Start Balance"
+#~ msgstr "Số dư"
+
+#, fuzzy
+#~| msgid "Deposit List"
+#~ msgid "Deposit"
+#~ msgstr "Danh sách lệnh nạp"
+
+#~ msgid "Total Payout Amount"
+#~ msgstr "Tổng tiền lệnh rút thường"
+
+#~ msgid "Total Payouts"
+#~ msgstr "Tổng lệnh rút thường"
+
+#, fuzzy
+#~| msgid "Total Settled Payout"
+#~ msgid "Total Settle Amount"
+#~ msgstr "Tổng tiền lệnh rút có bill"
+
+#, fuzzy
+#~| msgid "Total Settled Payout"
+#~ msgid "Total Settles"
+#~ msgstr "Tổng tiền lệnh rút có bill"
+
+#, fuzzy
+#~| msgid "Total Payout Amount"
+#~ msgid "Total Valid Payout Amount"
+#~ msgstr "Tổng tiền lệnh rút thường"
+
+#, fuzzy
+#~| msgid "Total Payout"
+#~ msgid "Total Valid Payout"
+#~ msgstr "Tổng tiền lệnh rút thường"
+
+#, fuzzy
+#~| msgid "Balance"
+#~ msgid "End Balance"
+#~ msgstr "Số dư"
+
+#, fuzzy
+#~| msgid "Timeline Amount"
+#~ msgid "Estimate Total End Timeline Amount"
+#~ msgstr "Khối lượng payout theo ca gần nhất"
+
+#~ msgid "OFF"
+#~ msgstr "TẮT"
+
+#~ msgid "ON"
+#~ msgstr "BẬT"
+
+#~ msgid "User Statistic"
+#~ msgstr "Thống kê nhân viên"
+
+#~ msgid "Total Success Transations"
+#~ msgstr "Tổng số giao dịch vào"
+
+#~ msgid "Total Success Transations Amount"
+#~ msgstr "Tổng khối lượng vào"
+
+#~ msgid "Total Amount In and Out for the last 5 days"
+#~ msgstr "Tổng khối lượng vào ra 5 ngày gần nhất"
+
+#, fuzzy
+#~| msgid "Bank Account"
+#~ msgid "Bank Accounts"
+#~ msgstr "Tài khoản ngân hàng"
+
+#, fuzzy
+#~| msgid "Total Payout"
+#~ msgid "Current Total Payout"
+#~ msgstr "Tổng tiền lệnh rút thường"
+
+#, fuzzy
+#~| msgid "Total Success Transations"
+#~ msgid "Current Total Valid Transactions"
+#~ msgstr "Tổng số giao dịch vào"
+
+#~ msgid "User Payout Statistic"
+#~ msgstr "Thống kê lệnh rút tiền"
+
+#~ msgid "Payout Statistics"
+#~ msgstr "Thống kê lệnh rút tiền"
+
+#~ msgid "Search User"
+#~ msgstr "Tìm kiếm nhân viên"
+
+#~ msgid "Select a username and press enter to add it to the list."
+#~ msgstr "Tìm kiếm tên nhân viên và ấn enter để thêm vào danh sách"
+
+#~ msgid "Selected User"
+#~ msgstr "Nhân viên được chọn"
+
+#~ msgid "Total Payout"
+#~ msgstr "Tổng tiền lệnh rút thường"
+
+#~ msgid "Total Settled Payout"
+#~ msgstr "Tổng tiền lệnh rút có bill"
+
+#~ msgid "Total"
+#~ msgstr "Tổng"
+
+#~ msgid "No info found for the selected criteria."
+#~ msgstr "Không có kết quả"
 
 #~ msgid "Timeline"
 #~ msgstr "Ca"
