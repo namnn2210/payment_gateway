@@ -209,6 +209,9 @@ def get_amount_today(request):
     if request.user.is_superuser:
         start_date, end_date = get_today_date()
 
+        print('======',start_date)
+        print('======',end_date)
+
         total_in = get_total_amount(start_date, end_date, ["IN","ALL"])
         total_out = get_total_amount(start_date, end_date, ["OUT","ALL"])
     # else:
