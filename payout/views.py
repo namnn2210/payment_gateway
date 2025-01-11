@@ -57,7 +57,8 @@ def list_payout(request):
             Q(accountno__icontains=search_query) |
             Q(accountname__icontains=search_query) |
             Q(bankcode__icontains=search_query) |
-            Q(process_bank__name__icontains=search_query)
+            Q(process_bank__name__icontains=search_query) |
+            Q(memo__icontains=search_query)
         )
 
     if status_filter == 'Pending':
