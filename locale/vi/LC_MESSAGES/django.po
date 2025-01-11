@@ -470,7 +470,7 @@ msgstr "Tổng tiền"
 #, fuzzy
 #| msgid "Status"
 msgid "Partner Status"
-msgstr "Trạng thái"
+msgstr "Trạng thái đối tác"
 
 #: templates/payout_list.html:102 templates/settle_payout_list.html:62
 #, fuzzy
