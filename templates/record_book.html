@@ -245,7 +245,10 @@
                                         <td colspan="6">
                                             <div>
                                                 <strong>{% trans "Transaction Number" %}:</strong> {{ item.transaction_number }}<br>
-                                                <strong>{% trans "Memo" %}:</strong> {{ item.description }}
+                                                <strong>{% trans "Memo" %}:</strong> {{ item.description }}<br>
+                                                <strong>{% trans "Order ID" %}:</strong> {{ item.orderid }}<br>
+                                                <strong>{% trans "CID" %}:</strong> {{ item.scode }}<br>
+                                                <strong>{% trans "Order code" %}:</strong> {{ item.incomingorderid }}<br>
                                             </div>
                                         </td>
                                     </tr>
