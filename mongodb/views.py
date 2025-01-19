@@ -149,6 +149,9 @@ def get_new_transactions(transactions, account_number):
                                     f'Please check the transaction again'
                                 )
                                 send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
+                            else:
+                                txn['status'] = 'Success'
+                                break
                 elif len(existed_settles) > 0:
                     for settle in existed_settles:
                         if not settle.status:
