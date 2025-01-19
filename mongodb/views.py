@@ -127,6 +127,7 @@ def get_new_transactions(transactions, account_number):
                             )
                             send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
                             txn['status'] = 'Success'
+                            flag_process = True
                             break
                         else:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
@@ -147,7 +148,7 @@ def get_new_transactions(transactions, account_number):
                                 f'Please check the transaction again'
                             )
                             send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
-                if len(existed_settles) > 0:
+                elif len(existed_settles) > 0:
                     for settle in existed_settles:
                         if not settle.status:
                             settle.status = True
