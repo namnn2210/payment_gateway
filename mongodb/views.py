@@ -127,7 +127,6 @@ def get_new_transactions(transactions, account_number):
                             )
                             send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
                             txn['status'] = 'Success'
-                            flag_process = True
                             break
                         else:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
