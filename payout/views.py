@@ -67,7 +67,7 @@ def list_payout(request):
         status = True
 
     if status is not None:
-        list_payout = list_payout.filter(status=status, is_cancel=False)
+        list_payout = list_payout.filter(status=status, is_cancel=False, is_report=False)
     elif status_filter == 'Canceled':
         list_payout = list_payout.filter(is_cancel=True)
     elif status_filter == 'Reported':
