@@ -62,7 +62,7 @@ def send_telegram_message(message: str, chat_id, api_key):
                              data=data,
                              headers=headers,
                              params=params,
-                             proxies=proxy_settings
+                             proxies=proxy_settings,
                              verify=False)
     return response
 
