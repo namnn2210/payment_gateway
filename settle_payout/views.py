@@ -154,7 +154,7 @@ class AddSettlePayoutView(View):
             f'🔴 - THÔNG BÁO PAYOUT\n'
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
-        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
@@ -235,7 +235,7 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Date: {payout.updated_at}'
             )
-            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
         elif update_type == 'report':
             payout.is_report = True
             reason_text = ''
@@ -261,7 +261,7 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Reason: {reason_text}'
             )
-            send_telegram_message(alert, get_env('SUPPORT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('SUPPORT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
         elif update_type == 'cancel':
             payout.is_cancel = True
             payout.status = False
@@ -284,7 +284,7 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Date: {payout.updated_at}'
             )
-            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
         else:
             return JsonResponse({'status': 422, 'message': 'Done', 'success': False})
         payout.save()

@@ -56,7 +56,7 @@ def get_balance(bank):
                     f'Dữ liệu tài khoản: {bank.account_number} trống\n'
                     f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')}'
                 )
-                send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+                send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
                 return
 
             bank_logged_in = None
@@ -110,7 +110,7 @@ def get_balance(bank):
             f'Lấy số dư tài khoản {bank.account_number} - {bank.bank_name.name} không thành công\n'
             f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
-        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
 
     bank.updated_at = datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')
     bank.save()
@@ -137,7 +137,7 @@ def get_transaction(bank, transactions=None):
             f'Lỗi lấy lịch sử giao dịch từ {bank.account_number} - {bank.bank_name.name} empty\n'
             f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')}'
         )
-        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
 
     if not current_transactions:
         transaction_dicts = [txn for txn in new_transactions]
@@ -240,7 +240,7 @@ def process_transactions(transactions, bank):
                                         f'Time: {row['transaction_date']}\n'
                                     )
                                     send_telegram_message(alert, get_env('TRANSACTION_CHAT_ID'),
-                                                          get_env('TRANSACTION_BOT_API_KEY'))
+                                                          get_env('TRANSACTION_BOT_2_API_KEY'))
                                     success = True
                                     break
                             else:
@@ -307,8 +307,8 @@ def process_transactions(transactions, bank):
                 if memo_transfer_check in row['description'] or memo_deposit_check in row[
                     'description'] and bank.bank_type == 'OUT':
                     send_telegram_message(alert, get_env('INTERNAL_CHAT_ID'),
-                                          get_env('TRANSACTION_BOT_API_KEY'))
+                                          get_env('TRANSACTION_BOT_2_API_KEY'))
                     internal = True
                     break
             if not internal:
-                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
+                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))

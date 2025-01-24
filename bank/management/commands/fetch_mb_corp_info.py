@@ -24,5 +24,5 @@ class Command(BaseCommand):
                             f'Fetch MB Corp bank info error: {str(ex)}\n'
                             f'Date: {datetime.now(pytz.timezone('Asia/Singapore'))}'
                         )
-                        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+                        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
                 time.sleep(45)

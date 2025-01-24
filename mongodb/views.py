@@ -125,7 +125,7 @@ def get_new_transactions(transactions, account_number):
                                 f'\n'
                                 f'Date: {payout.updated_at}'
                             )
-                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
+                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                             txn['status'] = 'Success'
                             break
                         else:
@@ -177,7 +177,7 @@ def get_new_transactions(transactions, account_number):
                                 f'\n'
                                 f'Date: {settle.updated_at}'
                             )
-                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_API_KEY'))
+                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                             txn['status'] = 'Success'
                             break
                         else:

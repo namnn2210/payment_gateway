@@ -187,7 +187,7 @@ class AddPayoutView(View):
             f'🔴 - THÔNG BÁO PAYOUT\n'
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
-        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
@@ -413,7 +413,7 @@ def webhook(request):
                 f'🔴 - THÔNG BÁO SETTLE PAYOUT\n'
                 f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
-            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_API_KEY'))
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
 
         else:
             system_bankcode = BANK_CODE_MAPPING.get(bankcode, '')
@@ -454,5 +454,5 @@ def webhook(request):
                 f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
-                                  get_env('MONITORING_BOT_API_KEY'))
+                                  get_env('MONITORING_BOT_2_API_KEY'))
         return HttpResponse('success')
