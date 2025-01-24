@@ -45,8 +45,11 @@ def update_payout_background(update_body):
                     f'\n'
                     f'Date: {payout.updated_at}'
                 )
-                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                try:
+                    send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                       os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+                except Exception as ex:
+                    print(str(ex))
                 return True
         else:
             if not payout.status:
@@ -72,8 +75,11 @@ def update_payout_background(update_body):
                     f'\n'
                     f'Date: {payout.updated_at}'
                 )
-                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                try:
+                    send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
                                       os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+                except Exception as ex:
+                    print(str(ex))
                 return True
         return False
     elif update_type == 'report':
@@ -103,7 +109,10 @@ def update_payout_background(update_body):
             f'Reason: {reason_text}\n'
             f'Please update status to failed !'
         )
-        send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_2_API_KEY'))
+        try:
+            send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_2_API_KEY'))
+        except Exception as ex:
+            print(str(ex))
         return True
     elif update_type == 'cancel':
         payout.is_cancel = True
@@ -129,8 +138,11 @@ def update_payout_background(update_body):
                 f'\n'
                 f'Date: {payout.updated_at}'
             )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                  os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+            try:
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                    os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+            except Exception as ex:
+                print(str(ex))
             return True
         else:
             payout.save()
@@ -153,5 +165,8 @@ def update_payout_background(update_body):
                 f'\n'
                 f'Date: {payout.updated_at}'
             )
-            send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+            try:
+                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+            except Exception as ex:
+                print(str(ex))
         return False

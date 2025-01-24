@@ -56,7 +56,10 @@ def get_balance(bank):
                     f'Dữ liệu tài khoản: {bank.account_number} trống\n'
                     f'Thời gian: {datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')}'
                 )
-                send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+                try:
+                    send_telegram_message(alert, get_env('MONITORING_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+                except Exception as ex:
+                    print(str(ex))
                 return
 
             bank_logged_in = None
@@ -239,9 +242,9 @@ def process_transactions(transactions, bank):
                                         f'\n'
                                         f'Time: {row['transaction_date']}\n'
                                     )
+                                    success = True
                                     send_telegram_message(alert, get_env('TRANSACTION_CHAT_ID'),
                                                           get_env('TRANSACTION_BOT_2_API_KEY'))
-                                    success = True
                                     break
                             else:
                                 continue

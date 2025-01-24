@@ -30,6 +30,9 @@ class Command(BaseCommand):
                         f'Submit payout error: {str(ex)}\n'
                         f'Date: {datetime.now(pytz.timezone('Asia/Singapore'))}'
                     )
-                    send_telegram_message(alert, get_env('MONITORING_CHAT_ID'),
-                                          get_env('MONITORING_BOT_2_API_KEY'))
+                    try:
+                        send_telegram_message(alert, get_env('MONITORING_CHAT_ID'),
+                                            get_env('MONITORING_BOT_2_API_KEY'))
+                    except Exception as ex:
+                        print(str(ex))
             time.sleep(15)

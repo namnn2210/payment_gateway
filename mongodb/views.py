@@ -125,8 +125,11 @@ def get_new_transactions(transactions, account_number):
                                 f'\n'
                                 f'Date: {payout.updated_at}'
                             )
-                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                             txn['status'] = 'Success'
+                            try:
+                                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
+                            except Exception as ex:
+                                print(str(ex))
                             break
                         else:
                             # existed_transaction = get_transaction_by_transaction_number(txn['transaction_number'])
@@ -177,8 +180,11 @@ def get_new_transactions(transactions, account_number):
                                 f'\n'
                                 f'Date: {settle.updated_at}'
                             )
-                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                             txn['status'] = 'Success'
+                            try:
+                                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
+                            except Exception as ex:
+                                print(str(ex))
                             break
                         else:
                             existed_transaction = get_transaction_by_transaction_number(txn['transaction_number'])
@@ -200,7 +206,10 @@ def get_new_transactions(transactions, account_number):
                                     f'\n'
                                     f'Please check the transaction again'
                                 )
-                                send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
+                                try:
+                                    send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
+                                except Exception as ex:
+                                    print(str(ex))
                             else:
                                 txn['status'] = 'Success'
                                 break
