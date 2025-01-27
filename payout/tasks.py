@@ -109,10 +109,7 @@ def update_payout_background(update_body):
             f'Reason: {reason_text}\n'
             f'Please update status to failed !'
         )
-        try:
-            send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_2_API_KEY'))
-        except Exception as ex:
-            print(str(ex))
+        send_telegram_message(alert, os.environ.get('SUPPORT_CHAT_ID'), os.environ.get('MONITORING_BOT_2_API_KEY'))
         return True
     elif update_type == 'cancel':
         payout.is_cancel = True
