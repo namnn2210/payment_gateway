@@ -255,7 +255,7 @@ def process_transactions(transactions, bank):
                     if not success:
                         update_transaction_history_status(row['account_number'], row['transaction_number'],
                                                           row['transfer_code'], None, None, None,
-                                                          'Failed')
+                                                          'Failed', None)
                         alert = (
                             f'Hi, failed\n'
                             f'\n'
