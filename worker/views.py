@@ -187,7 +187,7 @@ def process_transactions(transactions, bank):
                 if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL':
                     update_transaction_history_status(row['account_number'], row['transaction_number'],
                                                       row['transfer_code'], None,
-                                                      None, None, 'Failed')
+                                                      None, None, 'Failed', None)
                     alert = (
                         f'Hi, failed\n'
                         f'\n'
@@ -224,11 +224,13 @@ def process_transactions(transactions, bank):
                                                                       row['transaction_number'],
                                                                       row['transfer_code'], result['orderid'],
                                                                       result['scode'], result['incomingorderid'],
-                                                                      'Success')
+                                                                      'Success', result['payername'])
                                     alert = (
                                         f'🟩🟩🟩 Success! CID: {item.name}\n'
                                         f'\n'
                                         f'Account: {row['account_number']}'
+                                        f'\n'
+                                        f'Payer Name: {row['payername']}\n'
                                         f'\n'
                                         f'Confirmed by order: {result['incomingorderid']}\n'
                                         f'\n'

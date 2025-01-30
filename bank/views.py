@@ -232,11 +232,12 @@ def get_amount_today(request):
 
 
 def update_transaction_history_status(account_number, transaction_number, transfer_code, orderid, scode,
-                                      incomingorderid, status):
+                                      incomingorderid, status,payer_name):
     update_fields = {
         "orderid": orderid,
         "scode": scode,
         "incomingorderid": incomingorderid,
+        "payer_name":payer_name,
         "status": status,
     }
     update_transaction_status(account_number, transaction_number, update_fields)
