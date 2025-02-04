@@ -113,3 +113,9 @@ def get_today_date():
     start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
     end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
     return start_date, end_date
+
+def clean_text(text):
+    if isinstance(text, str):
+        # Remove control characters (ASCII 0-31)
+        return re.sub(r'[\x00-\x1F]', '', text)
+    return text

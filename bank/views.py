@@ -11,7 +11,7 @@ from django.forms.models import model_to_dict
 from datetime import datetime
 from django.core.paginator import Paginator
 from mongodb.views import update_transaction_status, get_transactions_by_account_number, get_total_amount
-from bank.utils import get_today_date
+from bank.utils import get_today_date, clean_text
 from tech.views import tech_login
 import json
 import pandas as pd
@@ -262,6 +262,7 @@ def export_to_excel(request):
                                                            order_by=order_by, search_text=search_query)
 
     filtered_transactions_df = pd.DataFrame(list_transactions)
+    filtered_transactions_df = filtered_transactions_df.applymap(clean_text)
 
     # Prepare the Excel file for download
     if not filtered_transactions_df.empty:
