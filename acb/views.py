@@ -65,7 +65,8 @@ def acb_transactions(username, password, account_number):
                 account_number=transaction['account'],
                 description=transaction['description'],
                 transfer_code=find_substring(transaction['description']),
-                amount=transaction['amount']
+                amount=transaction['amount'],
+                payername=''
             )
             formatted_transactions.append(new_formatted_transaction.__dict__())
         return formatted_transactions

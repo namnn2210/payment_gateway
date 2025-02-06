@@ -96,7 +96,8 @@ def tech_transactions(username, password, account_number):
                 account_number=account_number,
                 description=transaction['description'],
                 transfer_code=find_substring(transaction['description']),
-                amount=int(transaction['transactionAmountCurrency']['amount'])
+                amount=int(transaction['transactionAmountCurrency']['amount']),
+                payername=''
             )
             formatted_transactions.append(new_formatted_transaction.__dict__())
         return formatted_transactions
