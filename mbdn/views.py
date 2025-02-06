@@ -16,7 +16,7 @@ def mbdn_transactions(transactions):
         if int(transaction['creditAmount']) != 0:
             transaction_type = 'IN'
             amount = int(transaction['creditAmount'])
-            payername = transaction['reciprocalAcctName']
+            # payername = transaction['reciprocalAcctName']
         else:
             transaction_type = 'OUT'
             amount = int(transaction['debitAmount'])
