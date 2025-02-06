@@ -232,6 +232,8 @@ def process_transactions(transactions, bank):
                                         f'\n'
                                         f'Payer Name: {result['payername']}\n'
                                         f'\n'
+                                        f'Bank Payer Name: {row['payername']}\n'
+                                        f'\n'
                                         f'Confirmed by order: {result['incomingorderid']}\n'
                                         f'\n'
                                         f'Received amount💲: {formatted_amount} \n'
