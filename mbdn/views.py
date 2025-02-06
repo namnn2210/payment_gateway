@@ -13,10 +13,10 @@ def mbdn_transactions(transactions):
     formatted_transactions = []
     for transaction in transactions:
         payername = ''
-        if int(transaction['creditAmount']) != 0:
+        if int(transaction['creditAmount']) != 0 and transaction['sign'] == 'C':
             transaction_type = 'IN'
             amount = int(transaction['creditAmount'])
-            # payername = transaction['reciprocalAcctName']
+            payername = transaction.get('reciprocalAcctName','')
         else:
             transaction_type = 'OUT'
             amount = int(transaction['debitAmount'])
