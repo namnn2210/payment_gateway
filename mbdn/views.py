@@ -12,9 +12,11 @@ logger = logging.getLogger('django')
 def mbdn_transactions(transactions):
     formatted_transactions = []
     for transaction in transactions:
+        payername = ''
         if int(transaction['creditAmount']) != 0:
             transaction_type = 'IN'
             amount = int(transaction['creditAmount'])
+            payername = transaction['reciprocalAcctName']
         else:
             transaction_type = 'OUT'
             amount = int(transaction['debitAmount'])
@@ -25,6 +27,7 @@ def mbdn_transactions(transactions):
             account_number=transaction['accountNo'],
             description=transaction['description'],
             transfer_code=find_substring(transaction['description']),
+            payername=payername,
             amount=amount
         )
         formatted_transactions.append(new_formatted_transaction.__dict__())
@@ -43,7 +46,6 @@ def mbdn_balance(username, password, account_number, corp_id, start=''):
         "accountNo": account_number,
         "corp_id": corp_id
     }
-    print(body)
     response = requests.post(get_env("MBDN_URL"), json=body, timeout=120)
     if response.status_code == 200:
         if '"ok":true' in response.text:

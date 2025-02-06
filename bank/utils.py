@@ -8,7 +8,7 @@ import pytz
 
 class Transaction:
     def __init__(self, transaction_number, transaction_date, transaction_type, account_number, description,
-                 transfer_code, amount) -> None:
+                 transfer_code, amount, payername) -> None:
         self.transaction_number = str(transaction_number)
         if transaction_date:
             self.transaction_date = datetime.strptime(transaction_date, '%d/%m/%Y %H:%M:%S')
@@ -25,6 +25,7 @@ class Transaction:
         self.orderid = None
         self.scode = None
         self.incomingorderid = None
+        self.payername = payername
 
     def __dict__(self) -> dict:
         return {
@@ -39,7 +40,8 @@ class Transaction:
             'note': self.note,
             'orderid': self.orderid,
             'scode': self.scode,
-            'incomingorderid': self.incomingorderid
+            'incomingorderid': self.incomingorderid,
+            'payername': self.payername,
         }
 
 
