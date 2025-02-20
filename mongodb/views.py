@@ -97,7 +97,9 @@ def get_new_transactions(transactions, account_number):
                 orderno = match.group().replace('Z','')
                 print("Order No: ", orderno)
                 existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn['amount']).get()
+                print("Existed Payout: ", existed_payout)
                 existed_settle = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount']).get()
+                print("Existed Settle: ", existed_settle)
                 formatted_amount = '{:,.2f}'.format(txn['amount'])
                 if existed_payout:
                     if not payout.status:
