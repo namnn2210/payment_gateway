@@ -164,6 +164,8 @@ def get_new_transactions(transactions, account_number):
                                 f'Please check the transaction again'
                             )
                             send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
+                        else:
+                            txn['status'] = 'Success'
                         break
                 elif existed_settle:
                     if not existed_settle.status:
@@ -218,6 +220,8 @@ def get_new_transactions(transactions, account_number):
                                 send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
                             except Exception as ex:
                                 print(str(ex))
+                        else:
+                            txn['status'] = 'Success'
                         break
     return new_transactions
 
