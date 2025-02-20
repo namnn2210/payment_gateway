@@ -167,27 +167,27 @@ def get_new_transactions(transactions, account_number):
                         break
                 elif existed_settle:
                     if not existed_settle.status:
-                        settle_payout.status = True
-                        settle_payout.save()
+                        existed_settle.status = True
+                        existed_settle.save()
                         process_bank = bank_account.objects.filter(account_number=account_number).first()
                         alert = (
-                            f'🟢🟢🟢{settle_payout.orderid}\n'
+                            f'🟢🟢🟢{existed_settle.orderid}\n'
                             f'\n'
                             f'Amount: {formatted_amount} \n'
                             f'\n'
-                            f'Bank name: {settle_payout.bankcode}\n'
+                            f'Bank name: {existed_settle.bankcode}\n'
                             f'\n'
-                            f'Account name: {settle_payout.accountname}\n'
+                            f'Account name: {existed_settle.accountname}\n'
                             f'\n'
-                            f'Account number: {settle_payout.accountno}\n'
+                            f'Account number: {existed_settle.accountno}\n'
                             f'\n'
                             f'Process bank: {process_bank.bank_name.name}\n'
                             f'\n'
-                            f'Created by: {settle_payout.user}\n'
+                            f'Created by: {existed_settle.user}\n'
                             f'\n'
-                            f'Done by: {settle_payout.user}\n'
+                            f'Done by: {existed_settle.user}\n'
                             f'\n'
-                            f'Date: {settle_payout.updated_at}'
+                            f'Date: {existed_settle.updated_at}'
                         )
                         txn['status'] = 'Success'
                         try:
