@@ -145,7 +145,7 @@ def get_new_transactions(transactions, account_number):
                             print(str(ex))
                         break
                     else:
-                        existed_transaction = get_transaction_by_description(match)
+                        existed_transaction = get_transaction_by_description(orderno)
                         if existed_transaction:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (
@@ -198,7 +198,7 @@ def get_new_transactions(transactions, account_number):
                             print(str(ex))
                         break
                     else:
-                        existed_transaction = get_transaction_by_description(match)
+                        existed_transaction = get_transaction_by_description(orderno)
                         if existed_transaction:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (
