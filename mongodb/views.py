@@ -202,7 +202,6 @@ def get_new_transactions(transactions, account_number):
                             alert = (
                                 f'Hi, failed\n'
                                 f'\n'
-    
                                 f'Account: {txn['account_number']}'
                                 f'\n'
                                 f'Amount💲: {formatted_amount} \n'
