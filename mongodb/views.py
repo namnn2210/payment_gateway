@@ -71,9 +71,9 @@ def get_transaction_by_transaction_number(transaction_number):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
     return collection.find_one({'transaction_number': transaction_number})
 
-def get_transaction_by_description(description):
+def get_transaction_by_description(description_substring):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    return collection.find_one({'description': description})
+    return collection.find_one({'description': {'$regex': description_substring}})  # Case-insensitive search
 
 
 def get_new_transactions(transactions, account_number):
@@ -145,7 +145,7 @@ def get_new_transactions(transactions, account_number):
                             print(str(ex))
                         break
                     else:
-                        existed_transaction = get_transaction_by_description(txn['description'])
+                        existed_transaction = get_transaction_by_description(match)
                         if existed_transaction:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (
@@ -198,7 +198,7 @@ def get_new_transactions(transactions, account_number):
                             print(str(ex))
                         break
                     else:
-                        existed_transaction = get_transaction_by_description(txn['description'])
+                        existed_transaction = get_transaction_by_description(match)
                         if existed_transaction:
                             formatted_amount = '{:,.2f}'.format(txn['amount'])
                             alert = (
