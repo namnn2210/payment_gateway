@@ -110,29 +110,29 @@ def get_new_transactions(transactions, account_number):
                     print("Settle not found")
                 formatted_amount = '{:,.2f}'.format(txn['amount'])
                 if existed_payout:
-                    if not payout.status:
-                        payout.status = True
-                        payout.staging_status = True
-                        payout.save()
+                    if not existed_payout.status:
+                        existed_payout.status = True
+                        existed_payout.staging_status = True
+                        existed_payout.save()
                         process_bank = bank_account.objects.filter(account_number=account_number).first()
                         alert = (
-                            f'🟢🟢🟢{payout.orderid}\n'
+                            f'🟢🟢🟢{existed_payout.orderid}\n'
                             f'\n'
                             f'Amount: {formatted_amount} \n'
                             f'\n'
-                            f'Bank name: {payout.bankcode}\n'
+                            f'Bank name: {existed_payout.bankcode}\n'
                             f'\n'
-                            f'Account name: {payout.accountname}\n'
+                            f'Account name: {existed_payout.accountname}\n'
                             f'\n'
-                            f'Account number: {payout.accountno}\n'
+                            f'Account number: {existed_payout.accountno}\n'
                             f'\n'
                             f'Process bank: {process_bank.bank_name.name}\n'
                             f'\n'
-                            f'Created by: {payout.user}\n'
+                            f'Created by: {existed_payout.user}\n'
                             f'\n'
-                            f'Done by: {payout.user}\n'
+                            f'Done by: {existed_payout.user}\n'
                             f'\n'
-                            f'Date: {payout.updated_at}'
+                            f'Date: {existed_payout.updated_at}'
                         )
                         txn['status'] = 'Success'
                         try:
@@ -141,25 +141,25 @@ def get_new_transactions(transactions, account_number):
                             print(str(ex))
                         break
                     else:
-                        # existed_transaction = get_transaction_by_transaction_number(txn['transaction_number'])
-                        # if existed_transaction:
-                        # formatted_amount = '{:,.2f}'.format(txn['amount'])
-                        # alert = (
-                        #     f'Hi, failed\n'
-                        #     f'\n'
-                        #     f'Account: {txn['account_number']}'
-                        #     f'\n'
-                        #     f'Amount💲: {formatted_amount} \n'
-                        #     f'\n'
-                        #     f'Memo: {txn['description']}\n'
-                        #     f'\n'
-                        #     f'Order No: {orderno}\n'
-                        #     f'\n'
-                        #     f'Time: {txn['transaction_date']}\n'
-                        #     f'\n'
-                        #     f'Please check the transaction again'
-                        # )
-                        # send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
+                        existed_transaction = get_transaction_by_transaction_number(txn['transaction_number'])
+                        if existed_transaction:
+                            formatted_amount = '{:,.2f}'.format(txn['amount'])
+                            alert = (
+                                f'Hi, failed\n'
+                                f'\n'
+                                f'Account: {txn['account_number']}'
+                                f'\n'
+                                f'Amount💲: {formatted_amount} \n'
+                                f'\n'
+                                f'Memo: {txn['description']}\n'
+                                f'\n'
+                                f'Order No: {orderno}\n'
+                                f'\n'
+                                f'Time: {txn['transaction_date']}\n'
+                                f'\n'
+                                f'Please check the transaction again'
+                            )
+                            send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
                         # # else:
                         txn['status'] = 'Success'
                         break
