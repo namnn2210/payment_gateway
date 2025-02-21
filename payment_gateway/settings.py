@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     'two_factor_auth',
     'mongodb',
     'config',
-    'transaction'
+    'transaction',
+    'mysql'
 ]
 
 MIDDLEWARE = [
