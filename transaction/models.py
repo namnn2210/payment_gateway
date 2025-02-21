@@ -12,10 +12,11 @@ class TransactionHistory(models.Model):
     scode = models.CharField(max_length=255, null=True)
     status = models.CharField(max_length=255, null=True)
     transaction_type = models.CharField(max_length=255,null=False)
-    transaction_number = models.CharField(max_length=255, unique=True, null=False, default='')
+    transaction_number = models.CharField(max_length=255, null=False, default='')
     transfer_code = models.CharField(max_length=255, null=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = 'transaction_history'
+        unique_together = ('account_number', 'transaction_number')

@@ -14,7 +14,7 @@ class Command(BaseCommand):
         collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
         transactions = collection.find()
         for transaction in transactions:
-
+            print(transaction)
             new_transaction = TransactionHistory(
                 transaction_number=transaction['transaction_number'],
                 created_at=transaction['transaction_date'],
