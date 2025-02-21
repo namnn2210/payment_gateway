@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'employee',
     'two_factor_auth',
     'mongodb',
-    'config'
+    'config',
+    'transaction'
 ]
 
 MIDDLEWARE = [
