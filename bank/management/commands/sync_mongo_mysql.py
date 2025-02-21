@@ -12,7 +12,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.NOTICE('Starting syncing mongodb...'))
 
         collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-        transactions = collection.find()[:5]
+        transactions = collection.find()
         for transaction in transactions:
 
             new_transaction = TransactionHistory(
