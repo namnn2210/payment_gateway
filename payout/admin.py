@@ -14,7 +14,7 @@ class UpdateUserForm(forms.Form):
 class PayoutAdmin(admin.ModelAdmin):
     list_display = ('user','scode','orderno', 'orderid', 'status', 'money', 'bankname', 'accountno','accountname', 'bankcode','partner_bankcode', 'created_at', 'updated_at')
     list_filter = ('user','is_report','is_cancel', 'status',)
-    search_fields = ('orderno', 'orderid','scode', 'did', 'accountno', 'accountname',)
+    search_fields = ('orderno', 'orderid','scode', 'did', 'accountno', 'accountname','memo',)
 
     def update_user(self, request, queryset):
         form = None
