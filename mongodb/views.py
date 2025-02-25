@@ -103,12 +103,12 @@ def get_new_transactions(transactions, account_number):
                 existed_payout = None
                 existed_settle = None
                 try:
-                    existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn['amount']).get()
+                    existed_payout = payout.objects.filter(orderno__contains=orderno).first()
                     print("Existed Payout: ", existed_payout)
                 except Exception as e:
                     print("Payout not found. ", e)
                 try:
-                    existed_settle = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount']).get()
+                    existed_settle = settle_payout.objects.filter(orderno__contains=orderno).first()
                     print("Existed Settle: ", existed_settle)
                 except Exception as e:
                     print("Settle not found")
