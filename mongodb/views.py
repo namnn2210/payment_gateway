@@ -98,22 +98,12 @@ def get_new_transactions(transactions, account_number):
             settle_payout = apps.get_model('settle_payout', 'SettlePayout')
             bank_account = apps.get_model('bank', 'BankAccount')
             if match:
-                orderno = match.group().replace('Z','')
+                orderno = match.group()
                 print("Order No: ", orderno)
-                existed_payout = None
-                existed_settle = None
-                try:
-                    existed_payout = payout.objects.filter(orderno__contains=orderno).first()
-                    print("Existed Payout: ", existed_payout)
-                except Exception as e:
-                    print("Payout not found. ", e)
-                try:
-                    existed_settle = settle_payout.objects.filter(orderno__contains=orderno).first()
-                    print("Existed Settle: ", existed_settle)
-                except Exception as e:
-                    print("Settle not found")
                 formatted_amount = '{:,.2f}'.format(txn['amount'])
+                existed_payout = payout.objects.filter(memo__contains=orderno.strip()).first()
                 if existed_payout:
+                    print("Existed Payout: ", existed_payout)
                     if not existed_payout.status:
                         existed_payout.status = True
                         existed_payout.staging_status = True
@@ -139,36 +129,13 @@ def get_new_transactions(transactions, account_number):
                             f'Date: {existed_payout.updated_at}'
                         )
                         txn['status'] = 'Success'
-                        try:
-                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
-                        except Exception as ex:
-                            print(str(ex))
-                        break
+                        send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     else:
-                        # existed_transaction = get_transaction_by_description(orderno)
-                        # if existed_transaction:
-                        #     formatted_amount = '{:,.2f}'.format(txn['amount'])
-                        #     alert = (
-                        #         f'Hi, failed\n'
-                        #         f'\n'
-                        #         f'Account: {txn['account_number']}'
-                        #         f'\n'
-                        #         f'Amount💲: {formatted_amount} \n'
-                        #         f'\n'
-                        #         f'Memo: {txn['description']}\n'
-                        #         f'\n'
-                        #         f'Order No: {orderno}\n'
-                        #         f'\n'
-                        #         f'Time: {txn['transaction_date']}\n'
-                        #         f'\n'
-                        #         f'Please check the transaction again'
-                        #     )
-                        #     send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
-                        # else:
                         txn['status'] = 'Success'
-                        break
-                elif existed_settle:
-                    if not existed_settle.status:
+                else:
+                    existed_settle = settle_payout.objects.filter(memo__contains=orderno.strip()).first()
+                    print("Existed Settle: ", existed_settle)
+                    if existed_settle and not existed_settle.status:
                         existed_settle.status = True
                         existed_settle.save()
                         process_bank = bank_account.objects.filter(account_number=account_number).first()
@@ -192,37 +159,9 @@ def get_new_transactions(transactions, account_number):
                             f'Date: {existed_settle.updated_at}'
                         )
                         txn['status'] = 'Success'
-                        try:
-                            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
-                        except Exception as ex:
-                            print(str(ex))
-                        break
+                        send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     else:
-                        # existed_transaction = get_transaction_by_description(orderno)
-                        # if existed_transaction:
-                        #     formatted_amount = '{:,.2f}'.format(txn['amount'])
-                        #     alert = (
-                        #         f'Hi, failed\n'
-                        #         f'\n'
-                        #         f'Account: {txn['account_number']}'
-                        #         f'\n'
-                        #         f'Amount💲: {formatted_amount} \n'
-                        #         f'\n'
-                        #         f'Memo: {txn['description']}\n'
-                        #         f'\n'
-                        #         f'Order No: {orderno}\n'
-                        #         f'\n'
-                        #         f'Time: {txn['transaction_date']}\n'
-                        #         f'\n'
-                        #         f'Please check the transaction again'
-                        #     )
-                        #     try:
-                        #         send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
-                        #     except Exception as ex:
-                        #         print(str(ex))
-                        # else:
                         txn['status'] = 'Success'
-                        break
     return new_transactions
 
 def get_unprocessed_transactions(account_number):
