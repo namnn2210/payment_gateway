@@ -187,8 +187,6 @@ def get_new_transactions(transactions, account_number):
                                 f'\n'
                                 f'Account: {txn['account_number']}'
                                 f'\n'
-                                f'Confirmed by order: \n'
-                                f'\n'
                                 f'Received amount💲: {formatted_amount} \n'
                                 f'\n'
                                 f'Memo: {txn['description']}\n'
