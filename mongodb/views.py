@@ -73,7 +73,7 @@ def get_transaction_by_transaction_number(transaction_number):
 
 def get_transaction_by_description(description_substring):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    return collection.find_one({'description': {'$regex': description_substring}})  # Case-insensitive search
+    return collection.find_one({'description': {'$regex': description_substring}})
 
 
 def get_new_transactions(transactions, account_number):
@@ -131,7 +131,24 @@ def get_new_transactions(transactions, account_number):
                         txn['status'] = 'Success'
                         send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     else:
-                        txn['status'] = 'Success'
+                        existed_transaction = get_transaction_by_description(orderno.strip())
+                        if not existed_transaction:
+                            txn['status'] = 'Success'
+                        else:
+                            alert = (
+                                f'Hi, failed\n'
+                                f'\n'
+                                f'Account: {txn['account_number']}'
+                                f'\n'
+                                f'Confirmed by order: \n'
+                                f'\n'
+                                f'Received amount💲: {formatted_amount} \n'
+                                f'\n'
+                                f'Memo: {txn['description']}\n'
+                                f'\n'
+                                f'Time: {txn['transaction_date']}\n'
+                            )
+                            send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
                 else:
                     existed_settle = settle_payout.objects.filter(memo__contains=orderno.strip()).first()
                     print("Existed Settle: ", existed_settle)
@@ -161,7 +178,24 @@ def get_new_transactions(transactions, account_number):
                         txn['status'] = 'Success'
                         send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     else:
-                        txn['status'] = 'Success'
+                        existed_transaction = get_transaction_by_description(orderno.strip())
+                        if not existed_transaction:
+                            txn['status'] = 'Success'
+                        else:
+                            alert = (
+                                f'Hi, failed\n'
+                                f'\n'
+                                f'Account: {txn['account_number']}'
+                                f'\n'
+                                f'Confirmed by order: \n'
+                                f'\n'
+                                f'Received amount💲: {formatted_amount} \n'
+                                f'\n'
+                                f'Memo: {txn['description']}\n'
+                                f'\n'
+                                f'Time: {txn['transaction_date']}\n'
+                            )
+                            send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
     return new_transactions
 
 def get_unprocessed_transactions(account_number):
