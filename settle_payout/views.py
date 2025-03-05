@@ -236,6 +236,8 @@ def update_settle_payout(request, update_type):
                 f'\n'
                 f'Done by: {request.user}\n'
                 f'\n'
+                f'Description: {payout.memo}\n'
+                f'\n'
                 f'Date: {payout.updated_at}'
             )
             try:

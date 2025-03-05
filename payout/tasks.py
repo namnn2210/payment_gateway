@@ -43,6 +43,8 @@ def update_payout_background(update_body):
                     f'\n'
                     f'Done by: {request_user}\n'
                     f'\n'
+                    f'Description: {payout.memo}\n'
+                    f'\n'
                     f'Date: {payout.updated_at}'
                 )
                 try:
@@ -72,6 +74,8 @@ def update_payout_background(update_body):
                     f'Created by: {payout.user}\n'
                     f'\n'
                     f'Done by: {request_user}\n'
+                    f'\n'
+                    f'Description: {payout.memo}\n'
                     f'\n'
                     f'Date: {payout.updated_at}'
                 )
