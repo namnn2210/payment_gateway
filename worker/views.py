@@ -43,9 +43,7 @@ def get_balance(bank):
     max_error_count = 3
 
     if bank.bank_name.bankcode == 'MB_CORP':
-        print(bank_balance)
-        if bank_balance > 200000000:
-           pass
+        pass
     else:
         while bank_balance is None:
             print('Error fetching bank balance, try to login')
