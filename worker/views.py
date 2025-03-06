@@ -98,6 +98,8 @@ def get_balance(bank):
             print('Update for bank: %s. Updated at %s' % (
                 bank.account_number, timezone.now().strftime('%Y-%m-%d %H:%M:%S')))
 
+            get_transaction(bank)
+
         else:
             pass
     elif bank_balance is None:
