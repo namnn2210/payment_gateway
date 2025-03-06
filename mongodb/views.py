@@ -217,7 +217,7 @@ def update_transaction_status(account_number, transaction_number, update_fields)
 
 def insert_all(transaction_list):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    collection.insert_many(transaction_list)
+    collection.insert_many(transaction_list, ordered=False)
 
 
 def get_total_amount(date_start, date_end, transaction_type):
