@@ -43,6 +43,7 @@ def get_balance(bank):
     max_error_count = 3
 
     if bank.bank_name.bankcode == 'MB_CORP':
+        print(bank_balance)
         if bank_balance > 200000000:
            pass
     else:
