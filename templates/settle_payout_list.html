@@ -79,7 +79,7 @@
                                             {% endif %}
                                             <p><strong>{% trans "Action" %}:</strong>
                                                 {% if user.is_superuser %}
-                                                    {% if not item.status and not item.is_cancel and not item.manual_withdrawal%}
+                                                    {% if not item.status and not item.is_cancel%}
                                                         <button class="btn btn-sm rounded-pill btn-success pay-btn" data-bs-toggle="modal"
                                                             data-bs-target="#payModal" data-item-id="{{ item.id }}"
                                                             data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"
@@ -90,7 +90,7 @@
                                                     <button class="btn btn-sm rounded-pill btn-danger delete-btn" data-item-id="{{ item.id }}"><i class="bi bi-trash me-1"></i>{% trans "Delete" %}</button>
                                                 {% else %}
                                                     {% if item.user == user or item.user.username == 'admin' %}
-                                                        {% if not item.status and not item.is_cancel and not item.manual_withdrawal%}
+                                                        {% if not item.status and not item.is_cancel%}
                                                             <button class="btn rounded-pill btn-sm btn-success pay-btn" data-bs-toggle="modal"
                                                                 data-bs-target="#payModal" data-item-id="{{ item.id }}"
                                                                 data-bankcode="{{ item.bankcode }}" data-accountno="{{ item.accountno }}"

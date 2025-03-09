@@ -121,7 +121,7 @@
                                         {% endif %}
                                         <p><strong>{% trans "Action" %}:</strong>
                                             {% if user.is_superuser %}
-                                                {% if not item.status and not item.is_cancel and not item.manual_withdrawal %}
+                                                {% if not item.status and not item.is_cancel%}
                                                     <button class="btn btn-sm rounded-pill btn-success pay-btn"
                                                             data-bs-toggle="modal"
                                                             data-bs-target="#payModal" data-item-id="{{ item.id }}"
@@ -144,7 +144,7 @@
                                                 {% endif %}
                                             {% else %}
                                                 {% if item.user == user or item.user.username == 'admin' %}
-                                                    {% if not item.status and not item.is_cancel and not item.manual_withdrawal %}
+                                                    {% if not item.status and not item.is_cancel %}
                                                         <button class="btn btn-sm rounded-pill btn-success pay-btn"
                                                                 data-bs-toggle="modal"
                                                                 data-bs-target="#payModal" data-item-id="{{ item.id }}"
