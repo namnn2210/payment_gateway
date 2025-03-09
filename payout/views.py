@@ -459,14 +459,14 @@ def webhook(request):
                 result = mbdn_internal_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
                                                 payout.accountno, str(payout.money), payout.memo)
                 if 'result' in result and result['result'].get('responseCode') == '00':
-                    payout.status = True
+                    payout.manual_withdraw = True
                     payout.save()
             else:
                 result = mbdn_external_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
                                                 payout.accountno, payout.bankcode, str(payout.money),
                                                 payout.memo)
                 if 'result' in result and result['result'].get('responseCode') == '00':
-                    payout.status = True
+                    payout.manual_withdraw = True
                     payout.save()
             alert = (
                 f'🔴 - THÔNG BÁO PAYOUT\n'
