@@ -19,6 +19,7 @@ class SettlePayout(models.Model):
     is_cancel = models.BooleanField(default=False)
     is_report = models.BooleanField(default=False)
     process_bank = models.ForeignKey(Bank, on_delete=models.DO_NOTHING, null=True)
+    manual_withdraw = models.BooleanField(default=False, null=True)
     status = models.BooleanField(default=False)
     updated_by = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='settle_payout_created_by', null=True)
     created_at = models.DateTimeField(auto_now_add=True)

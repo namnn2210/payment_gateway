@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponse
+from mbdn.views import mbdn_internal_transfer, mbdn_external_transfer
 from bank.utils import send_telegram_message
 from bank.models import Bank
 from config.views import get_env
@@ -454,6 +455,19 @@ def webhook(request):
                 created_at=timezone.now()
             )
             payout.save()
+            if payout.bankcode == 'MB':
+                result = mbdn_internal_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
+                                                payout.accountno, str(payout.money), payout.memo)
+                if 'result' in result and result['result'].get('responseCode') == '00':
+                    payout.status = True
+                    payout.save()
+            else:
+                result = mbdn_external_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
+                                                payout.accountno, payout.bankcode, str(payout.money),
+                                                payout.memo)
+                if 'result' in result and result['result'].get('responseCode') == '00':
+                    payout.status = True
+                    payout.save()
             alert = (
                 f'🔴 - THÔNG BÁO PAYOUT\n'
                 f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'

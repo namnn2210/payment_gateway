@@ -8,12 +8,13 @@ import logging
 
 logger = logging.getLogger('django')
 
+
 # Create your views here.
 def mbdn_transactions(username, password, account_number, corp_id, start=''):
     end_date, start_date = get_dates(start_date=start)
     body = {
-        "begin":start_date,
-        "end":end_date,
+        "begin": start_date,
+        "end": end_date,
         "username": username,
         "password": password,
         "accountNo": account_number,
@@ -28,7 +29,7 @@ def mbdn_transactions(username, password, account_number, corp_id, start=''):
             if int(transaction['creditAmount']) != 0 and transaction['sign'] == 'C':
                 transaction_type = 'IN'
                 amount = int(transaction['creditAmount'])
-                payername = transaction.get('reciprocalAcctName','')
+                payername = transaction.get('reciprocalAcctName', '')
             else:
                 transaction_type = 'OUT'
                 amount = int(transaction['debitAmount'])
@@ -56,6 +57,38 @@ def mbdn_balance(username, password, account_number, corp_id):
         "accountNo": account_number,
         "corp_id": corp_id
     }
-    response = requests.post(get_env("MBDN_URL")+'/balance', json=body, timeout=120)
+    response = requests.post(get_env("MBDN_URL") + '/balance', json=body, timeout=120)
+    print(response.json())
     if response.status_code == 200:
         return response.json()['data']
+
+
+def mbdn_internal_transfer(username, password, account_number, corp_id, bank_number, amount, content):
+    body = {
+        "username": username,
+        "password": password,
+        "accountNo": account_number,
+        "corp_id": corp_id,
+        "bank_number": bank_number,
+        "amount": amount,
+        "content": content
+    }
+    response = requests.post(get_env("MBDN_URL") + '/internal-transfer', json=body, timeout=120)
+    if response.status_code == 200:
+        return response.json()
+
+
+def mbdn_external_transfer(username, password, account_number, corp_id, bank_number, bank_code, amount, content):
+    body = {
+        "username": username,
+        "password": password,
+        "accountNo": account_number,
+        "corp_id": corp_id,
+        "bank_number": bank_number,
+        "bank_code": bank_code,
+        "amount": amount,
+        "content": content
+    }
+    response = requests.post(get_env("MBDN_URL") + '/external-transfer', json=body, timeout=120)
+    if response.status_code == 200:
+        return response.json()

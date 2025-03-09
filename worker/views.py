@@ -3,17 +3,19 @@ from mb.views import mb_balance, mb_transactions, mb_login
 from acb.views import acb_transactions, acb_balance, acb_login
 from vietin.views import vietin_login, vietin_balance, vietin_transactions
 from tech.views import tech_balance, tech_transactions
-from mbdn.views import mbdn_balance, mbdn_transactions
+from mbdn.views import mbdn_balance, mbdn_transactions, mbdn_internal_transfer, mbdn_external_transfer
 from bank.utils import send_telegram_message, find_substring
 from bank.views import update_transaction_history_status
 from bank.models import BankAccount
 from partner.views import create_deposit_order
 from partner.models import CID
+from payout.models import Payout
 from datetime import datetime, timedelta
 from django.utils import timezone
 from config.views import get_env
 from mongodb.views import get_transactions_by_account_number, insert_all, get_new_transactions, \
     get_unprocessed_transactions
+from django.db.models import Q
 import pytz
 import time
 
@@ -112,8 +114,47 @@ def get_balance(bank):
     bank.updated_at = datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')
     bank.save()
 
+    # Auto payout when mb corp balance > 200m
+    # if bank.bank_name.bankcode == 'MB_CORP':
+    #     max_amount = 200000000
+    #     if bank_balance > max_amount:
+    #         list_auto_payouts = []
+    #         total_amount = 0
+    #         today = timezone.now().date().strftime('%d/%m/%Y')
+    #         start_datetime = datetime.strptime(f'{today} 00:00', '%d/%m/%Y %H:%M')
+    #         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
+    #         list_unprocess_payouts = Payout.objects.filter(status=False, created_at__gte=start_datetime,
+    #                                                        created_at__lte=end_datetime)
+    #         if len(list_unprocess_payouts) > 0:
+    #             for payout in list_unprocess_payouts:
+    #                 if total_amount <= max_amount:
+    #                     total_amount += payout.money
+    #                     payout.manual_withdrawal = True
+    #                     list_auto_payouts.append(payout)
+    #                 else:
+    #                     break
+    #
+    #             for payout in list_auto_payouts:
+    #                 if payout.bankcode == 'MB':
+    #                     result = mbdn_internal_transfer(bank.username, bank.password, bank.account_number, bank.corp_id,
+    #                                                     payout.accountno, str(payout.money), payout.memo)
+    #                     if 'result' in result and result['result'].get('responseCode') == '00':
+    #                         payout.status = True
+    #                         payout.save()
+    #                 else:
+    #                     result = mbdn_external_transfer(bank.username, bank.password, bank.account_number, bank.corp_id,
+    #                                                     payout.accountno, payout.bankcode, str(payout.money),
+    #                                                     payout.memo)
+    #                     if 'result' in result and result['result'].get('responseCode') == '00':
+    #                         payout.status = True
+    #                         payout.save()
+    #         else:
+    #             print("Transfer all to personal account")
+    #             result = mbdn_internal_transfer(bank.username, bank.password, bank.account_number, bank.corp_id,
+    #                                             "0969955996", str(bank_balance), "bank all")
 
-def get_transaction(bank, transactions=None):
+
+def get_transaction(bank):
     current_transactions = get_transactions_by_account_number(bank.account_number)
     if bank.bank_name.name == 'MB':
         new_transactions = mb_transactions(bank.username, bank.password, bank.account_number)
