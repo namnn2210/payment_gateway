@@ -455,26 +455,26 @@ def webhook(request):
                 created_at=timezone.now()
             )
             payout.save()
-            if payout.bankcode == 'MB':
-                result = mbdn_internal_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
-                                                payout.accountno, str(payout.money), payout.memo)
-                print(result)
-                if 'result' in result and result['result'].get('responseCode') == '00':
-                    payout.manual_withdraw = True
-                    payout.save()
-            else:
-                print(payout.bankcode)
-                if payout.bankcode == 'ICB':
-                    bankcode = 'VIETINBANK'
-                else:
-                    bankcode = payout.bankcode
-                result = mbdn_external_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
-                                                payout.accountno, bankcode, str(payout.money),
-                                                payout.memo)
-                print(result)
-                if 'result' in result and result['result'].get('responseCode') == '00':
-                    payout.manual_withdraw = True
-                    payout.save()
+            # if payout.bankcode == 'MB':
+            #     result = mbdn_internal_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
+            #                                     payout.accountno, str(payout.money), payout.memo)
+            #     print(result)
+            #     if 'result' in result and result['result'].get('responseCode') == '00':
+            #         payout.manual_withdraw = True
+            #         payout.save()
+            # else:
+            #     print(payout.bankcode)
+            #     if payout.bankcode == 'ICB':
+            #         bankcode = 'VIETINBANK'
+            #     else:
+            #         bankcode = payout.bankcode
+            #     result = mbdn_external_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
+            #                                     payout.accountno, bankcode, str(payout.money),
+            #                                     payout.memo)
+            #     print(result)
+            #     if 'result' in result and result['result'].get('responseCode') == '00':
+            #         payout.manual_withdraw = True
+            #         payout.save()
             alert = (
                 f'🔴 - THÔNG BÁO PAYOUT\n'
                 f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
