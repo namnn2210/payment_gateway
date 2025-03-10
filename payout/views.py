@@ -462,6 +462,7 @@ def webhook(request):
                     payout.manual_withdraw = True
                     payout.save()
             else:
+                print(payout.bankcode)
                 result = mbdn_external_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
                                                 payout.accountno, payout.bankcode, str(payout.money),
                                                 payout.memo)
