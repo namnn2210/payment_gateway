@@ -114,45 +114,6 @@ def get_balance(bank):
     bank.updated_at = datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')
     bank.save()
 
-    # Auto payout when mb corp balance > 200m
-    # if bank.bank_name.bankcode == 'MB_CORP':
-    #     max_amount = 200000000
-    #     if bank_balance > max_amount:
-    #         list_auto_payouts = []
-    #         total_amount = 0
-    #         today = timezone.now().date().strftime('%d/%m/%Y')
-    #         start_datetime = datetime.strptime(f'{today} 00:00', '%d/%m/%Y %H:%M')
-    #         end_datetime = datetime.strptime(f'{today} 23:59', '%d/%m/%Y %H:%M')
-    #         list_unprocess_payouts = Payout.objects.filter(status=False, created_at__gte=start_datetime,
-    #                                                        created_at__lte=end_datetime)
-    #         if len(list_unprocess_payouts) > 0:
-    #             for payout in list_unprocess_payouts:
-    #                 if total_amount <= max_amount:
-    #                     total_amount += payout.money
-    #                     payout.manual_withdrawal = True
-    #                     list_auto_payouts.append(payout)
-    #                 else:
-    #                     break
-    #
-    #             for payout in list_auto_payouts:
-    #                 if payout.bankcode == 'MB':
-    #                     result = mbdn_internal_transfer(bank.username, bank.password, bank.account_number, bank.corp_id,
-    #                                                     payout.accountno, str(payout.money), payout.memo)
-    #                     if 'result' in result and result['result'].get('responseCode') == '00':
-    #                         payout.status = True
-    #                         payout.save()
-    #                 else:
-    #                     result = mbdn_external_transfer(bank.username, bank.password, bank.account_number, bank.corp_id,
-    #                                                     payout.accountno, payout.bankcode, str(payout.money),
-    #                                                     payout.memo)
-    #                     if 'result' in result and result['result'].get('responseCode') == '00':
-    #                         payout.status = True
-    #                         payout.save()
-    #         else:
-    #             print("Transfer all to personal account")
-    #             result = mbdn_internal_transfer(bank.username, bank.password, bank.account_number, bank.corp_id,
-    #                                             "0969955996", str(bank_balance), "bank all")
-
 
 def get_transaction(bank):
     current_transactions = get_transactions_by_account_number(bank.account_number)
@@ -333,6 +294,8 @@ def process_transactions(transactions, bank):
                 f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
                 f'\n'
                 f'Nội dung: {row['description']}\n'
+                f'\n'
+                f'Order ID: {row['description']}\n'
                 f'\n'
                 f'🏦 {bank.account_number} - {bank.account_name}\n'
                 f'\n'
