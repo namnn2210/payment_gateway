@@ -1,13 +1,16 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from .views import BankViewSet, BankAccountViewSet
+from django.urls import path
+from bank.controllers.bank_controller import BankController, BankStatusController
+from bank.controllers.bank_account_controller import BankAccountController, BankAccountStatusController, BankAccountBalanceController
 
-# Create a router and register our viewsets with it
-router = DefaultRouter()
-router.register(r'banks', BankViewSet)
-router.register(r'accounts', BankAccountViewSet)
-
-# The API URLs are determined automatically by the router
 urlpatterns = [
-    path('', include(router.urls)),
+    # Bank URLs
+    path('banks/', BankController.as_view(), name='bank-list'),
+    path('banks/<int:bank_id>/', BankController.as_view(), name='bank-detail'),
+    path('banks/<int:bank_id>/toggle-status/', BankStatusController.as_view(), name='bank-toggle-status'),
+    
+    # Bank Account URLs
+    path('accounts/', BankAccountController.as_view(), name='bank-account-list'),
+    path('accounts/<int:account_id>/', BankAccountController.as_view(), name='bank-account-detail'),
+    path('accounts/<int:account_id>/toggle-status/', BankAccountStatusController.as_view(), name='bank-account-toggle-status'),
+    path('accounts/<int:account_id>/update-balance/', BankAccountBalanceController.as_view(), name='bank-account-update-balance'),
 ] 
