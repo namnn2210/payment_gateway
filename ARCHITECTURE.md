@@ -64,22 +64,21 @@ HTTP Request
 
 ## Directory Structure
 
+The refactored system follows this directory structure for each app:
+
 ```
 app/
 ├── controllers/        # Controllers handle HTTP requests/responses
 │   ├── __init__.py
-│   ├── bank_controller.py
-│   └── bank_account_controller.py
+│   └── *_controller.py
 │
 ├── services/           # Services implement business logic
 │   ├── __init__.py
-│   ├── bank_service.py
-│   └── bank_account_service.py
+│   └── *_service.py
 │
 ├── repositories/       # Repositories manage data access
 │   ├── __init__.py
-│   ├── bank_repository.py
-│   └── bank_account_repository.py
+│   └── *_repository.py
 │
 ├── models/             # Django models
 │   ├── __init__.py
@@ -91,6 +90,44 @@ app/
     ├── urls.py
     └── ...
 ```
+
+## Implemented Modules
+
+### Bank Module
+
+The Bank module manages bank and bank account information:
+
+- **Repositories**:
+  - `BankRepository`: Handles database operations for the Bank model
+  - `BankAccountRepository`: Handles database operations for the BankAccount model
+
+- **Services**:
+  - `BankService`: Implements business logic for bank management
+  - `BankAccountService`: Implements business logic for bank account management
+
+- **Controllers**:
+  - `BankController`: Handles HTTP requests for bank management
+  - `BankStatusController`: Handles HTTP requests for toggling bank status
+  - `BankAccountController`: Handles HTTP requests for bank account management
+  - `BankAccountStatusController`: Handles HTTP requests for toggling account status
+  - `BankAccountBalanceController`: Handles HTTP requests for updating account balance
+
+### Payout Module
+
+The Payout module manages payment transactions:
+
+- **Repositories**:
+  - `PayoutRepository`: Handles database operations for the Payout model
+
+- **Services**:
+  - `PayoutService`: Implements business logic for payout management
+
+- **Controllers**:
+  - `PayoutController`: Handles HTTP requests for payout management
+  - `PayoutProcessController`: Handles HTTP requests for processing payouts
+  - `PayoutCancelController`: Handles HTTP requests for cancelling payouts
+  - `PayoutBulkProcessController`: Handles HTTP requests for bulk processing
+  - `PayoutStatsController`: Handles HTTP requests for payout statistics
 
 ## Benefits of This Architecture
 
@@ -146,4 +183,20 @@ class BankController(APIView):
             return Response(serializer.data)
         except Exception as e:
             return Response({"error": str(e)}, status=500)
-``` 
+```
+
+## Testing Strategy
+
+This architecture makes testing easier by allowing each layer to be tested independently:
+
+1. **Repository Tests**: Focus on database interactions, using Django's test database.
+2. **Service Tests**: Mock the repositories to test business logic in isolation.
+3. **Controller Tests**: Mock the services to test HTTP handling.
+
+## Future Considerations
+
+As the application grows, consider:
+
+1. **Dependency Injection**: Implement a proper DI framework to make testing easier.
+2. **Async Processing**: Move long-running tasks to background workers.
+3. **Microservices**: Split the monolith into separate services based on domains. 
