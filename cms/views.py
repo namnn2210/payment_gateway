@@ -21,9 +21,9 @@ TWO_FA_EXPIRATION_TIME = 21600
 def index(request):
     list_bank_option = Bank.objects.filter(status=True)
     number_failed = 0
-    user_online = None
     if request.user.is_superuser:
         list_user_bank = BankAccount.objects.all()
+        user_online = EmployeeWorkingSession.objects.filter(status=False)
     else:
         list_user_bank = BankAccount.objects.filter(user=request.user)
         user_online = EmployeeWorkingSession.objects.filter(status=False)
