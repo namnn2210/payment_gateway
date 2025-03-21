@@ -88,7 +88,7 @@
                                     {% for item in user_online %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
                                             <span class="status-dot online"></span>
-                                            {{ item.user.username }} - {{ item.user.start_balance|intcomma }}
+                                            {{ item.user.username }} - {{ item.start_balance|intcomma }}
                                         </li>
                                     {% endfor %}
                                 </ul>
