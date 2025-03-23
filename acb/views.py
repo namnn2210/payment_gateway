@@ -17,6 +17,7 @@ def acb_login(username, password, account_number):
         "action": "login"
     }
     response = requests.post(get_env("ACB_URL"), json=body)
+    print('acb login response', response.text)
     if response.status_code == 200:
         data = response.json()
         if 'accessToken' in data.keys():
