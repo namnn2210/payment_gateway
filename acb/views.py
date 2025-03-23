@@ -35,8 +35,9 @@ def acb_balance(username, password, account_number):
         "action": "balance"
     }
     response = requests.post(get_env("ACB_URL"), json=body)
-    response = response.json()
     print('acb balance response', response.text)
+    response = response.json()
+
     if response:
         if 'codeStatus' in response.keys():
             if response['codeStatus'] == 200:
