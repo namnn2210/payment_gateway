@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['gateway.226pay.com', 'alpha.226pay.com', 'www.gateway.226pay.com', 'localhost']
+ALLOWED_HOSTS = ['gateway.226pay.com', 'alpha.226pay.com', 'omega.226pay.com' , 'www.gateway.226pay.com', 'localhost']
 
 # Application definition
 
@@ -161,6 +161,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 CORS_ALLOWED_ORIGINS = [
     'https://gateway.226pay.com',
     'https://alpha.226pay.com',
+    'https://omega.226pay.com',
     'https://www.gateway.226pay.com',
     'http://0.0.0.0:2210'
 ]
@@ -168,6 +169,7 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     'https://gateway.226pay.com',
     'https://alpha.226pay.com',
+    'https://omega.226pay.com',
     'https://www.gateway.226pay.com',
     'http://0.0.0.0:2210'
 ]
