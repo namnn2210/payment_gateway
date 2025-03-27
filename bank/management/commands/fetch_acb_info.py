@@ -29,4 +29,4 @@ class Command(BaseCommand):
                                             get_env('MONITORING_BOT_2_API_KEY'))
                     except Exception as ex:
                         print(str(ex))
-            time.sleep(15)
+            time.sleep(30)
