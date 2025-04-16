@@ -393,7 +393,7 @@ def webhook(request):
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
-            memo = accountname.split(' ')[-1] + ' ' + 'Z' + orderno[-11:]
+            memo = accountname.split(' ')[-1] + ' ' + 'CK' + orderno[-11:]
             settle_payout = SettlePayout.objects.create(
                 user=random.choice(current_working_user),
                 scode=scode,
