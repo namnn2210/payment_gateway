@@ -56,6 +56,54 @@ def create_deposit_order(transaction, cid):
         return None
 
 
+def create_multiple_deposit_order(transactions, cid):
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    payloads = []
+    for transaction in transactions:
+        # key_df = pd.read_csv(get_env('MID_KEY'))
+        scode = cid.name
+        cardtype = cid.cardtype
+        key = cid.key
+
+        payeeaccountno = str(transaction['account_number'])
+        amount = f'{str(transaction['amount'])}.00'
+
+        transfercode = transaction['transfer_code']
+        payername = 'NA'
+        payeraccountno = str(transaction['account_number'])[-4:]
+
+        hashid = str(transaction['transaction_number'])
+
+        # Create the sign string
+        sign_string = f"{scode}|{payeeaccountno}|{amount}|{transfercode}|{payername}|{payeraccountno}|{hashid}|{cardtype}:{key}"
+        # Generate MD5 signature
+        sign = hashlib.md5(sign_string.encode('utf-8')).hexdigest()
+
+        payloads.append({
+            'scode': scode,
+            'payeeaccountno': payeeaccountno,
+            'cardtype': cardtype,
+            'amount': amount,
+            'payername': payername,
+            'payeraccountno': payeraccountno,
+            'transfercode': transfercode,
+            'hashid': hashid,
+            'sign': sign,
+        })
+
+    try:
+        response = requests.post(get_env('DEPOSIT_URL'), json=payloads, headers=headers)
+
+        if response.status_code == 200:
+            response_data = response.json()
+            logger.info(response_data)
+            return response_data
+        else:
+            return None
+    except Exception as e:
+        return None
+
+
 def update_status_request(payout, status='S'):
     cid = CID.objects.filter(name=payout.scode).first()
 

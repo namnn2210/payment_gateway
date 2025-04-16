@@ -465,7 +465,7 @@
         var firstName = accountname.split(' ').slice(-1);
 
         var lastName = accountname.split(' ').slice(-1)[0];
-        var memo = lastName + ' ' + 'Z' + orderNo.toString().slice(-11);
+        var memo = lastName + ' ' + 'CK' + orderNo.toString().slice(-11);
 
         var existed = false
         $('#modalQrImage').attr('src', '');

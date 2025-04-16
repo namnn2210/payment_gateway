@@ -93,7 +93,7 @@ def get_new_transactions(transactions, account_number):
     for txn in new_transactions:
         if txn['transaction_type'] == 'OUT':
             description = txn.get('description', '')
-            match = re.search(r'Z\d{11}', description)
+            match = re.search(r'CK\d{11}', description)
             payout = apps.get_model('payout', 'Payout')
             settle_payout = apps.get_model('settle_payout', 'SettlePayout')
             bank_account = apps.get_model('bank', 'BankAccount')

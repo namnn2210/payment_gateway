@@ -549,7 +549,7 @@
             var staging = $(this).data('staging');
             
             var lastName = accountname.split(' ').slice(-1)[0];
-            var memo = lastName + ' ' + 'Z' + orderNo.toString().slice(-11);
+            var memo = lastName + ' ' + 'CK' + orderNo.toString().slice(-11);
 
             $('#modalQrImage').attr('src', '');
 
@@ -569,7 +569,7 @@
             var existed = false
             // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
             dataIn.map(transaction => {
-                if (transaction.description.includes(`Z${accountname}`) && transaction.amount === money) {
+                if (transaction.description.includes(`CK${accountname}`) && transaction.amount === money) {
                     existed = true
                 }
             })
