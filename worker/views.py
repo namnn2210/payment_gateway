@@ -165,6 +165,7 @@ def get_transaction(bank):
             print('Update missed transactions for bank: %s. Updated at %s' % (
                 bank.account_number, datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')))
 
+
 def process_multiple_transactions(transactions, bank):
     print("Number of transactions:", len(transactions))
     valid_in_transactions = []
@@ -251,10 +252,6 @@ def process_multiple_transactions(transactions, bank):
                 continue
         else:
             continue
-
-
-
-
 
 
 def process_transactions(transactions, bank):

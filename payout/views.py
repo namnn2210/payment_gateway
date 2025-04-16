@@ -434,7 +434,7 @@ def webhook(request):
             else:
                 partner_bankcode = bankcode
 
-            memo = accountname.split(' ')[-1] + ' ' + 'Z' + orderno[-11:]
+            memo = accountname.split(' ')[-1] + ' ' + 'CK' + orderno[-11:]
 
             payout = Payout.objects.create(
                 user=random.choice(current_working_user),
