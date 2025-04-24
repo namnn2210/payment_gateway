@@ -35,7 +35,7 @@ def mb_transactions(username, password, account_number, start=''):
         "password": password,
         "accountNumber": account_number
     }
-    response = requests.post(get_env("MB_URL"), json=body, timeout=120)
+    response = requests.post(get_env("MBB_URL"), json=body, timeout=120)
     if response.status_code == 200:
         if '"ok":true' in response.text:
             json_response = json.loads(response.text)
@@ -72,7 +72,7 @@ def mb_balance(username, password, account_number):
         "accountNumber": account_number,
         "password": password
     }
-    response = requests.post(get_env("MB_URL"), json=body, timeout=120)
+    response = requests.post(get_env("MBB_URL_BALANCE"), json=body, timeout=120)
     if '"ok":true' in response.text:
         data = response.json()
         acc_list = data['acct_list']
