@@ -169,7 +169,7 @@ class AddPayoutView(View):
 
         payout = Payout.objects.create(
             user=request.user,
-            scode='CID1630' + scode,
+            scode='CID1910' + scode,
             orderno=orderid,
             orderid=orderid,
             money=int(float(money)),
@@ -393,7 +393,7 @@ def webhook(request):
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
-            memo = accountname.split(' ')[-1] + ' ' + 'CK' + orderno[-11:]
+            memo = 'TQ' + orderno[-11:]
             settle_payout = SettlePayout.objects.create(
                 user=random.choice(current_working_user),
                 scode=scode,
@@ -434,7 +434,7 @@ def webhook(request):
             else:
                 partner_bankcode = bankcode
 
-            memo = accountname.split(' ')[-1] + ' ' + 'CK' + orderno[-11:]
+            memo = 'TQ' + orderno[-11:]
 
             payout = Payout.objects.create(
                 user=random.choice(current_working_user),
