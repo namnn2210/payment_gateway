@@ -14,7 +14,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         while True:
             # Get all active bank accounts
-            bank_accounts = BankAccount.objects.filter(bank_name=1, status=True)
+            bank_accounts = BankAccount.objects.filter(bank_name=2, status=True)
             for bank in bank_accounts:
                 try:
                     get_balance(bank=bank)
