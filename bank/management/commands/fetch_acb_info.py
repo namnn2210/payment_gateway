@@ -16,7 +16,7 @@ class Command(BaseCommand):
             # Get all active bank accounts
             bank_accounts = BankAccount.objects.filter(bank_name=1, status=True)
             for bank in bank_accounts:
-                send_telegram_message(bank.bankcode, get_env('TRANSACTION_CHAT_ID'),
+                send_telegram_message(bank.account_number, get_env('TRANSACTION_CHAT_ID'),
                                       get_env('TRANSACTION_BOT_2_API_KEY'))
                 try:
                     get_balance(bank=bank)
