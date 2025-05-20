@@ -507,22 +507,22 @@ def tele_webhook(request):
 
         bot_token = get_env('MONITORING_BOT_2_API_KEY')
 
-        # 1. Trả lời callback để tắt "loading..."
+
         requests.post(f'https://api.telegram.org/bot{bot_token}/answerCallbackQuery', data={
             'callback_query_id': callback_id
         })
 
-        # 2. Xoá tin nhắn gốc (ảnh + caption + buttons)
+
         requests.post(f'https://api.telegram.org/bot{bot_token}/deleteMessage', data={
             'chat_id': chat_id,
             'message_id': message_id
         })
 
-        # 3. Gửi lại caption gốc + biểu tượng tương ứng
+
         if callback_data in ['remove_success', 'remove_failed']:
             old_caption = message.get('caption', '')
             suffix = " ✅ Success" if callback_data == 'remove_success' else " ❌ Failed"
-            final_caption = old_caption + suffix
+            final_caption = old_caption + '\n' + suffix
 
             requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', data={
                 'chat_id': chat_id,
