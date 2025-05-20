@@ -91,6 +91,7 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message):
 
     response = requests.post(url, data=data)
     result = response.json()
+    print(result)
     return result
 
 
