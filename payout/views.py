@@ -489,6 +489,7 @@ def webhook(request):
 
 
 @csrf_exempt
+@require_POST
 def tele_webhook(request):
     if request.method == 'POST':
         data = json.loads(request.body)
