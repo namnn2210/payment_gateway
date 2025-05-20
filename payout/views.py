@@ -491,30 +491,36 @@ def webhook(request):
 @csrf_exempt
 @require_POST
 def tele_webhook(request):
-    if request.method == 'POST':
-        data = json.loads(request.body)
+    data = json.loads(request.body)
 
-        if 'callback_query' in data:
-            callback = data['callback_query']
-            chat_id = callback['message']['chat']['id']
-            message_id = callback['message']['message_id']
-            callback_data = callback['data']
-            callback_id = callback['id']
+    if 'callback_query' in data:
+        callback = data['callback_query']
+        message = callback['message']
+        chat_id = message['chat']['id']
+        message_id = message['message_id']
+        callback_data = callback['data']
+        callback_id = callback['id']
 
+        bot_token = get_env('MONITORING_BOT_2_API_KEY')
 
-            # 2. Xoá ảnh/mã QR
-            requests.post(f'https://api.telegram.org/bot{get_env('MONITORING_BOT_2_API_KEY')}/deleteMessage', data={
+        # 1. Trả lời callback để tắt "loading..."
+        requests.post(f'https://api.telegram.org/bot{bot_token}/answerCallbackQuery', data={
+            'callback_query_id': callback_id
+        })
+
+        # 2. Xoá tin nhắn gốc (ảnh + caption + buttons)
+        requests.post(f'https://api.telegram.org/bot{bot_token}/deleteMessage', data={
+            'chat_id': chat_id,
+            'message_id': message_id
+        })
+
+        # 3. Nếu là success → gửi lại caption gốc
+        if callback_data == 'remove_success':
+            old_caption = message.get('caption', '[No caption]')
+            requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', data={
                 'chat_id': chat_id,
-                'message_id': message_id
+                'text': old_caption,
+                'parse_mode': 'HTML'  # nếu caption có định dạng HTML
             })
 
-            # 3. Gửi phản hồi sau khi xoá
-            text = "✅ Bạn đã chọn thành công." if callback_data == 'remove_success' else "❌ Bạn đã chọn thất bại."
-            requests.post(f'https://api.telegram.org/bot{get_env('MONITORING_BOT_2_API_KEY')}/sendMessage', data={
-                'chat_id': chat_id,
-                'text': text
-            })
-
-        return JsonResponse({"status": "ok"})
-
-    return JsonResponse({"error": "Invalid method"}, status=405)
+    return JsonResponse({"status": "ok"})
