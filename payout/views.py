@@ -485,3 +485,8 @@ def webhook(request):
             except Exception as ex:
                 print(str(ex))
         return HttpResponse('success')
+
+
+@csrf_exempt
+def tele_webhook(request):
+    pass

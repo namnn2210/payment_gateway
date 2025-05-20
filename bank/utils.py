@@ -69,6 +69,31 @@ def send_telegram_message(message: str, chat_id, api_key):
     return response
 
 
+def send_telegram_qr(api_key, chat_id, qr_image_url, message):
+    url = f'https://api.telegram.org/bot{api_key}/sendPhoto'
+
+    keyboard = {
+        "inline_keyboard": [
+            [
+                {"text": "✅ Success", "callback_data": "remove_success"},
+                {"text": "❌ Failed", "callback_data": "remove_failed"}
+            ]
+        ]
+    }
+
+    data = {
+        'chat_id': chat_id,
+        'photo': qr_image_url,
+        'caption': message,
+        'parse_mode': 'HTML',
+        'reply_markup': json.dumps(keyboard)
+    }
+
+    response = requests.post(url, data=data)
+    result = response.json()
+    return result
+
+
 def get_dates(start_date=''):
     # If start_date is empty, use the current date
     if start_date == '':
