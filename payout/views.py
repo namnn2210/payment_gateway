@@ -189,22 +189,19 @@ class AddPayoutView(View):
             f'🔴 - THÔNG BÁO PAYOUT\n'
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
-        try:
-            caption = (
-                f'{orderid}\n'
-                f'{int(float(money))}\n'
-                f'{accountname}\n'
-                f'{accountno}\n'
-                # f'{payeebankname}\n'
-                f'{bankcode}\n'
-            )
-            memo = 'TQ' + orderid[-11:]
-            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
-                             f'https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
-                             caption)
-        except Exception as ex:
-            print(str(ex))
+        caption = (
+            f'{orderid}\n'
+            f'{int(float(money))}\n'
+            f'{accountname}\n'
+            f'{accountno}\n'
+            # f'{payeebankname}\n'
+            f'{bankcode}\n'
+        )
+        memo = 'TQ' + orderid[-11:]
+        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+        send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
+                         f'https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
+                         caption)
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
@@ -439,14 +436,13 @@ def webhook(request):
                 f'{system_bankcode}\n'
             )
             memo = 'TQ' + orderno[-11:]
-            try:
 
-                send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-                send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
-                                 f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
-                                 caption)
-            except Exception as ex:
-                print(str(ex))
+
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
+                             f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
+                             caption)
+
         else:
             system_bankcode = BANK_CODE_MAPPING.get(bankcode, '')
             if not system_bankcode:
@@ -485,22 +481,21 @@ def webhook(request):
                 f'🔴 - THÔNG BÁO PAYOUT\n'
                 f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
-            try:
-                caption = (
-                    f'{orderid}\n'
-                    f'{int(float(money))}\n'
-                    f'{accountname}\n'
-                    f'{accountno}\n'
-                    f'{payeebankname}\n'
-                    f'{system_bankcode}\n'
-                )
-                send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
-                                  get_env('MONITORING_BOT_2_API_KEY'))
-                send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
-                                 f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
-                                 caption)
-            except Exception as ex:
-                print(str(ex))
+
+            caption = (
+                f'{orderid}\n'
+                f'{int(float(money))}\n'
+                f'{accountname}\n'
+                f'{accountno}\n'
+                f'{payeebankname}\n'
+                f'{system_bankcode}\n'
+            )
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
+                              get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
+                             f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
+                             caption)
+
         return HttpResponse('success')
 
 
