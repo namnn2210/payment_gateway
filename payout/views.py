@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponse
 from mbdn.views import mbdn_internal_transfer, mbdn_external_transfer
-from bank.utils import send_telegram_message
+from bank.utils import send_telegram_message, send_telegram_qr
 from bank.models import Bank
 from config.views import get_env
 from datetime import datetime, time
@@ -418,8 +418,21 @@ def webhook(request):
                 f'🔴 - THÔNG BÁO SETTLE PAYOUT\n'
                 f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
+            caption = (
+                f'{orderid}\n'
+                f'{int(float(money))}\n'
+                f'{accountname}\n'
+                f'{accountno}\n'
+                f'{payeebankname}\n'
+                f'{system_bankcode}\n'
+            )
+            memo = 'TQ' + orderno[-11:]
             try:
+
                 send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+                send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
+                                 f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
+                                 caption)
             except Exception as ex:
                 print(str(ex))
         else:
@@ -456,33 +469,24 @@ def webhook(request):
                 created_at=timezone.now()
             )
             payout.save()
-            # if payout.bankcode == 'MB':
-            #     result = mbdn_internal_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
-            #                                     payout.accountno, str(payout.money), payout.memo)
-            #     print(result)
-            #     if 'result' in result and result['result'].get('responseCode') == '00':
-            #         payout.manual_withdraw = True
-            #         payout.save()
-            # else:
-            #     print(payout.bankcode)
-            #     if payout.bankcode == 'ICB':
-            #         bankcode = 'VIETINBANK'
-            #     else:
-            #         bankcode = payout.bankcode
-            #     result = mbdn_external_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
-            #                                     payout.accountno, bankcode, str(payout.money),
-            #                                     payout.memo)
-            #     print(result)
-            #     if 'result' in result and result['result'].get('responseCode') == '00':
-            #         payout.manual_withdraw = True
-            #         payout.save()
             alert = (
                 f'🔴 - THÔNG BÁO PAYOUT\n'
                 f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
             try:
+                caption = (
+                    f'{orderid}\n'
+                    f'{int(float(money))}\n'
+                    f'{accountname}\n'
+                    f'{accountno}\n'
+                    f'{payeebankname}\n'
+                    f'{system_bankcode}\n'
+                )
                 send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
                                   get_env('MONITORING_BOT_2_API_KEY'))
+                send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
+                                 f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
+                                 caption)
             except Exception as ex:
                 print(str(ex))
         return HttpResponse('success')
@@ -514,12 +518,15 @@ def tele_webhook(request):
             'message_id': message_id
         })
 
-        # 3. Nếu là success → gửi lại caption gốc
-        if callback_data == 'remove_success':
-            old_caption = message.get('caption', '[No caption]')
+        # 3. Gửi lại caption gốc + biểu tượng tương ứng
+        if callback_data in ['remove_success', 'remove_failed']:
+            old_caption = message.get('caption', '')
+            suffix = " ✅ Success" if callback_data == 'remove_success' else " ❌ Failed"
+            final_caption = old_caption + suffix
+
             requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', data={
                 'chat_id': chat_id,
-                'text': old_caption,
+                'text': final_caption,
                 'parse_mode': 'HTML'  # nếu caption có định dạng HTML
             })
 
