@@ -190,7 +190,19 @@ class AddPayoutView(View):
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
         try:
+            caption = (
+                f'{orderid}\n'
+                f'{int(float(money))}\n'
+                f'{accountname}\n'
+                f'{accountno}\n'
+                # f'{payeebankname}\n'
+                f'{bankcode}\n'
+            )
+            memo = 'TQ' + orderid[-11:]
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
+                             f'https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
+                             caption)
         except Exception as ex:
             print(str(ex))
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
@@ -521,7 +533,7 @@ def tele_webhook(request):
 
         if callback_data in ['remove_success', 'remove_failed']:
             old_caption = message.get('caption', '')
-            suffix = " ✅ Success" if callback_data == 'remove_success' else " ❌ Failed"
+            suffix = "✅" if callback_data == 'remove_success' else "❌"
             final_caption = old_caption + '\n' + suffix
 
             requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', data={
