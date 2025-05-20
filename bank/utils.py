@@ -65,7 +65,7 @@ def send_telegram_message(message: str, chat_id, api_key):
                              headers=headers,
                              params=params,
                              verify=False)
-    print("****************", response)
+    print("****************", response.json())
     return response
 
 
@@ -91,7 +91,7 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message):
 
     response = requests.post(url, data=data)
     result = response.json()
-    print(result)
+    print("****************", response.json())
     return result
 
 
