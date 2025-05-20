@@ -24,6 +24,7 @@ from django.utils import timezone
 import json
 import random
 import hashlib
+import requests
 
 BANK_CODE_MAPPING = {
     'VTB': 'ICB',
@@ -489,4 +490,30 @@ def webhook(request):
 
 @csrf_exempt
 def tele_webhook(request):
-    pass
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        if 'callback_query' in data:
+            callback = data['callback_query']
+            chat_id = callback['message']['chat']['id']
+            message_id = callback['message']['message_id']
+            callback_data = callback['data']
+            callback_id = callback['id']
+
+
+            # 2. Xoá ảnh/mã QR
+            requests.post(f'https://api.telegram.org/bot{get_env('MONITORING_BOT_2_API_KEY')}/deleteMessage', data={
+                'chat_id': chat_id,
+                'message_id': message_id
+            })
+
+            # 3. Gửi phản hồi sau khi xoá
+            text = "✅ Bạn đã chọn thành công." if callback_data == 'remove_success' else "❌ Bạn đã chọn thất bại."
+            requests.post(f'https://api.telegram.org/bot{get_env('MONITORING_BOT_2_API_KEY')}/sendMessage', data={
+                'chat_id': chat_id,
+                'text': text
+            })
+
+        return JsonResponse({"status": "ok"})
+
+    return JsonResponse({"error": "Invalid method"}, status=405)
