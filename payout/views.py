@@ -190,18 +190,18 @@ class AddPayoutView(View):
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
         caption = (
+            f'{scode}\n'
             f'{orderid}\n'
-            f'{int(float(money))}\n'
-            f'{accountname}\n'
-            f'{accountno}\n'
-            # f'{payeebankname}\n'
             f'{bankcode}\n'
+            f'{accountno}\n'
+            f'{accountname}\n'
+            f'{int(float(money))}\n'
+            f'- - - - - - - - - - - - - -\n'
         )
         memo = 'TQ' + orderid[-11:]
         send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-        send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
-                         f'https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
-                         caption)
+        img_url = f'https://img.vietqr.io/image/{bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+        send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
@@ -428,20 +428,18 @@ def webhook(request):
                 f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
             caption = (
+                f'{scode}\n'
                 f'{orderid}\n'
-                f'{int(float(money))}\n'
-                f'{accountname}\n'
-                f'{accountno}\n'
-                f'{payeebankname}\n'
                 f'{system_bankcode}\n'
+                f'{accountno}\n'
+                f'{accountname}\n'
+                f'{int(float(money))}\n'
+                f'- - - - - - - - - - - - - -\n'
             )
             memo = 'TQ' + orderno[-11:]
-
-
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
-                             f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
-                             caption)
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
 
         else:
             system_bankcode = BANK_CODE_MAPPING.get(bankcode, '')
@@ -483,18 +481,18 @@ def webhook(request):
             )
 
             caption = (
+                f'{scode}\n'
                 f'{orderid}\n'
-                f'{int(float(money))}\n'
-                f'{accountname}\n'
-                f'{accountno}\n'
-                f'{payeebankname}\n'
                 f'{system_bankcode}\n'
+                f'{accountno}\n'
+                f'{accountname}\n'
+                f'{int(float(money))}\n'
+                f'- - - - - - - - - - - - - -\n'
             )
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
-                              get_env('MONITORING_BOT_2_API_KEY'))
-            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730',
-                             f'https://img.vietqr.io/image/${system_bankcode}-${accountno}-compact.jpg?amount=${int(float(money))}&addInfo=${memo}&accountName=${accountname}',
-                             caption)
+                                  get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
 
         return HttpResponse('success')
 
@@ -511,25 +509,23 @@ def tele_webhook(request):
         message_id = message['message_id']
         callback_data = callback['data']
         callback_id = callback['id']
+        username = callback['from']['username']
 
         bot_token = get_env('MONITORING_BOT_2_API_KEY')
-
 
         requests.post(f'https://api.telegram.org/bot{bot_token}/answerCallbackQuery', data={
             'callback_query_id': callback_id
         })
-
 
         requests.post(f'https://api.telegram.org/bot{bot_token}/deleteMessage', data={
             'chat_id': chat_id,
             'message_id': message_id
         })
 
-
         if callback_data in ['remove_success', 'remove_failed']:
             old_caption = message.get('caption', '')
             suffix = "✅" if callback_data == 'remove_success' else "❌"
-            final_caption = old_caption + '\n' + suffix
+            final_caption = old_caption + '\n' + suffix + timezone.now().strftime("%Y-%m-%d %H:%M:%S")
 
             requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', data={
                 'chat_id': chat_id,
