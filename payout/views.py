@@ -534,3 +534,9 @@ def tele_webhook(request):
             })
 
     return JsonResponse({"status": "ok"})
+
+@csrf_exempt
+@require_POST
+def check_license(request):
+    data = json.loads(request.body)
+    license = data['license']
