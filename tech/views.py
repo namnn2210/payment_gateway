@@ -28,6 +28,7 @@ def tech_balance(username, password, account_number):
     }
 
     response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=300).json()
+    print(response)
     if type(response) == list :
         for item in response:
             if item['BBAN'] == account_number:
@@ -74,17 +75,17 @@ def tech_transactions(username, password, account_number):
         "size": 100
     }
 
+    print(body)
+
     response = requests.post(f'{os.environ.get("TECH_URL")}', json=body, timeout=300).json()
-    print("transactions", response)
     if response['success']:
         transactions = response['transactions']
         transaction_type = ''
         for transaction in transactions:
-            if 'category' not in transaction.keys():
-                continue
-            if transaction['category'] == "Spending" and transaction['additions']['debitAcctNo'] == account_number:
+            print(transaction)
+            if transaction['type'] == "DBIT" and transaction['additions']['debitAcctNo'] == account_number:
                 transaction_type = "OUT"
-            elif transaction['category'] == "Income" and transaction['additions']['creditAcctNo'] == account_number:
+            elif transaction['type'] == "CRDT" and transaction['additions']['creditAcctNo'] == account_number:
                 transaction_type = "IN"
             transaction_date = datetime.fromisoformat(transaction['creationTime'])
             transaction_date = transaction_date.astimezone(timezone(timedelta(hours=8)))
