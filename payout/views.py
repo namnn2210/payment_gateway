@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Payout, Timeline, UserTimeline
+from .models import Payout, LicenseKeys
 from settle_payout.models import SettlePayout
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
@@ -539,4 +539,12 @@ def tele_webhook(request):
 @require_POST
 def check_license(request):
     data = json.loads(request.body)
-    license = data['license']
+    key = data['key']
+    mac = data['mac']
+    current_license = LicenseKeys.objects.filter(key=key).first()
+    if current_license:
+        if current_license.mac == "":
+            current_license.mac = mac
+            current_license.save()
+            return JsonResponse({"status": "ok"})
+    return JsonResponse({"status": "error"})
