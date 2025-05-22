@@ -65,6 +65,7 @@ def send_telegram_message(message: str, chat_id, api_key):
                              headers=headers,
                              params=params,
                              verify=False)
+
     return response
 
 
@@ -92,6 +93,7 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message):
 
     response = requests.post(url, data=data)
     result = response.json()
+    print("QR response: ", result)
     return result
 
 
@@ -129,6 +131,7 @@ def unix_to_datetime(unix_time):
     formatted_dt = dt_gmt_plus_7.strftime('%d/%m/%Y %H:%M:%S')
     return formatted_dt
 
+
 def format_transaction_list(transaction_list):
     for transaction in transaction_list:
         for key, value in transaction.items():
@@ -136,11 +139,13 @@ def format_transaction_list(transaction_list):
                 transaction[key] = ''
     return transaction_list
 
+
 def get_today_date():
     today = django_timezone.now()
     start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
     end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
     return start_date, end_date
+
 
 def clean_text(text):
     if isinstance(text, str):
