@@ -28,11 +28,10 @@ def tech_balance(username, password, account_number):
     }
 
     response = requests.post(f'{os.environ.get("TECH_URL")}balance', json=body , timeout=300).json()
-    print('balance response', response)
     if type(response) == list :
         for item in response:
             if item['BBAN'] == account_number:
-                print(item['availableBalance'])
+                print("balance", item['availableBalance'])
                 return item['availableBalance']
     if type(response) == dict :
 
@@ -76,6 +75,7 @@ def tech_transactions(username, password, account_number):
     }
 
     response = requests.post(f'{os.environ.get("TECH_URL")}', json=body, timeout=300).json()
+    print("transactions", response)
     if response['success']:
         transactions = response['transactions']
         transaction_type = ''
