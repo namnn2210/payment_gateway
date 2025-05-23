@@ -540,11 +540,19 @@ def tele_webhook(request):
 def check_license(request):
     data = json.loads(request.body)
     key = data['key']
-    mac = data['mac']
+    verify_type = data['verify_type']
     current_license = LicenseKeys.objects.filter(key=key).first()
     if current_license:
-        if current_license.mac == "":
-            current_license.mac = mac
-            current_license.save()
-            return JsonResponse({"status": "ok"})
+        if verify_type == 'init':
+            if not current_license.status:
+                current_license.status = True
+                current_license.save()
+                return JsonResponse({"status": "ok"})
+            else:
+                return JsonResponse({"status": "error"})
+        else:
+            if current_license.status:
+                return JsonResponse({"status": "ok"})
+            else:
+                return JsonResponse({"status": "error"})
     return JsonResponse({"status": "error"})
