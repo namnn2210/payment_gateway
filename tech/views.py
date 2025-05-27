@@ -81,9 +81,9 @@ def tech_transactions(username, password, account_number):
         transaction_type = ''
         print(transactions)
         for transaction in transactions:
-            if transaction['type'] == "DBIT" and transaction['additions']['debitAcctNo'] == account_number:
+            if transaction['type'] == "DBIT":
                 transaction_type = "OUT"
-            elif transaction['type'] == "CRDT" and transaction['additions']['creditAcctNo'] == account_number:
+            elif transaction['type'] == "CRDT":
                 transaction_type = "IN"
             transaction_date = datetime.fromisoformat(transaction['creationTime'])
             transaction_date = transaction_date.astimezone(timezone(timedelta(hours=8)))
