@@ -79,6 +79,7 @@ def tech_transactions(username, password, account_number):
     if response['success']:
         transactions = response['transactions']
         transaction_type = ''
+        print(transactions)
         for transaction in transactions:
             if transaction['type'] == "DBIT" and transaction['additions']['debitAcctNo'] == account_number:
                 transaction_type = "OUT"
