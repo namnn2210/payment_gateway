@@ -4,6 +4,8 @@ from bank.utils import format_transaction_list, get_today_date
 from django.apps import apps
 from bank.utils import send_telegram_message
 import re
+from pymongo import UpdateOne
+from pymongo.errors import BulkWriteError
 import time
 
 def mongo_connect():
@@ -217,7 +219,30 @@ def update_transaction_status(account_number, transaction_number, update_fields)
 
 def insert_all(transaction_list):
     collection = mongo_get_collection(get_env("MONGODB_COLLECTION_TRANSACTION"))
-    collection.insert_many(transaction_list, ordered=False)
+
+    operations = []
+    for tx in transaction_list:
+        operations.append(
+            UpdateOne(
+                {
+                    "transaction_number": tx["transaction_number"],
+                    "account_number": tx["account_number"]
+                },
+                {
+                    "$setOnInsert": tx
+                },
+                upsert=True
+            )
+        )
+
+    if operations:
+        try:
+            result = collection.bulk_write(operations, ordered=False)
+            print(f"Inserted: {result.upserted_count}, Matched existing: {result.matched_count}")
+        except BulkWriteError as bwe:
+            print("Some documents caused errors (likely duplicates already exist).")
+            for err in bwe.details.get("writeErrors", []):
+                print(f" - Duplicated: {err.get('op', {}).get('transaction_number')}")
 
 
 def get_total_amount(date_start, date_end, transaction_type):
