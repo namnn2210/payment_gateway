@@ -18,7 +18,7 @@ def mb_login(username, password, account_number):
     }
     print('start login: ', datetime.now())
     response = requests.post(get_env("MBB_URL"), json=body, timeout=120)
-    print(response)
+    print("mb login", response)
     if '"ok":true' in response.text:
         print('end login: ', datetime.now())
         return True
@@ -42,7 +42,7 @@ def mb_transactions(username, password, account_number, start=''):
             if json_response['result']['ok']:
                 formatted_transactions = []
                 transactions = json_response['transactionHistoryList']
-                logger.info(transactions)
+                print("mb transaction", transactions)
                 for transaction in transactions:
                     if int(transaction['creditAmount']) != 0:
                         transaction_type = 'IN'
@@ -73,6 +73,7 @@ def mb_balance(username, password, account_number):
         "password": password
     }
     response = requests.post(get_env("MBB_URL_BALANCE"), json=body, timeout=120)
+    print("mb balance", response)
     if '"ok":true' in response.text:
         data = response.json()
         acc_list = data['acct_list']
