@@ -16,11 +16,8 @@ def mb_login(username, password, account_number):
         "password": password,
         "accountNumber": account_number
     }
-    print('start login: ', datetime.now())
-    response = requests.post(get_env("MBB_URL"), json=body, timeout=120)
-    print("mb login", response)
-    if '"ok":true' in response.text:
-        print('end login: ', datetime.now())
+    response = requests.post(f'{get_env("MBB_URL")}/login', json=body, timeout=120).json()
+    if response['result']['ok']:
         return True
     return False
 
