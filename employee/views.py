@@ -41,6 +41,11 @@ def employee_deposit(request):
         
     return render(request=request, template_name='employee/deposit.html', context={'list_deposit_requests':list_deposit_requests})
 
+
+def employee_stats(request):
+
+    return render(request=request, template_name='employee/stats.html',)
+
 @csrf_exempt
 @require_POST
 def update_deposit(request):
@@ -80,18 +85,17 @@ def calculate_total_balance(bank_accounts):
 @require_POST
 def employee_session(request, session_type):
     # try:
-    print(session_type)
     undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
     bank_accounts = BankAccount.objects.filter(user=request.user)
     if session_type == 'start':
         if undone_session:
             return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
-        start_balance = calculate_total_balance(bank_accounts)
+        # start_balance = calculate_total_balance(bank_accounts)
             
         EmployeeWorkingSession.objects.create(
             user=request.user,
             start_time=timezone.now(),
-            start_balance = start_balance
+            # start_balance = start_balance
         )
     elif session_type == 'end':
         print('end', undone_session)

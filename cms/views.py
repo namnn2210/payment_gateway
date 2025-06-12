@@ -27,13 +27,6 @@ def index(request):
     else:
         list_user_bank = BankAccount.objects.filter(user=request.user)
         user_online = EmployeeWorkingSession.objects.filter(status=False)
-    if request.user.is_superuser:
-        list_deposit_requests = EmployeeDeposit.objects.filter(status=False)
-        paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
-        page_number = request.GET.get('page')
-        list_deposit_requests = paginator.get_page(page_number)
-    else:
-        list_deposit_requests = None
 
     session = EmployeeWorkingSession.objects.filter(status=False, user=request.user).first()
     if session:
@@ -42,7 +35,7 @@ def index(request):
         is_session = False
 
     return render(request=request, template_name='index.html',
-                  context={'list_user_bank': list_user_bank, 'list_deposit_requests': list_deposit_requests,
+                  context={'list_user_bank': list_user_bank,
                            'list_bank_option': list_bank_option, 'is_session': is_session,
                            'number_failed': number_failed, 'user_online': user_online})
 

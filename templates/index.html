@@ -60,10 +60,11 @@
                                         data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
                                 {% if is_session %}
                                     <button type="button"
-                                            class="btn btn-danger rounded-pill start-session-btn">{% trans "End Session" %}</button>
+                                            class="btn btn-danger rounded-pill end-session-btn">{% trans "End Session" %}</button>
                                 {% else %}
                                     <button type="button"
-                                            class="btn btn-success rounded-pill start-session-btn">{% trans "Start Session" %}</button>
+                                            class="btn btn-success rounded-pill"
+                                            data-bs-toggle="modal" data-bs-target="#startSessionModal">{% trans "Start Session" %}</button>
                                 {% endif %}
                             </div>
                             <div class="user-list">
@@ -353,52 +354,37 @@
         </div>
     </div>
     <!-- End Latest Transactions -->
-    <div class="modal fade" id="createDepositModal" aria-labelledby="createDepositModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createDepositModalcreateDepositModalLabel">{% trans "Deposit Details" %}
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body row">
-                    <form id="depositForm" method="post" action="{% url 'employee_deposit' %}">
-                        {% csrf_token %}
-                        <div class="col-md-12 col-sm-12">
-                            <label for="deposit">{% trans 'Amount' %}</label>
-                            <input type="number" id="deposit" name="deposit" class="form-control" required>
-                        </div>
-                        <div class="col-md-12 col-sm-12 mt-2">
-                            <label for="bank">{% trans 'Bank Account' %}</label>
-                            <select class="form-select" id="bank" name="bank" required>
-                                {% for bank_account in list_user_bank %}
-                                    <option value="{{ bank_account.id }}">{{ bank_account.account_number }} -
-                                        {{ bank_account.bank_name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </form>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-success create-done-btn-modal"
-                            data-item-id="">{% trans "Done" %}</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="payModal" aria-labelledby="payModalLabel" aria-hidden="true">
+    <div class="modal fade" id="startSessionModal" aria-labelledby="startSessionModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="payModalLabel">{% trans "Deposit Details" %}</h5>
+                    <h5 class="modal-title" id="startSessionModalLabel">{% trans "Start Session Info" %}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <img id="modalQrImage" class="img-fluid rounded-start" alt="QR Code">
+                    <form id="addBankForm">
+                        <div class="form-group">
+                            <label for="deposit">{% trans "Deposit" %}</label>
+                            <input type="number" class="form-control" id="deposit" name="deposit" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bank1">{% trans "Bank 1" %}</label>
+                            <input type="number" class="form-control" id="bank1" name="bank1"
+                                   required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bank2">{% trans "Bank 2" %}</label>
+                            <input type="number" class="form-control" id="bank2" name="bank2" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="bank3">{% trans "Bank 3" %}</label>
+                            <input type="number" class="form-control" id="bank3" name="bank3" required>
+                        </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-success done-btn-modal"
+                    <button type="button" class="btn btn-success start-session-btn"
                             data-item-id="">{% trans "Done" %}</button>
                 </div>
             </div>
@@ -711,46 +697,25 @@
         });
     </script>
     <script>
-        $(document).on('click', '.start-session-btn', function () {
-            const button = $(this);
-            if (button.hasClass('btn-success')) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "employee_session" "start" %}',  // Ensure this URL name matches your urls.py
-                    contentType: 'application/json',
-                    success: function (response) {
-                        if (response.status === 200) {
-                            button.removeClass('btn-success').addClass('btn-danger');
-                            button.text('{% trans "End Session" %}');
-                        } else {
-                            showAlert('Failed to update session.', 'danger', $('#modalAlertContainer'));
-                        }
-                    },
-                    error: function (response) {
-                        showAlert('An error occurred. Please try again.', 'danger', $('#modalAlertContainer'));
-                    }
-                });
-            } else {
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "employee_session" "end" %}',  // Ensure this URL name matches your urls.py
-                    contentType: 'application/json',
-                    success: function (response) {
-                        console.log(response)
-                        if (response.status === 200) {
-                            button.removeClass('btn-danger').addClass('btn-success');
-                            button.text('{% trans "Start Session" %}');
+        $(document).on('click', '.end-session-btn', function () {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "employee_session" "end" %}',  // Ensure this URL name matches your urls.py
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log(response)
+                    if (response.status === 200) {
+                        button.removeClass('btn-danger').addClass('btn-success');
+                        button.text('{% trans "Start Session" %}');
 
-                        } else {
-                            showAlert('Failed to update session.', 'danger', $('#modalAlertContainer'));
-                        }
-                    },
-                    error: function (response) {
-                        showAlert('An error occurred. Please try again.', 'danger', $('#modalAlertContainer'));
+                    } else {
+                        showAlert('Failed to update session.', 'danger', $('#modalAlertContainer'));
                     }
-                });
-
-            }
+                },
+                error: function (response) {
+                    showAlert('An error occurred. Please try again.', 'danger', $('#modalAlertContainer'));
+                }
+            });
         });
 
     </script>

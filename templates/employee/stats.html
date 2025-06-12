@@ -1,0 +1,138 @@
+{% extends "layout/layout.html" %}
+{% load humanize %}
+{% load i18n %}
+{% block title %}{% trans "Employee Deposit" %}{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{% trans 'Employee Stats' %}</h5>
+                    <!-- Default Table -->
+                    <div class="table-responsive">
+                        <table class="table table-borderless table-sm">
+                            <thead>
+                                <tr class="text-center" style="font-size: 12px;">
+                                    <th></th>
+                                    <th>{% trans "Start Time" %}</th>
+                                    <th>{% trans "End Time" %}</th>
+                                    <th>{% trans "Deposit" %}</th>
+                                    <th>{% trans "Bank 1" %}</th>
+                                    <th>{% trans "Bank 2" %}</th>
+                                    <th>{% trans "Bank 3" %}</th>
+                                    <th>{% trans "Total Payout Done" %}</th>
+                                    <th>{% trans "Total Payout Amount" %}</th>
+                                    <th>{% trans "Final Balance" %}</th>
+                                </tr>
+                            </thead>
+                            <tbody id="depositList">
+                                {% for deposit in list_deposit_requests %}
+                                    <tr class="text-center main-row" style="font-size: 12px;" data-id="{{ deposit.id }}">
+                                        <td>
+                                            <span class="toggle-icon" id="icon-{{ deposit.id }}">
+                                                <i class="fa fa-plus-circle" style="color: green;"></i>
+                                            </span>
+                                        </td>
+                                        <td>{{ deposit.user }}</td>
+                                        <td>{{ deposit.amount|floatformat:2|intcomma }}</td>
+                                        <td>
+                                            {% if deposit.status %}
+                                            <span class="btn btn-sm bg-success text-center">{% trans "Done" %}</span>
+                                            {% else %}
+                                            <span class="btn btn-sm bg-warning text-center">{% trans "Pending" %}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ deposit.created_at|date:"d/m/Y H:i:s" }}</td>
+                                    </tr>
+                                    <tr class="hidden-row" id="details-{{ deposit.id }}" style="display: none;">
+                                        <td colspan="5">
+                                            <div class="row">
+                                                <div class="col-md-3 col-sm-12" style="font-size: 12px;"style="font-size: 12px;">
+                                                    <p><strong>{% trans "Note" %}:</strong> {{ deposit.note }} </p>
+                                                    <p><strong>{% trans "Bank Name" %}:</strong> {{ deposit.bankname }} </p>
+                                                    <p><strong>{% trans "Bank Code" %}:</strong> {{ deposit.bankcode }} </p>
+                                                    <p><strong>{% trans "Account Number" %}:</strong> {{ deposit.accountno }} </p>
+                                                    <p><strong>{% trans "Account Name" %}:</strong> {{ deposit.accountname }} </p>
+                                                </div>
+                                                <div class="col-md-3 col-sm-12" style="font-size: 12px;"style="font-size: 12px;">
+                                                    <p><strong>{% trans "Updated By" %}:</strong> {{ deposit.updated_by }} </p>
+                                                    <p><strong>{% trans "Updated At" %}:</strong> {{ deposit.updated_at|date:"d/m/Y H:i:s" }}</p>
+                                                </div>
+                                                <div class="col-md-4 col-sm-12" style="font-size: 12px;"style="font-size: 12px;">
+                                                    <p>
+                                                        <strong>{% trans "Action" %}:</strong> 
+                                                        {% if not deposit.status and user.is_superuser %}
+                                                        <button class="btn btn-sm rounded-pill btn-success pay-btn" data-bs-toggle="modal" data-bs-target="#payModal" data-item-id="{{ deposit.id }}" data-bankcode="{{ deposit.bankcode }}" data-accountno="{{ deposit.accountno }}" data-accountname="{{ deposit.accountname }}" data-amount="{{ deposit.amount }}">{% trans "Pay" %}</button>
+                                                        {% endif %}
+                                                        {% if user.is_superuser %}
+                                                            <button class="btn btn-sm rounded-pill btn-danger delete-btn" data-item-id="{{ deposit.id }}">{% trans "Delete" %}</button>
+                                                        {% endif %}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="row mt-4">
+                            <div class="col-md-12 col-sm-12">
+                                <nav aria-label="Page navigation example">
+                                    <ul class="pagination justify-content-center">
+                                        {% if list_deposit_requests.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="First">
+                                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ list_deposit_requests.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Previous">
+                                                    <span aria-hidden="true">&laquo;</span>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        {% for num in list_deposit_requests.paginator.page_range %}
+                                            {% if list_deposit_requests.number == num %}
+                                                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                            {% elif num > list_deposit_requests.number|add:-3 and num < list_deposit_requests.number|add:3 %}
+                                                <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}">{{ num }}</a></li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% if list_deposit_requests.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ list_deposit_requests.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Next">
+                                                    <span aria-hidden="true">&raquo;</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ list_deposit_requests.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.start_datetime %}&start_datetime={{ request.GET.start_datetime|urlencode }}{% endif %}{% if request.GET.end_datetime %}&end_datetime={{ request.GET.end_datetime|urlencode }}{% endif %}" aria-label="Last">
+                                                    <span aria-hidden="true">&raquo;&raquo;</span>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Default Table Example -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!-- Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+{% endblock %}
