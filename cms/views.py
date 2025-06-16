@@ -23,10 +23,10 @@ def index(request):
     number_failed = 0
     if request.user.is_superuser:
         list_user_bank = BankAccount.objects.all()
-        user_online = EmployeeWorkingSession.objects.filter(status=False)
+        # user_online = EmployeeWorkingSession.objects.filter(status=False)
     else:
         list_user_bank = BankAccount.objects.filter(user=request.user)
-        user_online = EmployeeWorkingSession.objects.filter(status=False)
+        # user_online = EmployeeWorkingSession.objects.filter(status=False)
     if request.user.is_superuser:
         list_deposit_requests = EmployeeDeposit.objects.filter(status=False)
         paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
@@ -35,16 +35,16 @@ def index(request):
     else:
         list_deposit_requests = None
 
-    session = EmployeeWorkingSession.objects.filter(status=False, user=request.user).first()
-    if session:
-        is_session = True
-    else:
-        is_session = False
+    # session = EmployeeWorkingSession.objects.filter(status=False, user=request.user).first()
+    # if session:
+    #     is_session = True
+    # else:
+    #     is_session = False
 
     return render(request=request, template_name='index.html',
                   context={'list_user_bank': list_user_bank, 'list_deposit_requests': list_deposit_requests,
-                           'list_bank_option': list_bank_option, 'is_session': is_session,
-                           'number_failed': number_failed, 'user_online': user_online})
+                           'list_bank_option': list_bank_option,
+                           'number_failed': number_failed})
 
 
 def user_login(request):
