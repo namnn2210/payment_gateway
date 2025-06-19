@@ -220,13 +220,13 @@ def update_settle_payout(request, update_type):
             payout.save()
             bank = Bank.objects.filter(id=bank_id).first()
             # Show how much success payout by this account
-            start_of_day = datetime.now(pytz.timezone('Asia/Singapore')).replace(hour=0, minute=0, second=0,
-                                                                                 microsecond=0)
-            total_money = SettlePayout.objects.filter(
-                user=payout.user,
-                created_at__gte=start_of_day
-            ).aggregate(total=Sum('money'))
-            print(total_money)
+            # start_of_day = datetime.now(pytz.timezone('Asia/Singapore')).replace(hour=0, minute=0, second=0,
+            #                                                                      microsecond=0)
+            # total_money = SettlePayout.objects.filter(
+            #     user=payout.user,
+            #     created_at__gte=start_of_day
+            # ).aggregate(total=Sum('money'))
+            # print(total_money)
             payout.process_bank = bank
             alert = (
                 f'🟢🟢🟢{payout.orderid}\n'
