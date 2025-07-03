@@ -53,6 +53,7 @@ def send_telegram_message(message: str, chat_id, api_key):
     headers = {'Content-Type': 'application/json',
                'Proxy-Authorization': 'Basic base64'}
     data = json.dumps(data_dict)
+    print(data)
     params = {
         'parse_mode': 'Markdown'
     }
