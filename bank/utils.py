@@ -57,7 +57,7 @@ def send_telegram_message(message: str, chat_id, api_key):
         'parse_mode': 'Markdown'
     }
     proxy_settings = {
-        'http': '"http://147.45.178.211:14658"'
+        'http': 'http://147.45.178.211:14658'
     }
     url = f'https://api.telegram.org/bot{api_key}/sendMessage'
     response = requests.post(url,
