@@ -333,7 +333,7 @@ def process_transactions(transactions, bank):
                                         f'Time: {row['transaction_date']}\n'
                                     )
                                     success = True
-                                    send_telegram_message(alert, get_env('TRANSACTION_CHAT_ID'),
+                                    send_telegram_message(alert, "-1002674641230",
                                                           get_env('TRANSACTION_BOT_2_API_KEY'))
                                     break
                             else:
