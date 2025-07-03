@@ -204,7 +204,7 @@ def process_multiple_transactions(transactions, bank):
                         f'Reason of not be credited: No transfer code!!!'
                     )
                     send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
-                                          get_env('226PAY_BOT'))
+                                          get_env('MONITORING_BOT_2_API_KEY'))
                     continue
             if bank_account:
                 if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL':
@@ -292,7 +292,7 @@ def process_transactions(transactions, bank):
                         f'Reason of not be credited: No transfer code!!!'
                     )
                     send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
-                                          get_env('226PAY_BOT'))
+                                          get_env('MONITORING_BOT_2_API_KEY'))
                     continue
             if bank_account:
                 if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL':
@@ -374,7 +374,7 @@ def process_transactions(transactions, bank):
                                 break
                         if not internal and bank.bank_type == 'IN':
                             send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
-                                                  get_env('226PAY_BOT'))
+                                                  get_env('MONITORING_BOT_2_API_KEY'))
         else:
             transaction_type = '-'
             transaction_color = '🔴'  # Red circle emoji for OUT transactions

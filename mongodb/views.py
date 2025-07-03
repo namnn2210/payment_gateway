@@ -150,7 +150,7 @@ def get_new_transactions(transactions, account_number):
                                 f'\n'
                                 f'Time: {txn['transaction_date']}\n'
                             )
-                            send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
+                            send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
                 else:
                     existed_settle = settle_payout.objects.filter(memo__contains=orderno.strip()).first()
                     print("Existed Settle: ", existed_settle)
@@ -195,7 +195,7 @@ def get_new_transactions(transactions, account_number):
                                 f'\n'
                                 f'Time: {txn['transaction_date']}\n'
                             )
-                            send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('226PAY_BOT'))
+                            send_telegram_message(alert, get_env('FAILED_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
     return new_transactions
 
 def get_unprocessed_transactions(account_number):
