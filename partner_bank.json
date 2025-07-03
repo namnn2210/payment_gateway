@@ -226,6 +226,10 @@
             "bankname": "HD Bank"
         },
         {
+            "code": "HDB",
+            "bankname": "HDBANK"
+        },
+        {
             "code": "OCB",
             "bankname": "Orient Commercial Joint Stock Bank"
         },
