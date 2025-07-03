@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
-from bank.utils import send_telegram_message
+from bank.utils import send_telegram_message, send_telegram_qr
 from bank.models import Bank
 from datetime import datetime
 from django.db.models import Q, Case, Value, When, IntegerField, Sum
@@ -184,6 +184,18 @@ def edit_settle_payout(request):
         settle_payout = get_object_or_404(SettlePayout, id=settle_payout_id)
         settle_payout.bankcode = bank_code
         settle_payout.save()
+        caption = (
+            f'{settle_payout.scode}\n'
+            f'{settle_payout.orderid}\n'
+            f'{settle_payout.bankcode}\n'
+            f'{settle_payout.accountno}\n'
+            f'{settle_payout.accountname}\n'
+            f'{int(float(settle_payout.money)):,}\n'
+            f'- - - - - - - - - - - - - -\n'
+        )
+        memo = 'TQ' + settle_payout.orderno[-11:]
+        img_url = f'https://img.vietqr.io/image/{settle_payout.bankcode}-{settle_payout.accountno}-compact.jpg?amount={int(float(settle_payout.money))}&addInfo={memo}&accountName={settle_payout.accountname}'
+        send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002888070097', img_url, caption)
         return JsonResponse({'status': 200, 'message': 'Done', 'success': True})
     except Exception as ex:
         return JsonResponse({'status': 500, 'message': str(ex), 'success': False})
