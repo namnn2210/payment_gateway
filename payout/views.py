@@ -439,7 +439,7 @@ def webhook(request):
             memo = 'TQ' + orderno[-11:]
             img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002708633182', img_url, caption)
 
         else:
             system_bankcode = BANK_CODE_MAPPING.get(bankcode, '')
