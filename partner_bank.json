@@ -105,6 +105,10 @@
             "code": "VPB",
             "bankname": "Vietnam Prosperity Joint-Stock Commercial Bank"
         },
+	{
+            "code": "VPB",
+            "bankname": "VPBANK"
+        },
         {
             "code": "VPB",
             "bankname": "VP Bank"
