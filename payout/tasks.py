@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from bank.models import Bank
 from django.contrib.auth.models import User
 from payout.models import Payout
+from partner.views import update_status_request
 import pytz
 import os
 
@@ -23,36 +24,37 @@ def update_payout_background(update_body):
     if update_type == 'done':
         if payout.is_auto:
             if not payout.status:
-                payout.status = True
-                payout.staging_status = True
-                payout.save()
-                alert = (
-                    f'🟢🟢🟢{payout.orderid}\n'
-                    f'\n'
-                    f'Amount: {formatted_amount} \n'
-                    f'\n'
-                    f'Bank name: {payout.bankcode}\n'
-                    f'\n'
-                    f'Account name: {payout.accountname}\n'
-                    f'\n'
-                    f'Account number: {payout.accountno}\n'
-                    f'\n'
-                    f'Process bank: {payout.process_bank.name}\n'
-                    f'\n'
-                    f'Created by: {payout.user}\n'
-                    f'\n'
-                    f'Done by: {request_user}\n'
-                    f'\n'
-                    f'Description: {payout.memo}\n'
-                    f'\n'
-                    f'Date: {payout.updated_at}'
-                )
-                try:
-                    send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                      os.environ.get('TRANSACTION_BOT_2_API_KEY'))
-                except Exception as ex:
-                    print(str(ex))
-                return True
+                if update_status_request(payout=payout, status='S'):
+                    payout.status = True
+                    payout.staging_status = True
+                    payout.save()
+                    alert = (
+                        f'🟢🟢🟢{payout.orderid}\n'
+                        f'\n'
+                        f'Amount: {formatted_amount} \n'
+                        f'\n'
+                        f'Bank name: {payout.bankcode}\n'
+                        f'\n'
+                        f'Account name: {payout.accountname}\n'
+                        f'\n'
+                        f'Account number: {payout.accountno}\n'
+                        f'\n'
+                        f'Process bank: {payout.process_bank.name}\n'
+                        f'\n'
+                        f'Created by: {payout.user}\n'
+                        f'\n'
+                        f'Done by: {request_user}\n'
+                        f'\n'
+                        f'Description: {payout.memo}\n'
+                        f'\n'
+                        f'Date: {payout.updated_at}'
+                    )
+                    try:
+                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
+                                          os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+                    except Exception as ex:
+                        print(str(ex))
+                    return True
         else:
             if not payout.status:
                 payout.status = True
