@@ -525,7 +525,7 @@ def tele_webhook(request):
         if callback_data in ['remove_success', 'remove_failed']:
             old_caption = message.get('caption', '')
             suffix = "✅" if callback_data == 'remove_success' else "❌"
-            final_caption = old_caption + '\n' + suffix + timezone.now().strftime("%d-%m-%Y %H:%M:%S") + '@' + username
+            final_caption = old_caption + '\n' + suffix + timezone.now().strftime("%d-%m-%Y %H:%M:%S") + "\n" +  '@' + username
 
             requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', data={
                 'chat_id': chat_id,
