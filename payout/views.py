@@ -433,7 +433,7 @@ def webhook(request):
                 f'{system_bankcode}\n'
                 f'{accountno}\n'
                 f'{accountname}\n'
-                f'{int(float(money))}\n'
+                f'{int(float(money)):,}\n'
                 f'- - - - - - - - - - - - - -\n'
             )
             memo = 'TQ' + orderno[-11:]
