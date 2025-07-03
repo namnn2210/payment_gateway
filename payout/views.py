@@ -501,7 +501,7 @@ def webhook(request):
 @require_POST
 def tele_webhook(request):
     data = json.loads(request.body)
-
+    print("callback data", data)
     if 'callback_query' in data:
         callback = data['callback_query']
         message = callback['message']
