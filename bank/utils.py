@@ -67,7 +67,7 @@ def send_telegram_message(message: str, chat_id, api_key):
                              verify=False,
 
                              )
-    print(response.json)
+    print(response.text)
     return response
 
 
