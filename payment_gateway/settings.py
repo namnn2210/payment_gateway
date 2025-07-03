@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-ru_3rxr5ze)g_t5$dkaz+*v9&gi3$2gujy*do(2d+x_1pmm5u!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['omega.diveinthebluesky.xyz', 'localhost']
+ALLOWED_HOSTS = ['x5jqk.tqa556.com', 'localhost']
 
 # Application definition
 
@@ -159,12 +159,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ALLOWED_ORIGINS = [
-    'https://omega.diveinthebluesky.xyz',
+    'https://x5jqk.tqa556.com',
     'http://0.0.0.0:2210'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://omega.diveinthebluesky.xyz',
+    'https://x5jqk.tqa556.com',
     'http://0.0.0.0:2210'
 ]
 

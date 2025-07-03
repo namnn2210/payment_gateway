@@ -17,6 +17,7 @@ def acb_login(username, password, account_number):
         "action": "login"
     }
     response = requests.post(get_env("ACB_URL"), json=body)
+    print(response.text)
     if response.status_code == 200:
         data = response.json()
         if 'accessToken' in data.keys():
@@ -35,7 +36,7 @@ def acb_balance(username, password, account_number):
     }
     response = requests.post(get_env("ACB_URL"), json=body)
     response = response.json()
-
+    print(response)
     if response:
         if 'codeStatus' in response.keys():
             if response['codeStatus'] == 200:

@@ -119,15 +119,15 @@ def update_status_request(payout, status='S'):
                 "orderno": payout.orderno,
                 "amount": f'{payout.money}.00',
                 "payerbankname": payout.partner_bankcode,
-                "payeraccountno": "226662",
-                "payeraccountname": "226 pay",
+                "payeraccountno": "2017241",
+                "payeraccountname": "TQA556",
                 "status": status
             }
         ],
         "sign": sign
     }
     logger.info(f'update resquest body:{request_body}')
-    response = requests.post('https://gdly.jzc899.com/service/withdraw_confirm.aspx', json=request_body)
+    response = requests.post('https://p2p.jzc899.com/service/withdraw_confirm.aspx', json=request_body)
     logger.info(f'response:{response.text}')
 
     if response.status_code == 200:

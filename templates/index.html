@@ -435,10 +435,8 @@
                 balances.forEach(balance => {
                     const balanceCell = document.getElementById(`balance-${balance.id}`);
                     if (balanceCell) {
-                        if (balance.bank_type !== 'ALL') {
+                        if (balance.bank_type === 'IN') {
                             totalBalance += balance.balance;
-                        } else {
-                            totalAll += balance.balance
                         }
 
                         const balanceClass = balance.bank_type === 'IN' ? 'text-success' : 'text-danger';
@@ -452,7 +450,7 @@
                     }
                 });
 
-                totalBalance += totalAll / 2
+                {#totalBalance += totalAll / 2#}
 
                 const balanceTotalElem = document.querySelector('.balance-total');
                 if (balanceTotalElem) {

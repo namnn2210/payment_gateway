@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django import forms
-from .models import Payout, Timeline, UserTimeline, BalanceTimeline
+from .models import Payout, Timeline, UserTimeline, BalanceTimeline, LicenseKeys
 from django.contrib.admin.helpers import ACTION_CHECKBOX_NAME
 from django.template.response import TemplateResponse
 from django.contrib.auth.models import User
@@ -74,3 +74,10 @@ class BalanceTimelineAdmin(admin.ModelAdmin):
     list_display = ('id','timeline', 'bank_account', 'balance', 'status', 'created_at', 'updated_at')
     list_filter = ('timeline', 'bank_account', 'status','created_at',)
     search_fields = ('bank_account',)
+
+
+@admin.register(LicenseKeys)
+class LicenseKeysAdmin(admin.ModelAdmin):
+    list_display = ('id','key', 'mac', 'status', 'created_at', 'updated_at')
+    list_filter = ('status','created_at')
+    search_fields = ('key','mac',)

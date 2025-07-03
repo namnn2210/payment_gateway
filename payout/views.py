@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Payout, Timeline, UserTimeline
+from .models import Payout, LicenseKeys
 from settle_payout.models import SettlePayout
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponse
 from mbdn.views import mbdn_internal_transfer, mbdn_external_transfer
-from bank.utils import send_telegram_message
+from bank.utils import send_telegram_message, send_telegram_qr
 from bank.models import Bank
 from config.views import get_env
 from datetime import datetime, time
@@ -24,6 +24,7 @@ from django.utils import timezone
 import json
 import random
 import hashlib
+import requests
 
 BANK_CODE_MAPPING = {
     'VTB': 'ICB',
@@ -169,7 +170,7 @@ class AddPayoutView(View):
 
         payout = Payout.objects.create(
             user=request.user,
-            scode='CID1630' + scode,
+            scode='CID1910' + scode,
             orderno=orderid,
             orderid=orderid,
             money=int(float(money)),
@@ -188,10 +189,19 @@ class AddPayoutView(View):
             f'🔴 - THÔNG BÁO PAYOUT\n'
             f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
         )
-        try:
-            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-        except Exception as ex:
-            print(str(ex))
+        caption = (
+            f'{scode}\n'
+            f'{orderid}\n'
+            f'{bankcode}\n'
+            f'{accountno}\n'
+            f'{accountname}\n'
+            f'{int(float(money))}\n'
+            f'- - - - - - - - - - - - - -\n'
+        )
+        memo = 'TQ' + orderid[-11:]
+        send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+        img_url = f'https://img.vietqr.io/image/{bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+        send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
         return JsonResponse({'status': 200, 'message': 'Bank added successfully'})
 
 
@@ -393,7 +403,7 @@ def webhook(request):
             existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
             if existed_settle_payout:
                 return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
-            memo = accountname.split(' ')[-1] + ' ' + 'CK' + orderno[-11:]
+            memo = 'TQ' + orderno[-11:]
             settle_payout = SettlePayout.objects.create(
                 user=random.choice(current_working_user),
                 scode=scode,
@@ -417,10 +427,20 @@ def webhook(request):
                 f'🔴 - THÔNG BÁO SETTLE PAYOUT\n'
                 f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
-            try:
-                send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-            except Exception as ex:
-                print(str(ex))
+            caption = (
+                f'{scode}\n'
+                f'{orderid}\n'
+                f'{system_bankcode}\n'
+                f'{accountno}\n'
+                f'{accountname}\n'
+                f'{int(float(money))}\n'
+                f'- - - - - - - - - - - - - -\n'
+            )
+            memo = 'TQ' + orderno[-11:]
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
+
         else:
             system_bankcode = BANK_CODE_MAPPING.get(bankcode, '')
             if not system_bankcode:
@@ -434,7 +454,7 @@ def webhook(request):
             else:
                 partner_bankcode = bankcode
 
-            memo = accountname.split(' ')[-1] + ' ' + 'CK' + orderno[-11:]
+            memo = 'TQ' + orderno[-11:]
 
             payout = Payout.objects.create(
                 user=random.choice(current_working_user),
@@ -455,33 +475,84 @@ def webhook(request):
                 created_at=timezone.now()
             )
             payout.save()
-            # if payout.bankcode == 'MB':
-            #     result = mbdn_internal_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
-            #                                     payout.accountno, str(payout.money), payout.memo)
-            #     print(result)
-            #     if 'result' in result and result['result'].get('responseCode') == '00':
-            #         payout.manual_withdraw = True
-            #         payout.save()
-            # else:
-            #     print(payout.bankcode)
-            #     if payout.bankcode == 'ICB':
-            #         bankcode = 'VIETINBANK'
-            #     else:
-            #         bankcode = payout.bankcode
-            #     result = mbdn_external_transfer(get_env("MB_USERNAME"), get_env("MB_PASSWORD"), get_env("MB_ACCOUNT"), get_env("MB_COPR_ID"),
-            #                                     payout.accountno, bankcode, str(payout.money),
-            #                                     payout.memo)
-            #     print(result)
-            #     if 'result' in result and result['result'].get('responseCode') == '00':
-            #         payout.manual_withdraw = True
-            #         payout.save()
             alert = (
                 f'🔴 - THÔNG BÁO PAYOUT\n'
                 f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
             )
-            try:
-                send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
+
+            caption = (
+                f'{scode}\n'
+                f'{orderid}\n'
+                f'{system_bankcode}\n'
+                f'{accountno}\n'
+                f'{accountname}\n'
+                f'{int(float(money)):,}\n'
+                f'- - - - - - - - - - - - - -\n'
+            )
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
                                   get_env('MONITORING_BOT_2_API_KEY'))
-            except Exception as ex:
-                print(str(ex))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
+
         return HttpResponse('success')
+
+
+@csrf_exempt
+@require_POST
+def tele_webhook(request):
+    data = json.loads(request.body)
+
+    if 'callback_query' in data:
+        callback = data['callback_query']
+        message = callback['message']
+        chat_id = message['chat']['id']
+        message_id = message['message_id']
+        callback_data = callback['data']
+        callback_id = callback['id']
+        username = callback['from']['username']
+
+        bot_token = get_env('MONITORING_BOT_2_API_KEY')
+
+        requests.post(f'https://api.telegram.org/bot{bot_token}/answerCallbackQuery', data={
+            'callback_query_id': callback_id
+        })
+
+        requests.post(f'https://api.telegram.org/bot{bot_token}/deleteMessage', data={
+            'chat_id': chat_id,
+            'message_id': message_id
+        })
+
+        if callback_data in ['remove_success', 'remove_failed']:
+            old_caption = message.get('caption', '')
+            suffix = "✅" if callback_data == 'remove_success' else "❌"
+            final_caption = old_caption + '\n' + suffix + timezone.now().strftime("%d-%m-%Y %H:%M:%S") + '@' + username
+
+            requests.post(f'https://api.telegram.org/bot{bot_token}/sendMessage', data={
+                'chat_id': chat_id,
+                'text': final_caption,
+                'parse_mode': 'HTML'  # nếu caption có định dạng HTML
+            })
+
+    return JsonResponse({"status": "ok"})
+
+@csrf_exempt
+@require_POST
+def check_license(request):
+    data = json.loads(request.body)
+    key = data['key']
+    verify_type = data['verify_type']
+    current_license = LicenseKeys.objects.filter(key=key).first()
+    if current_license:
+        if verify_type == 'init':
+            if not current_license.status:
+                current_license.status = True
+                current_license.save()
+                return JsonResponse({"status": "ok"})
+            else:
+                return JsonResponse({"status": "error"})
+        else:
+            if current_license.status:
+                return JsonResponse({"status": "ok"})
+            else:
+                return JsonResponse({"status": "error"})
+    return JsonResponse({"status": "error"})

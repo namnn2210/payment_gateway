@@ -92,7 +92,7 @@ def setup_2fa(request):
         user_2fa.save()
 
     totp = pyotp.TOTP(user_2fa.otp_secret)
-    totp_uri = totp.provisioning_uri(name=request.user.username, issuer_name="226Pay")
+    totp_uri = totp.provisioning_uri(name=request.user.username, issuer_name="TQA556")
 
     qr = qrcode.make(totp_uri)
     buffer = BytesIO()

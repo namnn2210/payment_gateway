@@ -57,7 +57,7 @@ def send_telegram_message(message: str, chat_id, api_key):
         'parse_mode': 'Markdown'
     }
     proxy_settings = {
-        'https': 'http://xesn9457:WTHmof8064@51.79.186.247:57529'
+        'https': '70.36.118.30:58653:gvxh0498:KINyuv6713'
     }
     url = f'https://api.telegram.org/bot{api_key}/sendMessage'
     response = requests.post(url,
@@ -65,7 +65,36 @@ def send_telegram_message(message: str, chat_id, api_key):
                              headers=headers,
                              params=params,
                              verify=False)
+
     return response
+
+
+def send_telegram_qr(api_key, chat_id, qr_image_url, message):
+    url = f'https://api.telegram.org/bot{api_key}/sendPhoto'
+
+    print(url)
+
+    keyboard = {
+        "inline_keyboard": [
+            [
+                {"text": "✅ Success", "callback_data": "remove_success"},
+                {"text": "❌ Failed", "callback_data": "remove_failed"}
+            ]
+        ]
+    }
+
+    data = {
+        'chat_id': chat_id,
+        'photo': qr_image_url,
+        'caption': message,
+        'parse_mode': 'HTML',
+        'reply_markup': json.dumps(keyboard)
+    }
+
+    response = requests.post(url, data=data)
+    result = response.json()
+    print("QR response: ", result)
+    return result
 
 
 def get_dates(start_date=''):
@@ -102,6 +131,7 @@ def unix_to_datetime(unix_time):
     formatted_dt = dt_gmt_plus_7.strftime('%d/%m/%Y %H:%M:%S')
     return formatted_dt
 
+
 def format_transaction_list(transaction_list):
     for transaction in transaction_list:
         for key, value in transaction.items():
@@ -109,11 +139,13 @@ def format_transaction_list(transaction_list):
                 transaction[key] = ''
     return transaction_list
 
+
 def get_today_date():
     today = django_timezone.now()
     start_date = today.replace(hour=0, minute=0, second=0, microsecond=0)
     end_date = today.replace(hour=23, minute=59, second=59, microsecond=999999)
     return start_date, end_date
+
 
 def clean_text(text):
     if isinstance(text, str):

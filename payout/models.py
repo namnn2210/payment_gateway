@@ -65,3 +65,13 @@ class BalanceTimeline(models.Model):
     
     class Meta:
         db_table = 'balance_timeline'
+
+class LicenseKeys(models.Model):
+    key = models.CharField(max_length=255)
+    mac = models.CharField(max_length=255,null=True,blank=True)
+    status = models.BooleanField(default=False, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'license_keys'

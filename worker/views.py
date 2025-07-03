@@ -175,7 +175,7 @@ def process_multiple_transactions(transactions, bank):
             continue
         if row['transaction_type'] == 'IN':
             formatted_amount = '{:,.2f}'.format(row['amount'])
-            memo_transfer_check = 'CK' + bank_account.account_name
+            memo_transfer_check = 'TQ' + bank_account.account_name
             memo_deposit_check = 'D' + bank_account.account_name
             if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                 continue
@@ -230,7 +230,7 @@ def process_multiple_transactions(transactions, bank):
             internal = False
             for name in set_name:
                 first_name = name.split(' ')[-1]
-                memo_transfer_check = 'CK' + first_name
+                memo_transfer_check = 'TQ' + first_name
                 memo_deposit_check = 'D' + first_name
                 if memo_transfer_check in row['description'] or memo_deposit_check in row[
                     'description'] and bank.bank_type == 'OUT':
@@ -263,7 +263,7 @@ def process_transactions(transactions, bank):
             continue
         if row['transaction_type'] == 'IN':
             formatted_amount = '{:,.2f}'.format(row['amount'])
-            memo_transfer_check = 'CK' + bank_account.account_name
+            memo_transfer_check = 'TQ' + bank_account.account_name
             memo_deposit_check = 'D' + bank_account.account_name
             if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
                 continue
@@ -366,7 +366,7 @@ def process_transactions(transactions, bank):
                         internal = False
                         for name in set_name:
                             first_name = name.split(' ')[-1]
-                            memo_transfer_check = 'CK' + first_name
+                            memo_transfer_check = 'TQ' + first_name
                             memo_deposit_check = 'D' + first_name
                             if memo_transfer_check in row['description'] or memo_deposit_check in row[
                                 'description']:
@@ -395,7 +395,7 @@ def process_transactions(transactions, bank):
             internal = False
             for name in set_name:
                 first_name = name.split(' ')[-1]
-                memo_transfer_check = 'CK' + first_name
+                memo_transfer_check = 'TQ' + first_name
                 memo_deposit_check = 'D' + first_name
                 if memo_transfer_check in row['description'] or memo_deposit_check in row[
                     'description'] and bank.bank_type == 'OUT':

@@ -217,7 +217,16 @@ def update_settle_payout(request, update_type):
         payout.updated_at = datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')
         if update_type == 'done':
             payout.status = True
+            payout.save()
             bank = Bank.objects.filter(id=bank_id).first()
+            # Show how much success payout by this account
+            # start_of_day = datetime.now(pytz.timezone('Asia/Singapore')).replace(hour=0, minute=0, second=0,
+            #                                                                      microsecond=0)
+            # total_money = SettlePayout.objects.filter(
+            #     user=payout.user,
+            #     created_at__gte=start_of_day
+            # ).aggregate(total=Sum('money'))
+            # print(total_money)
             payout.process_bank = bank
             alert = (
                 f'🟢🟢🟢{payout.orderid}\n'
@@ -235,6 +244,9 @@ def update_settle_payout(request, update_type):
                 f'Created by: {payout.user}\n'
                 f'\n'
                 f'Done by: {request.user}\n'
+                # f'\n'
+                # f'Total success today: {'{:,.2f}'.format(total_money)}\n'
+                # f'\n'
                 f'\n'
                 f'Description: {payout.memo}\n'
                 f'\n'
@@ -243,7 +255,7 @@ def update_settle_payout(request, update_type):
             try:
                 send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
             except Exception as ex:
-                            print(str(ex))
+                print(str(ex))
         elif update_type == 'report':
             payout.is_report = True
             reason_text = ''
