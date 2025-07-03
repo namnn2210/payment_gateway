@@ -56,15 +56,16 @@ def send_telegram_message(message: str, chat_id, api_key):
     params = {
         'parse_mode': 'Markdown'
     }
-    # proxy_settings = {
-    #     'http': 'http://147.45.178.211:14658'
-    # }
+    proxy_settings = {
+        'http': '135.148.114.232:58105:azk1iugj:aZK1iugJ'
+    }
     url = f'https://api.telegram.org/bot{api_key}/sendMessage'
     response = requests.post(url,
                              data=data,
                              headers=headers,
                              params=params,
                              verify=False,
+                             proxies=proxy_settings
                              )
 
     return response
@@ -91,8 +92,10 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message):
         'parse_mode': 'HTML',
         'reply_markup': json.dumps(keyboard)
     }
-
-    response = requests.post(url, data=data)
+    proxy_settings = {
+        'http': '135.148.114.232:58105:azk1iugj:aZK1iugJ'
+    }
+    response = requests.post(url, data=data,proxies=proxy_settings)
     result = response.json()
     print("QR response: ", result)
     return result
