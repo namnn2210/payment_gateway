@@ -85,8 +85,7 @@
                                 <div class="row">
                                     <div class="col-md-4">
                                         <p>
-                                            <strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma
-                                            }}
+                                            <strong>{% trans "Amount" %}:</strong> {{ item.money|floatformat:2|intcomma }}
                                         </p>
                                         <p><strong>{% trans "Account Number" %}:</strong> {{ item.accountno }}</p>
                                         <p><strong>{% trans "Account Name" %}:</strong> {{ item.accountname }}</p>
@@ -119,16 +118,13 @@
                                                 data-accountno="{{ item.accountno }}"
                                                 data-accountname="{{ item.accountname }}" data-money="{{ item.money }}"
                                                 data-is-report="{{ item.is_report }}" data-orderno="{{ item.orderno }}"
-                                                data-is-cancel="{{ item.is_cancel }}"><i class="bi bi-cash me-1"></i>{%
-                                                trans "Pay" %}</button>
+                                                data-is-cancel="{{ item.is_cancel }}"><i class="bi bi-cash me-1"></i>{% trans "Pay" %}</button>
                                             {% endif %}
                                             <button class="btn btn-sm btn-danger rounded-pill delete-btn"
-                                                data-item-id="{{ item.id }}"><i class="bi bi-trash me-1"></i>{% trans
-                                                "Delete" %}</button>
+                                                data-item-id="{{ item.id }}"><i class="bi bi-trash me-1"></i>{% trans "Delete" %}</button>
                                             {% if not item.status and not item.is_cancel and not item.is_report %}
                                             <button class="btn btn-sm btn-warning rounded-pill move-btn"
-                                                data-item-id="{{ item.id }}"><i class="bi bi-forward me-1"></i>{% trans
-                                                "Move" %}</button>
+                                                data-item-id="{{ item.id }}"><i class="bi bi-forward me-1"></i>{% trans "Move" %}</button>
                                             {% endif %}
                                             {% else %}
                                             {% if item.user == user or item.user.username == 'admin' %}
@@ -148,8 +144,7 @@
                                             {% if not item.status or item.is_report %}
                                             <button class="btn btn-sm btn-danger rounded-pill edit-btn"
                                                 data-bs-toggle="modal" data-bs-target="#editModal"
-                                                data-item-id="{{ item.id }}"><i class="bi bi-pencil-square me-1"></i>{%
-                                                trans "Edit" %}</button>
+                                                data-item-id="{{ item.id }}"><i class="bi bi-pencil-square me-1"></i>{% trans "Edit" %}</button>
                                             {% endif %}
                                         </p>
                                     </div>
