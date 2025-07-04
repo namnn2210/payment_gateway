@@ -185,7 +185,7 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     amount_different = end_balance - amount_left
 
     await update.message.reply_text(
-        f"Tổng kết {username}\n"
+        f"Tổng kết: {username}\n"
         f"Giờ bắt đầu: {start_datetime_str}\n"
         f"Giờ kết thúc: {end_datetime_str}\n"
         f"==================================\n"
