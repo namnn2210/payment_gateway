@@ -11,15 +11,12 @@ import os
 
 def update_payout_background(update_body):
     payout_id = update_body['payout_id']
-    bank_id = update_body['bank_id']
     update_type = update_body['update_type']
     reason = update_body['reason']
     payout = get_object_or_404(Payout, id=payout_id)
     request_user = User.objects.filter(username=update_body['request_user_username']).first()
     payout.updated_by = request_user
     payout.updated_at = datetime.now(pytz.timezone('Asia/Singapore')).strftime('%Y-%m-%d %H:%M:%S')
-    bank = Bank.objects.filter(id=bank_id).first()
-    payout.process_bank = bank
     formatted_amount = '{:,.2f}'.format(payout.money)
     if update_type == 'done':
         if payout.is_auto:
