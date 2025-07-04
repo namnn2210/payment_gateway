@@ -104,6 +104,9 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Đã nạp thành công cho {username}.\nSố tiền vừa nạp: {amount:,}\nTổng nạp hiện tại: {session.deposit:,}"
     )
 
+from asgiref.sync import sync_to_async
+from django.utils import timezone
+
 async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
 
@@ -141,38 +144,56 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
 
-
     session.end_time = timezone.now()
 
-    start_datetime = datetime.strftime(session.start_time, '%Y-%m-%d %H:%M')
-    end_datetime = datetime.strftime(session.end_time, '%Y-%m-%d %H:%M')
+    # ✅ Dùng datetime object trực tiếp khi filter
+    list_payout = await sync_to_async(lambda: list(
+        Payout.objects.filter(
+            user=user, 
+            created_at__gte=session.start_time, 
+            created_at__lte=session.end_time, 
+            status=True
+        )
+    ))()
 
-    list_payout = await sync_to_async(lambda:Payout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True))()
-    list_settle = await sync_to_async(lambda:SettlePayout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True))()
-    session.total_payout = await sync_to_async(lambda:len(list_payout))
-    session.total_amount_payout = await sync_to_async(lambda:sum(p.money for p in list_payout))
-    session.total_settle = await sync_to_async(lambda:len(list_settle))
-    session.total_amount_settle = await sync_to_async(lambda:sum(p.money for p in list_settle))
-    
+    list_settle = await sync_to_async(lambda: list(
+        SettlePayout.objects.filter(
+            user=user, 
+            created_at__gte=session.start_time, 
+            created_at__lte=session.end_time, 
+            status=True
+        )
+    ))()
+
+    # ✅ Tính tổng bằng Python, không cần await
+    session.total_payout = len(list_payout)
+    session.total_amount_payout = sum(p.money for p in list_payout)
+    session.total_settle = len(list_settle)
+    session.total_amount_settle = sum(p.money for p in list_settle)
+
     session.end_balance = end_balance
     session.status = True
 
     await sync_to_async(session.save)()
 
-    amount_left = await sync_to_async(lambda: session.start_balance + session.deposit - session.total_amount_payout - session.total_amount_settle)()
+    amount_left = session.start_balance + session.deposit - session.total_amount_payout - session.total_amount_settle
+
+    # ✅ Định dạng giờ để hiển thị
+    start_datetime_str = session.start_time.strftime('%Y-%m-%d %H:%M')
+    end_datetime_str = session.end_time.strftime('%Y-%m-%d %H:%M')
 
     await update.message.reply_text(
-        f"Tổng kết {username}\n" + 
-        f"Giờ bắt đầu: {start_datetime}\n" +
-        f"Giờ kết thúc: {end_datetime}\n" +
-        f"==================================\n" +
-        f"Payout: {session.total_payout}\n" +
-        f"Tổng tiền: {session.total_amount_payout:,}\n" +
-        f"Settle: {session.total_settle}\n" +
-        f"Tổng tiền: {session.total_amount_settle:,}\n" +
-        f"==================================\n" +
+        f"Tổng kết {username}\n"
+        f"Giờ bắt đầu: {start_datetime_str}\n"
+        f"Giờ kết thúc: {end_datetime_str}\n"
+        f"==================================\n"
+        f"Payout: {session.total_payout}\n"
+        f"Tổng tiền: {session.total_amount_payout:,}\n"
+        f"Settle: {session.total_settle}\n"
+        f"Tổng tiền: {session.total_amount_settle:,}\n"
+        f"==================================\n"
         f"Số dư còn lại dự tính: {amount_left:,}\n"
-        f"Vui lòng kiểm tra số dư"
+        f"Vui lòng kiểm tra số dư\n"
         f"-----------END SESSION-----------"
     )
 
