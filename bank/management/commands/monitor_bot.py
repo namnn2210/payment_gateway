@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = 'Session Bot Management'
 
     def handle(self, *args, **kwargs):
-        app = Application.builder().token('MONITORING_BOT_2_API_KEY').build()
+        app = Application.builder().token(get_env('MONITORING_BOT_2_API_KEY')).build()
         app.add_handler(CommandHandler('start', start))
         self.stdout.write('Bot running...')
         app.run_polling()
