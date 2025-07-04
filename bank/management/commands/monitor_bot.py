@@ -54,7 +54,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     await update.message.reply_text(
-        f"Nhân viên: {employee.username}\nGiờ bắt đầu: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\nSố dư bắt đầu: {start_balance_int}"
+        f"Nhân viên: {employee.username}\nGiờ bắt đầu: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\nSố dư bắt đầu: {start_balance_int:,}"
     )
 
 async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -99,7 +99,7 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await sync_to_async(session.save)()
 
     await update.message.reply_text(
-        f"Đã nạp thành công cho {username}.\nSố tiền vừa nạp: {amount}\nTổng nạp hiện tại: {session.deposit}"
+        f"Đã nạp thành công cho {username}.\nSố tiền vừa nạp: {amount:,}\nTổng nạp hiện tại: {session.deposit:,}"
     )
 
 class Command(BaseCommand):
