@@ -136,8 +136,6 @@ def list_payout(request):
     })
 
 
-def search_payout(request):
-    return render(request=request, template_name='payout_history.html')
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -535,24 +533,3 @@ def tele_webhook(request):
 
     return JsonResponse({"status": "ok"})
 
-@csrf_exempt
-@require_POST
-def check_license(request):
-    data = json.loads(request.body)
-    key = data['key']
-    verify_type = data['verify_type']
-    current_license = LicenseKeys.objects.filter(key=key).first()
-    if current_license:
-        if verify_type == 'init':
-            if not current_license.status:
-                current_license.status = True
-                current_license.save()
-                return JsonResponse({"status": "ok"})
-            else:
-                return JsonResponse({"status": "error"})
-        else:
-            if current_license.status:
-                return JsonResponse({"status": "ok"})
-            else:
-                return JsonResponse({"status": "error"})
-    return JsonResponse({"status": "error"})

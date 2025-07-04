@@ -45,22 +45,76 @@ class Transaction:
         }
 
 
-def send_telegram_message(message: str, chat_id, api_key):
-    data_dict = {'chat_id': chat_id,
-                 'text': message,
-                 'parse_mode': 'HTML',
-                 'disable_notification': False}
-    headers = {'Content-Type': 'application/json',
-               'Proxy-Authorization': 'Basic base64'}
-    data = json.dumps(data_dict)
-    print(data)
+def send_telegram_message(
+        message: str,
+        chat_id,
+        api_key,
+        parse_mode='HTML',
+        disable_notification=False,
+        proxy_url=None
+):
+    """
+    Gửi tin nhắn Telegram an toàn, rõ ràng.
+
+    :param message: Nội dung tin nhắn
+    :param chat_id: ID của người nhận hoặc nhóm
+    :param api_key: Bot token
+    :param parse_mode: HTML hoặc Markdown
+    :param disable_notification: True/False
+    :param proxy_url: str dạng 'http://user:pass@ip:port' nếu cần
+    :return: response object
+    """
+
+    # Data để gửi
+    payload = {
+        'chat_id': chat_id,
+        'text': message,
+        'parse_mode': parse_mode,
+        'disable_notification': disable_notification
+    }
+
+    # Header
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    # Proxy (nếu có)
+    proxies = None
+    if proxy_url:
+        proxies = {
+            'http': proxy_url,
+            'https': proxy_url
+        }
+
+    # Endpoint
     url = f'https://api.telegram.org/bot{api_key}/sendMessage'
-    response = requests.post(url,
-                             data=data,
-                             headers=headers,
-                             verify=True)
-    print(response.text)
-    return response
+
+    try:
+        response = requests.post(
+            url,
+            data=json.dumps(payload),
+            headers=headers,
+            proxies=proxies,
+            timeout=10
+        )
+
+        print(f"Request payload: {json.dumps(payload, ensure_ascii=False)}")
+        print(f"Status code: {response.status_code}")
+        print(f"Response text: {response.text}")
+
+        response.raise_for_status()
+        data = response.json()
+
+        if not data.get('ok'):
+            print("⚠️ Telegram API error:", data.get('description'))
+        else:
+            print("✅ Message sent successfully!")
+
+        return response
+
+    except requests.exceptions.RequestException as e:
+        print("❌ Error sending Telegram message:", e)
+        return None
 
 
 def send_telegram_qr(api_key, chat_id, qr_image_url, message):
