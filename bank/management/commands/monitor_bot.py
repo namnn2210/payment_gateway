@@ -3,7 +3,7 @@ from bank.utils import send_telegram_message
 from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
 from config.views import get_env
-from datetime import timezone
+from django.utils import timezone
 from django.contrib.auth.models import User
 from employee.models import EmployeeWorkingSession
 from asgiref.sync import sync_to_async
