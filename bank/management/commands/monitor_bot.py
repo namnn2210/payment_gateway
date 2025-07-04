@@ -147,8 +147,8 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     start_datetime = datetime.strftime(session.start_time, '%Y-%m-%d %H:%M')
     end_datetime = datetime.strftime(session.end_time, '%Y-%m-%d %H:%M')
 
-    list_payout = Payout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
-    list_settle = SettlePayout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
+    list_payout = await sync_to_async(lambda:Payout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True))()
+    list_settle = await sync_to_async(lambda:SettlePayout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True))()
     session.total_payout = len(list_payout)
     session.total_amount_payout = sum(p.money for p in list_payout)
     session.total_settle = len(list_settle)
