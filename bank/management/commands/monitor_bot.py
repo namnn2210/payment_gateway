@@ -144,8 +144,8 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     session.end_time = timezone.now()
 
-    start_datetime = datetime.strptime(session.start_time, '%Y-%m-%d %H:%M')
-    end_datetime = datetime.strptime(session.end_time, '%Y-%m-%d %H:%M')
+    start_datetime = datetime.strftime(session.start_time, '%Y-%m-%d %H:%M')
+    end_datetime = datetime.strftime(session.end_time, '%Y-%m-%d %H:%M')
 
     list_payout = Payout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
     list_settle = SettlePayout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
