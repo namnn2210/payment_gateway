@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CID, PartnerMapping
+from .models import CID
 
 # Register your models here.
 @admin.register(CID)
@@ -8,9 +8,3 @@ class CIDAdmin(admin.ModelAdmin):
     list_filter = ('name','status','key','cardtype',)
     search_fields = ('name','key',)
     
-
-# @admin.register(PartnerMapping)
-# class PartnerMappingAdmin(admin.ModelAdmin):
-#     list_display = ('cid', 'key', 'cardtype', 'bank', 'status', 'created_at', 'updated_at')
-#     list_filter = ('cid','cardtype', 'bank',)
-#     search_fields = ('cid','bank',)

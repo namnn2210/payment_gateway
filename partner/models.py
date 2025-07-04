@@ -15,16 +15,5 @@ class CID(models.Model):
     class Meta:
         db_table = 'cid'
 
-# Create your models here.
-class PartnerMapping(models.Model):
-    cid = models.ForeignKey(CID, on_delete=models.CASCADE, null=False)
-    key = models.TextField(null=False)
-    cardtype=models.IntegerField(null=False)
-    bank = models.ForeignKey(BankAccount, on_delete=models.CASCADE, null=False)
-    status = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        db_table = 'partner_mapping'
+
         

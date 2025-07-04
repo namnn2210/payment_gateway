@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Payout, LicenseKeys
+from .models import Payout
 from settle_payout.models import SettlePayout
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
@@ -10,7 +10,6 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse, HttpResponse
-from mbdn.views import mbdn_internal_transfer, mbdn_external_transfer
 from bank.utils import send_telegram_message, send_telegram_qr
 from bank.models import Bank
 from config.views import get_env

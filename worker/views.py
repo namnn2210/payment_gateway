@@ -334,7 +334,7 @@ def process_transactions(transactions, bank):
                                     )
                                     success = True
                                     send_telegram_message(alert, "-1002674641230",
-                                                          get_env('TRANSACTION_BOT_2_API_KEY'))
+                                                          get_env('MONITORING_BOT_2_API_KEY'))
                                     break
                             else:
                                 continue
@@ -400,8 +400,8 @@ def process_transactions(transactions, bank):
                 if memo_transfer_check in row['description'] or memo_deposit_check in row[
                     'description'] and bank.bank_type == 'OUT':
                     send_telegram_message(alert, get_env('INTERNAL_CHAT_ID'),
-                                          get_env('TRANSACTION_BOT_2_API_KEY'))
+                                          get_env('MONITORING_BOT_2_API_KEY'))
                     internal = True
                     break
             if not internal:
-                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
+                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
