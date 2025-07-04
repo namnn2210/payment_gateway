@@ -107,6 +107,8 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
 
+    print(args)
+
     if len(args) < 2:
         await update.message.reply_text(
             "Nhập thông tin sai. Mẫu: end username số dư cuối\nVí dụ:\n/end admin 54321"
@@ -115,6 +117,8 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     username = args[0]
     end_balance_str = args[1]
+
+    print(username, end_balance_str)
 
     if username.isdigit() or username.isdecimal():
         await update.message.reply_text("Sai tên đăng nhập")
@@ -126,11 +130,15 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     end_balance = int(end_balance_str)
 
+    print(end_balance)
+
     user = await sync_to_async(lambda: User.objects.filter(username=username).first())()
     if not user:
         await update.message.reply_text(f"Không tìm thấy nhân viên '{username}'.")
         return
 
+
+    print(user)
     session = await sync_to_async(
         lambda: EmployeeWorkingSession.objects.filter(user=user, status=False).first()
     )()
@@ -140,11 +148,15 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"Nhân viên '{username}' hiện không có phiên làm việc đang mở."
         )
         return
+    
+    print(session)
 
     session.end_time = timezone.now()
 
     start_datetime = datetime.strptime(session.start_time, '%Y-%m-%d %H:%M')
     end_datetime = datetime.strptime(session.end_time, '%Y-%m-%d %H:%M')
+
+    print(start_datetime, end_datetime)
 
     list_payout = Payout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
     list_settle = SettlePayout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
@@ -152,6 +164,8 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     session.total_amount_payout = sum(p.money for p in list_payout)
     session.total_settle = len(list_settle)
     session.total_amount_settle = sum(p.money for p in list_settle)
+
+    print(session.total_payout, session.total_amount_payout, session.total_settle, session.total_amount_settle)
     
     session.end_balance = end_balance
     session.status = True
@@ -159,6 +173,8 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await sync_to_async(session.save)()
 
     amount_left = session.start_balance + session.deposit - session.total_amount_payout - session.total_amount_settle
+
+    print(amount_left)
 
     await update.message.reply_text(
         f"Tổng kết {username}\n" + 
