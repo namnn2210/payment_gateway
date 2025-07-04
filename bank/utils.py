@@ -54,20 +54,11 @@ def send_telegram_message(message: str, chat_id, api_key):
                'Proxy-Authorization': 'Basic base64'}
     data = json.dumps(data_dict)
     print(data)
-    params = {
-        'parse_mode': 'Markdown'
-    }
-    # proxy_settings = {
-    #     'http': '135.148.114.232:58105:azk1iugj:aZK1iugJ'
-    # }
     url = f'https://api.telegram.org/bot{api_key}/sendMessage'
     response = requests.post(url,
                              data=data,
                              headers=headers,
-                             params=params,
-                             verify=False,
-
-                             )
+                             verify=True)
     print(response.text)
     return response
 
