@@ -11,7 +11,6 @@ from payout.models import Payout
 from settle_payout.models import SettlePayout
 from asgiref.sync import sync_to_async
 from django.utils import timezone
-from datetime import datetime
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
@@ -104,9 +103,6 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Đã nạp thành công cho {username}.\nSố tiền vừa nạp: {amount:,}\nTổng nạp hiện tại: {session.deposit:,}"
     )
 
-from asgiref.sync import sync_to_async
-from django.utils import timezone
-
 async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
 
@@ -146,7 +142,6 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     session.end_time = timezone.now()
 
-    # ✅ Dùng datetime object trực tiếp khi filter
     list_payout = await sync_to_async(lambda: list(
         Payout.objects.filter(
             user=user, 
@@ -165,7 +160,6 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     ))()
 
-    # ✅ Tính tổng bằng Python, không cần await
     session.total_payout = len(list_payout)
     session.total_amount_payout = sum(p.money for p in list_payout)
     session.total_settle = len(list_settle)
@@ -178,7 +172,6 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     amount_left = session.start_balance + session.deposit - session.total_amount_payout - session.total_amount_settle
 
-    # ✅ Định dạng giờ để hiển thị
     start_datetime_str = session.start_time.strftime('%Y-%m-%d %H:%M')
     end_datetime_str = session.end_time.strftime('%Y-%m-%d %H:%M')
 
