@@ -33,8 +33,6 @@ class EmployeeWorkingSession(models.Model):
     total_amount_payout = models.BigIntegerField(default=0)
     total_settle = models.IntegerField(default=0)
     total_amount_settle = models.BigIntegerField(default=0)
-    total_payout = models.IntegerField(default=0)
-    total_amount_payout = models.IntegerField(default=0)
     end_time = models.DateTimeField(null=True)
     end_balance = models.BigIntegerField(default=0)
     status = models.BooleanField(default=False,null=True)
