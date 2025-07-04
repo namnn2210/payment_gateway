@@ -117,10 +117,17 @@ def send_telegram_message(
         return None
 
 
-def send_telegram_qr(api_key, chat_id, qr_image_url, message):
+import json
+import requests
+
+def send_telegram_qr(api_key, chat_id, qr_image_url, message, proxy_url=None):
+    """
+    Gửi ảnh QR kèm caption và inline keyboard.
+    """
+
     url = f'https://api.telegram.org/bot{api_key}/sendPhoto'
 
-    print(url)
+    print(f"Telegram API endpoint: {url}")
 
     keyboard = {
         "inline_keyboard": [
@@ -131,20 +138,51 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message):
         ]
     }
 
-    data = {
+    payload = {
         'chat_id': chat_id,
         'photo': qr_image_url,
         'caption': message,
         'parse_mode': 'HTML',
-        'reply_markup': json.dumps(keyboard)
+        'reply_markup': keyboard
     }
-    # proxy_settings = {
-    #     'http': '135.148.114.232:58105:azk1iugj:aZK1iugJ'
-    # }
-    response = requests.post(url, data=data)
-    result = response.json()
-    print("QR response: ", result)
-    return result
+
+    headers = {
+        'Content-Type': 'application/json'
+    }
+
+    proxies = None
+    if proxy_url:
+        proxies = {
+            'http': proxy_url,
+            'https': proxy_url
+        }
+
+    try:
+        response = requests.post(
+            url,
+            json=payload,
+            headers=headers,
+            proxies=proxies,
+            timeout=10
+        )
+
+        print(f"Request payload: {json.dumps(payload, ensure_ascii=False)}")
+        print(f"Status code: {response.status_code}")
+        print(f"Response text: {response.text}")
+
+        response.raise_for_status()
+        result = response.json()
+
+        if not result.get('ok'):
+            print("⚠️ Telegram API error:", result.get('description'))
+        else:
+            print("✅ Photo sent successfully!")
+
+        return result
+
+    except requests.exceptions.RequestException as e:
+        print("❌ Error sending photo to Telegram:", e)
+        return None
 
 
 def get_dates(start_date=''):
