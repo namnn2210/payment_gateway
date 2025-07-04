@@ -6,6 +6,7 @@ from config.views import get_env
 from datetime import timezone
 from django.contrib.auth.models import User
 from employee.models import EmployeeWorkingSession
+from asgiref.sync import sync_to_async
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
@@ -29,8 +30,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
         return
     
-    employee = User.objects.filter(username=username).first()
-    undone_session = EmployeeWorkingSession.objects.filter(user=employee, status=False).first()
+    employee = await sync_to_async(lambda: User.objects.filter(username=username).first())()
+    undone_session = await sync_to_async(lambda:EmployeeWorkingSession.objects.filter(user=employee, status=False).first())()
     if undone_session:
             update.message.reply_text('Bạn đang trong phiên làm việc. Không thể bắt đầu')
     else:
