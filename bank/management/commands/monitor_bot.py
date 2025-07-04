@@ -7,9 +7,11 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from employee.models import EmployeeWorkingSession
 from asgiref.sync import sync_to_async
-
+from payout.models import Payout
+from settle_payout.models import SettlePayout
 from asgiref.sync import sync_to_async
 from django.utils import timezone
+from datetime import datetime
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
@@ -100,6 +102,77 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         f"Đã nạp thành công cho {username}.\nSố tiền vừa nạp: {amount:,}\nTổng nạp hiện tại: {session.deposit:,}"
+    )
+
+async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    args = context.args
+
+    if len(args) < 2:
+        await update.message.reply_text(
+            "Nhập thông tin sai. Mẫu: end username số dư cuối\nVí dụ:\n/end admin 54321"
+        )
+        return
+
+    username = args[0]
+    end_balance_str = args[1]
+
+    if username.isdigit() or username.isdecimal():
+        await update.message.reply_text("Sai tên đăng nhập")
+        return
+
+    if not end_balance_str.isdigit():
+        await update.message.reply_text("Sai số dư cuối")
+        return
+
+    end_balance = int(end_balance_str)
+
+    user = await sync_to_async(lambda: User.objects.filter(username=username).first())()
+    if not user:
+        await update.message.reply_text(f"Không tìm thấy nhân viên '{username}'.")
+        return
+
+    session = await sync_to_async(
+        lambda: EmployeeWorkingSession.objects.filter(user=user, status=False).first()
+    )()
+
+    if not session:
+        await update.message.reply_text(
+            f"Nhân viên '{username}' hiện không có phiên làm việc đang mở."
+        )
+        return
+
+    session.end_time = timezone.now()
+
+    start_datetime = datetime.strptime(session.start_time, '%Y-%m-%d %H:%M')
+    end_datetime = datetime.strptime(session.end_time, '%Y-%m-%d %H:%M')
+
+    list_payout = Payout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
+    list_settle = SettlePayout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True)
+    session.total_payout = len(list_payout)
+    session.total_amount_payout = sum(p.money for p in list_payout)
+    session.total_settle = len(list_settle)
+    session.total_amount_settle = sum(p.money for p in list_settle)
+    
+    session.end_balance = end_balance
+    session.status = True
+
+    await sync_to_async(session.save)()
+
+    amount_left = session.start_balance + session.deposit - session.total_amount_payout - session.total_amount_settle
+
+    await update.message.reply_text(
+        f"Tổng kết {username}\n" + 
+        f"Giờ bắt đầu: {start_datetime}\n" +
+        f"Giờ kết thúc: {end_datetime}\n" +
+        f"==================================\n" +
+        f"Payout: {session.total_payout}\n" +
+        f"Tổng tiền: {session.total_amount_payout:,}\n" +
+        f"Settle: {session.total_settle}\n" +
+        f"Tổng tiền: {session.total_amount_settle:,}\n" +
+        f"==================================\n" +
+        f"Số dư còn lại dự tính: {amount_left:,}\n"
+        f"Vui lòng kiểm tra số dư"
+        f"-----------END SESSION-----------"
     )
 
 class Command(BaseCommand):
