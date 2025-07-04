@@ -149,17 +149,17 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     list_payout = await sync_to_async(lambda:Payout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True))()
     list_settle = await sync_to_async(lambda:SettlePayout.objects.filter(user=user, created_at__gte=start_datetime, created_at__lte=end_datetime, status=True))()
-    session.total_payout = len(list_payout)
-    session.total_amount_payout = sum(p.money for p in list_payout)
-    session.total_settle = len(list_settle)
-    session.total_amount_settle = sum(p.money for p in list_settle)
+    session.total_payout = await sync_to_async(lambda:len(list_payout))
+    session.total_amount_payout = await sync_to_async(lambda:sum(p.money for p in list_payout))
+    session.total_settle = await sync_to_async(lambda:len(list_settle))
+    session.total_amount_settle = await sync_to_async(lambda:sum(p.money for p in list_settle))
     
     session.end_balance = end_balance
     session.status = True
 
     await sync_to_async(session.save)()
 
-    amount_left = session.start_balance + session.deposit - session.total_amount_payout - session.total_amount_settle
+    amount_left = await sync_to_async(lambda: session.start_balance + session.deposit - session.total_amount_payout - session.total_amount_settle)()
 
     await update.message.reply_text(
         f"Tổng kết {username}\n" + 
