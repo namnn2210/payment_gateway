@@ -57,11 +57,57 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Nhân viên: {employee.username}\nGiờ bắt đầu: {start_time.strftime('%Y-%m-%d %H:%M:%S')}\nSố dư bắt đầu: {start_balance_int}"
     )
 
+async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    args = context.args
+
+    # 1️⃣ Kiểm tra đủ tham số
+    if len(args) < 2:
+        await update.message.reply_text(
+            "Nhập thông tin sai. Mẫu: deposit username số tiền nạp\nVí dụ:\n/in admin 5000"
+        )
+        return
+
+    username = args[0]
+    amount_str = args[1]
+
+    if username.isdigit() or username.isdecimal():
+        await update.message.reply_text("Sai tên đăng nhập")
+        return
+
+    if not amount_str.isdigit():
+        await update.message.reply_text("Sai số tiền nạp")
+        return
+
+    amount = int(amount_str)
+
+    user = await sync_to_async(lambda: User.objects.filter(username=username).first())()
+    if not user:
+        await update.message.reply_text(f"Không tìm thấy nhân viên '{username}'.")
+        return
+
+    session = await sync_to_async(
+        lambda: EmployeeWorkingSession.objects.filter(user=user, status=False).first()
+    )()
+
+    if not session:
+        await update.message.reply_text(
+            f"Nhân viên '{username}' hiện không có phiên làm việc đang mở."
+        )
+        return
+
+    session.deposit += amount
+    await sync_to_async(session.save)()
+
+    await update.message.reply_text(
+        f"Đã nạp thành công cho {username}.\nSố tiền vừa nạp: {amount}\nTổng nạp hiện tại: {session.deposit}"
+    )
+
 class Command(BaseCommand):
     help = 'Session Bot Management'
 
     def handle(self, *args, **kwargs):
         app = Application.builder().token(get_env('MONITORING_BOT_2_API_KEY')).build()
         app.add_handler(CommandHandler('start', start))
+        app.add_handler(CommandHandler('in', deposit))
         self.stdout.write('Bot running...')
         app.run_polling()
