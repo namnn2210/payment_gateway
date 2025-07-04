@@ -182,6 +182,8 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
     start_datetime_str = session.start_time.strftime('%Y-%m-%d %H:%M')
     end_datetime_str = session.end_time.strftime('%Y-%m-%d %H:%M')
 
+    amount_different = end_balance - amount_left
+
     await update.message.reply_text(
         f"Tổng kết {username}\n"
         f"Giờ bắt đầu: {start_datetime_str}\n"
@@ -193,6 +195,8 @@ async def end(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Tổng tiền: {session.total_amount_settle:,}\n"
         f"==================================\n"
         f"Số dư còn lại dự tính: {amount_left:,}\n"
+        f"Số dư: {end_balance:,}\n"
+        f"Lệch: {amount_different:,}"
         f"Vui lòng kiểm tra số dư\n"
         f"-----------END SESSION-----------"
     )
