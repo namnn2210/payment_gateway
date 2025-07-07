@@ -295,14 +295,110 @@ class PayoutWebhookAPIView(APIView):
 
         settle = bankcode in ['NA', '', '-'] or payeebankbranch in ['NA', '', '-']
 
+        partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         if settle:
-            # Logic for Settle Payout
-            # ... (This logic remains largely the same)
-            pass
+            # print('settle')
+            print(partner_bank_data)
+            # Settle
+            for bank in partner_bank_data:
+                if payeebankname == bank['bankname']:
+                    print('get bank code')
+                    system_bankcode = bank['code']
+                    # partner_bankcode = bank['code']
+
+            admin = User.objects.filter(username="admin").first()
+            existed_settle_payout = SettlePayout.objects.filter(orderid=orderid).first()
+            if existed_settle_payout:
+                return JsonResponse({'status': 505, 'message': 'Settle Payout existed'})
+            memo = 'TQ' + orderno[-11:]
+            settle_payout = SettlePayout.objects.create(
+                user=random.choice(current_working_user),
+                scode=scode,
+                orderno=orderno,
+                orderid=orderid,
+                money=int(float(money)),
+                accountno=accountno,
+                accountname=accountname,
+                bankname=payeebankname,
+                bankcode=system_bankcode,
+                memo=memo,
+                # partner_bankcode=partner_bankcode,
+                updated_by=None,
+                is_auto=True,
+                is_cancel=False,
+                is_report=False,
+                created_at=timezone.now()
+            )
+            settle_payout.save()
+            alert = (
+                f'🔴 - THÔNG BÁO SETTLE PAYOUT\n'
+                f'Đã có lệnh settle payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
+            )
+            caption = (
+                f'{scode}\n'
+                f'{orderid}\n'
+                f'{system_bankcode}\n'
+                f'{accountno}\n'
+                f'{accountname}\n'
+                f'{int(float(money)):,}\n'
+                f'- - - - - - - - - - - - - -\n'
+            )
+            memo = 'TQ' + orderno[-11:]
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002888070097', img_url, caption)
         else:
-            # Logic for regular Payout
-            # ... (This logic remains largely the same)
-            pass
+            system_bankcode = BANK_CODE_MAPPING.get(bankcode, '')
+            if not system_bankcode:
+                for bank in partner_bank_data:
+                    if bank['bankname'] == payeebankname:
+                        system_bankcode = bank['code']
+                        partner_bankcode = bank['code']
+                if not system_bankcode and not partner_bankcode:
+                    partner_bankcode = bankcode
+                    system_bankcode = bankcode
+            else:
+                partner_bankcode = bankcode
+
+            memo = 'TQ' + orderno[-11:]
+
+            payout = Payout.objects.create(
+                user=random.choice(current_working_user),
+                scode=scode,
+                orderno=orderno,
+                orderid=orderid,
+                money=int(float(money)),
+                accountno=accountno,
+                accountname=accountname,
+                bankname=payeebankname,
+                memo=memo,
+                bankcode=system_bankcode,
+                partner_bankcode=partner_bankcode,
+                updated_by=None,
+                is_auto=True,
+                is_cancel=False,
+                is_report=False,
+                created_at=timezone.now()
+            )
+            payout.save()
+            alert = (
+                f'🔴 - THÔNG BÁO PAYOUT\n'
+                f'Đã có lệnh payout mới. Vui lòng kiểm tra và hoàn thành !!"\n'
+            )
+
+            caption = (
+                f'{scode}\n'
+                f'{orderid}\n'
+                f'{system_bankcode}\n'
+                f'{accountno}\n'
+                f'{accountname}\n'
+                f'{int(float(money)):,}\n'
+                f'- - - - - - - - - - - - - -\n'
+            )
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+            send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
+                                  get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
 
         return Response("success", status=status.HTTP_200_OK)
 
