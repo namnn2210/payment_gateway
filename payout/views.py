@@ -272,6 +272,7 @@ class PayoutWebhookAPIView(APIView):
         body_sign = data.get('sign')
 
         system_bankcode = ''
+        partner_bankcode = ''
 
         cid = CID.objects.filter(name=scode).first()
         if not cid:
