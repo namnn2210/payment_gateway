@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q, Sum, Case, When, Value, IntegerField
 from django.utils import timezone
 from rest_framework.views import APIView
-from rest_framework.response import Response,HttpResponse
+from rest_framework.response import Response
 from rest_framework import status
 from .models import Payout
 from settle_payout.models import SettlePayout
