@@ -400,7 +400,7 @@ class PayoutWebhookAPIView(APIView):
                                   get_env('MONITORING_BOT_2_API_KEY'))
             send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
 
-        return Response("success", status=status.HTTP_200_OK)
+        return "success"
 
 class TelegramWebhookAPIView(APIView):
     authentication_classes = []
