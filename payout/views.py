@@ -291,7 +291,7 @@ class PayoutWebhookAPIView(APIView):
             return Response({'message': 'Payout existed'}, status=status.HTTP_409_CONFLICT)
 
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
-        current_working_user = [session.user for session in current_sessions] if current_sessions else [User.objects.filter(username='admin-huong').first()]
+        current_working_user = [session.user for session in current_sessions] if current_sessions else [User.objects.filter(username='admin-tqa').first()]
 
         settle = bankcode in ['NA', '', '-'] or payeebankbranch in ['NA', '', '-']
 
