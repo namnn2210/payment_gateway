@@ -57,11 +57,11 @@
             </div>
         </form>
         <div class="row d-flex justify-content-between mt-4 same-height">
-            <div class="col-md-6">
+            <div class="col-md-6 card">
                 {% include 'bank/_transaction_table.html' with table_type="IN" page_obj=in_page_obj total_amount=total_in_amount %}
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6 card">
                 {% include 'bank/_transaction_table.html' with table_type="OUT" page_obj=out_page_obj total_amount=total_out_amount %}
             </div>
         </div>
