@@ -40,7 +40,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{% url "add_bank" %}',  // Ensure this URL name matches your urls.py
+                url: '{% url "bank:add_bank_api" %}',  // Ensure this URL name matches your urls.py
                 data: JSON.stringify(formData),
                 contentType: 'application/json',
                 success: function (response) {
@@ -64,7 +64,7 @@
             var newStatus = button.data('status') === 'ON' ? 'OFF' : 'ON';
             $.ajax({
                 type: 'POST',
-                url: '{% url "toggle_bank_status" %}',  // Ensure this URL name matches your urls.py
+                url: '{% url "bank:toggle_bank_status_api" %}',  // Ensure this URL name matches your urls.py
                 data: JSON.stringify({ id: accountId, status: newStatus }),
                 contentType: 'application/json',
                 success: function (response) {

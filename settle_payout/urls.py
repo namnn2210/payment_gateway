@@ -1,11 +1,20 @@
 from django.urls import path
-from .views import list_settle_payout, AddSettlePayoutView, update_settle_payout, delete_settle_payout, edit_settle_payout,check_success_settle
+from .views import (
+    SettlePayoutListView,
+    AddSettlePayoutAPIView,
+    UpdateSettlePayoutAPIView,
+    DeleteSettlePayoutAPIView,
+    EditSettlePayoutAPIView,
+    CheckSuccessSettleAPIView,
+)
+
+app_name = 'settle_payout'
 
 urlpatterns = [
-    path('list', list_settle_payout, name='list_settle_payout'),
-    path('add', AddSettlePayoutView.as_view(), name='add_settle_payout'),
-    path('update_payout/<str:update_type>', update_settle_payout, name='update_settle_payout'),
-    path('edit_settle_payout', edit_settle_payout, name='edit_settle_payout'),
-    path('delete_settle_payout', delete_settle_payout, name='delete_settle_payout'),
-    path('check_success_settle', check_success_settle, name='check_success_settle'),
+    path('list/', SettlePayoutListView.as_view(), name='list_settle_payout'),
+    path('api/add/', AddSettlePayoutAPIView.as_view(), name='add_settle_payout_api'),
+    path('api/update/<str:update_type>/', UpdateSettlePayoutAPIView.as_view(), name='update_settle_payout_api'),
+    path('api/delete/', DeleteSettlePayoutAPIView.as_view(), name='delete_settle_payout_api'),
+    path('api/edit/', EditSettlePayoutAPIView.as_view(), name='edit_settle_payout_api'),
+    path('api/check_success/', CheckSuccessSettleAPIView.as_view(), name='check_success_settle_api'),
 ]

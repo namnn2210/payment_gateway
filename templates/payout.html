@@ -15,19 +15,10 @@
 {% block content %}
     <div class="container-fluid">
         <h3>{% trans 'Payout' %}</h3>
-        <div class="row">
-            <div class="col-md-6 col-sm-12 text-right mt-4">
-            </div>
-            <div class="col-md-6 col-sm-12 text-right mt-4">
-                <button class="btn btn-primary rounded-pill btn-add" data-toggle="modal" data-target="#addPayoutModal">
-                    <i class="bi bi-plus me-1"></i>{% trans "Add Payout" %}</button>
-            </div>
-        </div>
-        <form id="searchForm" method="get" action="{% url 'list_payout' %}">
+        <form id="searchForm" method="get" action="{% url 'payout:list_payout' %}">
             <div class="row">
                 <div class="col-md-6 col-sm-12 mt-4">
-                    <input type="text" id="customSearchBox" name="search" class="form-control"
-                           placeholder="{% trans "Search" %}" value="{{ request.GET.search|default_if_none:'' }}">
+                    <input type="text" id="customSearchBox" name="search" class="form-control" placeholder="{% trans "Search" %}" value="{{ request.GET.search|default_if_none:'' }}">
                 </div>
                 <div class="col-md-6 col-sm-12 mt-4">
                     <select id="statusFilter" name="status" class="form-select">
@@ -84,61 +75,10 @@
             </div>
         </form>
 
-        <div id="payoutList">
-            {% include 'payout_list.html' %}
-        </div>
-    </div>
-    <div class="modal fade" id="addPayoutModal" aria-labelledby="addPayoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addPayoutModalLabel">{% trans "Add Payout" %}</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div id="modalAlertContainer"></div>
-                    <form id="addPayoutForm">
-                        <div class="form-group">
-                            <label for="scode">{% trans "CID" %}</label>
-                            <select class="form-select" id="scode" name="scode" required>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4">4</option>
-                                <option value="5">5</option>
-                                <option value="6">6</option>
-                                <option value="7">7</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="orderid">{% trans "Order ID" %}</label>
-                            <input type="text" class="form-control" id="orderid" name="orderid" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="amount">{% trans "Amount" %}</label>
-                            <input type="text" class="form-control" id="money" name="money" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="accountno">{% trans "Account Number" %}</label>
-                            <input type="text" class="form-control" id="accountno" name="accountno" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="accountname">{% trans "Account Name" %}</label>
-                            <input type="text" class="form-control" id="accountname" name="accountname" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bankcode">{% trans "Bank" %}</label>
-                            <select class="form-select" id="bankcode" name="bankcode" required>
-                                {% for bank in bank_data %}
-                                    <option value="{{ bank.code }}"
-                                            data-bank-name="{{ bank.short_name }}">{{ bank.short_name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <button type="submit" class="btn rounded-pill btn-primary">{% trans "Add" %}</button>
-                    </form>
+        <div class="row mt-4">
+            <div class="mb-3 col-md-12 col-sm-12">
+                <div id="payoutList">
+                    {% include 'payout_list.html' %}
                 </div>
             </div>
         </div>
@@ -173,14 +113,14 @@
                                         </div>
                                     </div>
                                 </div>
-{#                                <div class="col-md-12 col-sm-12">#}
-{#                                    <label for="processBank">{% trans "Process Bank" %}</label>#}
-{#                                    <select class="form-select" id="processBank" name="processBank" required>#}
-{#                                        {% for bank in banks %}#}
-{#                                            <option value="{{ bank.id }}">{{ bank.name }}</option>#}
-{#                                        {% endfor %}#}
-{#                                    </select>#}
-{#                                </div>#}
+                               <div class="col-md-12 col-sm-12">
+                                    <label for="processBank">{% trans "Process Bank" %}</label>
+                                   <select class="form-select" id="processBank" name="processBank" required>
+                                       {% for bank in banks %}
+                                          <option value="{{ bank.id }}">{{ bank.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -308,7 +248,8 @@
                     type: 'GET',
                     data: formData,
                     success: function (response) {
-                        $('#payoutList').html(response);
+                        var payoutList = $(response).find('#payoutList').html();
+                        $('#payoutList').html(payoutList);
                         // Rebind the click event after updating the list
                         $('.main-row').on('click', function () {
                             var id = $(this).data('id');
@@ -329,6 +270,8 @@
                     }
                 });
             }
+
+            
         });
 
 
@@ -380,7 +323,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '{% url "add_payout" %}',  // Ensure this URL name matches your urls.py
+                url: '{% url "payout:add_payout_api" %}',  // Ensure this URL name matches your urls.py
                 data: JSON.stringify(formData),
                 contentType: 'application/json',
                 success: function (response) {
@@ -414,7 +357,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{% url 'delete_payout' %}",
+                        url: "{% url "payout:delete_payout_api" %}",
                         type: 'POST',
                         data: JSON.stringify({id: itemId}),
                         contentType: 'application/json',
@@ -462,7 +405,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{% url 'edit_payout'%}",
+                            url: "{% url "payout:edit_payout_api" %}",
                             type: 'POST',
                             data: JSON.stringify({id: itemId, bankCode: bankCode}),
                             contentType: 'application/json',
@@ -507,7 +450,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{% url 'move_payout' %}",
+                        url: "{% url "payout:move_payout_api" %}",
                         type: 'POST',
                         data: JSON.stringify({id: itemId}),
                         contentType: 'application/json',
@@ -564,7 +507,7 @@
             };
 
 
-            const data = await fetchData('{% url "update_transaction_history" %}');
+            const data = await fetchData('{% url "bank:transaction_history_api" %}');
             const dataIn = data.data.in
             var existed = false
             // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
@@ -589,7 +532,7 @@
             $('#modalQrImage').on('click', function () {
                 const csrftoken = getCookie('csrftoken');
                 $.ajax({
-                    url: "{% url 'check_success_payout' %}",
+                    url: "{% url "payout:check_success_payout_api" %}",
                     type: 'POST',
                     data: JSON.stringify({id: itemId}),
                     contentType: 'application/json',
@@ -653,7 +596,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{% url 'update_payout' 'done' %}",
+                            url: "{% url "payout:update_payout_api" 'done' %}",
                             type: 'POST',
                             data: JSON.stringify({id: itemId, bank_id: bankId}),
                             contentType: 'application/json',
@@ -698,7 +641,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{% url 'update_payout' 'report' %}",
+                            url: "{% url "payout:update_payout_api" 'report' %}",
                             type: 'POST',
                             data: JSON.stringify({id: itemId, reason: reason}),
                             contentType: 'application/json',
@@ -742,7 +685,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         $.ajax({
-                            url: "{% url 'update_payout' 'cancel' %}",
+                            url: "{% url "payout:update_payout_api" 'cancel' %}",
                             type: 'POST',
                             data: JSON.stringify({id: itemId}),
                             contentType: 'application/json',

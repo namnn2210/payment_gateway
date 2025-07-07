@@ -1,63 +1,13 @@
 {% extends "layout/layout.html" %}
 {% load humanize %}
 {% load i18n %}
+{% load static %}
 {% block title %}{% trans "Record Book" %}{% endblock %}
 {% block head %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'assets/css/record_book.css' %}">
 {% endblock %}
 {% block content %}
-    <style>
-        .table-wrapper {
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .table-wrapper h6 {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .totals-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .totals-container div {
-            margin-bottom: 10px;
-        }
-
-        .same-height {
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        .same-height > .col-md-6 {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .same-height .card-body {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .same-height .table-responsive {
-            flex-grow: 1;
-        }
-
-        .hidden-row td {
-            text-align: left;
-        }
-    </style>
     <div class="container-fluid">
         <h3 class="card-title" style="font-size: 13px;">{% trans "Record Book" %}</h3>
         <form method="get" id="search-form">
@@ -97,6 +47,7 @@
                 <div class="col-md-12 col-sm-12 text-right">
                     <input type="hidden" name="in_page" value="{{ in_page_obj.number }}">
                     <input type="hidden" name="out_page" value="{{ out_page_obj.number }}">
+                    <input type="hidden" name="page_size" id="page_size" value="10">
                     <button type="button" class="btn rounded-pill btn-secondary btn-export" id="export-excel">
                         <i class="fa fa-file-excel me-1"></i>{% trans "Export Excel" %}
                     </button>
@@ -107,213 +58,16 @@
         </form>
         <div class="row d-flex justify-content-between mt-4 same-height">
             <div class="col-md-6">
-                <div class="card-body table-wrapper" style="font-size: 12px">
-                    <div class="totals-container">
-                        <div>{% trans "Total IN Amount:" %} <span
-                                id="total-in-amount">{{ total_in_amount|floatformat:2|intcomma }}</span></div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-sm display">
-                            <thead>
-                            <tr class="text-center" style="font-size: 12px">
-                                <th></th>
-                                <th>{% trans "Account Number" %}</th>
-                                <th>{% trans "Amount" %}</th>
-                                <th>{% trans "Date" %}</th>
-                                <th>{% trans "Transfer Code" %}</th>
-                                <th>{% trans "Status" %}</th>
-                            </tr>
-                            </thead>
-                            <tbody id="inTransactionTableBody" class="text-center">
-                            {% if in_page_obj %}
-                                {% for item in in_page_obj %}
-                                    <tr class="main-row text-center" style="font-size: 12px;"
-                                        data-transaction-number="{{ item.transaction_number }}">
-                                        <td>
-                                    <span class="toggle-icon" id="icon-{{ item.transaction_number }}">
-                                        <i class="fa fa-plus-circle" style="color: green;"></i>
-                                    </span>
-                                        </td>
-                                        <td>{{ item.account_number }}</td>
-                                        <td class="text-success">{{ item.amount|floatformat:2|intcomma }}</td>
-                                        <td>{{ item.transaction_date|date:"d/m/Y H:i:s" }}</td>
-                                        <td>{{ item.transfer_code }}</td>
-                                        <td>{{ item.status }}</td>
-                                    </tr>
-                                    <tr class="hidden-row" id="details-{{ item.transaction_number }}"
-                                        style="display: none;">
-                                        <td colspan="6">
-                                            <div>
-                                                <strong>{% trans "Transaction Number" %}:</strong> {{ item.transaction_number }}<br>
-                                                <strong>{% trans "Memo" %}:</strong> {{ item.description }}<br>
-                                                <strong>{% trans "Order ID" %}:</strong> {{ item.orderid }}<br>
-                                                <strong>{% trans "CID" %}:</strong> {{ item.scode }}<br>
-                                                <strong>{% trans "Order No" %}:</strong> {{ item.orderid }}<br>
-                                                <strong>{% trans "Order code" %}:</strong> {{ item.incomingorderid }}<br>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Pagination for IN transactions -->
-                    {% if in_page_obj %}
-                        <div class="d-flex justify-content-center">
-                            <nav aria-label="In transactions page navigation">
-                                <ul class="pagination" id="in-pagination">
-                                    {% if in_page_obj.has_previous %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#"
-                                               data-page="{{ in_page_obj.previous_page_number }}" aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled">
-                                <span class="page-link" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </span>
-                                        </li>
-                                    {% endif %}
-                                    {% for num in in_page_obj.paginator.page_range %}
-                                        {% if num > in_page_obj.number|add:'-3' and num < in_page_obj.number|add:'3' %}
-                                            {% if in_page_obj.number == num %}
-                                                <li class="page-item active"><span class="page-link">{{ num }}</span>
-                                                </li>
-                                            {% else %}
-                                                <li class="page-item"><a class="page-link" href="#"
-                                                                         data-page="{{ num }}">{{ num }}</a></li>
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if in_page_obj.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#" data-page="{{ in_page_obj.next_page_number }}"
-                                               aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled">
-                                <span class="page-link" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </span>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
-                        </div>
-                    {% endif %}
-                </div>
+                {% include 'bank/_transaction_table.html' with table_type="IN" page_obj=in_page_obj total_amount=total_in_amount %}
             </div>
 
             <div class="col-md-6">
-                <div class="card-body table-wrapper" style="font-size: 12px">
-                    <div class="totals-container">
-                        <div>{% trans "Total OUT Amount:" %} <span
-                                id="total-out-amount">{{ total_out_amount|floatformat:2|intcomma }}</span></div>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-sm display">
-                            <thead>
-                            <tr class="text-center" style="font-size: 12px">
-                                <th></th>
-                                <th>{% trans "Account Number" %}</th>
-                                <th>{% trans "Amount" %}</th>
-                                <th>{% trans "Date" %}</th>
-                                <th>{% trans "Status" %}</th>
-                            </tr>
-                            </thead>
-                            <tbody id="outTransactionTableBody" class="text-center">
-                            {% if in_page_obj %}
-                                {% for item in out_page_obj %}
-                                    <tr class="main-row text-center" style="font-size: 12px;"
-                                        data-transaction-number="{{ item.transaction_number }}">
-                                        <td>
-                                    <span class="toggle-icon" id="icon-{{ item.transaction_number }}">
-                                        <i class="fa fa-plus-circle" style="color: green;"></i>
-                                    </span>
-                                        </td>
-                                        <td>{{ item.account_number }}</td>
-                                        <td class="text-danger">{{ item.amount|floatformat:2|intcomma }}</td>
-                                        <td>{{ item.transaction_date|date:"d/m/Y H:i:s" }}</td>
-                                        <td>{{ item.status }}</td>
-                                    </tr>
-                                    <tr class="hidden-row" id="details-{{ item.transaction_number }}"
-                                        style="display: none;">
-                                        <td colspan="6">
-                                            <div>
-                                                <strong>{% trans "Transaction Number" %}:</strong> {{ item.transaction_number }}<br>
-                                                <strong>{% trans "Memo" %}:</strong> {{ item.description }}<br>
-                                                <strong>{% trans "Order ID" %}:</strong> {{ item.orderid }}<br>
-                                                <strong>{% trans "CID" %}:</strong> {{ item.scode }}<br>
-                                                <strong>{% trans "Order code" %}:</strong> {{ item.incomingorderid }}<br>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Pagination for OUT transactions -->
-                    {% if in_page_obj %}
-                        <div class="d-flex justify-content-center">
-                            <nav aria-label="Out transactions page navigation">
-                                <ul class="pagination" id="out-pagination">
-                                    {% if out_page_obj.has_previous %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#"
-                                               data-page="{{ out_page_obj.previous_page_number }}"
-                                               aria-label="Previous">
-                                                <span aria-hidden="true">&laquo;</span>
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled">
-                                <span class="page-link" aria-label="Previous">
-                                    <span aria-hidden="true">&laquo;</span>
-                                </span>
-                                        </li>
-                                    {% endif %}
-                                    {% for num in out_page_obj.paginator.page_range %}
-                                        {% if num > out_page_obj.number|add:'-3' and num < out_page_obj.number|add:'3' %}
-                                            {% if out_page_obj.number == num %}
-                                                <li class="page-item active"><span class="page-link">{{ num }}</span>
-                                                </li>
-                                            {% else %}
-                                                <li class="page-item"><a class="page-link" href="#"
-                                                                         data-page="{{ num }}">{{ num }}</a></li>
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endfor %}
-                                    {% if out_page_obj.has_next %}
-                                        <li class="page-item">
-                                            <a class="page-link" href="#"
-                                               data-page="{{ out_page_obj.next_page_number }}" aria-label="Next">
-                                                <span aria-hidden="true">&raquo;</span>
-                                            </a>
-                                        </li>
-                                    {% else %}
-                                        <li class="page-item disabled">
-                                <span class="page-link" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span>
-                                </span>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </nav>
-                        </div>
-                    {% endif %}
-                </div>
+                {% include 'bank/_transaction_table.html' with table_type="OUT" page_obj=out_page_obj total_amount=total_out_amount %}
             </div>
         </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block script %}
     <script>
         $(document).ready(function () {
             function formatDateTime(input) {
@@ -336,7 +90,7 @@
                 var accountNumber = button.data('account-number');
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "toggle_transaction_status" %}',  // Ensure this URL name matches your urls.py
+                    url: '{% url "bank:toggle_transaction_status_api" %}',  // Ensure this URL name matches your urls.py
                     data: JSON.stringify({transactionNumber: transactionNumber, accountNumber:accountNumber}),
                     contentType: 'application/json',
                     success: function (response) {
@@ -384,9 +138,9 @@
                 }));
             }
 
-            function fetchData(url, callback) {
+            function fetchData(params, callback) {
                 $.ajax({
-                    url: url,
+                    url: '{% url "bank:record_book_data_api" %}' + '?' + params,
                     method: 'GET',
                     dataType: 'json',
                     success: function (data) {
@@ -427,166 +181,165 @@
                                     <strong>{% trans "Order ID" %}:</strong> ${item.orderid || 'N/A'}<br>
                                     <strong>{% trans "CID" %}:</strong> ${item.scode || 'N/A'}<br>
                                     <strong>{% trans "Order Code" %}:</strong> ${item.incomingorderid || 'N/A'}
-                                </div>
-                            </td>
-                        </tr>`;
+                        </div>
+                    </td>
+                </tr>`;
             
-                    tableBody.append(mainRow);
-                    tableBody.append(detailsRow);
-                });
-            
-                // Re-bind click events to new rows
-                bindRowClickEvents();
+            tableBody.append(mainRow);
+            tableBody.append(detailsRow);
+        });
+    
+        // Re-bind click events to new rows
+        bindRowClickEvents();
+    }
+
+
+    function handlePaginationClick(event, paginationId) {
+        event.preventDefault();
+        const page = $(this).data('page');
+        if (page) {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+
+            // Preserve the current search parameters
+            params.set('in_page', paginationId === 'in-pagination' ? page : params.get('in_page') || 1);
+            params.set('out_page', paginationId === 'out-pagination' ? page : params.get('out_page') || 1);
+
+            url.search = params.toString();
+            fetchData(params.toString(), function (data) {
+                updateTableData('inTransactionTableBody', data.in_transactions);
+                updateTableData('outTransactionTableBody', data.out_transactions);
+                updatePagination('in-pagination', data.in_page, data.in_num_pages);
+                updatePagination('out-pagination', data.out_page, data.out_num_pages);
+            });
+
+            history.pushState({}, '', url.toString());
+        }
+    }
+
+    function updatePagination(paginationId, currentPage, numPages) {
+        const pagination = $('#' + paginationId);
+        pagination.empty();
+        if (currentPage > 1) {
+            pagination.append(`
+        <li class="page-item">
+            <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+    `);
+        } else {
+            pagination.append(`
+        <li class="page-item disabled">
+            <span class="page-link" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </span>
+        </li>
+    `);
+        }
+        for (let i = Math.max(1, currentPage - 3); i <= Math.min(numPages, currentPage + 3); i++) {
+            pagination.append(`
+        <li class="page-item ${i === currentPage ? 'active' : ''}">
+            <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+    `);
+        }
+        if (currentPage < numPages) {
+            pagination.append(`
+        <li class="page-item">
+            <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    `);
+        } else {
+            pagination.append(`
+        <li class="page-item disabled">
+            <span class="page-link" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </span>
+        </li>
+    `);
+        }
+        pagination.find('a.page-link').on('click', function (event) {
+            handlePaginationClick.call(this, event, paginationId);
+        });
+    }
+
+    $('#export-excel').on('click', function (event) {
+        event.preventDefault();
+
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams($('#search-form').serialize());
+
+        // Add additional data you want to pass
+        $.ajax({
+            url: '{% url "bank:export_to_excel" %}',
+            type: 'GET',
+            data: params.toString(),
+            xhrFields: {
+                responseType: 'blob' // Important for binary data
+            },
+            success: function (blob, status, xhr) {
+                // Create a link element to download the file
+                const link = document.createElement('a');
+                const url = window.URL.createObjectURL(blob);
+                link.href = url;
+
+                // Extract file name from the content disposition header (if available)
+                const disposition = xhr.getResponseHeader('Content-Disposition');
+                let fileName = 'record_book.xlsx';
+                if (disposition && disposition.indexOf('attachment') !== -1) {
+                    const fileNameMatch = disposition.match(/filename="?(.+)"?/);
+                    if (fileNameMatch.length === 2) fileName = fileNameMatch[1];
+                }
+
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+
+                // Clean up and remove the link
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(link);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error exporting data:', error);
             }
+        });
+    });
 
+    $('#search-form').on('submit', function (event) {
+        event.preventDefault();
+        const url = new URL(window.location.href);
+        const params = new URLSearchParams($(this).serialize());
 
-            function handlePaginationClick(event, paginationId) {
-                event.preventDefault();
-                const page = $(this).data('page');
-                if (page) {
-                    const url = new URL(window.location.href);
-                    const params = new URLSearchParams(url.search);
+        // Preserve pagination parameters
+        const inPage = params.get('in_page') || 1;
+        const outPage = params.get('out_page') || 1;
+        params.set('in_page', inPage);
+        params.set('out_page', outPage);
 
-                    // Preserve the current search parameters
-                    params.set('in_page', paginationId === 'in-pagination' ? page : params.get('in_page') || 1);
-                    params.set('out_page', paginationId === 'out-pagination' ? page : params.get('out_page') || 1);
-
-                    url.search = params.toString();
-                    fetchData(url.toString(), function (data) {
-                        updateTableData('inTransactionTableBody', data.in_transactions);
-                        updateTableData('outTransactionTableBody', data.out_transactions);
-                        updatePagination('in-pagination', data.in_page, data.in_num_pages);
-                        updatePagination('out-pagination', data.out_page, data.out_num_pages);
-                    });
-
-                    history.pushState({}, '', url.toString());
-                }
-            }
-
-            function updatePagination(paginationId, currentPage, numPages) {
-                const pagination = $('#' + paginationId);
-                pagination.empty();
-                if (currentPage > 1) {
-                    pagination.append(`
-                <li class="page-item">
-                    <a class="page-link" href="#" data-page="${currentPage - 1}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </a>
-                </li>
-            `);
-                } else {
-                    pagination.append(`
-                <li class="page-item disabled">
-                    <span class="page-link" aria-label="Previous">
-                        <span aria-hidden="true">&laquo;</span>
-                    </span>
-                </li>
-            `);
-                }
-                for (let i = Math.max(1, currentPage - 2); i <= Math.min(numPages, currentPage + 2); i++) {
-                    pagination.append(`
-                <li class="page-item ${i === currentPage ? 'active' : ''}">
-                    <a class="page-link" href="#" data-page="${i}">${i}</a>
-                </li>
-            `);
-                }
-                if (currentPage < numPages) {
-                    pagination.append(`
-                <li class="page-item">
-                    <a class="page-link" href="#" data-page="${currentPage + 1}" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </a>
-                </li>
-            `);
-                } else {
-                    pagination.append(`
-                <li class="page-item disabled">
-                    <span class="page-link" aria-label="Next">
-                        <span aria-hidden="true">&raquo;</span>
-                    </span>
-                </li>
-            `);
-                }
-                pagination.find('a.page-link').on('click', function (event) {
-                    handlePaginationClick.call(this, event, paginationId);
-                });
-            }
-
-            $('#export-excel').on('click', function (event) {
-                event.preventDefault();
-
-                const url = new URL(window.location.href);
-                const params = new URLSearchParams($('#search-form').serialize());
-
-                // Add additional data you want to pass
-                $.ajax({
-                    url: '/en/bank/export_to_excel',  // You need to define this export-excel endpoint
-                    type: 'GET',
-                    data: params.toString(),
-                    xhrFields: {
-                        responseType: 'blob' // Important for binary data
-                    },
-                    success: function (blob, status, xhr) {
-                        // Create a link element to download the file
-                        const link = document.createElement('a');
-                        const url = window.URL.createObjectURL(blob);
-                        link.href = url;
-
-                        // Extract file name from the content disposition header (if available)
-                        const disposition = xhr.getResponseHeader('Content-Disposition');
-                        let fileName = 'record_book.xlsx';
-                        if (disposition && disposition.indexOf('attachment') !== -1) {
-                            const fileNameMatch = disposition.match(/filename="?(.+)"?/);
-                            if (fileNameMatch.length === 2) fileName = fileNameMatch[1];
-                        }
-
-                        link.download = fileName;
-                        document.body.appendChild(link);
-                        link.click();
-
-                        // Clean up and remove the link
-                        window.URL.revokeObjectURL(url);
-                        document.body.removeChild(link);
-                    },
-                    error: function (xhr, status, error) {
-                        console.error('Error exporting data:', error);
-                    }
-                });
-            });
-
-            $('#search-form').on('submit', function (event) {
-                event.preventDefault();
-                const url = new URL(window.location.href);
-                const params = new URLSearchParams($(this).serialize());
-
-                // Preserve pagination parameters
-                const inPage = params.get('in_page') || 1;
-                const outPage = params.get('out_page') || 1;
-                params.set('in_page', inPage);
-                params.set('out_page', outPage);
-
-                fetchData(`${url.pathname}?${params.toString()}`, function (data) {
-                    updateTableData('inTransactionTableBody', data.in_transactions);
-                    updateTableData('outTransactionTableBody', data.out_transactions);
-                    updatePagination('in-pagination', data.in_page, data.in_num_pages);
-                    updatePagination('out-pagination', data.out_page, data.out_num_pages);
-                });
-
-                history.pushState({}, '', `${url.pathname}?${params.toString()}`);
-            });
-
-            // Bind the initial row click events
-            bindRowClickEvents();
-
-            // Initial pagination binding
-            $('#in-pagination').find('a.page-link').on('click', function (event) {
-                handlePaginationClick.call(this, event, 'in-pagination');
-            });
-            $('#out-pagination').find('a.page-link').on('click', function (event) {
-                handlePaginationClick.call(this, event, 'out-pagination');
-            });
+        fetchData(params.toString(), function (data) {
+            updateTableData('inTransactionTableBody', data.in_transactions);
+            updateTableData('outTransactionTableBody', data.out_transactions);
+            updatePagination('in-pagination', data.in_page, data.in_num_pages);
+            updatePagination('out-pagination', data.out_page, data.out_num_pages);
         });
 
+        history.pushState({}, '', `${url.pathname}?${params.toString()}`);
+    });
 
+    // Initial data fetch and pagination binding on page load
+    const initialParams = new URLSearchParams(window.location.search);
+    fetchData(initialParams.toString(), function (data) {
+        updateTableData('inTransactionTableBody', data.in_transactions);
+        updateTableData('outTransactionTableBody', data.out_transactions);
+        updatePagination('in-pagination', data.in_page, data.in_num_pages);
+        updatePagination('out-pagination', data.out_page, data.out_num_pages);
+    });
+
+    // Bind the initial row click events
+    bindRowClickEvents();
+});
     </script>
 {% endblock %}

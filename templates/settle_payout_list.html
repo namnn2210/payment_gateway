@@ -1,32 +1,30 @@
 {% load i18n %}
 {% load humanize %}
-<div class="row mt-4">
-    <div class="card mb-3 col-md-12 col-sm-12">
-        <div class="card-body text-center">
-            <div class="row">
-                <div class="col-md-6 col-sm-12">
-                    <strong>{% trans "Total Results" %}:</strong> <strong id="total-results">{{total_results}}</strong>
-                </div>
-                <div class="col-md-6 col-sm-12">
-                    <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|floatformat:2|intcomma}}</strong>
-                </div>
-            </div>
+<div class="card-body text-center">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <strong>{% trans "Total Results" %}:</strong> <strong id="total-results">{{total_results}}</strong>
         </div>
-        <div class="card-body" style="font-size: 12px">
-            <h5 class="card-title">{% trans "List Settle Payout" %}</h5>
-            <div class="table-responsive">
-                <table class="table table-sm display" id="payoutTable">
-                    <thead>
-                        <tr class="text-center" style="font-size: 12px">
-                            <th></th>
-                            <th scope="col">{% trans "Order ID" %}</th>
-                            <th scope="col">{% trans "CID" %}</th>
-                            <th scope="col">{% trans "User" %}</th>
-                            <th scope="col">{% trans "Status" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in list_payout %}
+        <div class="col-md-6 col-sm-12">
+            <strong>{% trans "Total Amount" %}:</strong> <strong id="grand-total">{{total_amount|floatformat:2|intcomma}}</strong>
+        </div>
+    </div>
+</div>
+<div class="card-body" style="font-size: 12px">
+    <h5 class="card-title">{% trans "List Settle Payout" %}</h5>
+    <div class="table-responsive">
+        <table class="table table-sm display" id="payoutTable">
+            <thead>
+                <tr class="text-center" style="font-size: 12px">
+                    <th></th>
+                    <th scope="col">{% trans "Order ID" %}</th>
+                    <th scope="col">{% trans "CID" %}</th>
+                    <th scope="col">{% trans "User" %}</th>
+                    <th scope="col">{% trans "Status" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in list_payout %}
                             <tr class="main-row text-center" style="font-size: 12px;" data-id="{{ item.id }}">
                                 <td>
                                     <span class="toggle-icon" id="icon-{{ item.id }}">

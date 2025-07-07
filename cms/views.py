@@ -1,152 +1,137 @@
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login as auth_login
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
-from bank.models import BankAccount, Bank
-from employee.models import EmployeeDeposit
+from django.shortcuts import redirect
+from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView, PasswordChangeView, LogoutView
+from django.views.generic import TemplateView, FormView
+from django.urls import reverse_lazy
+from django.utils import timezone
 from django.core.paginator import Paginator
-from employee.models import EmployeeWorkingSession
-from cms.models import User2Fa
-from io import BytesIO
+from .models import User2Fa
+from .forms import OTPForm
+from bank.models import Bank, BankAccount
+from employee.models import EmployeeDeposit, EmployeeWorkingSession
 import pyotp
 import qrcode
 import base64
-from django.utils import timezone
+from io import BytesIO
 
-TWO_FA_EXPIRATION_TIME = 21600
+class IndexView(LoginRequiredMixin, TemplateView):
+    template_name = 'index.html'
+    login_url = 'cms:user_login'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
 
-# Create your views here.
-@login_required(login_url='user_login')
-def index(request):
-    list_bank_option = Bank.objects.filter(status=True)
-    number_failed = 0
-    if request.user.is_superuser:
-        list_user_bank = BankAccount.objects.all()
+        list_bank_option = Bank.objects.filter(status=True)
+        list_user_bank = BankAccount.objects.filter(user=user) if not user.is_superuser else BankAccount.objects.all()
         user_online = EmployeeWorkingSession.objects.filter(status=False)
-    else:
-        list_user_bank = BankAccount.objects.filter(user=request.user)
-        user_online = EmployeeWorkingSession.objects.filter(status=False)
-    if request.user.is_superuser:
-        list_deposit_requests = EmployeeDeposit.objects.filter(status=False)
-        paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
-        page_number = request.GET.get('page')
-        list_deposit_requests = paginator.get_page(page_number)
-    else:
+
         list_deposit_requests = None
+        if user.is_superuser:
+            deposits = EmployeeDeposit.objects.filter(status=False)
+            paginator = Paginator(deposits, 10)
+            page_number = self.request.GET.get('page')
+            list_deposit_requests = paginator.get_page(page_number)
 
-    session = EmployeeWorkingSession.objects.filter(status=False, user=request.user).first()
-    if session:
-        is_session = True
-    else:
-        is_session = False
+        session = EmployeeWorkingSession.objects.filter(status=False, user=user).first()
 
-    return render(request=request, template_name='index.html',
-                  context={'list_user_bank': list_user_bank, 'list_deposit_requests': list_deposit_requests,
-                           'list_bank_option': list_bank_option, 'is_session': is_session,
-                           'number_failed': number_failed, 'user_online': user_online})
+        context.update({
+            'list_bank_option': list_bank_option,
+            'list_user_bank': list_user_bank,
+            'user_online': user_online,
+            'list_deposit_requests': list_deposit_requests,
+            'is_session': bool(session),
+            'number_failed': 0, # This seems to be static
+        })
+        return context
 
+class UserLoginView(LoginView):
+    template_name = 'login.html'
 
-def user_login(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            auth_login(request, user)
-            user_2fa = User2Fa.objects.filter(user=user).first()
-            if user_2fa and user_2fa.is_2fa_enabled:
-                return redirect('verify_otp')
-            return redirect('setup_2fa')
-        else:
-            return render(request=request, template_name='login.html',
-                          context={'error': 'Invalid username or password. Contact admin for support'})
-    return render(request=request, template_name='login.html')
+    def form_valid(self, form):
+        user = form.get_user()
+        auth_login(self.request, user)
+        user_2fa, created = User2Fa.objects.get_or_create(user=user)
+        if user_2fa.is_2fa_enabled:
+            return redirect('cms:verify_otp')
+        return redirect('cms:setup_2fa')
 
+class UserLogoutView(LogoutView):
+    next_page = reverse_lazy('cms:index')
 
-def profile(request):
-    if request.method == 'POST':
-        current_password = request.POST.get('password')
-        new_password = request.POST.get('newpassword')
-        new_password2 = request.POST.get('renewpassword')
-        if not current_password or not new_password or not new_password2:
-            return render(request=request, template_name='profile.html', context={'error': 'Please fill all fields'})
-        if new_password != new_password2:
-            return render(request=request, template_name='profile.html', context={'error': 'Passwords do not match'})
-        if not request.user.check_password(current_password):
-            return render(request=request, template_name='profile.html',
-                          context={'error': 'Current password is incorrect'})
-        request.user.set_password(new_password)
-        request.user.save()
-        return render(request=request, template_name='profile.html',
-                      context={'success': 'Password changed successfully'})
+class ProfileView(LoginRequiredMixin, PasswordChangeView):
+    template_name = 'profile.html'
+    success_url = reverse_lazy('cms:profile')
+    login_url = 'cms:user_login'
 
-    return render(request=request, template_name='profile.html', context={'error': None})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # You can add a success message to the context here if you want
+        if 'password_change_done' in self.request.GET:
+            context['success'] = 'Password changed successfully'
+        return context
 
+class Setup2FAView(LoginRequiredMixin, FormView):
+    template_name = 'setup_2fa.html'
+    form_class = OTPForm
+    success_url = reverse_lazy('cms:index')
+    login_url = 'cms:user_login'
 
-@login_required(login_url='user_login')
-def setup_2fa(request):
-    user_2fa, created = User2Fa.objects.get_or_create(user=request.user)
-    if not user_2fa.otp_secret:
-        user_2fa.otp_secret = pyotp.random_base32()
-        user_2fa.save()
-
-    totp = pyotp.TOTP(user_2fa.otp_secret)
-    totp_uri = totp.provisioning_uri(name=request.user.username, issuer_name="TQA556")
-
-    qr = qrcode.make(totp_uri)
-    buffer = BytesIO()
-    qr.save(buffer, format="PNG")
-    qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
-    if request.method == 'POST':
-        otp_code = request.POST.get('otp_code')
-        print(otp_code)
-        if totp.verify(otp_code):
-            user_2fa.is_2fa_enabled = True
-            user_2fa.last_verified = timezone.now()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_2fa, created = User2Fa.objects.get_or_create(user=self.request.user)
+        if not user_2fa.otp_secret:
+            user_2fa.otp_secret = pyotp.random_base32()
             user_2fa.save()
-            request.session['is_2fa_verified'] = True
-            request.session['2fa_verified_at'] = timezone.now().timestamp()
-            return redirect('index')
-        else:
-            return render(request, 'setup_2fa.html',
-                          {"error": "Invalid OTP", "qr_code": qr_code_base64, "totp_secret": user_2fa.otp_secret})
-    return render(request, 'setup_2fa.html', {"qr_code": qr_code_base64, "totp_secret": user_2fa.otp_secret})
 
+        totp = pyotp.TOTP(user_2fa.otp_secret)
+        totp_uri = totp.provisioning_uri(name=self.request.user.username, issuer_name="TQA556")
 
-@login_required(login_url='user_login')
-def verify_otp(request):
-    if request.method == 'POST':
-        otp_code = request.POST.get('otp_code')
-        user_2fa = User2Fa.objects.filter(user=request.user).first()
-        if user_2fa:
-            totp = pyotp.TOTP(user_2fa.otp_secret)
-            if totp.verify(otp_code):
-                request.session['is_2fa_verified'] = True
-                request.session['2fa_verified_at'] = timezone.now().timestamp()
-                user_2fa.last_verified = timezone.now()
-                user_2fa.save()
-                return redirect('index')
-            else:
-                return render(request, 'verify_otp.html', {"error": "Invalid OTP"})
-    return render(request, 'verify_otp.html')
+        qr = qrcode.make(totp_uri)
+        buffer = BytesIO()
+        qr.save(buffer, format="PNG")
+        qr_code_base64 = base64.b64encode(buffer.getvalue()).decode('utf-8')
 
+        context.update({
+            "qr_code": qr_code_base64,
+            "totp_secret": user_2fa.otp_secret
+        })
+        return context
 
-@login_required(login_url='user_login')
-def submit_otp(request):
-    if request.method == "POST":
-        otp_code = request.POST.get("otpCode")
-        user_2fa = User2Fa.objects.filter(user=request.user).first()
+    def form_valid(self, form):
+        otp_code = form.cleaned_data['otp_code']
+        user_2fa = User2Fa.objects.get(user=self.request.user)
         totp = pyotp.TOTP(user_2fa.otp_secret)
 
         if totp.verify(otp_code):
             user_2fa.is_2fa_enabled = True
+            user_2fa.last_verified = timezone.now()
             user_2fa.save()
-            return redirect('index')
+            self.request.session['is_2fa_verified'] = True
+            self.request.session['2fa_verified_at'] = timezone.now().timestamp()
+            return super().form_valid(form)
         else:
-            return render(request, '2fa.html', {"error": "Invalid OTP"})
+            form.add_error('otp_code', 'Invalid OTP')
+            return self.form_invalid(form)
 
+class VerifyOTPView(LoginRequiredMixin, FormView):
+    template_name = 'verify_otp.html'
+    form_class = OTPForm
+    success_url = reverse_lazy('cms:index')
+    login_url = 'cms:user_login'
 
-def user_logout(request):
-    logout(request)
-    return redirect('index')
+    def form_valid(self, form):
+        otp_code = form.cleaned_data['otp_code']
+        user_2fa = User2Fa.objects.get(user=self.request.user)
+        totp = pyotp.TOTP(user_2fa.otp_secret)
+
+        if totp.verify(otp_code):
+            self.request.session['is_2fa_verified'] = True
+            self.request.session['2fa_verified_at'] = timezone.now().timestamp()
+            user_2fa.last_verified = timezone.now()
+            user_2fa.save()
+            return super().form_valid(form)
+        else:
+            form.add_error('otp_code', 'Invalid OTP')
+            return self.form_invalid(form)

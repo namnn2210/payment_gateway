@@ -34,7 +34,7 @@
         <div class="row d-flex">
             <div class="col-md-6 col-sm-12 same-height">
                 <div class="card info-card revenue-card">
-                    <div class="card-body justify-content-center">
+                    <div class="card-body py-4">
                         <div class="d-flex align-items-center">
                             <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
                                 <i class="bi bi-bullseye"></i>
@@ -52,43 +52,24 @@
             </div>
             {% if not user.is_superuser %}
                 <div class="col-md-6 col-sm-12 same-height mt-4">
-                    <div class="card info-card revenue-card">
-                        <div class="card-body">
-                            <div>
-                                <button type="button" class="btn btn-primary rounded-pill create-deposit-btn"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
-                                {% if is_session %}
-                                    <button type="button"
-                                            class="btn btn-danger rounded-pill start-session-btn">{% trans "End Session" %}</button>
-                                {% else %}
-                                    <button type="button"
-                                            class="btn btn-success rounded-pill start-session-btn">{% trans "Start Session" %}</button>
-                                {% endif %}
-                            </div>
-                            <div class="user-list">
-                                <ul class="list-group">
-                                    {% for item in user_online %}
-                                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span class="status-dot online"></span>
-                                            {{ item.user.username }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                        </div>
+                    <div class="card info-card revenue-card user-session-card">
+                        
                     </div>
                 </div>
             {% else %}
-                <div class="col-md-6 col-sm-12 same-height mt-4">
-                    <div class="card info-card revenue-card">
+                <div class="col-md-6 col-sm-12 same-height mt-4 mt-md-0">
+                    <div class="card info-card revenue-card user-session-card">
                         <div class="card-body">
                             <div class="user-list">
-                                <ul class="list-group">
+                                <h5 class="card-title">{% trans "Online Users" %}</h5>
+                                <ul class="list-group list-group-flush">
                                     {% for item in user_online %}
                                         <li class="list-group-item d-flex justify-content-between align-items-center">
-                                            <span class="status-dot online"></span>
-                                            {{ item.user.username }} - {{ item.start_balance|intcomma }}
+                                            <div>
+                                                <span class="status-dot online me-2"></span>
+                                                {{ item.user.username }}
+                                            </div>
+                                            <span class="badge bg-secondary rounded-pill">{{ item.start_balance|intcomma }}</span>
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -362,7 +343,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body row">
-                    <form id="depositForm" method="post" action="{% url 'employee_deposit' %}">
+                    <form id="depositForm" method="post" action="{% url 'employee:employee_deposit' %}">
                         {% csrf_token %}
                         <div class="col-md-12 col-sm-12">
                             <label for="deposit">{% trans 'Amount' %}</label>
@@ -470,9 +451,9 @@
             };
 
             const fetchBalance = async () => {
-                const data = await fetchData('{% url "update_balance" %}');
+                const data = await fetchData('{% url "bank:update_balance_api" %}');
                 if (data) {
-                    updateBalanceCells(data.data.balance);
+                    updateBalanceCells(data.balance);
                 }
             };
 
@@ -506,21 +487,21 @@
             };
 
             const fetchLatestTransactions = async () => {
-                const data = await fetchData('{% url "update_transaction_history" %}');
+                const data = await fetchData('{% url "bank:transaction_history_api" %}');
                 if (data) {
-                    if (Object.keys(data.data.in).length !== 0) {
-                        updateTransactionTable(data.data.in, 'table.table-in tbody');
+                    if (Object.keys(data.in).length !== 0) {
+                        updateTransactionTable(data.in, 'table.table-in tbody');
                     }
-                    if (Object.keys(data.data.out).length !== 0) {
-                        updateTransactionTable(data.data.out, 'table.table-out tbody');
+                    if (Object.keys(data.out).length !== 0) {
+                        updateTransactionTable(data.out, 'table.table-out tbody');
                     }
                 }
             };
 
 
             const fetchAmountToday = async () => {
-                const data = await fetchData('{% url "get_amount_today" %}');
-                if (data) updateAmountToday(data.data);
+                const data = await fetchData('{% url "bank:get_amount_today_api" %}');
+                if (data) updateAmountToday(data);
             };
 
             $(document).on('click', '.create-done-btn-modal', function () {
@@ -619,12 +600,12 @@
 
         $(document).on('click', '.done-btn-modal', function () {
             const itemId = $(this).data('item-id');
-            handleAction("{% url 'update_deposit' %}", itemId, 'The request has been marked as done.', 'An error occurred while marking the request as done.');
+            handleAction("{% url "employee:update_deposit_api" %}", itemId, 'The request has been marked as done.', 'An error occurred while marking the request as done.');
         });
 
         $(document).on('click', '.delete-btn', function () {
             const itemId = $(this).data('item-id');
-            handleAction("{% url 'delete_deposit' %}", itemId, 'The request has been deleted.', 'An error occurred while deleting the request.');
+            handleAction("{% url "employee:delete_deposit_api" %}", itemId, 'The request has been deleted.', 'An error occurred while deleting the request.');
         });
 
         document.addEventListener('DOMContentLoaded', bindRowClickEvents);
@@ -663,7 +644,7 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "add_bank" %}',  // Ensure this URL name matches your urls.py
+                    url: '{% url "bank:add_bank_api" %}',  // Ensure this URL name matches your urls.py
                     data: JSON.stringify(formData),
                     contentType: 'application/json',
                     success: function (response) {
@@ -687,7 +668,7 @@
                 var newStatus = button.data('status') === 'ON' ? 'OFF' : 'ON';
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "toggle_bank_status" %}',  // Ensure this URL name matches your urls.py
+                    url: '{% url "bank:toggle_bank_status_api" %}',  // Ensure this URL name matches your urls.py
                     data: JSON.stringify({id: accountId, status: newStatus}),
                     contentType: 'application/json',
                     success: function (response) {
@@ -714,7 +695,7 @@
             if (button.hasClass('btn-success')) {
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "employee_session" "start" %}',  // Ensure this URL name matches your urls.py
+                    url: '{% url "employee:employee_session_api" "start" %}',  // Ensure this URL name matches your urls.py
                     contentType: 'application/json',
                     success: function (response) {
                         if (response.status === 200) {
@@ -731,7 +712,7 @@
             } else {
                 $.ajax({
                     type: 'POST',
-                    url: '{% url "employee_session" "end" %}',  // Ensure this URL name matches your urls.py
+                    url: '{% url "employee:employee_session_api" "end" %}',  // Ensure this URL name matches your urls.py
                     contentType: 'application/json',
                     success: function (response) {
                         console.log(response)

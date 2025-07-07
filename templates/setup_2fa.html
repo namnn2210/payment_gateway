@@ -47,7 +47,7 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
                         <div class="d-flex justify-content-center py-4">
-                            <a href="{% url 'index' %}" class="logo d-flex align-items-center w-auto">
+                            <a href="{% url 'cms:index' %}" class="logo d-flex align-items-center w-auto">
                                 <img src="{% static 'assets/img/nb-logo-01.png' %}" alt="">
                                 <span class="d-none d-lg-block">TQA556</span>
                             </a>
@@ -61,7 +61,7 @@
                                 {% if error %}
                                 <span class="text-center small text-danger">{{ error }}</span>
                                 {% endif %}
-                                <form class="row g-3 needs-validation" action="{% url 'setup_2fa' %}" method="POST">
+                                <form class="row g-3 needs-validation" action="{% url 'cms:setup_2fa' %}" method="POST">
                                     {% csrf_token %}
                                     <div class="col-12">
                                         <p>Scan the QR code below to set up 2FA:</p>

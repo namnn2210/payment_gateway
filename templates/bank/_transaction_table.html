@@ -1,0 +1,66 @@
+{% load humanize %}
+{% load i18n %}
+
+<div class="card-body table-wrapper" style="font-size: 12px">
+    <div class="totals-container">
+        <div>{% trans "Total " %}{{ table_type }}{% trans " Amount:" %} <span
+                id="total-{{ table_type|lower }}-amount">{{ total_amount|floatformat:2|intcomma }}</span></div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm display">
+            <thead>
+            <tr class="text-center" style="font-size: 12px">
+                <th></th>
+                <th>{% trans "Account Number" %}</th>
+                <th>{% trans "Amount" %}</th>
+                <th>{% trans "Date" %}</th>
+                {% if table_type == "IN" %}
+                <th>{% trans "Transfer Code" %}</th>
+                {% endif %}
+                <th>{% trans "Status" %}</th>
+            </tr>
+            </thead>
+            <tbody id="{{ table_type|lower }}TransactionTableBody" class="text-center">
+            {% if page_obj %}
+                {% for item in page_obj %}
+                    <tr class="main-row text-center" style="font-size: 12px;"
+                        data-transaction-number="{{ item.transaction_number }}">
+                        <td>
+                            <span class="toggle-icon" id="icon-{{ item.transaction_number }}">
+                                <i class="fa fa-plus-circle" style="color: green;"></i>
+                            </span>
+                        </td>
+                        <td>{{ item.account_number }}</td>
+                        <td class="{% if table_type == "IN" %}text-success{% else %}text-danger{% endif %}">{{ item.amount|floatformat:2|intcomma }}</td>
+                        <td>{{ item.transaction_date|date:"d/m/Y H:i:s" }}</td>
+                        {% if table_type == "IN" %}
+                        <td>{{ item.transfer_code }}</td>
+                        {% endif %}
+                        <td>{{ item.status }}</td>
+                    </tr>
+                    <tr class="hidden-row" id="details-{{ item.transaction_number }}"
+                        style="display: none;">
+                        <td colspan="6">
+                            <div>
+                                <strong>{% trans "Transaction Number" %}:</strong> {{ item.transaction_number }}<br>
+                                <strong>{% trans "Memo" %}:</strong> {{ item.description }}<br>
+                                <strong>{% trans "Order ID" %}:</strong> {{ item.orderid }}<br>
+                                <strong>{% trans "CID" %}:</strong> {{ item.scode }}<br>
+                                <strong>{% trans "Order No" %}:</strong> {{ item.orderid }}<br>
+                                <strong>{% trans "Order code" %}:</strong> {{ item.incomingorderid }}<br>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="d-flex justify-content-center">
+        <nav aria-label="{{ table_type }} transactions page navigation">
+            <ul class="pagination" id="{{ table_type|lower }}-pagination">
+                <!-- Pagination links will be rendered by JavaScript -->
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -27,7 +27,7 @@
             <button class="btn btn-primary rounded-pill btn-add" data-toggle="modal" data-target="#addPayoutModal"><i class="bi bi-plus me-1"></i>{% trans "Add Settle Payout" %}</button>
         </div>
     </div>
-    <form id="searchForm" method="get" action="{% url 'list_settle_payout' %}">
+    <form id="searchForm" method="get" action="{% url 'settle_payout:list_settle_payout' %}">
         <div class="row">
             <div class="col-md-6 col-sm-12 mt-4">
                 <input type="text" id="customSearchBox" name="search" class="form-control" placeholder="{% trans "Search" %}" value="{{ request.GET.search|default_if_none:'' }}">
@@ -59,8 +59,12 @@
         </div>
     </form>
     
-    <div id="payoutList">
-        {% include 'settle_payout_list.html' %}
+    <div class="row mt-4">
+        <div class="card mb-3 col-md-12 col-sm-12">
+            <div id="payoutList">
+                <!-- Content will be loaded here by JavaScript -->
+            </div>
+        </div>
     </div>
 </div>
 <div class="modal fade" id="addPayoutModal"  aria-labelledby="addPayoutModalLabel" aria-hidden="true">
@@ -253,15 +257,15 @@
 
         $('#searchForm').on('submit', function(event) {
             event.preventDefault();
-            fetchPayouts();
+            fetchSettlePayouts();
         });
 
         $(document).on('click', '.pagination a', function(event) {
             event.preventDefault();
-            fetchPayouts($(this).attr('href'));
+            fetchSettlePayouts($(this).attr('href'));
         });
 
-        function fetchPayouts(url) {
+        function fetchSettlePayouts(url) {
             url = url || $('#searchForm').attr('action');
             var formData = $('#searchForm').serialize();
             $.ajax({
@@ -286,10 +290,13 @@
                     });
                 },
                 error: function() {
-                    toastr.error('An error occurred while fetching the payouts.');
+                    toastr.error('An error occurred while fetching the settle payouts.');
                 }
             });
         }
+
+        // Call fetchSettlePayouts on initial page load
+        fetchSettlePayouts();
     });
 
     function formatDateToYYYYMMDD(date) {
@@ -340,7 +347,7 @@
 
         $.ajax({
             type: 'POST',
-            url: '{% url "add_settle_payout" %}',  // Ensure this URL name matches your urls.py
+            url: '{% url "settle_payout:add_settle_payout_api" %}',  // Ensure this URL name matches your urls.py
             data: JSON.stringify(formData),
             contentType: 'application/json',
             success: function (response) {
@@ -374,7 +381,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: "{% url 'delete_settle_payout' %}",
+                    url: "{% url "settle_payout:delete_settle_payout_api" %}",
                     type: 'POST',
                     data: JSON.stringify({ id: itemId }),
                     contentType: 'application/json',
@@ -422,7 +429,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{% url 'edit_settle_payout'%}",
+                        url: "{% url "settle_payout:edit_settle_payout_api"%}",
                         type: 'POST',
                         data: JSON.stringify({ id: itemId, bankCode: bankCode }),
                         contentType: 'application/json',
@@ -487,7 +494,7 @@
         $('#modalQrImage').on('click', function () {
             const csrftoken = getCookie('csrftoken');
             $.ajax({
-                url: "{% url 'check_success_settle' %}",
+                url: "{% url "settle_payout:check_success_settle_api" %}",
                 type: 'POST',
                 data: JSON.stringify({id: itemId}),
                 contentType: 'application/json',
@@ -550,7 +557,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{% url 'update_settle_payout' 'done' %}",
+                        url: "{% url "settle_payout:update_settle_payout_api" 'done' %}",
                         type: 'POST',
                         data: JSON.stringify({ id: itemId, bank_id: bankId }),
                         contentType: 'application/json',
@@ -594,7 +601,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{% url 'update_settle_payout' 'report' %}",
+                        url: "{% url "settle_payout:update_settle_payout_api" 'report' %}",
                         type: 'POST',
                         data: JSON.stringify({ id: itemId }),
                         contentType: 'application/json',
@@ -639,7 +646,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: "{% url 'update_settle_payout' 'cancel' %}",
+                        url: "{% url "settle_payout:update_settle_payout_api" 'cancel' %}",
                         type: 'POST',
                         data: JSON.stringify({ id: itemId }),
                         contentType: 'application/json',
@@ -683,7 +690,7 @@
         };
 
         const fetchLastTransaction = async () => {
-            const data = await fetchData('{% url "update_transaction_history" %}');
+            const data = await fetchData('{% url "bank:transaction_history_api" %}');
             if (data) {
                 if (Object.keys(data.data.out).length !== 0) {
                     var spanTransaction = document.querySelector('.lastTransaction');

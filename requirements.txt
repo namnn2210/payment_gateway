@@ -1,15 +1,10 @@
-amqp==5.2.0
 annotated-types==0.7.0
 asgiref==3.8.1
 attrs==23.2.0
 autobahn==23.6.2
 Automat==22.10.0
-billiard==4.2.0
-celery==5.4.0
 certifi==2024.6.2
 cffi==1.16.0
-channels==4.1.0
-channels-redis==4.2.0
 charset-normalizer==3.3.2
 click==8.1.7
 click-didyoumean==0.3.1
@@ -32,7 +27,6 @@ et-xmlfile==1.1.0
 hyperlink==21.0.0
 idna==3.7
 incremental==22.10.0
-kombu==5.3.7
 msgpack==1.0.8
 msgpack-python==0.5.6
 mysqlclient==2.2.4
@@ -58,7 +52,6 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.1
 qrcode==7.4.2
-redis==5.0.7
 requests==2.32.3
 requests-oauthlib==2.0.0
 segno==1.6.1
@@ -71,7 +64,6 @@ txaio==23.1.1
 typing_extensions==4.12.2
 tzdata==2024.1
 urllib3==2.2.1
-vine==5.1.0
 wcwidth==0.2.13
 wheel==0.43.0
 zope.interface==6.4.post2

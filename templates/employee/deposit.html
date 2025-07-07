@@ -224,12 +224,12 @@
 
     $(document).on('click', '.done-btn-modal', function () {
         const itemId = $(this).data('item-id');
-        handleAction("{% url 'update_deposit' %}", itemId, 'The request has been marked as done.', 'An error occurred while marking the request as done.');
+        handleAction("{% url 'employee:update_deposit_api' %}", itemId, 'The request has been marked as done.', 'An error occurred while marking the request as done.');
     });
 
     $(document).on('click', '.delete-btn', function () {
         const itemId = $(this).data('item-id');
-        handleAction("{% url 'delete_deposit' %}", itemId, 'The request has been deleted.', 'An error occurred while deleting the request.');
+        handleAction("{% url 'employee:delete_deposit_api' %}", itemId, 'The request has been deleted.', 'An error occurred while deleting the request.');
     });
 
     document.addEventListener('DOMContentLoaded', bindRowClickEvents);

@@ -1,10 +1,16 @@
 from django.urls import path
-from .views import employee_deposit, update_deposit,delete_deposit, employee_session
+from .views import (
+    EmployeeDepositView,
+    UpdateDepositAPIView,
+    DeleteDepositAPIView,
+    EmployeeSessionAPIView,
+)
+
+app_name = 'employee'
 
 urlpatterns = [
-    path('employee_deposit', employee_deposit, name='employee_deposit'),
-    path('update_deposit',update_deposit, name='update_deposit'),
-    path('delete_deposit',delete_deposit, name='delete_deposit'),
-    path('employee_session/<str:session_type>', employee_session, name='employee_session'),
-    # path('list_employee_session',list_employee_session,name='list_employee_session')
+    path('deposit/', EmployeeDepositView.as_view(), name='employee_deposit'),
+    path('api/deposit/update/', UpdateDepositAPIView.as_view(), name='update_deposit_api'),
+    path('api/deposit/delete/', DeleteDepositAPIView.as_view(), name='delete_deposit_api'),
+    path('api/session/<str:session_type>/', EmployeeSessionAPIView.as_view(), name='employee_session_api'),
 ]

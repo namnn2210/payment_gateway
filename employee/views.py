@@ -1,103 +1,91 @@
-from django.shortcuts import render, redirect
+from django.views.generic import ListView
+from django.views.generic.edit import FormMixin
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .models import EmployeeDeposit, EmployeeWorkingSession
+from .forms import DepositForm
 from bank.models import BankAccount
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator
-from employee.models import EmployeeWorkingSession, EmployeeDeposit
 from django.utils import timezone
 
-import pytz
-import random
-import json
+class EmployeeDepositView(LoginRequiredMixin, FormMixin, ListView):
+    model = EmployeeDeposit
+    template_name = 'employee/deposit.html'
+    context_object_name = 'list_deposit_requests'
+    form_class = DepositForm
+    success_url = reverse_lazy('employee:employee_deposit')
+    login_url = 'cms:user_login'
+    paginate_by = 10
 
-tz = pytz.timezone('Asia/Singapore')
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return EmployeeDeposit.objects.all().order_by('-created_at')
+        return EmployeeDeposit.objects.filter(user=self.request.user).order_by('-created_at')
 
-# Create your views here.
-def employee_deposit(request):
-    if request.method == 'POST':
-        deposit_amount = int(request.POST.get('deposit', 0))
-        bank_id = int(request.POST.get('bank'))
-        bank = BankAccount.objects.filter(id=bank_id).first()
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
+    def form_valid(self, form):
+        bank = form.cleaned_data['bank']
         EmployeeDeposit.objects.create(
-            user = request.user,
-            amount = deposit_amount,
-            bankname = bank.bank_name,
-            accountno = bank.account_number,
-            accountname = bank.account_name,
-            bankcode = bank.bank_name.bankcode
+            user=self.request.user,
+            amount=form.cleaned_data['deposit'],
+            bankname=bank.bank_name,
+            accountno=bank.account_number,
+            accountname=bank.account_name,
+            bankcode=bank.bank_name.bankcode
         )
-        return redirect('index')
-    if request.user.is_superuser:
-        list_deposit_requests = EmployeeDeposit.objects.all()
-    else:
-        list_deposit_requests = EmployeeDeposit.objects.filter(user=request.user)
-    list_deposit_requests = list_deposit_requests.order_by('-created_at')
-        
-    paginator = Paginator(list_deposit_requests, 10)  # Show 10 items per page
-    page_number = request.GET.get('page')
-    list_deposit_requests = paginator.get_page(page_number)
-        
-    return render(request=request, template_name='employee/deposit.html', context={'list_deposit_requests':list_deposit_requests})
+        return super().form_valid(form)
 
-@csrf_exempt
-@require_POST
-def update_deposit(request):
-    try:
-        data = json.loads(request.body)
-        deposit_id = data.get('id')
-        deposit = EmployeeDeposit.objects.filter(id=deposit_id).first()
-        deposit.status = True
-        deposit.save()
-        
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
-    except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
-    
-    
-@csrf_exempt
-@require_POST
-def delete_deposit(request):
-    try:
-        data = json.loads(request.body)
-        deposit_id = data.get('id')
-        deposit = EmployeeDeposit.objects.filter(id=deposit_id).first()
-        
-        deposit.delete()
-        
-        return JsonResponse({'status': 200, 'message': 'Done','success': True})
-    except Exception as ex:
-        return JsonResponse({'status': 500, 'message': str(ex),'success': False})
+class UpdateDepositAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            deposit = EmployeeDeposit.objects.get(id=request.data.get('id'))
+            deposit.status = True
+            deposit.save()
+            return Response({'message': 'Done', 'success': True}, status=status.HTTP_200_OK)
+        except EmployeeDeposit.DoesNotExist:
+            return Response({'message': 'Deposit not found', 'success': False}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'message': str(e), 'success': False}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class DeleteDepositAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        try:
+            deposit = EmployeeDeposit.objects.get(id=request.data.get('id'))
+            deposit.delete()
+            return Response({'message': 'Done', 'success': True}, status=status.HTTP_200_OK)
+        except EmployeeDeposit.DoesNotExist:
+            return Response({'message': 'Deposit not found', 'success': False}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'message': str(e), 'success': False}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-@csrf_exempt
-@require_POST
-def employee_session(request, session_type):
-    # try:
-    print(session_type)
-    undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
-    bank_accounts = BankAccount.objects.filter(user=request.user)
-    if session_type == 'start':
-        if undone_session:
-            return JsonResponse({'status': 502, 'message': 'Đang trong phiên làm việc. Không thể bắt đầu','success': False})
-            
-        EmployeeWorkingSession.objects.create(
-            user=request.user,
-            start_time=timezone.now(),  
-        )
-    elif session_type == 'end':
-        print('end', undone_session)
-        if undone_session:
-            
-        
-            undone_session.end_time = timezone.now()
-            undone_session.end_balance = end_balance
-            undone_session.status = True
-            undone_session.save()
-    else:
-        return JsonResponse({'status': 504, 'message': 'Trạng thái không hợp lệ','success': False})
-    return JsonResponse({'status': 200, 'message': 'Done','success': True})
+class EmployeeSessionAPIView(APIView):
+    def post(self, request, session_type, *args, **kwargs):
+        undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
 
+        if session_type == 'start':
+            if undone_session:
+                return Response({'message': 'Đang trong phiên làm việc. Không thể bắt đầu', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+            EmployeeWorkingSession.objects.create(user=request.user, start_time=timezone.now())
+            return Response({'message': 'Done', 'success': True}, status=status.HTTP_200_OK)
 
+        elif session_type == 'end':
+            if undone_session:
+                # The original code had a reference to an undefined `end_balance`
+                # I'm setting it to 0 as a placeholder. You might need to adjust this.
+                undone_session.end_balance = 0 
+                undone_session.end_time = timezone.now()
+                undone_session.status = True
+                undone_session.save()
+                return Response({'message': 'Done', 'success': True}, status=status.HTTP_200_OK)
+            return Response({'message': 'Không có phiên làm việc nào để kết thúc', 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response({'message': 'Trạng thái không hợp lệ', 'success': False}, status=status.HTTP_400_BAD_REQUEST)

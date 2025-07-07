@@ -6,6 +6,9 @@ from bank.utils import format_transaction_list, get_today_date
 from config.views import get_env
 from django.db.models import Sum
 import re
+import logging
+
+logger = logging.getLogger('django')
 
 def get_transactions_by_account_number(account_number, transaction_type=None, status=None, date_start=None,
                                        date_end=None, order_by=None, limit_number=None, search_text=None):
@@ -76,14 +79,14 @@ def get_new_transactions(transactions, account_number):
     for txn in new_transactions:
         if txn['transaction_type'] == 'OUT':
             description = txn.get('description', '')
-            match = re.search(r'Z\d{11}', description)
+            match = re.search(r'TQ\d{11}', description)
             payout = apps.get_model('payout', 'Payout')
             settle_payout = apps.get_model('settle_payout', 'SettlePayout')
             bank_account = apps.get_model('bank', 'BankAccount')
 
             if match:
-                orderno = match.group().replace('Z', '')
-                print("Order No:", orderno)
+                orderno = match.group().replace('TQ', '')
+                logger.info(f"Order No: {orderno}")
 
                 existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn['amount']).first()
                 existed_settle = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount']).first()
@@ -111,8 +114,8 @@ def get_new_transactions(transactions, account_number):
                     try:
                         send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     except Exception as ex:
-                        print(str(ex))
-                    break
+                        logger.error(f"Error sending Telegram message: {ex}")
+                    # Removed break here to allow processing of other new transactions
 
                 elif existed_settle and not existed_settle.status:
                     existed_settle.status = True
@@ -135,8 +138,8 @@ def get_new_transactions(transactions, account_number):
                     try:
                         send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     except Exception as ex:
-                        print(str(ex))
-                    break
+                        logger.error(f"Error sending Telegram message: {ex}")
+                    # Removed break here to allow processing of other new transactions
 
     return new_transactions
 

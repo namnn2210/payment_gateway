@@ -1,15 +1,26 @@
 from django.urls import path
-from .views import list_payout, AddPayoutView, update_payout, webhook, delete_payout, move_payout, edit_payout, \
-    check_success_payout, tele_webhook
+from .views import (
+    PayoutListView,
+    AddPayoutAPIView,
+    UpdatePayoutAPIView,
+    DeletePayoutAPIView,
+    EditPayoutAPIView,
+    MovePayoutAPIView,
+    CheckSuccessPayoutAPIView,
+    PayoutWebhookAPIView,
+    TelegramWebhookAPIView,
+)
+
+app_name = 'payout'
 
 urlpatterns = [
-    path('list', list_payout, name='list_payout'),
-    path('add', AddPayoutView.as_view(), name='add_payout'),
-    path('update_payout/<str:update_type>', update_payout, name='update_payout'),
-    path('delete_payout', delete_payout, name='delete_payout'),
-    path('move_payout', move_payout, name='move_payout'),
-    path('edit_payout', edit_payout, name='edit_payout'),
-    path('check_success_payout', check_success_payout, name='check_success_payout'),
-    path('webhook', webhook, name='payout_webhook'),
-    path('tele_webhook', tele_webhook, name='tele_webhook'),
+    path('list/', PayoutListView.as_view(), name='list_payout'),
+    path('api/add/', AddPayoutAPIView.as_view(), name='add_payout_api'),
+    path('api/update/<str:update_type>/', UpdatePayoutAPIView.as_view(), name='update_payout_api'),
+    path('api/delete/', DeletePayoutAPIView.as_view(), name='delete_payout_api'),
+    path('api/edit/', EditPayoutAPIView.as_view(), name='edit_payout_api'),
+    path('api/move/', MovePayoutAPIView.as_view(), name='move_payout_api'),
+    path('api/check_success/', CheckSuccessPayoutAPIView.as_view(), name='check_success_payout_api'),
+    path('webhook/', PayoutWebhookAPIView.as_view(), name='payout_webhook'),
+    path('tele_webhook/', TelegramWebhookAPIView.as_view(), name='tele_webhook'),
 ]
