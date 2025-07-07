@@ -271,6 +271,8 @@ class PayoutWebhookAPIView(APIView):
         payeebankbranch = data.get('data', {}).get('payeebankbranch', '')
         body_sign = data.get('sign')
 
+        system_bankcode = ''
+
         cid = CID.objects.filter(name=scode).first()
         if not cid:
             return Response({'message': 'Invalid scode'}, status=status.HTTP_400_BAD_REQUEST)
