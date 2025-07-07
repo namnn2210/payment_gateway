@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import Q, Sum, Case, When, Value, IntegerField
 from django.utils import timezone
 from rest_framework.views import APIView
-from rest_framework.response import Response
+from rest_framework.response import Response,HttpResponse
 from rest_framework import status
 from .models import Payout
 from settle_payout.models import SettlePayout
@@ -291,8 +291,8 @@ class PayoutWebhookAPIView(APIView):
             return Response({'message': 'Invalid amount'}, status=status.HTTP_400_BAD_REQUEST)
 
         if Payout.objects.filter(orderid=orderid).exists() or SettlePayout.objects.filter(orderid=orderid).exists():
-            return Response("Payout existed", status=status.HTTP_409_CONFLICT)
-
+            return HttpResponse("existed", content_type="text/plain")
+            
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
         current_working_user = [session.user for session in current_sessions] if current_sessions else [User.objects.filter(username='admin-tqa').first()]
 
@@ -403,7 +403,7 @@ class PayoutWebhookAPIView(APIView):
                                   get_env('MONITORING_BOT_2_API_KEY'))
             send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
 
-        return Response("success", status=status.HTTP_200_OK)
+        return HttpResponse("success", content_type="text/plain")
 
 class TelegramWebhookAPIView(APIView):
     authentication_classes = []
