@@ -508,7 +508,7 @@
 
 
             const data = await fetchData('{% url "bank:transaction_history_api" %}');
-            const dataIn = data.data.in
+            const dataIn = data.in
             var existed = false
             // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
             dataIn.map(transaction => {
