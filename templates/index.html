@@ -49,7 +49,18 @@
             {% if not user.is_superuser %}
                 <div class="col-md-6 col-sm-12 same-height">
                     <div class="card info-card revenue-card user-session-card">
-                        
+                        <div>
+                            <button type="button" class="btn btn-primary rounded-pill create-deposit-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#createDepositModal">{% trans "Create Deposit Request" %}</button>
+                            {% if is_session %}
+                                <button type="button"
+                                        class="btn btn-danger rounded-pill start-session-btn">{% trans "End Session" %}</button>
+                            {% else %}
+                                <button type="button"
+                                        class="btn btn-success rounded-pill start-session-btn">{% trans "Start Session" %}</button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             {% else %}

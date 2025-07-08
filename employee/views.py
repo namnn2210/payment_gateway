@@ -79,9 +79,6 @@ class EmployeeSessionAPIView(APIView):
 
         elif session_type == 'end':
             if undone_session:
-                # The original code had a reference to an undefined `end_balance`
-                # I'm setting it to 0 as a placeholder. You might need to adjust this.
-                undone_session.end_balance = 0 
                 undone_session.end_time = timezone.now()
                 undone_session.status = True
                 undone_session.save()
