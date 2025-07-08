@@ -10,6 +10,10 @@ from .models import EmployeeDeposit, EmployeeWorkingSession
 from .forms import DepositForm
 from bank.models import BankAccount
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework.permissions import AllowAny
+
 
 class EmployeeDepositView(LoginRequiredMixin, FormMixin, ListView):
     model = EmployeeDeposit
@@ -67,7 +71,12 @@ class DeleteDepositAPIView(APIView):
         except Exception as e:
             return Response({'message': str(e), 'success': False}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@method_decorator(csrf_exempt, name='dispatch')
 class EmployeeSessionAPIView(APIView):
+
+    permission_classes = [AllowAny]
+
     def post(self, request, session_type, *args, **kwargs):
         undone_session = EmployeeWorkingSession.objects.filter(user=request.user, status=False).first()
 

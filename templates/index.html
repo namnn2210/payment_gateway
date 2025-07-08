@@ -49,7 +49,7 @@
             {% if not user.is_superuser %}
                 <div class="col-md-6 col-sm-12 same-height">
                     <div class="card info-card revenue-card user-session-card">
-                        <div class="d-flex justify-content-center">
+                        <div class="d-flex justify-content-center" style="margin-top: 40px;">
                             {% if is_session %}
                                 <button type="button"
                                         class="btn btn-danger rounded-pill start-session-btn">{% trans "End Session" %}</button>
@@ -435,7 +435,6 @@
                     }
                 });
 
-                {#totalBalance += totalAll / 2#}
 
                 const balanceTotalElem = document.querySelector('.balance-total');
                 if (balanceTotalElem) {
@@ -693,7 +692,15 @@
             });
         });
     </script>
+    
     <script>
+        $.ajaxSetup({
+                headers: {
+                    'X-CSRFToken': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+
         $(document).on('click', '.start-session-btn', function () {
             const button = $(this);
             if (button.hasClass('btn-success')) {
@@ -702,7 +709,7 @@
                     url: '{% url "employee:employee_session_api" "start" %}',  // Ensure this URL name matches your urls.py
                     contentType: 'application/json',
                     success: function (response) {
-                        if (response.status === 200) {
+                        if (response.success) {
                             button.removeClass('btn-success').addClass('btn-danger');
                             button.text('{% trans "End Session" %}');
                         } else {
@@ -720,7 +727,7 @@
                     contentType: 'application/json',
                     success: function (response) {
                         console.log(response)
-                        if (response.status === 200) {
+                        if (response.success) {
                             button.removeClass('btn-danger').addClass('btn-success');
                             button.text('{% trans "Start Session" %}');
 
