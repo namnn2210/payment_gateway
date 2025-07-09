@@ -80,7 +80,7 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
         banks = Bank.objects.filter(status=True)
 
         context['bank_data'] = bank_data
-        context['banks'] = Bank.objects.filter(status=True)
+        context['banks'] = banks
 
         return context
 
