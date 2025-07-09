@@ -73,6 +73,17 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
         ).order_by('status_priority', 'created_at')
 
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        bank_data = json.load(open('bank.json', encoding='utf-8'))
+        banks = Bank.objects.filter(status=True)
+
+        context['bank_data'] = bank_data
+        context['banks'] = Bank.objects.filter(status=True)
+
+        return context
+
 
     def render_to_response(self, context, **response_kwargs):
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':
