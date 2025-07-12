@@ -5,6 +5,7 @@ from bank.models import Bank
 from django.contrib.auth.models import User
 from payout.models import Payout
 from partner.views import update_status_request
+from config.views import get_env
 import pytz
 import os
 
@@ -45,8 +46,7 @@ def update_payout_background(update_body):
                         f'Date: {payout.updated_at}'
                     )
                     try:
-                        send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                          os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+                        send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
                     except Exception as ex:
                         print(str(ex))
                     return True
@@ -75,8 +75,7 @@ def update_payout_background(update_body):
                     f'Date: {payout.updated_at}'
                 )
                 try:
-                    send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                      os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+                    send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
                 except Exception as ex:
                     print(str(ex))
                 return True
@@ -135,8 +134,7 @@ def update_payout_background(update_body):
                 f'Date: {payout.updated_at}'
             )
             try:
-                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'),
-                                    os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
             except Exception as ex:
                 print(str(ex))
             return True
@@ -162,7 +160,7 @@ def update_payout_background(update_body):
                 f'Date: {payout.updated_at}'
             )
             try:
-                send_telegram_message(alert, os.environ.get('PAYOUT_CHAT_ID'), os.environ.get('TRANSACTION_BOT_2_API_KEY'))
+                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
             except Exception as ex:
                 print(str(ex))
         return False
