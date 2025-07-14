@@ -74,7 +74,7 @@ def mb_balance(username, password, account_number):
     }
     response = requests.post(get_env("MBB_URL_BALANCE"), json=body, timeout=120)
     print('mb balance response:', response.text)
-    if '"success":true' in response.text:
+    if '"ok":true' in response.text:
         data = response.json()
         acc_list = data['acct_list']
         for account in acc_list:
