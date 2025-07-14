@@ -18,7 +18,6 @@ def mb_login(username, password, account_number):
     }
     print('start login: ', datetime.now())
     response = requests.post(f'{get_env("MBB_URL")}/login', json=body, timeout=120)
-    print(response.text)
     if '"success":true' in response.text:
         print('end login: ', datetime.now())
         return True
@@ -73,7 +72,6 @@ def mb_balance(username, password, account_number):
         "password": password
     }
     response = requests.post(get_env("MBB_URL_BALANCE"), json=body, timeout=120)
-    print('mb balance response:', response.text)
     if '"ok":true' in response.text:
         data = response.json()
         acc_list = data['acct_list']
