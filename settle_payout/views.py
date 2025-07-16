@@ -20,7 +20,7 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
     template_name = 'settle_payout.html'
     context_object_name = 'list_payout'
     login_url = 'cms:user_login'
-    paginate_by = 10
+    paginate_by = 50
 
     def get_queryset(self):
         queryset = super().get_queryset()
