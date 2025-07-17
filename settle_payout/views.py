@@ -81,6 +81,8 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
 
         context['bank_data'] = bank_data
         context['banks'] = banks
+        context['total_results'] = self.get_queryset().count()
+        context['total_amount'] = self.get_queryset().aggregate(Sum('money'))['money__sum'] or 0
 
         return context
 
