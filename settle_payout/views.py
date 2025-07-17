@@ -15,12 +15,23 @@ import json
 from datetime import datetime
 import pytz
 
+from django.views.generic import ListView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.utils import timezone
+from django.db.models import Q, Sum, Case, When, Value, IntegerField
+from django.shortcuts import render
+import json
+from datetime import datetime
+
+from .models import SettlePayout, Bank
+
+
 class SettlePayoutListView(LoginRequiredMixin, ListView):
     model = SettlePayout
     template_name = 'settle_payout.html'
     context_object_name = 'list_payout'
     login_url = 'cms:user_login'
-    paginate_by = 50
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -72,20 +83,27 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
             )
         ).order_by('status_priority', 'created_at')
 
+        # Cache lại để dùng ở get_context_data
+        self.filtered_queryset = queryset
+        print("Filtered queryset count:", self.filtered_queryset.count())
+        
         return queryset
-    
-    def get_context_data(self, **kwargs):
-        context =  super().get_context_data(**kwargs)
-        bank_data = json.load(open('bank.json', encoding='utf-8'))
-        banks = Bank.objects.filter(status=True)
 
-        context['bank_data'] = bank_data
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        banks = Bank.objects.filter(status=True)
+        bank_data = json.load(open('bank.json', encoding='utf-8'))
+
+        filtered_queryset = getattr(self, 'filtered_queryset', self.get_queryset())
+
         context['banks'] = banks
-        context['total_results'] = self.get_queryset().count()
-        context['total_amount'] = self.get_queryset().aggregate(Sum('money'))['money__sum'] or 0
+        context['bank_data'] = bank_data
+        context['total_results'] = filtered_queryset.count()
+        context['total_amount'] = filtered_queryset.aggregate(Sum('money'))['money__sum'] or 0
+
+        print(type(context['list_payout']))
 
         return context
-
 
     def render_to_response(self, context, **response_kwargs):
         if self.request.headers.get('x-requested-with') == 'XMLHttpRequest':

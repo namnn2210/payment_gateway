@@ -35,7 +35,7 @@ class PayoutListView(LoginRequiredMixin, ListView):
     template_name = 'payout.html'
     context_object_name = 'list_payout'
     login_url = 'user_login'
-    paginate_by = 50
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
