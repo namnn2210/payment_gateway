@@ -3,7 +3,7 @@
 
 <div class="card-body table-wrapper" style="font-size: 12px">
     <div class="totals-container">
-        <strong>{% trans "Total " %}{{ table_type }}{% trans " Amount:" %} <span id="total-{{ table_type|lower }}-amount">{{ total_amount|floatformat:2|intcomma }}</span></strong>
+        <div>{% trans "Total " %}{{ table_type }}{% trans " Amount:" %} <span id="total-{{ table_type|lower }}-amount">{{ total_amount|floatformat:2|intcomma }}</span></div>
     </div>
     <div class="table-responsive">
         <table class="table table-sm display">
