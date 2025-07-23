@@ -45,6 +45,10 @@
             "bankname": "Asia Commercial Bank"
         },
         {
+            "code": "BVB",
+            "bankname": "Viet Capital Commercial Joint Stock Bank"
+        },
+        {
             "code": "ACB",
             "bankname": "ASIA COMMERCIAL BANK"
         },
