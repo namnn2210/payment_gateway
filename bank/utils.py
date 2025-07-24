@@ -11,7 +11,7 @@ class Transaction:
                  transfer_code, amount, payername) -> None:
         self.transaction_number = str(transaction_number)
         if created_at:
-            self.transaction_date = datetime.strptime(created_at, '%d/%m/%Y %H:%M:%S')
+            self.created_at = datetime.strptime(created_at, '%d/%m/%Y %H:%M:%S')
         self.transaction_type = transaction_type
         self.account_number = str(account_number)
         self.description = description
