@@ -199,7 +199,7 @@ def process_transactions(transactions, bank):
                         f'\n'
                         f'Code: {find_substring(row['description'])}\n'
                         f'\n'
-                        f'Time: {row['transaction_date']}\n'
+                        f'Time: {row['created_at']}\n'
                         f'\n'
                         f'Reason of not be credited: No transfer code!!!'
                     )
@@ -228,7 +228,7 @@ def process_transactions(transactions, bank):
                                         f'\n'
                                         f'Account: {row['account_number']}'
                                         f'\n'
-                                        f'Payer Name: {result['payername']}\n'
+                                        # f'Payer Name: {result['payername']}\n'
                                         f'\n'
                                         f'Bank Payer Name: {row['payername']}\n'
                                         f'\n'
@@ -242,7 +242,7 @@ def process_transactions(transactions, bank):
                                         f'\n'
                                         f'Code: {find_substring(row['description'])}\n'
                                         f'\n'
-                                        f'Time: {row['transaction_date']}\n'
+                                        f'Time: {row['created_at']}\n'
                                     )
                                     success = True
                                     send_telegram_message(alert, "-1002674641230",
@@ -269,7 +269,7 @@ def process_transactions(transactions, bank):
                             f'\n'
                             f'Code: {find_substring(row['description'])}\n'
                             f'\n'
-                            f'Time: {row['transaction_date']}\n'
+                            f'Time: {row['created_at']}\n'
                             f'\n'
                             f'Reason of not be credited: Order not found!!!'
                         )
@@ -299,7 +299,7 @@ def process_transactions(transactions, bank):
                 f'\n'
                 f'🏦 {bank.account_number} - {bank.account_name}\n'
                 f'\n'
-                f'🕒 {row['transaction_date']}'
+                f'🕒 {row['created_at']}'
             )
 
             bank_accounts = BankAccount.objects.filter(status=True)
