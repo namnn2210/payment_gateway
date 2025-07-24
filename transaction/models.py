@@ -14,6 +14,7 @@ class TransactionHistory(models.Model):
     transaction_type = models.CharField(max_length=255,null=False)
     transaction_number = models.CharField(max_length=255, null=False, default='')
     transfer_code = models.CharField(max_length=255, null=True)
+    payername = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(null=False)
     updated_at = models.DateTimeField(auto_now=False)
 
