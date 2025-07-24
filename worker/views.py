@@ -228,7 +228,7 @@ def process_transactions(transactions, bank):
                                         f'\n'
                                         f'Account: {row['account_number']}'
                                         f'\n'
-                                        # f'Payer Name: {result['payername']}\n'
+                                        f'Payer Name: {result['payername']}\n'
                                         f'\n'
                                         f'Bank Payer Name: {row['payername']}\n'
                                         f'\n'
