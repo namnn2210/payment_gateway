@@ -220,7 +220,7 @@
                             <td class="${tableId === 'inTransactionTableBody' ? 'text-success' : 'text-danger'}">
                                 ${item.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                             </td>
-                            <td>${formatDateTime(item.transaction_date)}</td>
+                            <td>${formatDateTime(item.created_at)}</td>
                             ${tableId === 'inTransactionTableBody' ? `<td>${item.transfer_code}</td>` : ''}
                             <td>${item.status}</td>
                         </tr>`;

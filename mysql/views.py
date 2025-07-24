@@ -20,6 +20,8 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
     elif isinstance(account_number, list):
         query_filters &= Q(account_number__in=account_number)
 
+    print(date_start, date_end)
+
     # Filter by transaction date range
     if date_start is not None and date_end is not None:
         query_filters &= Q(created_at__range=[date_start, date_end])
@@ -51,9 +53,8 @@ def get_transactions_by_account_number(account_number, transaction_type=None, st
     # Query the database
     transactions = TransactionHistory.objects.filter(query_filters)
 
-    # Apply ordering
-    if order_by:
-        transactions = transactions.order_by(order_by)
+    transactions = transactions.order_by("-created_at")
+    
 
     # Apply limit
     if limit_number is not None and limit_number > 0:

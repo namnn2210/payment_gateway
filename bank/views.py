@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Bank, BankAccount
-from mongodb.views import (
+from mysql.views import (
     update_transaction_status,
     get_transactions_by_account_number,
     get_total_amount,
@@ -198,7 +198,7 @@ class RecordBookDataAPIView(APIView):
         else:
             start_date, end_date = get_today_date()
 
-        order_by = ("transaction_date", -1)
+        order_by = None
         
         # Fetch all transactions first
         list_transactions_in = get_transactions_by_account_number(None, transaction_type='IN', status=status_filter, date_start=start_date, date_end=end_date, order_by=order_by, search_text=search_query)

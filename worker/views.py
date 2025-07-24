@@ -13,7 +13,7 @@ from payout.models import Payout
 from datetime import datetime, timedelta
 from django.utils import timezone
 from config.views import get_env
-from mongodb.views import get_transactions_by_account_number, insert_all, get_new_transactions, \
+from mysql.views import get_transactions_by_account_number, insert_all, get_new_transactions, \
     get_unprocessed_transactions
 from django.db.models import Q
 import pytz
@@ -146,7 +146,7 @@ def get_transaction(bank):
         # Get new transactions
         different_transactions = get_new_transactions(new_transactions, bank.account_number)
 
-        # Insert to MongoDB
+        # Insert to MySQL
         transaction_dicts = [txn for txn in different_transactions]
         if len(transaction_dicts) > 0:
             insert_all(transaction_list=transaction_dicts)

@@ -471,7 +471,7 @@
                     <td>${transaction.account_number}</td>
                     <td>${transaction.transaction_number}</td>
                     <td class="${transaction.transaction_type === 'IN' ? 'text-success' : 'text-danger'}">${transaction.amount.toLocaleString()}</td>
-                    <td>${formatDateWithTime(transaction.transaction_date)}</td>
+                    <td>${formatDateWithTime(transaction.created_at)}</td>
                     <td>${transaction.description}</td>
                     <td>${transaction.status || ''}</td>
                 </tr>
