@@ -27,7 +27,7 @@ def update_transaction_history_status(
         "orderid": orderid,
         "scode": scode,
         "incomingorderid": incomingorderid,
-        "payer_name": payer_name,
+        "payername": payer_name,
         "status": status,
     }
     update_transaction_status(account_number, transaction_number, update_fields)
