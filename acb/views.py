@@ -2,6 +2,7 @@ from bank.utils import Transaction, unix_to_datetime, find_substring
 from config.views import get_env
 import requests
 import logging
+import time
 
 
 logger = logging.getLogger('django')
@@ -48,6 +49,7 @@ def acb_balance(username, password, account_number):
 
 
 def acb_transactions(username, password, account_number):
+    time.sleep(5)
     body = {
         "rows": 1000,
         "username": username,
