@@ -171,7 +171,7 @@ def process_transactions(transactions, bank):
     for row in transactions:
         print("Processing new transaction %s" % row)
         bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
-        if not row['transaction_date'].date() >= timezone.now().date():
+        if not row['created_at'].date() >= timezone.now().date():
             continue
         if row['transaction_type'] == 'IN':
             formatted_amount = '{:,.2f}'.format(row['amount'])
