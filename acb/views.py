@@ -63,7 +63,7 @@ def acb_transactions(username, password, account_number):
         for transaction in transactions:
             new_formatted_transaction = Transaction(
                 transaction_number=transaction['transactionNumber'],
-                transaction_date=unix_to_datetime(transaction['activeDatetime']),
+                created_at=unix_to_datetime(transaction['activeDatetime']),
                 transaction_type=transaction['type'],
                 account_number=transaction['account'],
                 description=transaction['description'],

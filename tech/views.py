@@ -92,7 +92,7 @@ def tech_transactions(username, password, account_number):
             transaction_date = transaction_date.strftime('%d/%m/%Y %H:%M:%S')
             new_formatted_transaction = Transaction(
                 transaction_number=transaction['reference'],
-                transaction_date=transaction_date,
+                created_at=transaction_date,
                 transaction_type=transaction_type,
                 account_number=account_number,
                 description=transaction['description'],
