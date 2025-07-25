@@ -273,47 +273,20 @@ def process_transactions(transactions, bank):
                             f'\n'
                             f'Reason of not be credited: Order not found!!!'
                         )
-                        bank_accounts = BankAccount.objects.filter(status=True)
-                        set_name = set([bank_account.account_name for bank_account in bank_accounts])
-                        internal = False
-                        for name in set_name:
-                            first_name = name.split(' ')[-1]
-                            memo_transfer_check = 'TQ' + first_name
-                            memo_deposit_check = 'D' + first_name
-                            if memo_transfer_check in row['description'] or memo_deposit_check in row[
-                                'description']:
-                                internal = True
-                                break
-                        if not internal and bank.bank_type == 'IN':
-                            send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
+                        send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
                                                   get_env('MONITORING_BOT_2_API_KEY'))
-        else:
-            transaction_type = '-'
-            transaction_color = '🔴'  # Red circle emoji for OUT transactions
-            formatted_amount = '{:,.2f}'.format(row['amount'])
+                else:
+                    transaction_type = '-'
+                    transaction_color = '🔴'  # Red circle emoji for OUT transactions
+                    formatted_amount = '{:,.2f}'.format(row['amount'])
 
-            alert = (
-                f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
-                f'\n'
-                f'Nội dung: {row['description']}\n'
-                f'\n'
-                f'🏦 {bank.account_number} - {bank.account_name}\n'
-                f'\n'
-                f'🕒 {row['created_at']}'
-            )
-
-            bank_accounts = BankAccount.objects.filter(status=True)
-            set_name = set([bank_account.account_name for bank_account in bank_accounts])
-            internal = False
-            for name in set_name:
-                first_name = name.split(' ')[-1]
-                memo_transfer_check = 'TQ' + first_name
-                memo_deposit_check = 'D' + first_name
-                if memo_transfer_check in row['description'] or memo_deposit_check in row[
-                    'description'] and bank.bank_type == 'OUT':
-                    send_telegram_message(alert, get_env('INTERNAL_CHAT_ID'),
-                                          get_env('MONITORING_BOT_2_API_KEY'))
-                    internal = True
-                    break
-            if not internal:
-                send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+                    alert = (
+                        f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
+                        f'\n'
+                        f'Nội dung: {row['description']}\n'
+                        f'\n'
+                        f'🏦 {bank.account_number} - {bank.account_name}\n'
+                        f'\n'
+                        f'🕒 {row['created_at']}'
+                    )
+                    send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
