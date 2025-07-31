@@ -1,9 +1,9 @@
 from django.views.generic import ListView
 from django.shortcuts import get_object_or_404, render
-from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q, Sum, Case, When, Value, IntegerField
 from django.utils import timezone
+from django.contrib.auth.models import User
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -11,16 +11,15 @@ from .models import SettlePayout
 from bank.models import Bank
 from bank.utils import send_telegram_message, send_telegram_qr
 from config.views import get_env
-import json
-from datetime import datetime
-import pytz
-
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from django.db.models import Q, Sum, Case, When, Value, IntegerField
 from django.shortcuts import render
 import json
+import pytz
+
+
 from datetime import datetime
 
 from .models import SettlePayout, Bank
@@ -37,6 +36,7 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
         queryset = super().get_queryset()
         search_query = self.request.GET.get('search', '')
         status_filter = self.request.GET.get('status', 'Pending')
+        employee_filter = self.request.GET.get('employee')
 
         if search_query:
             queryset = queryset.filter(
@@ -75,6 +75,12 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
 
         queryset = queryset.filter(created_at__gte=start_datetime, created_at__lte=end_datetime)
 
+        if not employee_filter or employee_filter == 'All':
+            pass
+        else:
+            user = User.objects.filter(username=employee_filter).first()
+            queryset = queryset.filter(user=user)
+
         queryset = queryset.annotate(
             status_priority=Case(
                 When(status=False, then=Value(0)),
@@ -98,10 +104,9 @@ class SettlePayoutListView(LoginRequiredMixin, ListView):
 
         context['banks'] = banks
         context['bank_data'] = bank_data
+        context['users'] = User.objects.all()
         context['total_results'] = filtered_queryset.count()
         context['total_amount'] = filtered_queryset.aggregate(Sum('money'))['money__sum'] or 0
-
-        print(type(context['list_payout']))
 
         return context
 

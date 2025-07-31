@@ -156,6 +156,7 @@ def get_unprocessed_transactions(account_number):
 def update_transaction_status(account_number, transaction_number, update_fields):
     TransactionHistory.objects.filter(transaction_number=transaction_number, account_number=account_number).update(**update_fields)
 
+
 def insert_all(transaction_list):
     TransactionHistory.objects.bulk_create([
         TransactionHistory(**txn) for txn in transaction_list

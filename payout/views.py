@@ -1,5 +1,5 @@
 from django.views.generic import ListView
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -34,7 +34,7 @@ class PayoutListView(LoginRequiredMixin, ListView):
     model = Payout
     template_name = 'payout.html'
     context_object_name = 'list_payout'
-    login_url = 'user_login'
+    login_url = 'cms:user_login'
     paginate_by = 10
 
     def get_queryset(self):
