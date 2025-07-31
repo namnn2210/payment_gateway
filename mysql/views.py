@@ -74,12 +74,12 @@ def get_transaction_by_description(description_substring):
 def get_new_transactions(transactions, account_number):
     existing_transaction_numbers = TransactionHistory.objects.filter(account_number=account_number).values_list('transaction_number', flat=True)
 
-    new_transactions = [txn for txn in transactions if txn['transaction_number'] not in existing_transaction_numbers]
+    new_transactions = [txn for txn in transactions if txn.transaction_number not in existing_transaction_numbers]
 
     # Check if transaction is OUT and contains Z -> success
     for txn in new_transactions:
-        if txn['transaction_type'] == 'OUT':
-            description = txn.get('description', '')
+        if txn.transaction_type == 'OUT':
+            description = txn.description
             match = re.search(r'TQ\d{11}', description)
             payout = apps.get_model('payout', 'Payout')
             settle_payout = apps.get_model('settle_payout', 'SettlePayout')
@@ -89,9 +89,9 @@ def get_new_transactions(transactions, account_number):
                 orderno = match.group().replace('TQ', '')
                 logger.info(f"Order No: {orderno}")
 
-                existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn['amount']).first()
-                existed_settle = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount']).first()
-                formatted_amount = '{:,.2f}'.format(txn['amount'])
+                existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn.amount).first()
+                existed_settle = settle_payout.objects.filter(orderno__contains=orderno, money=txn.amount).first()
+                formatted_amount = '{:,.2f}'.format(txn.amount)
 
                 if existed_payout and not existed_payout.status:
                     existed_payout.status = True
@@ -111,7 +111,7 @@ def get_new_transactions(transactions, account_number):
                         f'Date: {existed_payout.updated_at}'
                     )
 
-                    txn['status'] = 'Success'
+                    txn.status = 'Success'
                     try:
                         send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     except Exception as ex:
@@ -135,7 +135,7 @@ def get_new_transactions(transactions, account_number):
                         f'Date: {existed_settle.updated_at}'
                     )
 
-                    txn['status'] = 'Success'
+                    txn.status = 'Success'
                     try:
                         send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
                     except Exception as ex:
