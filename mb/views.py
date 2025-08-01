@@ -57,7 +57,8 @@ def mb_transactions(username, password, account_number, start=''):
                         description=transaction['description'],
                         transfer_code=find_substring(transaction['description']),
                         amount=amount,
-                        payername=''
+                        payername='',
+                        status=''
                     )
                     formatted_transactions.append(new_formatted_transaction.__dict__())
                 return formatted_transactions

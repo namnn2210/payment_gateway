@@ -41,7 +41,8 @@ def mbdn_transactions(username, password, account_number, corp_id, start=''):
                 description=transaction['description'],
                 transfer_code=find_substring(transaction['description']),
                 payername=payername,
-                amount=amount
+                amount=amount,
+                status=''
             )
             formatted_transactions.append(new_formatted_transaction.__dict__())
         if len(formatted_transactions) == 0:

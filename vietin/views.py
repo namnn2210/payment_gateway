@@ -80,7 +80,8 @@ def vietin_transactions(username, password, account_number):
                 description=item['remark'],
                 transfer_code=find_substring(item['remark']),
                 amount=int(item['amount']),
-                payername=''
+                payername='',
+                status=''
             )
             formatted_transactions.append(new_formatted_transaction.__dict__())
         return formatted_transactions
