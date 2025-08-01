@@ -170,36 +170,36 @@ def process_transactions(transactions, bank):
     print("Number of transactions:", len(transactions))
     for row in transactions:
         print("Processing new transaction %s" % row)
-        bank_account = BankAccount.objects.filter(account_number=str(row['account_number'])).first()
-        if not row['created_at'].date() >= timezone.now().date():
+        bank_account = BankAccount.objects.filter(account_number=str(row.account_number)).first()
+        if not row.created_at.date() >= timezone.now().date():
             continue
-        if row['transaction_type'] == 'IN':
-            formatted_amount = '{:,.2f}'.format(row['amount'])
+        if row.transaction_type == 'IN':
+            formatted_amount = '{:,.2f}'.format(row.amount)
             memo_transfer_check = 'TQ' + bank_account.account_name
             memo_deposit_check = 'D' + bank_account.account_name
-            if memo_transfer_check in row['description'] or memo_deposit_check in row['description']:
+            if memo_transfer_check in row.description or memo_deposit_check in row.description:
                 continue
             success = False
 
-            if row['transfer_code'] is None:
+            if row.transfer_code is None:
                 if bank_account.bank_type == 'IN' or bank_account.bank_type == 'ALL':
-                    update_transaction_history_status(row['account_number'], row['transaction_number'],
-                                                      row['transfer_code'], None,
+                    update_transaction_history_status(row.account_number, row.transaction_number,
+                                                      row.transfer_code, None,
                                                       None, None, 'Failed', None)
                     alert = (
                         f'Hi, failed\n'
                         f'\n'
-                        f'Account: {row['account_number']}'
+                        f'Account: {row.account_number}'
                         f'\n'
                         f'Confirmed by order: \n'
                         f'\n'
                         f'Received amount💲: {formatted_amount} \n'
                         f'\n'
-                        f'Memo: {row['description']}\n'
+                        f'Memo: {row.description}\n'
                         f'\n'
-                        f'Code: {find_substring(row['description'])}\n'
+                        f'Code: {find_substring(row.description)}\n'
                         f'\n'
-                        f'Time: {row['created_at']}\n'
+                        f'Time: {row.created_at}\n'
                         f'\n'
                         f'Reason of not be credited: No transfer code!!!'
                     )
@@ -218,31 +218,31 @@ def process_transactions(transactions, bank):
                                 if result['orderno'] == '':
                                     continue
                                 else:
-                                    update_transaction_history_status(row['account_number'],
-                                                                      row['transaction_number'],
-                                                                      row['transfer_code'], result['orderid'],
+                                    update_transaction_history_status(row.account_number,
+                                                                      row.transaction_number,
+                                                                      row.transfer_code, result['orderid'],
                                                                       result['scode'], result['incomingorderid'],
                                                                       'Success', result['payername'])
                                     alert = (
                                         f'🟩🟩🟩 Success! CID: {item.name}\n'
                                         f'\n'
-                                        f'Account: {row['account_number']}'
+                                        f'Account: {row.account_number}'
                                         f'\n'
                                         f'Payer Name: {result['payername']}\n'
                                         f'\n'
-                                        f'Bank Payer Name: {row['payername']}\n'
+                                        f'Bank Payer Name: {row.payername}\n'
                                         f'\n'
                                         f'Confirmed by order: {result['incomingorderid']}\n'
                                         f'\n'
                                         f'Received amount💲: {formatted_amount} \n'
                                         f'\n'
-                                        f'Memo: {row['description']}\n'
+                                        f'Memo: {row.description}\n'
                                         f'\n'
                                         f'Order ID: {result['orderid']}\n'
                                         f'\n'
-                                        f'Code: {find_substring(row['description'])}\n'
+                                        f'Code: {find_substring(row.description)}\n'
                                         f'\n'
-                                        f'Time: {row['created_at']}\n'
+                                        f'Time: {row.created_at}\n'
                                     )
                                     success = True
                                     send_telegram_message(alert, "-1002674641230",
@@ -253,23 +253,23 @@ def process_transactions(transactions, bank):
                         else:
                             continue
                     if not success:
-                        update_transaction_history_status(row['account_number'], row['transaction_number'],
-                                                          row['transfer_code'], None, None, None,
+                        update_transaction_history_status(row.account_number, row.transaction_number,
+                                                          row.transfer_code, None, None, None,
                                                           'Failed', None)
                         alert = (
                             f'Hi, failed\n'
                             f'\n'
-                            f'Account: {row['account_number']}'
+                            f'Account: {row.account_number}'
                             f'\n'
                             f'Confirmed by order: \n'
                             f'\n'
                             f'Received amount💲: {formatted_amount} \n'
                             f'\n'
-                            f'Memo: {row['description']}\n'
+                            f'Memo: {row.description}\n'
                             f'\n'
-                            f'Code: {find_substring(row['description'])}\n'
+                            f'Code: {find_substring(row.description)}\n'
                             f'\n'
-                            f'Time: {row['created_at']}\n'
+                            f'Time: {row.created_at}\n'
                             f'\n'
                             f'Reason of not be credited: Order not found!!!'
                         )
@@ -278,15 +278,15 @@ def process_transactions(transactions, bank):
                 else:
                     transaction_type = '-'
                     transaction_color = '🔴'  # Red circle emoji for OUT transactions
-                    formatted_amount = '{:,.2f}'.format(row['amount'])
+                    formatted_amount = '{:,.2f}'.format(row.amount)
 
                     alert = (
                         f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
                         f'\n'
-                        f'Nội dung: {row['description']}\n'
+                        f'Nội dung: {row.description}\n'
                         f'\n'
                         f'🏦 {bank.account_number} - {bank.account_name}\n'
                         f'\n'
-                        f'🕒 {row['created_at']}'
+                        f'🕒 {row.created_at}'
                     )
                     send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
