@@ -151,7 +151,7 @@ def get_unprocessed_transactions(account_number):
         transaction_type='IN',
         created_at__range=(start_date, end_date),
         status='',
-    ).exclude(transfer_code='')
+    ).exclude(transfer_code='').values()
 
 def update_transaction_status(account_number, transaction_number, update_fields):
     TransactionHistory.objects.filter(transaction_number=transaction_number, account_number=account_number).update(**update_fields)
