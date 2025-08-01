@@ -8,7 +8,7 @@ import pytz
 
 class Transaction:
     def __init__(self, transaction_number, created_at, transaction_type, account_number, description,
-                 transfer_code, amount, payername) -> None:
+                 transfer_code, amount, payername, status) -> None:
         self.transaction_number = str(transaction_number)
         if created_at:
             self.created_at = datetime.strptime(created_at, '%d/%m/%Y %H:%M:%S')
@@ -19,7 +19,7 @@ class Transaction:
             self.transfer_code = transfer_code
         else:
             self.transfer_code = None
-        self.status = None
+        self.status = status
         self.amount = amount
         self.note = None
         self.orderid = None
