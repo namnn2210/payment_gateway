@@ -43,7 +43,6 @@
         "swift_code": "BIDVVNVX",
         "lookup_supported": 1
     },
-
     {
         "id": "fe05a74d-0b50-4569-8a78-d44648fc944c",
         "name": "Ngân hàng TMCP Quân đội",
@@ -55,7 +54,6 @@
         "swift_code": "MSCBVNVX",
         "lookup_supported": 1
     },
-
     {
         "id": "d9b10c0e-e96d-4550-ac4d-1117d03c8afc",
         "name": "Ngân hàng TMCP Kỹ thương Việt Nam",
@@ -78,7 +76,6 @@
         "swift_code": "ABBKVNVX",
         "lookup_supported": 1
     },
-    
     {
         "id": "f599edf9-40c8-4bbf-87e8-230c1787a439",
         "name": "Ngân hàng TMCP Bắc Á",
@@ -90,13 +87,12 @@
         "swift_code": "NASCVNVX",
         "lookup_supported": 1
     },
-    
     {
         "id": "a4f2d7b2-7b85-4420-8273-3c5d0a69e8f1",
-        "name": "Ngân hàng TMCP Bảo Việt",
+        "name": "Ngân hàng TMCP Bản Việt",
         "code": "BVB",
         "bin": 970438,
-        "short_name": "BaoVietBank",
+        "short_name": "BanVietBank",
         "logo_url": "https://api.vietqr.io/img/BVB.png",
         "icon_url": "https://cdn.httzip.com/shared/bank/icon/BVB.png",
         "swift_code": "BVBVVNVX",
@@ -311,7 +307,6 @@
         "swift_code": "LVBKVNVX",
         "lookup_supported": 1
     },
-    
     {
         "id": "bf9303e0-4048-4545-92e6-0702f212d1a0",
         "name": "Ngân hàng TMCP Hàng Hải",
@@ -488,7 +483,6 @@
         "swift_code": "SGTTVNVX",
         "lookup_supported": 1
     },
-    
     {
         "id": "fa941344-6a64-4438-9bd5-11b57077da18",
         "name": "Ngân hàng số Timo by Ban Viet Bank (Timo by Ban Viet Bank)",
@@ -555,7 +549,6 @@
         "swift_code": "VBAAVNVX",
         "lookup_supported": 1
     },
-    
     {
         "id": "ec514a5b-1cd7-4d7c-bf97-c6c412bed60c",
         "name": "Ngân hàng TMCP Bản Việt",
