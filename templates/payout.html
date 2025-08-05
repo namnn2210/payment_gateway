@@ -496,7 +496,7 @@
             //     toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
             // }
 
-            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname}&accountName=${accountname}`;
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname.toUpperCase()}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl);
             $('.bankcode').html(bankcode);
             $('.accountno').html(accountno);

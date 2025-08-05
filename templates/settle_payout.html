@@ -403,7 +403,7 @@
         var existed = false
         $('#modalQrImage').attr('src', '');
 
-        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname}&accountName=${accountname}`;
+        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname.toUpperCase()}&accountName=${accountname}`;
         $('#modalQrImage').attr('src', qrUrl);
         $('.bankcode').html(bankcode);
         $('.accountno').html(accountno);
