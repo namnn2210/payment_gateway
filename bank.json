@@ -89,8 +89,19 @@
     },
     {
         "id": "a4f2d7b2-7b85-4420-8273-3c5d0a69e8f1",
-        "name": "Ngân hàng TMCP Bản Việt",
+        "name": "Ngân hàng TMCP Bảo Việt",
         "code": "BVB",
+        "bin": 970438,
+        "short_name": "BaoVietBank",
+        "logo_url": "https://api.vietqr.io/img/BVB.png",
+        "icon_url": "https://cdn.httzip.com/shared/bank/icon/BVB.png",
+        "swift_code": "BVBVVNVX",
+        "lookup_supported": 1
+    },
+    {
+        "id": "a4f2d7b2-7b85-4420-8273-3c5d0a69e8f1",
+        "name": "Ngân hàng TMCP Bản Việt",
+        "code": "BVBank",
         "bin": 970438,
         "short_name": "BanVietBank",
         "logo_url": "https://api.vietqr.io/img/BVB.png",
