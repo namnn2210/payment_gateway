@@ -478,23 +478,31 @@
             const dataIn = data.in
             var existed = false
             // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
-            dataIn.map(transaction => {
-                if (transaction.description.includes(`TQ${accountname}`) && transaction.amount === money) {
-                    existed = true
-                }
-            })
+            // dataIn.map(transaction => {
+            //     if (transaction.description.includes(`TQ${accountname}`) && transaction.amount === money) {
+            //         existed = true
+            //     }
+            // })
 
-            if (!existed) {
-                var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
-                $('#modalQrImage').attr('src', qrUrl);
-                $('.bankcode').html(bankcode);
-                $('.accountno').html(accountno);
-                $('.accountname').html(accountname);
-                $('.memo').html(memo);
-                $('.money').html(money.toLocaleString());
-            } else {
-                toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
-            }
+            // if (!existed) {
+            //     var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname}&accountName=${accountname}`;
+            //     $('#modalQrImage').attr('src', qrUrl);
+            //     $('.bankcode').html(bankcode);
+            //     $('.accountno').html(accountno);
+            //     $('.accountname').html(accountname);
+            //     $('.memo').html(accountname);
+            //     $('.money').html(money.toLocaleString());
+            // } else {
+            //     toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
+            // }
+
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname}&accountName=${accountname}`;
+            $('#modalQrImage').attr('src', qrUrl);
+            $('.bankcode').html(bankcode);
+            $('.accountno').html(accountno);
+            $('.accountname').html(accountname);
+            $('.memo').html(accountname);
+            $('.money').html(money.toLocaleString());
 
 
             $('.done-btn-modal').data('item-id', itemId);

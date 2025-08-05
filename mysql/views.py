@@ -77,70 +77,9 @@ def get_new_transactions(transactions, account_number):
     new_transactions = [txn for txn in transactions if txn['transaction_number'] not in existing_transaction_numbers]
 
     # Check if transaction is OUT and contains Z -> success
-    for txn in new_transactions:
-        if txn['transaction_type'] == 'OUT':
-            description = txn.get('description', '')
-            match = re.search(r'TQ\d{11}', description)
-            payout = apps.get_model('payout', 'Payout')
-            settle_payout = apps.get_model('settle_payout', 'SettlePayout')
-            bank_account = apps.get_model('bank', 'BankAccount')
-
-            if match:
-                orderno = match.group().replace('TQ', '')
-                logger.info(f"Order No: {orderno}")
-
-                existed_payout = payout.objects.filter(orderno__contains=orderno, money=txn['amount']).first()
-                existed_settle = settle_payout.objects.filter(orderno__contains=orderno, money=txn['amount']).first()
-                formatted_amount = '{:,.2f}'.format(txn['amount'])
-
-                if existed_payout and not existed_payout.status:
-                    existed_payout.status = True
-                    existed_payout.staging_status = True
-                    existed_payout.save()
-
-                    process_bank = bank_account.objects.filter(account_number=account_number).first()
-                    alert = (
-                        f'🟢🟢🟢{existed_payout.orderid}\n'
-                        f'\nAmount: {formatted_amount}\n'
-                        f'Bank name: {existed_payout.bankcode}\n'
-                        f'Account name: {existed_payout.accountname}\n'
-                        f'Account number: {existed_payout.accountno}\n'
-                        f'Process bank: {process_bank.bank_name.name}\n'
-                        f'Created by: {existed_payout.user}\n'
-                        f'Done by: {existed_payout.user}\n'
-                        f'Date: {existed_payout.updated_at}'
-                    )
-
-                    txn['status'] = 'Success'
-                    try:
-                        send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
-                    except Exception as ex:
-                        logger.error(f"Error sending Telegram message: {ex}")
-                    # Removed break here to allow processing of other new transactions
-
-                elif existed_settle and not existed_settle.status:
-                    existed_settle.status = True
-                    existed_settle.save()
-
-                    process_bank = bank_account.objects.filter(account_number=account_number).first()
-                    alert = (
-                        f'🟢🟢🟢{existed_settle.orderid}\n'
-                        f'\nAmount: {formatted_amount}\n'
-                        f'Bank name: {existed_settle.bankcode}\n'
-                        f'Account name: {existed_settle.accountname}\n'
-                        f'Account number: {existed_settle.accountno}\n'
-                        f'Process bank: {process_bank.bank_name.name}\n'
-                        f'Created by: {existed_settle.user}\n'
-                        f'Done by: {existed_settle.user}\n'
-                        f'Date: {existed_settle.updated_at}'
-                    )
-
-                    txn['status'] = 'Success'
-                    try:
-                        send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('TRANSACTION_BOT_2_API_KEY'))
-                    except Exception as ex:
-                        logger.error(f"Error sending Telegram message: {ex}")
-                    # Removed break here to allow processing of other new transactions
+    # for txn in new_transactions:
+    #     if txn['transaction_type'] == 'OUT':
+    #         txn['status'] = 'Success'
 
     return new_transactions
 

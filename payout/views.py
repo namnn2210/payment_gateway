@@ -160,7 +160,7 @@ class AddPayoutAPIView(APIView):
         )
         memo = 'TQ' + orderid[-11:]
         send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
-        img_url = f'https://img.vietqr.io/image/{bankcode}-{accountno}-compact.jpg?amount={int(money_float)}&addInfo={memo}&accountName={accountname}'
+        img_url = f'https://img.vietqr.io/image/{bankcode}-{accountno}-compact.jpg?amount={int(money_float)}&addInfo={accountname}&accountName={accountname}'
         send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)
 
         return Response({'message': 'Bank added successfully'}, status=status.HTTP_201_CREATED)
@@ -347,7 +347,7 @@ class PayoutWebhookAPIView(APIView):
                 f'- - - - - - - - - - - - - -\n'
             )
             memo = 'TQ' + orderno[-11:]
-            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={accountname}&accountName={accountname}'
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
             send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002888070097', img_url, caption)
         else:
@@ -398,7 +398,7 @@ class PayoutWebhookAPIView(APIView):
                 f'{int(float(money)):,}\n'
                 f'- - - - - - - - - - - - - -\n'
             )
-            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={memo}&accountName={accountname}'
+            img_url = f'https://img.vietqr.io/image/{system_bankcode}-{accountno}-compact.jpg?amount={int(float(money))}&addInfo={accountname}&accountName={accountname}'
             send_telegram_message(alert, get_env('PENDING_PAYOUT_CHAT_ID'),
                                   get_env('MONITORING_BOT_2_API_KEY'))
             send_telegram_qr(get_env('MONITORING_BOT_2_API_KEY'), '-1002287492730', img_url, caption)

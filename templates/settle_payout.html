@@ -402,20 +402,27 @@
 
         var existed = false
         $('#modalQrImage').attr('src', '');
-        if (!existed) {
-            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
-            $('#modalQrImage').attr('src', qrUrl);
-            $('.bankcode').html(bankcode);
-            $('.accountno').html(accountno);
-            $('.accountname').html(accountname);
-            $('.money').html(money.toLocaleString());
-            setTimeout(function() {
-                $('#modalQrImage').addClass('blur');
-            }, 5000);
-        }
-        else {
-            toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
-        }
+
+        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname}&accountName=${accountname}`;
+        $('#modalQrImage').attr('src', qrUrl);
+        $('.bankcode').html(bankcode);
+        $('.accountno').html(accountno);
+        $('.accountname').html(accountname);
+        $('.money').html(money.toLocaleString());
+        // if (!existed) {
+        //     var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
+        //     $('#modalQrImage').attr('src', qrUrl);
+        //     $('.bankcode').html(bankcode);
+        //     $('.accountno').html(accountno);
+        //     $('.accountname').html(accountname);
+        //     $('.money').html(money.toLocaleString());
+        //     setTimeout(function() {
+        //         $('#modalQrImage').addClass('blur');
+        //     }, 5000);
+        // }
+        // else {
+        //     toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
+        // }
 
         // $('#modalQrImage').on('click', function () {
         //     const csrftoken = getCookie('csrftoken');
