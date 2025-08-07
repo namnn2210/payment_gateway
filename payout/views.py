@@ -302,7 +302,6 @@ class PayoutWebhookAPIView(APIView):
         partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         if settle:
             # print('settle')
-            print(partner_bank_data)
             # Settle
             for bank in partner_bank_data:
                 if payeebankname == bank['bankname']:
