@@ -165,10 +165,6 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message, proxy_url=None):
         response.raise_for_status()
         result = response.json()
 
-        if not result.get('ok'):
-            print("⚠️ Telegram API error:", result.get('description'))
-        else:
-            print("✅ Photo sent successfully!")
 
         return result
 
