@@ -275,7 +275,7 @@ def process_transactions(transactions, bank):
                         )
                         send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
                                                   get_env('MONITORING_BOT_2_API_KEY'))
-                else:
+                elif bank_account.bank_type == 'OUT' and row['transaction_type'] == 'OUT':
                     transaction_type = '-'
                     transaction_color = '🔴'  # Red circle emoji for OUT transactions
                     formatted_amount = '{:,.2f}'.format(row['amount'])
