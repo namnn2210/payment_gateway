@@ -98,9 +98,6 @@ def send_telegram_message(
             timeout=10
         )
 
-        print(f"Request payload: {json.dumps(payload, ensure_ascii=False)}")
-        print(f"Status code: {response.status_code}")
-        print(f"Response text: {response.text}")
 
         response.raise_for_status()
         data = response.json()
@@ -127,7 +124,6 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message, proxy_url=None):
 
     url = f'https://api.telegram.org/bot{api_key}/sendPhoto'
 
-    print(f"Telegram API endpoint: {url}")
 
     keyboard = {
         "inline_keyboard": [
