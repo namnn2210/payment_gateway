@@ -166,10 +166,6 @@ def send_telegram_qr(api_key, chat_id, qr_image_url, message, proxy_url=None):
             timeout=10
         )
 
-        print(f"Request payload: {json.dumps(payload, ensure_ascii=False)}")
-        print(f"Status code: {response.status_code}")
-        print(f"Response text: {response.text}")
-
         response.raise_for_status()
         result = response.json()
 
