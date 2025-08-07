@@ -260,7 +260,9 @@ class PayoutWebhookAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         data = request.data
-        print(data)
+        with open('payout_webhook_data.json', 'a', encoding='utf-8') as f:
+            f.write(json.dumps(data, ensure_ascii=False) + '\n')
+
         scode = data.get('scode')
         orderno = data.get('orderno')
         orderid = data.get('orderid')
