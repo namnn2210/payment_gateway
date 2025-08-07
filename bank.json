@@ -167,9 +167,9 @@
     {
         "id": "dc6920cb-8d1f-4393-a01d-db53d4b0e289",
         "name": "Ngân hàng TMCP Đông Á",
-        "code": "DOB",
+        "code": "Vikki",
         "bin": 970406,
-        "short_name": "DongABank",
+        "short_name": "Vikki Bank",
         "logo_url": "https://api.vietqr.io/img/DOB.png",
         "icon_url": "https://cdn.httzip.com/shared/bank/icon/DOB.png",
         "swift_code": "EACBVNVX",
