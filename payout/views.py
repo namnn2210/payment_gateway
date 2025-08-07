@@ -299,7 +299,7 @@ class PayoutWebhookAPIView(APIView):
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
         current_working_user = [session.user for session in current_sessions] if current_sessions else [User.objects.filter(username='admin-tqa').first()]
 
-        settle = bankcode in ['NA', '', '-'] or payeebankbranch in ['NA', '', '-']
+        settle = False
 
         partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         if settle:
