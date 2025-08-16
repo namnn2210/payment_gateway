@@ -14,6 +14,10 @@
         },
         {
             "code": "TCB",
+            "bankname": "TechComBank"
+        },
+        {
+            "code": "TCB",
             "bankname": "TECHCOMBANK"
         },
         {
@@ -27,6 +31,10 @@
         {
             "code": "VCB",
             "bankname": "Vietcombank"
+        },
+        {
+            "code": "VCB",
+            "bankname": "VietComBank"
         },
         {
             "code": "VCB",
@@ -60,7 +68,6 @@
             "code": "DOB",
             "bankname": "DongA Bank"
         },
-
         {
             "code": "DOB",
             "bankname": "DONG-A"
@@ -109,7 +116,7 @@
             "code": "VPB",
             "bankname": "Vietnam Prosperity Joint-Stock Commercial Bank"
         },
-	{
+        {
             "code": "VPB",
             "bankname": "VPBANK"
         },
@@ -133,7 +140,7 @@
             "code": "MB",
             "bankname": "MBBank"
         },
-         {
+        {
             "code": "MB",
             "bankname": "MBBANK"
         },
@@ -150,16 +157,16 @@
             "bankname": "Tien Phong Commercial"
         },
         {
-            "code":"TPB",
-            "bankname":"Tien Phong Bank"
+            "code": "TPB",
+            "bankname": "Tien Phong Bank"
         },
         {
-            "code":"TPB",
-            "bankname":"Tien Phong Commercial Joint Stock Bank"
+            "code": "TPB",
+            "bankname": "Tien Phong Commercial Joint Stock Bank"
         },
         {
-            "code":"TPB",
-            "bankname":"Tpbank"
+            "code": "TPB",
+            "bankname": "Tpbank"
         },
         {
             "code": "TPB",
