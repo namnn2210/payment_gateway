@@ -275,18 +275,18 @@ def process_transactions(transactions, bank):
                         )
                         send_telegram_message(alert, get_env('FAILED_CHAT_ID'),
                                                   get_env('MONITORING_BOT_2_API_KEY'))
-                elif bank_account.bank_type == 'OUT' and row['transaction_type'] == 'OUT':
-                    transaction_type = '-'
-                    transaction_color = '🔴'  # Red circle emoji for OUT transactions
-                    formatted_amount = '{:,.2f}'.format(row['amount'])
+        elif bank_account.bank_type == 'OUT' and row['transaction_type'] == 'OUT':
+            transaction_type = '-'
+            transaction_color = '🔴'  # Red circle emoji for OUT transactions
+            formatted_amount = '{:,.2f}'.format(row['amount'])
 
-                    alert = (
-                        f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
-                        f'\n'
-                        f'Nội dung: {row['description']}\n'
-                        f'\n'
-                        f'🏦 {bank.account_number} - {bank.account_name}\n'
-                        f'\n'
-                        f'🕒 {row['created_at']}'
-                    )
-                    send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+            alert = (
+                f'💰 {transaction_color} {transaction_type}{formatted_amount} \n'
+                f'\n'
+                f'Nội dung: {row['description']}\n'
+                f'\n'
+                f'🏦 {bank.account_number} - {bank.account_name}\n'
+                f'\n'
+                f'🕒 {row['created_at']}'
+            )
+            send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
