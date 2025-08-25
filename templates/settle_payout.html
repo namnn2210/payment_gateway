@@ -396,12 +396,19 @@
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
         var user = $(this).data('user');
+        var memo = ''
 
 
         var firstName = accountname.split(' ').slice(-1);
 
         var lastName = accountname.split(' ').slice(-1)[0];
-        var memo = user + ' chuyen'
+
+        if (user === 'DO DUC THINH') {
+            memo = user + ' chuyen'
+        } else {
+            memo = accountname
+        }
+        
 
         var existed = false
         $('#modalQrImage').attr('src', '');
