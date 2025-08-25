@@ -458,10 +458,11 @@
             var isCancel = $(this).data('is-cancel');
             var staging = $(this).data('staging');
             var user = $(this).data('user');
+            var superuser = $(this).data('superuser');
             var memo = ''
             
             var lastName = accountname.split(' ').slice(-1)[0];
-            if (user === 'DO DUC THINH') {
+            if (superuser) {
                 memo = user + ' chuyen'
             } else {
                 memo = accountname
