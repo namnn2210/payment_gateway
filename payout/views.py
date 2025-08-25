@@ -300,10 +300,10 @@ class PayoutWebhookAPIView(APIView):
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
         current_working_user = [session.user for session in current_sessions] if current_sessions else [User.objects.filter(username='admin-tqa').first()]
 
-        # settle = True
-        # if payout_type == 'withdrawal':
-        #     settle = False
-        settle = False
+        settle = True
+        if payout_type == 'withdrawal':
+            settle = False
+        # settle = False
 
         partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         if settle:
