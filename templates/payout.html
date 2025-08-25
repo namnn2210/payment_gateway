@@ -457,9 +457,10 @@
             var isReport = $(this).data('is-report');
             var isCancel = $(this).data('is-cancel');
             var staging = $(this).data('staging');
+            var user = $(this).data('user');
             
             var lastName = accountname.split(' ').slice(-1)[0];
-            var memo = 'TQ' + orderNo.toString().slice(-11);
+            var memo = user + ' chuyen'
 
             $('#modalQrImage').attr('src', '');
 
@@ -477,26 +478,8 @@
             const data = await fetchData('{% url "bank:transaction_history_api" %}');
             const dataIn = data.in
             var existed = false
-            // for each dataIn and check if there is transaction contain Z${accountname} and have the same amount
-            // dataIn.map(transaction => {
-            //     if (transaction.description.includes(`TQ${accountname}`) && transaction.amount === money) {
-            //         existed = true
-            //     }
-            // })
 
-            // if (!existed) {
-            //     var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname}&accountName=${accountname}`;
-            //     $('#modalQrImage').attr('src', qrUrl);
-            //     $('.bankcode').html(bankcode);
-            //     $('.accountno').html(accountno);
-            //     $('.accountname').html(accountname);
-            //     $('.memo').html(accountname);
-            //     $('.money').html(money.toLocaleString());
-            // } else {
-            //     toastr.error(response.message || 'Tồn tại giao dịch trùng lặp. Vui lòng kiểm tra lại');
-            // }
-
-            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname.toUpperCase()}&accountName=${accountname}`;
+            var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
             $('#modalQrImage').attr('src', qrUrl);
             $('.bankcode').html(bankcode);
             $('.accountno').html(accountno);

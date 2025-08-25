@@ -395,15 +395,18 @@
         var money = $(this).data('money');
         var isReport = $(this).data('is-report');
         var isCancel = $(this).data('is-cancel');
+        var user = $(this).data('user');
+
+
         var firstName = accountname.split(' ').slice(-1);
 
         var lastName = accountname.split(' ').slice(-1)[0];
-        var memo = 'TQ' + orderNo.toString().slice(-11);
+        var memo = user + ' chuyen'
 
         var existed = false
         $('#modalQrImage').attr('src', '');
 
-        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${accountname.toUpperCase()}&accountName=${accountname}`;
+        var qrUrl = `https://img.vietqr.io/image/${bankcode}-${accountno}-compact.jpg?amount=${money}&addInfo=${memo}&accountName=${accountname}`;
         $('#modalQrImage').attr('src', qrUrl);
         $('.bankcode').html(bankcode);
         $('.accountno').html(accountno);
