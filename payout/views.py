@@ -272,6 +272,7 @@ class PayoutWebhookAPIView(APIView):
         bankcode = data.get('data', {}).get('payeebankbranchcode', '')
         payeebankname = data.get('data', {}).get('payeebankname', '')
         payeebankbranch = data.get('data', {}).get('payeebankbranch', '')
+        payout_type = data.get('data', {}).get('type')
         body_sign = data.get('sign')
 
         system_bankcode = ''
@@ -299,7 +300,9 @@ class PayoutWebhookAPIView(APIView):
         current_sessions = EmployeeWorkingSession.objects.filter(status=False)
         current_working_user = [session.user for session in current_sessions] if current_sessions else [User.objects.filter(username='admin-tqa').first()]
 
-        settle = False
+        settle = True
+        if payout_type == 'withdrawal':
+            settle = False
 
         partner_bank_data = json.load(open('partner_bank.json', encoding='utf-8'))['banks']
         if settle:
