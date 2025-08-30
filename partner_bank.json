@@ -98,6 +98,10 @@
         },
         {
             "code": "BIDV",
+            "bankname": "Bank for Investment and Development of Vietnam (BI)"
+        },
+        {
+            "code": "BIDV",
             "bankname": "BIDV - Bank Investment and Development of Vietnam"
         },
         {
