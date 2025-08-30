@@ -463,10 +463,11 @@
             
             var lastName = accountname.split(' ').slice(-1)[0];
             if (superuser) {
-                memo = ' '
+                memo = ''
             } else {
                 memo = accountname
             }
+            console.log(memo)
 
             $('#modalQrImage').attr('src', '');
 
