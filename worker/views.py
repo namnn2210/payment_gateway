@@ -290,3 +290,4 @@ def process_transactions(transactions, bank):
                 f'🕒 {row['created_at']}'
             )
             send_telegram_message(alert, get_env('PAYOUT_CHAT_ID'), get_env('MONITORING_BOT_2_API_KEY'))
+            send_telegram_message(alert, "-1003072767763", get_env('MONITORING_BOT_2_API_KEY'))
